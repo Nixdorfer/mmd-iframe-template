@@ -141,18 +141,6 @@ page.1.content.1=标题;page.1.options.1.title=选项;page.1.content.2=说明
 
 ## 示例
 
-```
-[WELCOME:autoExpand=false;page.1.title=欢迎;page.1.content.1=请填写以下信息;page.1.input.1.title=您的名字;page.1.input.1.key=name;page.1.input.1.desc=请输入您的名字;page.1.options.1.title=选择选项;page.1.options.1.key=choice;page.1.options.1.option.1=选项A;page.1.options.1.option.2=选项B;page.1.options.1.default=1]
-```
-
-## 多内容块示例
-
-```
-[WELCOME:page.1.title=公告;page.1.content.1=重要通知;page.1.content.1.style=title;page.1.content.2=这是一段引用文字;page.1.content.2.style=quote;page.1.content.3=普通说明文字;page.1.content.3.align=left]
-```
-
-## 多页面示例
-
-```
-[WELCOME:page.1.title=第一页;page.1.input.1.title=姓名;page.1.input.1.key=name;page.1.next.content=继续;page.2.title=第二页;page.2.options.1.title=爱好;page.2.options.1.key=hobby;page.2.options.1.option.1=阅读;page.2.options.1.option.2=运动;page.2.options.1.option.3=音乐]
+``` REGEX_FLAG
+[WELCOME:page.1.title=欢迎来到Nix的自定义首页;page.1.content.1.align=left;page.1.content.1=在这里您可以写入您的故事详情\n使用这个字符可以换行(而且两行会比较紧);page.1.content.2=再写一个content也可以换行(两行中间会有点空隙);page.1.content.3=align可以设置对齐方式有leftright和middle可选;page.1.content.3.align=middle;page.1.content.4=page.x.content.align/style可以设置这一页的默认对齐/样式;page.1.content.5=page.content.align/style可以设置所有页的默认对齐/样式;page.1.content.6=style可以设置样式;page.1.content.6.style=title;page.1.content.7=有bold加粗tilt倾斜title标题quote引用可选;page.1.input.1.title=这里是输入框的标题;page.1.input.1.key=input1;page.1.input.1.desc=这里可以写输入框的描述;page.1.options.1.title=这里是选项的标题;page.1.options.1.key=options1;page.1.options.1.option.1=选项A;page.1.options.1.option.2=选项B;page.1.options.1.default=1;page.1.content.8=这就是第一页的全部内容;page.2.title=这里是第二页的标题;page.2.content.1=最后一页的继续按钮如果您未设置会被自动替换为“完成”;page.2.content.3=详细介绍和参数说明请查看;page.2.content.3.enter=false;page.2.content.4.style=url;page.2.content.4=项目说明书;page.2.content.4.url=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/README.md;page.2.content.2.style=title;page.2.content.2=祝您使用愉快！]
 ```
