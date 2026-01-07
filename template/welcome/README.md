@@ -4,7 +4,9 @@
 
 ## 使用方式
 
-启动正则表达式为 `/\[WELCOME:([\s\S]+?)\]/` [正则替换内容](./inject.html)
+启动正则表达式为 `/\[WELCOME:([\s\S]+?)\]/`
+
+替换内容为 [inject.html](./inject.html)（其中 `$1` 会被替换为捕获组1的内容）
 
 在 `第一句话` 中插入 `[WELCOME:k1=v1;k2=v2;kx=vx]` 样的指令即可
 
@@ -12,7 +14,9 @@
 - `;` → `%3B`
 - `=` → `%3D`
 
-换行符使用 `\n` 表示，例如：
+**注意：所有参数必须写在同一行内**
+
+如果参数值需要换行，使用 `\n` 表示：
 ```
 page.1.content=第一行\n第二行\n第三行
 ```
@@ -54,12 +58,33 @@ page.1.content=第一行\n第二行\n第三行
 | 参数 | 说明 |
 |------|------|
 | page.x.title | 页面标题 |
-| page.x.content | 页面内容 |
 | page.x.next.content | 下一步按钮文字（最后一页默认"完成"，其他默认"下一页"）|
 | page.x.hide.content | 隐藏按钮文字（默认"隐藏"）|
 | page.x.background.color | 页面背景颜色(6位hex) |
 | page.x.modal.color | 页面窗口颜色(6位hex) |
 | page.x.btn.color | 页面按钮颜色(6位hex) |
+
+### 内容配置
+
+内容索引 `y` 从 1 开始，不同 `y` 的内容之间会有换行，每个内容内可用 `\n` 换行
+
+| 参数 | 说明 |
+|------|------|
+| page.content.align | 所有页面的默认对齐方式 (left/right/middle，默认middle) |
+| page.content.style | 所有页面的默认样式 |
+| page.x.content.align | 第x页的默认对齐方式 |
+| page.x.content.style | 第x页的默认样式 |
+| page.x.content.y | 第y个内容块的文字 |
+| page.x.content.y.align | 第y个内容块的对齐方式 (left/right/middle) |
+| page.x.content.y.style | 第y个内容块的样式 |
+
+**样式选项**（多个样式用 `\` 分隔）：
+- quote - 引用样式（左边框+斜体）
+- title - 标题样式（加大加粗）
+- bold - 加粗
+- tilt - 倾斜
+
+**兼容模式**：也支持 `page.x.content` 作为单一内容（等同于 `page.x.content.1`）
 
 ### 下拉框配置
 
@@ -86,7 +111,13 @@ page.1.content=第一行\n第二行\n第三行
 ## 示例
 
 ```
-[WELCOME:autoExpand=false;page.1.title=欢迎;page.1.content=请填写以下信息;page.1.input.1.title=您的名字;page.1.input.1.key=name;page.1.input.1.desc=请输入您的名字;page.1.options.1.title=选择选项;page.1.options.1.key=choice;page.1.options.1.option.1=选项A;page.1.options.1.option.2=选项B;page.1.options.1.default=1]
+[WELCOME:autoExpand=false;page.1.title=欢迎;page.1.content.1=请填写以下信息;page.1.input.1.title=您的名字;page.1.input.1.key=name;page.1.input.1.desc=请输入您的名字;page.1.options.1.title=选择选项;page.1.options.1.key=choice;page.1.options.1.option.1=选项A;page.1.options.1.option.2=选项B;page.1.options.1.default=1]
+```
+
+## 多内容块示例
+
+```
+[WELCOME:page.1.title=公告;page.1.content.1=重要通知;page.1.content.1.style=title;page.1.content.2=这是一段引用文字;page.1.content.2.style=quote;page.1.content.3=普通说明文字;page.1.content.3.align=left]
 ```
 
 ## 多页面示例

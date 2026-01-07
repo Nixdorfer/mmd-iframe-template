@@ -7,7 +7,12 @@
 body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .container{background:var(--modal);border-radius:16px;padding:40px;max-width:500px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
 h1{color:#fff;margin-bottom:8px;text-align:center}
-.desc{color:#888;font-size:14px;text-align:center;margin-bottom:20px;white-space:pre-wrap}
+.desc{color:#888;font-size:14px;margin-bottom:20px;white-space:pre-wrap}
+.desc.align-left{text-align:left}.desc.align-right{text-align:right}.desc.align-middle{text-align:center}
+.desc.style-quote{border-left:3px solid #444;padding-left:12px;color:#aaa;font-style:italic}
+.desc.style-title{font-size:18px;font-weight:bold;color:#fff}
+.desc.style-bold{font-weight:bold}
+.desc.style-tilt{font-style:italic}
 .form-group{margin-bottom:20px}
 label{display:block;margin-bottom:8px;color:#fff}
 input,select{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}
@@ -30,6 +35,8 @@ var C = window.CONFIG || {};
 var modalColor = C.modalColor || '0d0d0d';
 var btnColor = C.btnColor || '166d3b';
 var bgColor = C.backgroundColor || '050505';
+var globalAlign = C['page.content.align'] || 'middle';
+var globalStyle = C['page.content.style'] || '';
 document.documentElement.style.setProperty('--bg', '#'+bgColor);
 document.documentElement.style.setProperty('--modal', '#'+modalColor);
 document.documentElement.style.setProperty('--btn', '#'+btnColor);
@@ -42,9 +49,27 @@ pageKeys.forEach(function(k) {
 });
 pageNums.sort(function(a,b){return a-b;});
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', content:'', options:[], inputs:[], nextContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:''};
+  var pg = {n:n, title:'', contents:[], options:[], inputs:[], nextContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:''};
   pg.title = C['page.'+n+'.title'] || '';
-  pg.content = C['page.'+n+'.content'] || '';
+  pg.defaultAlign = C['page.'+n+'.content.align'] || '';
+  pg.defaultStyle = C['page.'+n+'.content.style'] || '';
+  var contentNums = [];
+  Object.keys(C).forEach(function(k) {
+    var m = k.match(new RegExp('^page\\.'+n+'\\.content\\.(\\d+)'));
+    if (m && contentNums.indexOf(parseInt(m[1])) === -1) contentNums.push(parseInt(m[1]));
+  });
+  contentNums.sort(function(a,b){return a-b;});
+  if (contentNums.length > 0) {
+    contentNums.forEach(function(y) {
+      var ct = {text:'', align:'', style:''};
+      ct.text = C['page.'+n+'.content.'+y] || '';
+      ct.align = C['page.'+n+'.content.'+y+'.align'] || '';
+      ct.style = C['page.'+n+'.content.'+y+'.style'] || '';
+      pg.contents.push(ct);
+    });
+  } else if (C['page.'+n+'.content']) {
+    pg.contents.push({text: C['page.'+n+'.content'], align:'', style:''});
+  }
   pg.nextContent = C['page.'+n+'.next.content'] || '';
   pg.hideContent = C['page.'+n+'.hide.content'] || '隐藏';
   pg.bgColor = C['page.'+n+'.background.color'] || '';
@@ -89,7 +114,7 @@ pageNums.forEach(function(n) {
   pages.push(pg);
 });
 if (pages.length === 0) {
-  pages.push({n:1, title:'', content:'', options:[], inputs:[], nextContent:'完成', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:''});
+  pages.push({n:1, title:'', contents:[], options:[], inputs:[], nextContent:'完成', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:''});
 }
 var currentPage = 0;
 var data = {};
@@ -105,7 +130,17 @@ function render() {
   else document.documentElement.style.setProperty('--btn', '#'+btnColor);
   var html = '';
   if (pg.title) html += '<h1>'+esc(pg.title)+'</h1>';
-  if (pg.content) html += '<p class="desc">'+esc(pg.content)+'</p>';
+  pg.contents.forEach(function(ct) {
+    var align = ct.align || pg.defaultAlign || globalAlign;
+    var style = ct.style || pg.defaultStyle || globalStyle;
+    var cls = 'desc align-' + align;
+    if (style) {
+      style.split('\\').forEach(function(s) {
+        if (s) cls += ' style-' + s;
+      });
+    }
+    html += '<p class="'+cls+'">'+esc(ct.text)+'</p>';
+  });
   pg.options.forEach(function(opt, i) {
     html += '<div class="form-group">';
     if (opt.title) html += '<label>'+esc(opt.title)+'</label>';
