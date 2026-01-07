@@ -8,7 +8,10 @@ body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100
 .container{background:var(--modal);border-radius:16px;max-width:500px;width:90%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
 .modal-header{padding:24px 24px 16px;text-align:center;flex-shrink:0}
 .modal-header h1{color:#fff;margin:0}
-.modal-content{flex:1;overflow-y:auto;padding:0 24px}
+.modal-content{flex:1;overflow-y:auto;padding:0 24px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.5) transparent}
+.modal-content::-webkit-scrollbar{width:6px;background:transparent}
+.modal-content::-webkit-scrollbar-track{background:transparent}
+.modal-content::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.5);border-radius:3px}
 .modal-footer{padding:16px 24px 24px;flex-shrink:0;display:flex;gap:10px}
 .desc{color:#888;font-size:14px;margin-bottom:16px;white-space:pre-wrap}
 .desc.align-left{text-align:left}.desc.align-right{text-align:right}.desc.align-middle{text-align:center}
@@ -16,6 +19,9 @@ body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100
 .desc.style-title{font-size:18px;font-weight:bold;color:#fff}
 .desc.style-bold{font-weight:bold}
 .desc.style-tilt{font-style:italic}
+.desc.style-underline{text-decoration:underline}
+.desc.style-delete{text-decoration:line-through}
+.desc.style-url{color:#4a9eff;text-decoration:underline;cursor:pointer}
 .form-group{margin-bottom:16px}
 label{display:block;margin-bottom:8px;color:#fff}
 input,select{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}
@@ -159,12 +165,18 @@ function render() {
       var align = el.align || pg.defaultAlign || globalAlign;
       var style = el.style || pg.defaultStyle || globalStyle;
       var cls = 'desc align-' + align;
+      var isUrl = false;
       if (style) {
         style.split('\\').forEach(function(s) {
           if (s) cls += ' style-' + s;
+          if (s === 'url') isUrl = true;
         });
       }
-      html += '<p class="'+cls+'">'+esc(el.text)+'</p>';
+      if (isUrl) {
+        html += '<p class="'+cls+'" data-url="'+esc(el.text)+'">'+esc(el.text)+'</p>';
+      } else {
+        html += '<p class="'+cls+'">'+esc(el.text)+'</p>';
+      }
     } else if (el.type === 'option') {
       html += '<div class="form-group">';
       if (el.title) html += '<label>'+esc(el.title)+'</label>';
@@ -190,6 +202,9 @@ function render() {
   if (!isFirst) document.getElementById('prevBtn').onclick = prev;
   document.getElementById('nextBtn').onclick = next;
   document.getElementById('hideBtn').onclick = hide;
+  document.querySelectorAll('[data-url]').forEach(function(el) {
+    el.onclick = function() { window.open(el.getAttribute('data-url'), '_blank'); };
+  });
 }
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');

@@ -102,6 +102,9 @@ page.1.content.1=标题;page.1.options.1.title=选项;page.1.content.2=说明
 - title - 标题样式（加大加粗）
 - bold - 加粗
 - tilt - 倾斜
+- underline - 下划线
+- delete - 删除线
+- url - 链接样式（蓝色下划线，点击打开链接，内容必须是http/https开头的URL）
 
 **兼容模式**：也支持 `page.x.content` 作为单一内容（等同于 `page.x.content.1`）
 
