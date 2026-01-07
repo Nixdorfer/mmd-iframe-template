@@ -1,0 +1,96 @@
+<div class="IFEkkk">
+  <img src="" onerror="
+    (function(c) {
+      c.style.position = 'relative';
+      var btn = document.createElement('button');
+      btn.style.cssText = 'padding:12px 24px;background:#b8860b;border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:14px';
+      btn.textContent = '正在获取资源...';
+      btn.disabled = true;
+      c.appendChild(btn);
+      var o, f, msgHandler;
+      function doFetch() {
+        btn.disabled = true;
+        btn.style.background = '#b8860b';
+        btn.style.cursor = 'not-allowed';
+        btn.textContent = '正在获取资源...';
+        btn.onclick = null;
+        fetch('https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/test/index.html')
+          .then(r => {
+            if (!r.ok) throw new Error();
+            return r.text();
+          })
+          .then(h => {
+            btn.disabled = false;
+            btn.style.background = '#166d3b';
+            btn.style.cursor = 'pointer';
+            btn.textContent = '打开操作面板';
+            o = document.createElement('div');
+            o.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#050505;z-index:99999;display:none;align-items:center;justify-content:center';
+            f = document.createElement('iframe');
+            f.style.cssText = 'width:0;height:0;border:none;border-radius:12px;opacity:0;transform:translateY(-30px);transition:opacity 0.4s,transform 0.4s';
+            f.srcdoc = h;
+            o.appendChild(f);
+            document.body.appendChild(o);
+            function showIframe() {
+              o.style.display = 'flex';
+              f.style.width = '90vw';
+              f.style.height = '90vh';
+              f.style.opacity = '0';
+              f.style.transform = 'translateY(-30px) scale(1)';
+              setTimeout(function() {
+                f.style.opacity = '1';
+                f.style.transform = 'translateY(0) scale(1)';
+              }, 10);
+            }
+            function hideIframe(destroy) {
+              f.style.opacity = '0';
+              f.style.transform = 'scale(1.1)';
+              setTimeout(function() {
+                if (destroy) {
+                  o.remove();
+                } else {
+                  o.style.display = 'none';
+                  f.style.width = '0';
+                  f.style.height = '0';
+                  f.style.transform = 'translateY(-30px) scale(1)';
+                }
+              }, 400);
+            }
+            msgHandler = function(e) {
+              console.log('收到消息:', e.data);
+              if (!e.data || !e.data.t) return;
+              if (e.data.t === 'cancel') {
+                hideIframe(false);
+              } else if (e.data.t === 'done') {
+                console.log('执行写入');
+                var a = document.querySelector('.chat .chat-bottom .uni-textarea .chat-input-scope textarea');
+                console.log('textarea:', a);
+                if (a) {
+                  a.focus();
+                  a.value = e.data.msg + '\n';
+                  a.dispatchEvent(new Event('input', {bubbles: true}));
+                  console.log('写入完成');
+                }
+                window.removeEventListener('message', msgHandler);
+                btn.disabled = true;
+                btn.style.background = '#666';
+                btn.style.cursor = 'not-allowed';
+                btn.textContent = '您已完成了该轮操作';
+                hideIframe(true);
+              }
+            };
+            window.addEventListener('message', msgHandler);
+            btn.onclick = showIframe;
+          })
+          .catch(function() {
+            btn.disabled = false;
+            btn.style.background = '#8b0000';
+            btn.style.cursor = 'pointer';
+            btn.textContent = '获取远程资源失败 点击重试';
+            btn.onclick = doFetch;
+          });
+      }
+      doFetch();
+    })(this.closest('.IFEkkk'))
+  ">
+</div>

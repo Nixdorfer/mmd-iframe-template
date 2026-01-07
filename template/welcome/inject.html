@@ -1,0 +1,117 @@
+<div class="IFEkkk">
+  <img src="" onerror="
+    (function(c,p) {
+      var cfg = {};
+      p.split(';').forEach(function(pair) {
+        var idx = pair.indexOf('=');
+        if (idx > 0) cfg[pair.slice(0,idx)] = decodeURIComponent(pair.slice(idx+1));
+      });
+      var autoExpand = cfg.autoExpand !== 'false';
+      var allowReplay = cfg.allowReplay !== 'false';
+      var btnLoadContent = cfg.btnLoadContent || '正在获取资源...';
+      var btnLoadColor = cfg.btnLoadColor || 'b8860b';
+      var btnFailContent = cfg.btnFailContent || '获取远程资源失败 点击重试';
+      var btnFailColor = cfg.btnFailColor || '8b0000';
+      var btnContinueContent = cfg.btnContinueContent || '打开操作面板';
+      var btnContinueColor = cfg.btnContinueColor || '166d3b';
+      var btnDoneContent = cfg.btnDoneContent || '您已完成了该轮操作';
+      var btnDoneColor = cfg.btnDoneColor || '666666';
+      var bgColor = cfg.backgroundColor || '050505';
+      c.style.position = 'relative';
+      var btn = document.createElement('button');
+      btn.style.cssText = 'padding:12px 24px;background:#'+btnLoadColor+';border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:14px';
+      btn.textContent = btnLoadContent;
+      btn.disabled = true;
+      c.appendChild(btn);
+      var o, f, msgHandler, html;
+      function showIframe() {
+        o.style.display = 'flex';
+        f.style.width = '90vw';
+        f.style.height = '90vh';
+        f.style.opacity = '0';
+        f.style.transform = 'translateY(-30px) scale(1)';
+        setTimeout(function() {
+          f.style.opacity = '1';
+          f.style.transform = 'translateY(0) scale(1)';
+        }, 10);
+      }
+      function hideIframe(destroy) {
+        f.style.opacity = '0';
+        f.style.transform = 'scale(1.1)';
+        setTimeout(function() {
+          if (destroy) {
+            o.remove();
+          } else {
+            o.style.display = 'none';
+            f.style.width = '0';
+            f.style.height = '0';
+            f.style.transform = 'translateY(-30px) scale(1)';
+          }
+        }, 400);
+      }
+      function setupIframe(h) {
+        html = h.replace('/*__CONFIG__*/', 'window.CONFIG='+JSON.stringify(cfg)+';');
+        o = document.createElement('div');
+        o.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#'+bgColor+';z-index:99999;display:none;align-items:center;justify-content:center';
+        f = document.createElement('iframe');
+        f.style.cssText = 'width:0;height:0;border:none;border-radius:12px;opacity:0;transform:translateY(-30px);transition:opacity 0.4s,transform 0.4s';
+        f.srcdoc = html;
+        o.appendChild(f);
+        document.body.appendChild(o);
+        msgHandler = function(e) {
+          if (!e.data || !e.data.t) return;
+          if (e.data.t === 'cancel') {
+            hideIframe(false);
+          } else if (e.data.t === 'done') {
+            var a = document.querySelector('.chat .chat-bottom .uni-textarea .chat-input-scope textarea');
+            if (a) {
+              a.focus();
+              a.value = e.data.msg + '\n';
+              a.dispatchEvent(new Event('input', {bubbles: true}));
+            }
+            if (allowReplay) {
+              hideIframe(false);
+            } else {
+              window.removeEventListener('message', msgHandler);
+              btn.disabled = true;
+              btn.style.background = '#'+btnDoneColor;
+              btn.style.cursor = 'not-allowed';
+              btn.textContent = btnDoneContent;
+              hideIframe(true);
+            }
+          }
+        };
+        window.addEventListener('message', msgHandler);
+        btn.onclick = showIframe;
+      }
+      function doFetch() {
+        btn.disabled = true;
+        btn.style.background = '#'+btnLoadColor;
+        btn.style.cursor = 'not-allowed';
+        btn.textContent = btnLoadContent;
+        btn.onclick = null;
+        fetch('https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/welcome/index.html')
+          .then(function(r) {
+            if (!r.ok) throw new Error();
+            return r.text();
+          })
+          .then(function(h) {
+            btn.disabled = false;
+            btn.style.background = '#'+btnContinueColor;
+            btn.style.cursor = 'pointer';
+            btn.textContent = btnContinueContent;
+            setupIframe(h);
+            if (autoExpand) showIframe();
+          })
+          .catch(function() {
+            btn.disabled = false;
+            btn.style.background = '#'+btnFailColor;
+            btn.style.cursor = 'pointer';
+            btn.textContent = btnFailContent;
+            btn.onclick = doFetch;
+          });
+      }
+      doFetch();
+    })(this.closest('.IFEkkk'), '{{PARAMS}}')
+  ">
+</div>

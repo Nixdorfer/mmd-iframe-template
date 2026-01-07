@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.container{background:var(--modal);border-radius:16px;padding:40px;max-width:500px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
+h1{color:#fff;margin-bottom:8px;text-align:center}
+.desc{color:#888;font-size:14px;text-align:center;margin-bottom:20px;white-space:pre-wrap}
+.form-group{margin-bottom:20px}
+label{display:block;margin-bottom:8px;color:#fff}
+input,select{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}
+input:focus,select:focus{outline:2px solid var(--btn)}
+.btn{width:100%;padding:14px;border:none;border-radius:8px;font-size:18px;cursor:pointer;transition:all 0.3s}
+.btn-primary{background:var(--btn);color:#fff;margin-bottom:10px}
+.btn-primary:hover{filter:brightness(1.2)}
+.btn-primary:disabled{background:#444;cursor:not-allowed;filter:none}
+.btn-secondary{background:#1a1a1a;color:#fff}
+.btn-secondary:hover{background:#2a2a2a}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="container" id="root"></div>
+<script>
+/*__CONFIG__*/
+(function() {
+var C = window.CONFIG || {};
+var modalColor = C.modalColor || '0d0d0d';
+var btnColor = C.btnColor || '166d3b';
+var bgColor = C.backgroundColor || '050505';
+document.documentElement.style.setProperty('--bg', '#'+bgColor);
+document.documentElement.style.setProperty('--modal', '#'+modalColor);
+document.documentElement.style.setProperty('--btn', '#'+btnColor);
+var pages = [];
+var pageKeys = Object.keys(C).filter(function(k){return k.match(/^page\.\d+\./);});
+var pageNums = [];
+pageKeys.forEach(function(k) {
+  var n = parseInt(k.split('.')[1]);
+  if (pageNums.indexOf(n) === -1) pageNums.push(n);
+});
+pageNums.sort(function(a,b){return a-b;});
+pageNums.forEach(function(n) {
+  var pg = {n:n, title:'', content:'', options:[], inputs:[], nextContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:''};
+  pg.title = C['page.'+n+'.title'] || '';
+  pg.content = C['page.'+n+'.content'] || '';
+  pg.nextContent = C['page.'+n+'.next.content'] || '';
+  pg.hideContent = C['page.'+n+'.hide.content'] || '隐藏';
+  pg.bgColor = C['page.'+n+'.background.color'] || '';
+  pg.modalColor = C['page.'+n+'.modal.color'] || '';
+  pg.btnColor = C['page.'+n+'.btn.color'] || '';
+  var optNums = [];
+  Object.keys(C).forEach(function(k) {
+    var m = k.match(new RegExp('^page\\.'+n+'\\.options\\.(\\d+)\\.'));
+    if (m && optNums.indexOf(parseInt(m[1])) === -1) optNums.push(parseInt(m[1]));
+  });
+  optNums.sort(function(a,b){return a-b;});
+  optNums.forEach(function(y) {
+    var opt = {title:'', options:[], defaultIdx:0, key:''};
+    opt.title = C['page.'+n+'.options.'+y+'.title'] || '';
+    opt.key = C['page.'+n+'.options.'+y+'.key'] || 'option'+y;
+    opt.defaultIdx = parseInt(C['page.'+n+'.options.'+y+'.default'] || '1') - 1;
+    var optionNums = [];
+    Object.keys(C).forEach(function(k) {
+      var m = k.match(new RegExp('^page\\.'+n+'\\.options\\.'+y+'\\.option\\.(\\d+)$'));
+      if (m) optionNums.push(parseInt(m[1]));
+    });
+    optionNums.sort(function(a,b){return a-b;});
+    optionNums.forEach(function(z) {
+      opt.options.push(C['page.'+n+'.options.'+y+'.option.'+z] || '');
+    });
+    pg.options.push(opt);
+  });
+  var inputNums = [];
+  Object.keys(C).forEach(function(k) {
+    var m = k.match(new RegExp('^page\\.'+n+'\\.input\\.(\\d+)\\.'));
+    if (m && inputNums.indexOf(parseInt(m[1])) === -1) inputNums.push(parseInt(m[1]));
+  });
+  inputNums.sort(function(a,b){return a-b;});
+  inputNums.forEach(function(y) {
+    var inp = {title:'', desc:'', key:'', nullable:false};
+    inp.title = C['page.'+n+'.input.'+y+'.title'] || '';
+    inp.desc = C['page.'+n+'.input.'+y+'.desc'] || '';
+    inp.key = C['page.'+n+'.input.'+y+'.key'] || 'input'+y;
+    inp.nullable = C['page.'+n+'.input.'+y+'.nullable'] === 'true';
+    pg.inputs.push(inp);
+  });
+  pages.push(pg);
+});
+if (pages.length === 0) {
+  pages.push({n:1, title:'', content:'', options:[], inputs:[], nextContent:'完成', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:''});
+}
+var currentPage = 0;
+var data = {};
+function render() {
+  var pg = pages[currentPage];
+  var isLast = currentPage === pages.length - 1;
+  var nextText = pg.nextContent || (isLast ? '完成' : '下一页');
+  if (pg.bgColor) document.documentElement.style.setProperty('--bg', '#'+pg.bgColor);
+  else document.documentElement.style.setProperty('--bg', '#'+bgColor);
+  if (pg.modalColor) document.documentElement.style.setProperty('--modal', '#'+pg.modalColor);
+  else document.documentElement.style.setProperty('--modal', '#'+modalColor);
+  if (pg.btnColor) document.documentElement.style.setProperty('--btn', '#'+pg.btnColor);
+  else document.documentElement.style.setProperty('--btn', '#'+btnColor);
+  var html = '';
+  if (pg.title) html += '<h1>'+esc(pg.title)+'</h1>';
+  if (pg.content) html += '<p class="desc">'+esc(pg.content)+'</p>';
+  pg.options.forEach(function(opt, i) {
+    html += '<div class="form-group">';
+    if (opt.title) html += '<label>'+esc(opt.title)+'</label>';
+    html += '<select data-type="option" data-key="'+esc(opt.key)+'">';
+    opt.options.forEach(function(o, j) {
+      var sel = j === opt.defaultIdx ? ' selected' : '';
+      html += '<option value="'+esc(o)+'"'+sel+'>'+esc(o)+'</option>';
+    });
+    html += '</select></div>';
+  });
+  pg.inputs.forEach(function(inp, i) {
+    html += '<div class="form-group">';
+    if (inp.title) html += '<label>'+esc(inp.title)+'</label>';
+    html += '<input type="text" data-type="input" data-key="'+esc(inp.key)+'" data-nullable="'+inp.nullable+'" placeholder="'+esc(inp.desc)+'">';
+    html += '</div>';
+  });
+  html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
+  html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
+  document.getElementById('root').innerHTML = html;
+  document.getElementById('nextBtn').onclick = next;
+  document.getElementById('hideBtn').onclick = hide;
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function collectData() {
+  var selects = document.querySelectorAll('select[data-type="option"]');
+  selects.forEach(function(s) {
+    data[s.getAttribute('data-key')] = s.value;
+  });
+  var inputs = document.querySelectorAll('input[data-type="input"]');
+  inputs.forEach(function(inp) {
+    data[inp.getAttribute('data-key')] = inp.value;
+  });
+}
+function validate() {
+  var inputs = document.querySelectorAll('input[data-type="input"]');
+  for (var i = 0; i < inputs.length; i++) {
+    var inp = inputs[i];
+    if (inp.getAttribute('data-nullable') !== 'true' && !inp.value.trim()) {
+      inp.focus();
+      return false;
+    }
+  }
+  return true;
+}
+function next() {
+  if (!validate()) return;
+  collectData();
+  if (currentPage < pages.length - 1) {
+    currentPage++;
+    render();
+  } else {
+    var msg = Object.keys(data).map(function(k) {
+      return k + '=' + data[k];
+    }).join(';');
+    parent.postMessage({t:'done', d:data, msg:msg}, '*');
+  }
+}
+function hide() {
+  parent.postMessage({t:'cancel'}, '*');
+}
+render();
+})();
+</script>
+</body>
+</html>
