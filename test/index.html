@@ -6,7 +6,8 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,sans-serif;background:#050505;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
 .container{background:#0d0d0d;border-radius:16px;padding:40px;max-width:500px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
-h1{color:#fff;margin-bottom:20px;text-align:center}
+h1{color:#fff;margin-bottom:8px;text-align:center}
+.desc{color:#888;font-size:14px;text-align:center;margin-bottom:20px}
 .form-group{margin-bottom:20px}
 label{display:block;margin-bottom:8px;color:#fff}
 input,select{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}
@@ -20,13 +21,14 @@ input:focus,select:focus{outline:2px solid #166d3b}
 </head>
 <body>
 <div class="container">
-<h1>测试表单</h1>
+<h1>这里写故事标题</h1>
+<p class="desc">这里写故事内容</p>
 <div class="form-group">
-<label>用户名</label>
-<input type="text" id="username" placeholder="请输入用户名">
+<label>怎么称呼你...</label>
+<input type="text" id="username" placeholder="请输入你的尊姓大名">
 </div>
 <div class="form-group">
-<label>选择选项</label>
+<label>你更喜欢哪个选项...</label>
 <select id="option">
 <option value="A">选项 A</option>
 <option value="B">选项 B</option>
@@ -37,15 +39,13 @@ input:focus,select:focus{outline:2px solid #166d3b}
 <button class="btn btn-secondary" id="cancelBtn">取消</button>
 </div>
 <script>
-const STORAGE_KEY='iframe_form_data';
 const getData=()=>({username:document.getElementById('username').value,option:document.getElementById('option').value,timestamp:Date.now()});
 document.getElementById('completeBtn').onclick=function(){
 const data=getData();
-try{parent.localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){console.error(e)}
-parent.postMessage({type:'iframe-complete',data:data},'*');
+parent.postMessage({t:'done',d:data,msg:'用户名: '+data.username+', 选项: '+data.option},'*');
 };
 document.getElementById('cancelBtn').onclick=function(){
-parent.postMessage({type:'iframe-cancel'},'*');
+parent.postMessage({t:'cancel'},'*');
 };
 </script>
 </body>
