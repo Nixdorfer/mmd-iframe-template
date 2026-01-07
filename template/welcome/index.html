@@ -22,6 +22,16 @@ body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100
 .desc.style-underline{text-decoration:underline}
 .desc.style-delete{text-decoration:line-through}
 .desc.style-url{color:#4a9eff;text-decoration:underline;cursor:pointer}
+.desc.no-enter{display:inline;margin-bottom:0}
+.url-confirm{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:10000}
+.url-confirm-box{background:#1a1a1a;border-radius:12px;padding:20px;max-width:360px;width:90%}
+.url-confirm-title{color:#fff;font-size:16px;font-weight:bold;margin-bottom:12px}
+.url-confirm-link{color:#4a9eff;font-size:13px;word-break:break-all;margin-bottom:8px}
+.url-confirm-warn{color:#ff6b6b;font-size:12px;margin-bottom:16px}
+.url-confirm-btns{display:flex;justify-content:flex-end;gap:10px}
+.url-confirm-btns button{padding:8px 16px;border:none;border-radius:6px;cursor:pointer;font-size:14px}
+.url-confirm-close{background:#333;color:#888}
+.url-confirm-ok{background:var(--btn);color:#fff}
 .form-group{margin-bottom:16px}
 label{display:block;margin-bottom:8px;color:#fff}
 input,select{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}
@@ -92,10 +102,12 @@ pageNums.forEach(function(n) {
     if (m && contentNums.indexOf(parseInt(m[1])) === -1) contentNums.push(parseInt(m[1]));
   });
   contentNums.forEach(function(y) {
-    var ct = {type:'content', idx:y, text:'', align:'', style:'', order:0};
+    var ct = {type:'content', idx:y, text:'', align:'', style:'', url:'', enter:true, order:0};
     ct.text = C['page.'+n+'.content.'+y] || '';
     ct.align = C['page.'+n+'.content.'+y+'.align'] || '';
     ct.style = C['page.'+n+'.content.'+y+'.style'] || '';
+    ct.url = C['page.'+n+'.content.'+y+'.url'] || '';
+    ct.enter = C['page.'+n+'.content.'+y+'.enter'] !== 'false';
     ct.order = getKeyOrder('page.'+n+'.content.'+y);
     pg.elements.push(ct);
   });
@@ -172,8 +184,9 @@ function render() {
           if (s === 'url') isUrl = true;
         });
       }
-      if (isUrl) {
-        html += '<p class="'+cls+'" data-url="'+esc(el.text)+'">'+esc(el.text)+'</p>';
+      if (!el.enter) cls += ' no-enter';
+      if (isUrl && el.url) {
+        html += '<p class="'+cls+'" data-url="'+esc(el.url)+'">'+esc(el.text)+'</p>';
       } else {
         html += '<p class="'+cls+'">'+esc(el.text)+'</p>';
       }
@@ -203,11 +216,37 @@ function render() {
   document.getElementById('nextBtn').onclick = next;
   document.getElementById('hideBtn').onclick = hide;
   document.querySelectorAll('[data-url]').forEach(function(el) {
-    el.onclick = function() { window.open(el.getAttribute('data-url'), '_blank'); };
+    el.onclick = function() {
+      var url = el.getAttribute('data-url');
+      if (url.indexOf('https://github.com/Nixdorfer') === 0) {
+        window.open(url, '_blank');
+      } else {
+        showUrlConfirm(url);
+      }
+    };
   });
 }
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showUrlConfirm(url) {
+  var overlay = document.createElement('div');
+  overlay.className = 'url-confirm';
+  overlay.innerHTML = '<div class="url-confirm-box"><div class="url-confirm-title">您确认要打开这个链接吗？</div><div class="url-confirm-link">'+esc(url)+'</div><div class="url-confirm-warn">打开不安全的链接可能导致安全风险！</div><div class="url-confirm-btns"><button class="url-confirm-close" id="ucClose">关闭(5)</button><button class="url-confirm-ok" id="ucOk">确定</button></div></div>';
+  document.body.appendChild(overlay);
+  var countdown = 5;
+  var closeBtn = document.getElementById('ucClose');
+  var okBtn = document.getElementById('ucOk');
+  var timer = setInterval(function() {
+    countdown--;
+    closeBtn.textContent = '关闭(' + countdown + ')';
+    if (countdown <= 0) {
+      clearInterval(timer);
+      overlay.remove();
+    }
+  }, 1000);
+  closeBtn.onclick = function() { clearInterval(timer); overlay.remove(); };
+  okBtn.onclick = function() { clearInterval(timer); overlay.remove(); window.open(url, '_blank'); };
 }
 function collectData() {
   var selects = document.querySelectorAll('select[data-type="option"]');

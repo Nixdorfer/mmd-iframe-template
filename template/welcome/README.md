@@ -96,6 +96,8 @@ page.1.content.1=标题;page.1.options.1.title=选项;page.1.content.2=说明
 | page.x.content.y | 第y个内容块的文字 |
 | page.x.content.y.align | 第y个内容块的对齐方式 (left/right/middle) |
 | page.x.content.y.style | 第y个内容块的样式 |
+| page.x.content.y.url | 当style=url时，指定要打开的链接 |
+| page.x.content.y.enter | 是否在末尾换行（true/false，默认true）|
 
 **样式选项**（多个样式用 `\` 分隔）：
 - quote - 引用样式（左边框+斜体）
@@ -104,7 +106,7 @@ page.1.content.1=标题;page.1.options.1.title=选项;page.1.content.2=说明
 - tilt - 倾斜
 - underline - 下划线
 - delete - 删除线
-- url - 链接样式（蓝色下划线，点击打开链接，内容必须是http/https开头的URL）
+- url - 链接样式（蓝色下划线，点击弹出确认框后打开链接，需配合.url参数指定链接地址）
 
 **兼容模式**：也支持 `page.x.content` 作为单一内容（等同于 `page.x.content.1`）
 
