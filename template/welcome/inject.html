@@ -52,7 +52,9 @@
         }, 400);
       }
       function setupIframe(h) {
+        console.log('WELCOME html contains CONFIG placeholder:', h.indexOf('/*__CONFIG__*/') !== -1);
         html = h.replace('/*__CONFIG__*/', 'window.CONFIG='+JSON.stringify(cfg)+';');
+        console.log('WELCOME injected config');
         o = document.createElement('div');
         o.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#'+bgColor+';z-index:99999;display:none;align-items:center;justify-content:center';
         f = document.createElement('iframe');
