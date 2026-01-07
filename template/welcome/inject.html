@@ -1,11 +1,13 @@
 <div class="IFEkkk">
   <img src="" onerror="
     (function(c,p) {
+      console.log('WELCOME params:', p);
       var cfg = {};
-      p.split(';').forEach(function(pair) {
+      p.replace(/\\n/g,'\n').split(';').forEach(function(pair) {
         var idx = pair.indexOf('=');
         if (idx > 0) cfg[pair.slice(0,idx)] = decodeURIComponent(pair.slice(idx+1));
       });
+      console.log('WELCOME config:', cfg);
       var autoExpand = cfg.autoExpand !== 'false';
       var allowReplay = cfg.allowReplay !== 'false';
       var btnLoadContent = cfg.btnLoadContent || '正在获取资源...';
@@ -90,7 +92,7 @@
         btn.style.cursor = 'not-allowed';
         btn.textContent = btnLoadContent;
         btn.onclick = null;
-        fetch('https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/welcome/index.html')
+        fetch('https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/template/welcome/index.html')
           .then(function(r) {
             if (!r.ok) throw new Error();
             return r.text();
