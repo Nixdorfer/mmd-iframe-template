@@ -59,6 +59,7 @@ page.1.content=第一行\n第二行\n第三行
 |------|------|
 | page.x.title | 页面标题 |
 | page.x.next.content | 下一步按钮文字（最后一页默认"完成"，其他默认"下一页"）|
+| page.x.last.content | 上一页按钮文字（默认"上一页"，第一页不显示）|
 | page.x.hide.content | 隐藏按钮文字（默认"隐藏"）|
 | page.x.background.color | 页面背景颜色(6位hex) |
 | page.x.modal.color | 页面窗口颜色(6位hex) |
@@ -73,6 +74,14 @@ page.1.content=第一行\n第二行\n第三行
 - zoomin - 放大进入
 - zoomout - 缩小进入
 - none - 无动画
+
+### 元素排序
+
+页面内的元素（内容、下拉框、输入框）按参数定义顺序显示。例如：
+```
+page.1.content.1=标题;page.1.options.1.title=选项;page.1.content.2=说明
+```
+显示顺序为：标题 → 下拉框 → 说明
 
 ### 内容配置
 
@@ -117,6 +126,13 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.input.y.desc | 输入框占位提示文字 |
 | page.x.input.y.key | 返回数据时的键名 |
 | page.x.input.y.nullable | 是否允许为空（true/false，默认false）|
+
+### 界面布局
+
+- **窗口结构**：header（标题）+ content（可滚动内容区）+ footer（按钮区）
+- **按钮排列**：上一页（左）| 隐藏（中/灰色）| 下一页/完成（右）
+- **第一页**：不显示上一页按钮
+- **最后一页**：下一页按钮显示为"完成"
 
 ## 示例
 

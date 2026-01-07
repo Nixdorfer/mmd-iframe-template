@@ -4,25 +4,29 @@
 <meta charset="UTF-8">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-.container{background:var(--modal);border-radius:16px;padding:40px;max-width:500px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
-h1{color:#fff;margin-bottom:8px;text-align:center}
-.desc{color:#888;font-size:14px;margin-bottom:20px;white-space:pre-wrap}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.container{background:var(--modal);border-radius:16px;max-width:500px;width:90%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
+.modal-header{padding:24px 24px 16px;text-align:center;flex-shrink:0}
+.modal-header h1{color:#fff;margin:0}
+.modal-content{flex:1;overflow-y:auto;padding:0 24px}
+.modal-footer{padding:16px 24px 24px;flex-shrink:0;display:flex;gap:10px}
+.desc{color:#888;font-size:14px;margin-bottom:16px;white-space:pre-wrap}
 .desc.align-left{text-align:left}.desc.align-right{text-align:right}.desc.align-middle{text-align:center}
 .desc.style-quote{border-left:3px solid #444;padding-left:12px;color:#aaa;font-style:italic}
 .desc.style-title{font-size:18px;font-weight:bold;color:#fff}
 .desc.style-bold{font-weight:bold}
 .desc.style-tilt{font-style:italic}
-.form-group{margin-bottom:20px}
+.form-group{margin-bottom:16px}
 label{display:block;margin-bottom:8px;color:#fff}
 input,select{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}
 input:focus,select:focus{outline:2px solid var(--btn)}
-.btn{width:100%;padding:14px;border:none;border-radius:8px;font-size:18px;cursor:pointer;transition:all 0.3s}
-.btn-primary{background:var(--btn);color:#fff;margin-bottom:10px}
+.btn{flex:1;padding:14px;border:none;border-radius:8px;font-size:16px;cursor:pointer;transition:all 0.3s}
+.btn-primary{background:var(--btn);color:#fff}
 .btn-primary:hover{filter:brightness(1.2)}
-.btn-primary:disabled{background:#444;cursor:not-allowed;filter:none}
-.btn-secondary{background:#1a1a1a;color:#fff}
-.btn-secondary:hover{background:#2a2a2a}
+.btn-secondary{background:#333;color:#888}
+.btn-secondary:hover{background:#444}
+.btn-prev{background:var(--btn);color:#fff}
+.btn-prev:hover{filter:brightness(1.2)}
 .hidden{display:none}
 @keyframes aSlide{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes aFade{from{opacity:0}to{opacity:1}}
@@ -42,6 +46,7 @@ input:focus,select:focus{outline:2px solid var(--btn)}
 /*__CONFIG__*/
 (function() {
 var C = window.CONFIG || {};
+var CK = window.CONFIG_KEYS || [];
 var modalColor = C.modalColor || '0d0d0d';
 var btnColor = C.btnColor || '166d3b';
 var bgColor = C.backgroundColor || '050505';
@@ -58,46 +63,50 @@ pageKeys.forEach(function(k) {
   if (pageNums.indexOf(n) === -1) pageNums.push(n);
 });
 pageNums.sort(function(a,b){return a-b;});
+function getKeyOrder(k) {
+  var idx = CK.indexOf(k);
+  return idx >= 0 ? idx : 9999;
+}
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', contents:[], options:[], inputs:[], nextContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', animType:'', animDur:300};
+  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', animType:'', animDur:300};
   pg.title = C['page.'+n+'.title'] || '';
   pg.defaultAlign = C['page.'+n+'.content.align'] || '';
   pg.defaultStyle = C['page.'+n+'.content.style'] || '';
-  var contentNums = [];
-  Object.keys(C).forEach(function(k) {
-    var m = k.match(new RegExp('^page\\.'+n+'\\.content\\.(\\d+)'));
-    if (m && contentNums.indexOf(parseInt(m[1])) === -1) contentNums.push(parseInt(m[1]));
-  });
-  contentNums.sort(function(a,b){return a-b;});
-  if (contentNums.length > 0) {
-    contentNums.forEach(function(y) {
-      var ct = {text:'', align:'', style:''};
-      ct.text = C['page.'+n+'.content.'+y] || '';
-      ct.align = C['page.'+n+'.content.'+y+'.align'] || '';
-      ct.style = C['page.'+n+'.content.'+y+'.style'] || '';
-      pg.contents.push(ct);
-    });
-  } else if (C['page.'+n+'.content']) {
-    pg.contents.push({text: C['page.'+n+'.content'], align:'', style:''});
-  }
   pg.nextContent = C['page.'+n+'.next.content'] || '';
+  pg.lastContent = C['page.'+n+'.last.content'] || '上一页';
   pg.hideContent = C['page.'+n+'.hide.content'] || '隐藏';
   pg.bgColor = C['page.'+n+'.background.color'] || '';
   pg.modalColor = C['page.'+n+'.modal.color'] || '';
   pg.btnColor = C['page.'+n+'.btn.color'] || '';
   pg.animType = C['page.'+n+'.animation.type'] || '';
   pg.animDur = parseInt(C['page.'+n+'.animation.duration']) || 300;
+  var contentNums = [];
+  Object.keys(C).forEach(function(k) {
+    var m = k.match(new RegExp('^page\\.'+n+'\\.content\\.(\\d+)'));
+    if (m && contentNums.indexOf(parseInt(m[1])) === -1) contentNums.push(parseInt(m[1]));
+  });
+  contentNums.forEach(function(y) {
+    var ct = {type:'content', idx:y, text:'', align:'', style:'', order:0};
+    ct.text = C['page.'+n+'.content.'+y] || '';
+    ct.align = C['page.'+n+'.content.'+y+'.align'] || '';
+    ct.style = C['page.'+n+'.content.'+y+'.style'] || '';
+    ct.order = getKeyOrder('page.'+n+'.content.'+y);
+    pg.elements.push(ct);
+  });
+  if (contentNums.length === 0 && C['page.'+n+'.content']) {
+    pg.elements.push({type:'content', idx:1, text:C['page.'+n+'.content'], align:'', style:'', order:getKeyOrder('page.'+n+'.content')});
+  }
   var optNums = [];
   Object.keys(C).forEach(function(k) {
     var m = k.match(new RegExp('^page\\.'+n+'\\.options\\.(\\d+)\\.'));
     if (m && optNums.indexOf(parseInt(m[1])) === -1) optNums.push(parseInt(m[1]));
   });
-  optNums.sort(function(a,b){return a-b;});
   optNums.forEach(function(y) {
-    var opt = {title:'', options:[], defaultIdx:0, key:''};
+    var opt = {type:'option', idx:y, title:'', options:[], defaultIdx:0, key:'', order:0};
     opt.title = C['page.'+n+'.options.'+y+'.title'] || '';
     opt.key = C['page.'+n+'.options.'+y+'.key'] || 'option'+y;
     opt.defaultIdx = parseInt(C['page.'+n+'.options.'+y+'.default'] || '1') - 1;
+    opt.order = getKeyOrder('page.'+n+'.options.'+y+'.title');
     var optionNums = [];
     Object.keys(C).forEach(function(k) {
       var m = k.match(new RegExp('^page\\.'+n+'\\.options\\.'+y+'\\.option\\.(\\d+)$'));
@@ -107,31 +116,33 @@ pageNums.forEach(function(n) {
     optionNums.forEach(function(z) {
       opt.options.push(C['page.'+n+'.options.'+y+'.option.'+z] || '');
     });
-    pg.options.push(opt);
+    pg.elements.push(opt);
   });
   var inputNums = [];
   Object.keys(C).forEach(function(k) {
     var m = k.match(new RegExp('^page\\.'+n+'\\.input\\.(\\d+)\\.'));
     if (m && inputNums.indexOf(parseInt(m[1])) === -1) inputNums.push(parseInt(m[1]));
   });
-  inputNums.sort(function(a,b){return a-b;});
   inputNums.forEach(function(y) {
-    var inp = {title:'', desc:'', key:'', nullable:false};
+    var inp = {type:'input', idx:y, title:'', desc:'', key:'', nullable:false, order:0};
     inp.title = C['page.'+n+'.input.'+y+'.title'] || '';
     inp.desc = C['page.'+n+'.input.'+y+'.desc'] || '';
     inp.key = C['page.'+n+'.input.'+y+'.key'] || 'input'+y;
     inp.nullable = C['page.'+n+'.input.'+y+'.nullable'] === 'true';
-    pg.inputs.push(inp);
+    inp.order = getKeyOrder('page.'+n+'.input.'+y+'.title');
+    pg.elements.push(inp);
   });
+  pg.elements.sort(function(a,b){return a.order - b.order;});
   pages.push(pg);
 });
 if (pages.length === 0) {
-  pages.push({n:1, title:'', contents:[], options:[], inputs:[], nextContent:'完成', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', animType:'', animDur:300});
+  pages.push({n:1, title:'', elements:[], nextContent:'完成', lastContent:'上一页', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', animType:'', animDur:300});
 }
 var currentPage = 0;
 var data = {};
 function render() {
   var pg = pages[currentPage];
+  var isFirst = currentPage === 0;
   var isLast = currentPage === pages.length - 1;
   var nextText = pg.nextContent || (isLast ? '完成' : '下一页');
   if (pg.bgColor) document.documentElement.style.setProperty('--bg', '#'+pg.bgColor);
@@ -140,38 +151,43 @@ function render() {
   else document.documentElement.style.setProperty('--modal', '#'+modalColor);
   if (pg.btnColor) document.documentElement.style.setProperty('--btn', '#'+pg.btnColor);
   else document.documentElement.style.setProperty('--btn', '#'+btnColor);
-  var html = '';
+  var html = '<div class="modal-header">';
   if (pg.title) html += '<h1>'+esc(pg.title)+'</h1>';
-  pg.contents.forEach(function(ct) {
-    var align = ct.align || pg.defaultAlign || globalAlign;
-    var style = ct.style || pg.defaultStyle || globalStyle;
-    var cls = 'desc align-' + align;
-    if (style) {
-      style.split('\\').forEach(function(s) {
-        if (s) cls += ' style-' + s;
+  html += '</div><div class="modal-content">';
+  pg.elements.forEach(function(el) {
+    if (el.type === 'content') {
+      var align = el.align || pg.defaultAlign || globalAlign;
+      var style = el.style || pg.defaultStyle || globalStyle;
+      var cls = 'desc align-' + align;
+      if (style) {
+        style.split('\\').forEach(function(s) {
+          if (s) cls += ' style-' + s;
+        });
+      }
+      html += '<p class="'+cls+'">'+esc(el.text)+'</p>';
+    } else if (el.type === 'option') {
+      html += '<div class="form-group">';
+      if (el.title) html += '<label>'+esc(el.title)+'</label>';
+      html += '<select data-type="option" data-key="'+esc(el.key)+'">';
+      el.options.forEach(function(o, j) {
+        var sel = j === el.defaultIdx ? ' selected' : '';
+        html += '<option value="'+esc(o)+'"'+sel+'>'+esc(o)+'</option>';
       });
+      html += '</select></div>';
+    } else if (el.type === 'input') {
+      html += '<div class="form-group">';
+      if (el.title) html += '<label>'+esc(el.title)+'</label>';
+      html += '<input type="text" data-type="input" data-key="'+esc(el.key)+'" data-nullable="'+el.nullable+'" placeholder="'+esc(el.desc)+'">';
+      html += '</div>';
     }
-    html += '<p class="'+cls+'">'+esc(ct.text)+'</p>';
   });
-  pg.options.forEach(function(opt, i) {
-    html += '<div class="form-group">';
-    if (opt.title) html += '<label>'+esc(opt.title)+'</label>';
-    html += '<select data-type="option" data-key="'+esc(opt.key)+'">';
-    opt.options.forEach(function(o, j) {
-      var sel = j === opt.defaultIdx ? ' selected' : '';
-      html += '<option value="'+esc(o)+'"'+sel+'>'+esc(o)+'</option>';
-    });
-    html += '</select></div>';
-  });
-  pg.inputs.forEach(function(inp, i) {
-    html += '<div class="form-group">';
-    if (inp.title) html += '<label>'+esc(inp.title)+'</label>';
-    html += '<input type="text" data-type="input" data-key="'+esc(inp.key)+'" data-nullable="'+inp.nullable+'" placeholder="'+esc(inp.desc)+'">';
-    html += '</div>';
-  });
-  html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
+  html += '</div><div class="modal-footer">';
+  if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
+  html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
+  html += '</div>';
   document.getElementById('root').innerHTML = html;
+  if (!isFirst) document.getElementById('prevBtn').onclick = prev;
   document.getElementById('nextBtn').onclick = next;
   document.getElementById('hideBtn').onclick = hide;
 }
@@ -206,6 +222,13 @@ function applyAnim(pg) {
     document.documentElement.style.setProperty('--dur', pg.animDur + 'ms');
     void r.offsetWidth;
     r.className = 'container anim-' + pg.animType;
+  }
+}
+function prev() {
+  collectData();
+  if (currentPage > 0) {
+    currentPage--;
+    render();
   }
 }
 function next() {
