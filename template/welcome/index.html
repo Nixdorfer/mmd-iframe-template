@@ -24,6 +24,16 @@ input:focus,select:focus{outline:2px solid var(--btn)}
 .btn-secondary{background:#1a1a1a;color:#fff}
 .btn-secondary:hover{background:#2a2a2a}
 .hidden{display:none}
+@keyframes aSlide{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes aFade{from{opacity:0}to{opacity:1}}
+@keyframes aRotate{from{transform:rotate(-180deg) scale(0);opacity:0}to{transform:rotate(0) scale(1);opacity:1}}
+@keyframes aZoomin{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes aZoomout{from{transform:scale(2);opacity:0}to{transform:scale(1);opacity:1}}
+.anim-slide{animation:aSlide var(--dur) ease-out}
+.anim-fade{animation:aFade var(--dur) ease-out}
+.anim-rotate{animation:aRotate var(--dur) ease-out}
+.anim-zoomin{animation:aZoomin var(--dur) ease-out}
+.anim-zoomout{animation:aZoomout var(--dur) ease-out}
 </style>
 </head>
 <body>
@@ -49,7 +59,7 @@ pageKeys.forEach(function(k) {
 });
 pageNums.sort(function(a,b){return a-b;});
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', contents:[], options:[], inputs:[], nextContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:''};
+  var pg = {n:n, title:'', contents:[], options:[], inputs:[], nextContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', animType:'', animDur:300};
   pg.title = C['page.'+n+'.title'] || '';
   pg.defaultAlign = C['page.'+n+'.content.align'] || '';
   pg.defaultStyle = C['page.'+n+'.content.style'] || '';
@@ -75,6 +85,8 @@ pageNums.forEach(function(n) {
   pg.bgColor = C['page.'+n+'.background.color'] || '';
   pg.modalColor = C['page.'+n+'.modal.color'] || '';
   pg.btnColor = C['page.'+n+'.btn.color'] || '';
+  pg.animType = C['page.'+n+'.animation.type'] || '';
+  pg.animDur = parseInt(C['page.'+n+'.animation.duration']) || 300;
   var optNums = [];
   Object.keys(C).forEach(function(k) {
     var m = k.match(new RegExp('^page\\.'+n+'\\.options\\.(\\d+)\\.'));
@@ -114,7 +126,7 @@ pageNums.forEach(function(n) {
   pages.push(pg);
 });
 if (pages.length === 0) {
-  pages.push({n:1, title:'', contents:[], options:[], inputs:[], nextContent:'完成', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:''});
+  pages.push({n:1, title:'', contents:[], options:[], inputs:[], nextContent:'完成', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', animType:'', animDur:300});
 }
 var currentPage = 0;
 var data = {};
@@ -187,17 +199,35 @@ function validate() {
   }
   return true;
 }
+function applyAnim(pg) {
+  var r = document.getElementById('root');
+  r.className = 'container';
+  if (pg.animType && pg.animType !== 'none') {
+    document.documentElement.style.setProperty('--dur', pg.animDur + 'ms');
+    void r.offsetWidth;
+    r.className = 'container anim-' + pg.animType;
+  }
+}
 function next() {
   if (!validate()) return;
   collectData();
+  var prevPg = pages[currentPage];
   if (currentPage < pages.length - 1) {
     currentPage++;
     render();
+    applyAnim(prevPg);
   } else {
     var msg = Object.keys(data).map(function(k) {
       return k + '=' + data[k];
     }).join(';');
-    parent.postMessage({t:'done', d:data, msg:msg}, '*');
+    if (prevPg.animType && prevPg.animType !== 'none') {
+      var r = document.getElementById('root');
+      document.documentElement.style.setProperty('--dur', prevPg.animDur + 'ms');
+      r.style.animation = 'a' + prevPg.animType.charAt(0).toUpperCase() + prevPg.animType.slice(1) + ' ' + prevPg.animDur + 'ms ease-out reverse';
+      setTimeout(function() { parent.postMessage({t:'done', d:data, msg:msg}, '*'); }, prevPg.animDur);
+    } else {
+      parent.postMessage({t:'done', d:data, msg:msg}, '*');
+    }
   }
 }
 function hide() {

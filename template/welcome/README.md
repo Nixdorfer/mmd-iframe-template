@@ -4,7 +4,7 @@
 
 ## 使用方式
 
-启动正则表达式为 `/\[WELCOME:([\s\S]+?)\]/`
+启动正则表达式为 `/\[WELCOME:([^\]]+)\]/`
 
 替换内容为 [inject.html](./inject.html)（其中 `$1` 会被替换为捕获组1的内容）
 
@@ -63,6 +63,16 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.background.color | 页面背景颜色(6位hex) |
 | page.x.modal.color | 页面窗口颜色(6位hex) |
 | page.x.btn.color | 页面按钮颜色(6位hex) |
+| page.x.animation.type | 从第x页到第x+1页的过渡动画（最后一页则为消失动画）|
+| page.x.animation.duration | 动画持续时间（毫秒，默认300）|
+
+**动画类型**：
+- slide - 滑动
+- fade - 渐隐
+- rotate - 旋转
+- zoomin - 放大进入
+- zoomout - 缩小进入
+- none - 无动画
 
 ### 内容配置
 

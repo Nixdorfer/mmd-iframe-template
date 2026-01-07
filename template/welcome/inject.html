@@ -1,218 +1,35 @@
-<div class="IFEkkk">
+<div class="iFR">
   <img src="" onerror="
-    (function(c,p) {
-      var errors = [];
-      var cfg = {};
-      var pairs = p.replace(/\\n/g,'\n').split(';');
-      for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i];
-        var idx = pair.indexOf('=');
-        if (idx > 0) {
-          var k = pair.slice(0, idx);
-          var v = pair.slice(idx + 1);
-          if (v === '') errors.push('参数 ' + k + ' 值为空');
-          cfg[k] = decodeURIComponent(v);
-        }
-      }
-      function isHex6(s) { return /^[0-9a-fA-F]{6}$/.test(s); }
-      var colorKeys = ['btnLoadColor','btnFailColor','btnContinueColor','btnDoneColor','backgroundColor','modalColor','btnColor'];
-      colorKeys.forEach(function(k) { if (cfg[k] && !isHex6(cfg[k])) errors.push(k + ' 不是有效的6位十六进制颜色'); });
-      var pageNums = [], optNums = {}, inputNums = {}, optionNums = {}, contentNums = {};
-      var validAligns = ['left', 'right', 'middle'];
-      var validStyles = ['quote', 'title', 'bold', 'tilt'];
-      function checkAlign(k, v) {
-        if (v && validAligns.indexOf(v) === -1) errors.push(k + ' 必须是 left/right/middle');
-      }
-      function checkStyles(k, v) {
-        if (!v) return;
-        v.split('\\').forEach(function(s) {
-          if (s && validStyles.indexOf(s) === -1) errors.push(k + ' 包含无效样式 ' + s + ' (可选: quote/title/bold/tilt)');
-        });
-      }
-      if (cfg['page.content.align']) checkAlign('page.content.align', cfg['page.content.align']);
-      if (cfg['page.content.style']) checkStyles('page.content.style', cfg['page.content.style']);
-      Object.keys(cfg).forEach(function(k) {
-        var m;
-        if (m = k.match(/^page\.(\d+)\./)) {
-          var x = parseInt(m[1]);
-          if (x < 1) errors.push('page.' + x + ' 的x值小于1');
-          if (pageNums.indexOf(x) === -1) pageNums.push(x);
-          if (m = k.match(/^page\.(\d+)\.background\.color$/) || k.match(/^page\.(\d+)\.modal\.color$/) || k.match(/^page\.(\d+)\.btn\.color$/)) {
-            if (cfg[k] && !isHex6(cfg[k])) errors.push(k + ' 不是有效的6位十六进制颜色');
-          }
-          if (m = k.match(/^page\.(\d+)\.content\.align$/)) checkAlign(k, cfg[k]);
-          if (m = k.match(/^page\.(\d+)\.content\.style$/)) checkStyles(k, cfg[k]);
-        }
-        if (m = k.match(/^page\.(\d+)\.content\.(\d+)(\..*)?$/)) {
-          var x = parseInt(m[1]), y = parseInt(m[2]);
-          if (y < 1) errors.push(k + ' 的y值小于1');
-          if (!contentNums[x]) contentNums[x] = [];
-          if (contentNums[x].indexOf(y) === -1) contentNums[x].push(y);
-          if (m[3] === '.align') checkAlign(k, cfg[k]);
-          if (m[3] === '.style') checkStyles(k, cfg[k]);
-        }
-        if (m = k.match(/^page\.(\d+)\.options\.(\d+)\./)) {
-          var x = parseInt(m[1]), y = parseInt(m[2]);
-          if (y < 1) errors.push(k + ' 的y值小于1');
-          if (!optNums[x]) optNums[x] = [];
-          if (optNums[x].indexOf(y) === -1) optNums[x].push(y);
-        }
-        if (m = k.match(/^page\.(\d+)\.options\.(\d+)\.option\.(\d+)$/)) {
-          var x = parseInt(m[1]), y = parseInt(m[2]), z = parseInt(m[3]);
-          if (z < 1) errors.push(k + ' 的z值小于1');
-          var key = x + '.' + y;
-          if (!optionNums[key]) optionNums[key] = [];
-          if (optionNums[key].indexOf(z) === -1) optionNums[key].push(z);
-        }
-        if (m = k.match(/^page\.(\d+)\.input\.(\d+)\./)) {
-          var x = parseInt(m[1]), y = parseInt(m[2]);
-          if (y < 1) errors.push(k + ' 的y值小于1');
-          if (!inputNums[x]) inputNums[x] = [];
-          if (inputNums[x].indexOf(y) === -1) inputNums[x].push(y);
-        }
+    (function(c,p){
+      console.log('WELCOME:',p);
+      var g={},e=[];p.replace(/\\n/g,'\n').split(';').forEach(function(s){var i=s.indexOf('=');if(i>0){var k=s.slice(0,i),v=s.slice(i+1);if(v==='')e.push(k+' 值为空');g[k]=decodeURIComponent(v)}});
+      var H=function(s){return/^[0-9a-fA-F]{6}$/.test(s)};
+      ['btnLoadColor','btnFailColor','btnContinueColor','btnDoneColor','backgroundColor','modalColor','btnColor'].forEach(function(k){if(g[k]&&!H(g[k]))e.push(k+' 颜色无效')});
+      var pN=[],oN={},iN={},opN={},cN={},vA=['left','right','middle'],vS=['quote','title','bold','tilt'],vT=['slide','fade','rotate','zoomin','zoomout','none'];
+      function cA(k,v){if(v&&vA.indexOf(v)<0)e.push(k+' 必须是 left/right/middle')}
+      function cS(k,v){if(v)v.split('\\\\').forEach(function(s){if(s&&vS.indexOf(s)<0)e.push(k+' 无效样式 '+s)})}
+      function cT(k,v){if(v&&vT.indexOf(v)<0)e.push(k+' 必须是 slide/fade/rotate/zoomin/zoomout/none')}
+      if(g['page.content.align'])cA('page.content.align',g['page.content.align']);
+      if(g['page.content.style'])cS('page.content.style',g['page.content.style']);
+      Object.keys(g).forEach(function(k){var m;
+        if(m=k.match(/^page\\.(\d+)\\./)){var x=+m[1];if(x<1)e.push('page.'+x+' x<1');if(pN.indexOf(x)<0)pN.push(x);if(/\\.background\\.color\$|\\.modal\\.color\$|\\.btn\\.color\$/.test(k)&&g[k]&&!H(g[k]))e.push(k+' 颜色无效');if(/^page\\.\\d+\\.content\\.align\$/.test(k))cA(k,g[k]);if(/^page\\.\\d+\\.content\\.style\$/.test(k))cS(k,g[k]);if(/^page\\.(\\d+)\\.animation\\.type\$/.test(k))cT(k,g[k]);if(/^page\\.(\\d+)\\.animation\\.duration\$/.test(k)&&g[k]&&!/^\\d+\$/.test(g[k]))e.push(k+' 必须是数字')}
+        if(m=k.match(/^page\\.(\\d+)\\.content\\.(\\d+)(\\..*)?\$/)){var x=+m[1],y=+m[2];if(y<1)e.push(k+' y<1');if(!cN[x])cN[x]=[];if(cN[x].indexOf(y)<0)cN[x].push(y);if(m[3]==='.align')cA(k,g[k]);if(m[3]==='.style')cS(k,g[k])}
+        if(m=k.match(/^page\\.(\\d+)\\.options\\.(\\d+)\\./)){var x=+m[1],y=+m[2];if(y<1)e.push(k+' y<1');if(!oN[x])oN[x]=[];if(oN[x].indexOf(y)<0)oN[x].push(y)}
+        if(m=k.match(/^page\\.(\\d+)\\.options\\.(\\d+)\\.option\\.(\\d+)\$/)){var x=+m[1],y=+m[2],z=+m[3];if(z<1)e.push(k+' z<1');var K=x+'.'+y;if(!opN[K])opN[K]=[];if(opN[K].indexOf(z)<0)opN[K].push(z)}
+        if(m=k.match(/^page\\.(\\d+)\\.input\\.(\\d+)\\./)){var x=+m[1],y=+m[2];if(y<1)e.push(k+' y<1');if(!iN[x])iN[x]=[];if(iN[x].indexOf(y)<0)iN[x].push(y)}
       });
-      function checkContinuous(arr, name) {
-        if (arr.length === 0) return;
-        arr.sort(function(a,b){return a-b;});
-        var max = Math.max.apply(null, arr);
-        if (max !== arr.length) errors.push(name + ' 不连续 (最大值' + max + ' 但只有' + arr.length + '项)');
-      }
-      checkContinuous(pageNums, 'page.x');
-      Object.keys(optNums).forEach(function(x) { checkContinuous(optNums[x], 'page.' + x + '.options.y'); });
-      Object.keys(inputNums).forEach(function(x) { checkContinuous(inputNums[x], 'page.' + x + '.input.y'); });
-      Object.keys(optionNums).forEach(function(key) { checkContinuous(optionNums[key], 'page.' + key.replace('.', '.options.') + '.option.z'); });
-      Object.keys(contentNums).forEach(function(x) { checkContinuous(contentNums[x], 'page.' + x + '.content.y'); });
-      pageNums.forEach(function(x) {
-        if (optNums[x]) {
-          optNums[x].forEach(function(y) {
-            if (!cfg['page.' + x + '.options.' + y + '.title']) errors.push('缺少 page.' + x + '.options.' + y + '.title');
-            if (!cfg['page.' + x + '.options.' + y + '.key']) errors.push('缺少 page.' + x + '.options.' + y + '.key');
-            var def = parseInt(cfg['page.' + x + '.options.' + y + '.default'] || '1');
-            var key = x + '.' + y;
-            var maxOpt = optionNums[key] ? Math.max.apply(null, optionNums[key]) : 0;
-            if (def < 1 || def > maxOpt) errors.push('page.' + x + '.options.' + y + '.default 值' + def + '超出范围(1-' + maxOpt + ')');
-          });
-        }
-        if (inputNums[x]) {
-          inputNums[x].forEach(function(y) {
-            if (!cfg['page.' + x + '.input.' + y + '.title']) errors.push('缺少 page.' + x + '.input.' + y + '.title');
-            if (!cfg['page.' + x + '.input.' + y + '.key']) errors.push('缺少 page.' + x + '.input.' + y + '.key');
-          });
-        }
-      });
-      if (errors.length > 0) {
-        var errDiv = document.createElement('div');
-        errDiv.style.cssText = 'padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:14px;white-space:pre-wrap';
-        errDiv.textContent = '配置错误:\\n' + errors.join('\\n');
-        c.appendChild(errDiv);
-        return;
-      }
-      var autoExpand = cfg.autoExpand !== 'false';
-      var allowReplay = cfg.allowReplay !== 'false';
-      var btnLoadContent = cfg.btnLoadContent || '正在获取资源...';
-      var btnLoadColor = cfg.btnLoadColor || 'b8860b';
-      var btnFailContent = cfg.btnFailContent || '获取远程资源失败 点击重试';
-      var btnFailColor = cfg.btnFailColor || '8b0000';
-      var btnContinueContent = cfg.btnContinueContent || '打开操作面板';
-      var btnContinueColor = cfg.btnContinueColor || '166d3b';
-      var btnDoneContent = cfg.btnDoneContent || '您已完成了该轮操作';
-      var btnDoneColor = cfg.btnDoneColor || '666666';
-      var bgColor = cfg.backgroundColor || '050505';
-      c.style.position = 'relative';
-      var btn = document.createElement('button');
-      btn.style.cssText = 'padding:12px 24px;background:#'+btnLoadColor+';border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:14px';
-      btn.textContent = btnLoadContent;
-      btn.disabled = true;
-      c.appendChild(btn);
-      var o, f, msgHandler, html;
-      function showIframe() {
-        o.style.display = 'flex';
-        f.style.width = '90vw';
-        f.style.height = '90vh';
-        f.style.opacity = '0';
-        f.style.transform = 'translateY(-30px) scale(1)';
-        setTimeout(function() {
-          f.style.opacity = '1';
-          f.style.transform = 'translateY(0) scale(1)';
-        }, 10);
-      }
-      function hideIframe(destroy) {
-        f.style.opacity = '0';
-        f.style.transform = 'scale(1.1)';
-        setTimeout(function() {
-          if (destroy) {
-            o.remove();
-          } else {
-            o.style.display = 'none';
-            f.style.width = '0';
-            f.style.height = '0';
-            f.style.transform = 'translateY(-30px) scale(1)';
-          }
-        }, 400);
-      }
-      function setupIframe(h) {
-        html = h.replace('/*__CONFIG__*/', 'window.CONFIG='+JSON.stringify(cfg)+';');
-        o = document.createElement('div');
-        o.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#'+bgColor+';z-index:99999;display:none;align-items:center;justify-content:center';
-        f = document.createElement('iframe');
-        f.style.cssText = 'width:0;height:0;border:none;border-radius:12px;opacity:0;transform:translateY(-30px);transition:opacity 0.4s,transform 0.4s';
-        f.srcdoc = html;
-        o.appendChild(f);
-        document.body.appendChild(o);
-        msgHandler = function(e) {
-          if (!e.data || !e.data.t) return;
-          if (e.data.t === 'cancel') {
-            hideIframe(false);
-          } else if (e.data.t === 'done') {
-            var a = document.querySelector('.chat .chat-bottom .uni-textarea .chat-input-scope textarea');
-            if (a) {
-              a.focus();
-              a.value = e.data.msg + '\n';
-              a.dispatchEvent(new Event('input', {bubbles: true}));
-            }
-            if (allowReplay) {
-              hideIframe(false);
-            } else {
-              window.removeEventListener('message', msgHandler);
-              btn.disabled = true;
-              btn.style.background = '#'+btnDoneColor;
-              btn.style.cursor = 'not-allowed';
-              btn.textContent = btnDoneContent;
-              hideIframe(true);
-            }
-          }
-        };
-        window.addEventListener('message', msgHandler);
-        btn.onclick = showIframe;
-      }
-      function doFetch() {
-        btn.disabled = true;
-        btn.style.background = '#'+btnLoadColor;
-        btn.style.cursor = 'not-allowed';
-        btn.textContent = btnLoadContent;
-        btn.onclick = null;
-        fetch('https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/template/welcome/index.html')
-          .then(function(r) {
-            if (!r.ok) throw new Error();
-            return r.text();
-          })
-          .then(function(h) {
-            btn.disabled = false;
-            btn.style.background = '#'+btnContinueColor;
-            btn.style.cursor = 'pointer';
-            btn.textContent = btnContinueContent;
-            setupIframe(h);
-            if (autoExpand) showIframe();
-          })
-          .catch(function() {
-            btn.disabled = false;
-            btn.style.background = '#'+btnFailColor;
-            btn.style.cursor = 'pointer';
-            btn.textContent = btnFailContent;
-            btn.onclick = doFetch;
-          });
-      }
-      doFetch();
-    })(this.closest('.IFEkkk'), '$1')
+      var chk=function(a,n){if(a.length){a.sort(function(x,y){return x-y});var M=Math.max.apply(null,a);if(M!==a.length)e.push(n+' 不连续(max'+M+'/len'+a.length+')')}};
+      chk(pN,'page');Object.keys(oN).forEach(function(x){chk(oN[x],'page.'+x+'.options')});Object.keys(iN).forEach(function(x){chk(iN[x],'page.'+x+'.input')});Object.keys(opN).forEach(function(k){chk(opN[k],'page.'+k.replace('.','.options.')+'.option')});Object.keys(cN).forEach(function(x){chk(cN[x],'page.'+x+'.content')});
+      pN.forEach(function(x){if(oN[x])oN[x].forEach(function(y){var P='page.'+x+'.options.'+y;if(!g[P+'.title'])e.push('缺少 '+P+'.title');if(!g[P+'.key'])e.push('缺少 '+P+'.key');var d=+(g[P+'.default']||1),K=x+'.'+y,M=opN[K]?Math.max.apply(null,opN[K]):0;if(d<1||d>M)e.push(P+'.default 超出1-'+M)});if(iN[x])iN[x].forEach(function(y){var P='page.'+x+'.input.'+y;if(!g[P+'.title'])e.push('缺少 '+P+'.title');if(!g[P+'.key'])e.push('缺少 '+P+'.key')})});
+      if(e.length){var d=document.createElement('div');d.style.cssText='padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:14px;white-space:pre-wrap';d.textContent='配置错误:\\n'+e.join('\\n');c.appendChild(d);return}
+      var aE=g.autoExpand!=='false',aR=g.allowReplay!=='false',bLC=g.btnLoadContent||'正在获取资源...',bLo=g.btnLoadColor||'b8860b',bFC=g.btnFailContent||'获取失败 点击重试',bFo=g.btnFailColor||'8b0000',bCC=g.btnContinueContent||'打开操作面板',bCo=g.btnContinueColor||'166d3b',bDC=g.btnDoneContent||'已完成操作',bDo=g.btnDoneColor||'666666',bgC=g.backgroundColor||'050505';
+      c.style.position='relative';var b=document.createElement('button');b.style.cssText='padding:12px 24px;background:#'+bLo+';border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:14px';b.textContent=bLC;b.disabled=true;c.appendChild(b);
+      var o,f,mH;
+      function sI(){o.style.display='flex';f.style.width='90vw';f.style.height='90vh';f.style.opacity='0';f.style.transform='translateY(-30px)';setTimeout(function(){f.style.opacity='1';f.style.transform='translateY(0)'},10)}
+      function hI(D){f.style.opacity='0';f.style.transform='scale(1.1)';setTimeout(function(){if(D)o.remove();else{o.style.display='none';f.style.width='0';f.style.height='0';f.style.transform='translateY(-30px)'}},400)}
+      function sU(h){var ht=h.replace('/*__CONFIG__*/','window.CONFIG='+JSON.stringify(g)+';');o=document.createElement('div');o.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:#'+bgC+';z-index:99999;display:none;align-items:center;justify-content:center';f=document.createElement('iframe');f.style.cssText='width:0;height:0;border:none;border-radius:12px;opacity:0;transform:translateY(-30px);transition:opacity 0.4s,transform 0.4s';f.srcdoc=ht;o.appendChild(f);document.body.appendChild(o);mH=function(ev){if(!ev.data||!ev.data.t)return;if(ev.data.t==='cancel')hI(false);else if(ev.data.t==='done'){var a=document.querySelector('.chat .chat-bottom .uni-textarea .chat-input-scope textarea');if(a){a.focus();a.value=ev.data.msg+'\\n';a.dispatchEvent(new Event('input',{bubbles:true}))}if(aR)hI(false);else{window.removeEventListener('message',mH);b.disabled=true;b.style.background='#'+bDo;b.style.cursor='not-allowed';b.textContent=bDC;hI(true)}}};window.addEventListener('message',mH);b.onclick=sI}
+      function dF(){b.disabled=true;b.style.background='#'+bLo;b.style.cursor='not-allowed';b.textContent=bLC;b.onclick=null;fetch('https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/template/welcome/index.html').then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(h){b.disabled=false;b.style.background='#'+bCo;b.style.cursor='pointer';b.textContent=bCC;sU(h);if(aE)sI()}).catch(function(){b.disabled=false;b.style.background='#'+bFo;b.style.cursor='pointer';b.textContent=bFC;b.onclick=dF})}
+      dF()
+    })(this.closest('.iFR'),'$1')
   ">
 </div>
