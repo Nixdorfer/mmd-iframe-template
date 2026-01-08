@@ -52,7 +52,11 @@ page.1.content=第一行\n第二行\n第三行
 | background.image.mobile | 移动端背景图片URL | - |
 | background.image.cut | 背景图片是否裁剪(true/false) | false |
 | page.modal.color | 窗口颜色(6位hex) | 0d0d0d |
+| page.modal.transparency | 窗口透明度(0-100) | 0 |
+| page.modal.ambiguity | 窗口模糊度(0-100) | 0 |
 | page.btn.color | 按钮颜色(6位hex) | 166d3b |
+| page.btn.transparency | 按钮透明度(0-100) | 0 |
+| page.btn.ambiguity | 按钮模糊度(0-100) | 0 |
 
 ### 全局内容样式
 
