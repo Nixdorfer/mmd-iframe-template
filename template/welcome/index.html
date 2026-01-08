@@ -116,6 +116,9 @@ var globalAnimType = C['page.animation.type'] || '';
 var globalImgSize = parseInt(C['page.image.size']) || 100;
 var globalImgCut = C['page.image.cut'] === 'true';
 var globalAnimDur = parseInt(C['page.animation.duration']) || 300;
+var globalNextContentColor = C['page.next.content.color'] || '';
+var globalLastContentColor = C['page.last.content.color'] || '';
+var globalHideContentColor = C['page.hide.content.color'] || '';
 document.documentElement.style.setProperty('--bg', '#'+bgColor);
 document.documentElement.style.setProperty('--modal', '#'+modalColor);
 document.documentElement.style.setProperty('--btn', '#'+btnColor);
@@ -138,7 +141,7 @@ function getKeyOrder(k) {
   return idx >= 0 ? idx : 9999;
 }
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', elements:[], nextPage:-1, lastPage:-1, nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalBlur:0, btnColor:'', btnContentColor:'', btnTransparency:0, btnBlur:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', defaultColor:'', animType:'', animDur:300, imgSize:0, imgCut:null, btnLockAll:[], btnLockHeight:[], btnLockWidth:[]};
+  var pg = {n:n, title:'', elements:[], nextPage:-1, lastPage:-1, nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalBlur:0, btnColor:'', btnContentColor:'', btnTransparency:0, btnBlur:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', defaultColor:'', animType:'', animDur:300, imgSize:0, imgCut:null, btnLockAll:[], btnLockHeight:[], btnLockWidth:[], nextContentColor:'', lastContentColor:'', hideContentColor:''};
   pg.title = C['page.'+n+'.title'] || '';
   pg.defaultAlign = C['page.'+n+'.content.align'] || '';
   pg.defaultStyle = C['page.'+n+'.content.style'] || '';
@@ -160,6 +163,9 @@ pageNums.forEach(function(n) {
   pg.btnLockAll = (C['page.'+n+'.btn.lock.all']||'').split(',').map(function(s){return s.trim()}).filter(function(x){return x});
   pg.btnLockHeight = (C['page.'+n+'.btn.lock.height']||'').split(',').map(function(s){return s.trim()}).filter(function(x){return x});
   pg.btnLockWidth = (C['page.'+n+'.btn.lock.width']||'').split(',').map(function(s){return s.trim()}).filter(function(x){return x});
+  pg.nextContentColor = C['page.'+n+'.next.content.color'] || '';
+  pg.lastContentColor = C['page.'+n+'.last.content.color'] || '';
+  pg.hideContentColor = C['page.'+n+'.hide.content.color'] || '';
   pg.animType = C['page.'+n+'.animation.type'] || globalAnimType;
   pg.animDur = parseInt(C['page.'+n+'.animation.duration']) || globalAnimDur;
   pg.imgSize = C['page.'+n+'.image.size'] !== undefined ? parseInt(C['page.'+n+'.image.size']) : -1;
@@ -486,10 +492,13 @@ function render() {
     }
   });
   html += '</div><div class="modal-footer">';
-  if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
-  html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
-  html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.2.1</div></div>';
+  var lastCC = pg.lastContentColor || globalLastContentColor;
+  var hideCC = pg.hideContentColor || globalHideContentColor;
+  var nextCC = pg.nextContentColor || globalNextContentColor;
+  if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn"'+(lastCC?' style="color:#'+lastCC+'"':'')+'>'+esc(pg.lastContent)+'</button>';
+  html += '<button class="btn btn-secondary" id="hideBtn"'+(hideCC?' style="color:#'+hideCC+'"':'')+'>'+esc(pg.hideContent)+'</button>';
+  html += '<button class="btn btn-primary" id="nextBtn"'+(nextCC?' style="color:#'+nextCC+'"':'')+'>'+esc(nextText)+'</button>';
+  html += '<div class="version">v1.2.2</div></div>';
   document.getElementById('root').innerHTML = html;
   var root = document.getElementById('root');
   if (pg.modalTransparency) {
@@ -674,13 +683,17 @@ function validate() {
   }
   return true;
 }
+var animTypes = ['slide','fade','rotate','zoomin','zoomout'];
+function pickAnim(t) {
+  return t === 'random' ? animTypes[Math.floor(Math.random()*animTypes.length)] : t;
+}
 function applyAnim(pg) {
   var r = document.getElementById('root');
   r.className = 'container';
   if (pg.animType && pg.animType !== 'none') {
     document.documentElement.style.setProperty('--dur', pg.animDur + 'ms');
     void r.offsetWidth;
-    r.className = 'container anim-' + pg.animType;
+    r.className = 'container anim-' + pickAnim(pg.animType);
   }
 }
 function findPageIdx(pageId) {
@@ -719,8 +732,9 @@ function next() {
     }).join(';');
     if (prevPg.animType && prevPg.animType !== 'none') {
       var r = document.getElementById('root');
+      var at = pickAnim(prevPg.animType);
       document.documentElement.style.setProperty('--dur', prevPg.animDur + 'ms');
-      r.style.animation = 'a' + prevPg.animType.charAt(0).toUpperCase() + prevPg.animType.slice(1) + ' ' + prevPg.animDur + 'ms ease-out reverse';
+      r.style.animation = 'a' + at.charAt(0).toUpperCase() + at.slice(1) + ' ' + prevPg.animDur + 'ms ease-out reverse';
       setTimeout(function() { parent.postMessage({t:'done', d:data, msg:msg}, '*'); }, prevPg.animDur);
     } else {
       parent.postMessage({t:'done', d:data, msg:msg}, '*');
@@ -746,7 +760,7 @@ function openModal(pageNum, mode, animType, animDur) {
       var r = document.getElementById('root');
       document.documentElement.style.setProperty('--dur', animDur + 'ms');
       void r.offsetWidth;
-      r.className = 'container anim-' + animType;
+      r.className = 'container anim-' + pickAnim(animType);
     }
   } else {
     var overlay = document.createElement('div');
@@ -764,7 +778,7 @@ function openModal(pageNum, mode, animType, animDur) {
       container.style.transform = 'translateY(0)';
       if (animType && animType !== 'none') {
         document.documentElement.style.setProperty('--dur', animDur + 'ms');
-        container.className = 'container anim-' + animType;
+        container.className = 'container anim-' + pickAnim(animType);
       }
     }, 10);
     overlay.onclick = function(ev) {
@@ -894,9 +908,12 @@ function renderTo(container) {
   if (coverStack.length > 0) {
     html += '<button class="btn btn-secondary" id="coverCloseBtn">关闭</button>';
   } else {
-    if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
-    html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
-    html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
+    var lastCC2 = pg.lastContentColor || globalLastContentColor;
+    var hideCC2 = pg.hideContentColor || globalHideContentColor;
+    var nextCC2 = pg.nextContentColor || globalNextContentColor;
+    if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn"'+(lastCC2?' style="color:#'+lastCC2+'"':'')+'>'+esc(pg.lastContent)+'</button>';
+    html += '<button class="btn btn-secondary" id="hideBtn"'+(hideCC2?' style="color:#'+hideCC2+'"':'')+'>'+esc(pg.hideContent)+'</button>';
+    html += '<button class="btn btn-primary" id="nextBtn"'+(nextCC2?' style="color:#'+nextCC2+'"':'')+'>'+esc(nextText)+'</button>';
   }
   html += '<div class="version">v1.0.0</div></div>';
   container.innerHTML = html;
