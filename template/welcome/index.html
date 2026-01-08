@@ -561,7 +561,7 @@ function render() {
       if (message) {
         collectData();
         var msg = Object.keys(data).map(function(k){return k+'='+data[k]}).join(';');
-        parent.postMessage({t:'done', d:data, msg:msg+';'+message}, '*');
+        parent.postMessage({t:'done', d:data, msg:(msg?msg+';':'')+message}, '*');
         return;
       }
       if (killer) {
@@ -980,7 +980,7 @@ function renderTo(container) {
       if (message) {
         collectData();
         var msg = Object.keys(data).map(function(k){return k+'='+data[k]}).join(';');
-        parent.postMessage({t:'done', d:data, msg:msg+';'+message}, '*');
+        parent.postMessage({t:'done', d:data, msg:(msg?msg+';':'')+message}, '*');
         return;
       }
       if (killer) {

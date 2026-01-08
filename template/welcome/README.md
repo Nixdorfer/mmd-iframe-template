@@ -58,6 +58,9 @@ page.1.content=第一行\n第二行\n第三行
 | page.btn.content.color | 按钮文字颜色(6位hex) | - |
 | page.btn.transparency | 按钮透明度(0-100) | 0 |
 | page.btn.blur | 按钮模糊度(0-100) | 0 |
+| page.next.content.color | 下一步按钮文字颜色(6位hex) | - |
+| page.last.content.color | 上一页按钮文字颜色(6位hex) | - |
+| page.hide.content.color | 隐藏按钮文字颜色(6位hex) | - |
 
 ### 全局内容样式
 
@@ -82,8 +85,11 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.next | 下一页跳转的page编号(0=最后一页，不设置=顺序) |
 | page.x.last | 上一页跳转的page编号(0=第一页，不设置=顺序) |
 | page.x.next.content | 下一步按钮文字（最后一页默认"完成"，其他默认"下一页"）|
+| page.x.next.content.color | 下一步按钮文字颜色(6位hex) |
 | page.x.last.content | 上一页按钮文字（默认"上一页"，第一页不显示）|
+| page.x.last.content.color | 上一页按钮文字颜色(6位hex) |
 | page.x.hide.content | 隐藏按钮文字（默认"隐藏"）|
+| page.x.hide.content.color | 隐藏按钮文字颜色(6位hex) |
 | page.x.background.color | 页面背景颜色(6位hex) |
 | page.x.modal.color | 页面窗口颜色(6位hex) |
 | page.x.modal.transparency | 窗口透明度(0-100，越大越透明，默认0) |
