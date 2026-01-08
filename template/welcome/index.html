@@ -380,6 +380,7 @@ function applyState() {
 }
 function render() {
   var pg = pages[currentPage];
+  if (!pg) { currentPage = 0; pg = pages[0]; }
   var isFirst = pg.lastPage === 0 || (pg.lastPage === -1 && currentPage === 0);
   var isLast = pg.nextPage === 0 || (pg.nextPage === -1 && currentPage === pages.length - 1);
   var nextText = pg.nextContent || (isLast ? '完成' : '下一页');
@@ -498,7 +499,7 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn"'+(lastCC?' style="color:#'+lastCC+'"':'')+'>'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn"'+(hideCC?' style="color:#'+hideCC+'"':'')+'>'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn"'+(nextCC?' style="color:#'+nextCC+'"':'')+'>'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.2.2</div></div>';
+  html += '<div class="version">v1.2.3</div></div>';
   document.getElementById('root').innerHTML = html;
   var root = document.getElementById('root');
   if (pg.modalTransparency) {
@@ -703,7 +704,7 @@ function findPageIdx(pageId) {
 function prev() {
   collectData();
   var pg = pages[currentPage];
-  if (pg.lastPage === 0) return;
+  if (!pg || pg.lastPage === 0) return;
   if (pg.lastPage > 0) {
     var idx = findPageIdx(pg.lastPage);
     if (idx >= 0) { currentPage = idx; render(); }
@@ -716,6 +717,7 @@ function next() {
   if (!validate()) return;
   collectData();
   var prevPg = pages[currentPage];
+  if (!prevPg) return;
   var isLast = prevPg.nextPage === 0 || (prevPg.nextPage === -1 && currentPage === pages.length - 1);
   if (!isLast) {
     if (prevPg.nextPage > 0) {
@@ -796,6 +798,7 @@ function closeCover() {
 }
 function renderTo(container) {
   var pg = pages[currentPage];
+  if (!pg) { currentPage = 0; pg = pages[0]; }
   var isFirst = pg.lastPage === 0 || (pg.lastPage === -1 && currentPage === 0);
   var isLast = pg.nextPage === 0 || (pg.nextPage === -1 && currentPage === pages.length - 1);
   var nextText = pg.nextContent || (isLast ? '完成' : '下一页');
