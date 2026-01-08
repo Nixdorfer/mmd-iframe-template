@@ -506,7 +506,7 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn"'+(lastCC?' style="color:#'+lastCC+'"':'')+'>'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn"'+(hideCC?' style="color:#'+hideCC+'"':'')+'>'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn"'+(nextCC?' style="color:#'+nextCC+'"':'')+'>'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.2.3</div></div>';
+  html += '<div class="version">v1.2.4</div></div>';
   console.log('[RENDER] html length:', html.length);
   document.getElementById('root').innerHTML = html;
   console.log('[RENDER] innerHTML set');
