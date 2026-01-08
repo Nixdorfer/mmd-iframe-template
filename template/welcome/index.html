@@ -95,6 +95,8 @@ input.error{outline:2px solid #ff4444;animation:shake 0.5s ease}
 <script>
 /*__CONFIG__*/
 (function() {
+console.log('[INIT] CONFIG:', window.CONFIG);
+console.log('[INIT] CONFIG_KEYS:', window.CONFIG_KEYS);
 var C = window.CONFIG || {};
 var CK = window.CONFIG_KEYS || [];
 var platform = C.platform || 'pc';
@@ -348,7 +350,10 @@ pageNums.forEach(function(n) {
   pg.elements.sort(function(a,b){return a.order - b.order;});
   pages.push(pg);
 });
+console.log('[PARSE] pageNums:', pageNums);
+console.log('[PARSE] pages:', pages);
 if (pages.length === 0) {
+  console.log('[PARSE] No pages found, creating default');
   pages.push({n:1, title:'', elements:[], nextContent:'完成', lastContent:'上一页', hideContent:'隐藏', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', animType:'', animDur:300});
 }
 var currentPage = 0;
@@ -379,8 +384,10 @@ function applyState() {
   if (mc && stateCache.scroll) mc.scrollTop = stateCache.scroll;
 }
 function render() {
+  console.log('[RENDER] currentPage:', currentPage, 'pages.length:', pages.length);
   var pg = pages[currentPage];
-  if (!pg) { currentPage = 0; pg = pages[0]; }
+  console.log('[RENDER] pg:', pg);
+  if (!pg) { currentPage = 0; pg = pages[0]; console.log('[RENDER] Reset to page 0'); }
   var isFirst = pg.lastPage === 0 || (pg.lastPage === -1 && currentPage === 0);
   var isLast = pg.nextPage === 0 || (pg.nextPage === -1 && currentPage === pages.length - 1);
   var nextText = pg.nextContent || (isLast ? '完成' : '下一页');
@@ -500,7 +507,9 @@ function render() {
   html += '<button class="btn btn-secondary" id="hideBtn"'+(hideCC?' style="color:#'+hideCC+'"':'')+'>'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn"'+(nextCC?' style="color:#'+nextCC+'"':'')+'>'+esc(nextText)+'</button>';
   html += '<div class="version">v1.2.3</div></div>';
+  console.log('[RENDER] html length:', html.length);
   document.getElementById('root').innerHTML = html;
+  console.log('[RENDER] innerHTML set');
   var root = document.getElementById('root');
   if (pg.modalTransparency) {
     var mc = pg.modalColor || modalColor;
@@ -1014,7 +1023,9 @@ function renderTo(container) {
   syncBtnLock(pg, container);
 }
 restoreState();
+console.log('[MAIN] Calling render(), root element:', document.getElementById('root'));
 render();
+console.log('[MAIN] render() completed');
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter')next();
   else if(e.key==='Escape')hide();
