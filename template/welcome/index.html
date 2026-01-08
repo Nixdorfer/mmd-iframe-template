@@ -37,6 +37,8 @@ body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100
 label{display:block;margin-bottom:8px;color:#fff}
 input,select{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}
 input:focus,select:focus{outline:2px solid var(--btn)}
+input.error{outline:2px solid #ff4444;animation:shake 0.5s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 .btn{flex:1;padding:14px;border:none;border-radius:8px;font-size:16px;cursor:pointer;transition:all 0.3s}
 .btn-primary{background:var(--btn);color:#fff}
 .btn-primary:hover{filter:brightness(1.2)}
@@ -291,7 +293,7 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.0.0</div></div>';
+  html += '<div class="version">v1.0.1</div></div>';
   document.getElementById('root').innerHTML = html;
   if (!isFirst) document.getElementById('prevBtn').onclick = prev;
   document.getElementById('nextBtn').onclick = next;
@@ -387,7 +389,12 @@ function validate() {
   for (var i = 0; i < inputs.length; i++) {
     var inp = inputs[i];
     if (inp.getAttribute('data-nullable') !== 'true' && !inp.value.trim()) {
+      inp.scrollIntoView({behavior:'smooth',block:'center'});
+      inp.classList.remove('error');
+      void inp.offsetWidth;
+      inp.classList.add('error');
       inp.focus();
+      setTimeout(function(){inp.classList.remove('error')},500);
       return false;
     }
   }
