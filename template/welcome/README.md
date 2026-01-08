@@ -51,6 +51,16 @@ page.1.content=第一行\n第二行\n第三行
 | modalColor | 窗口颜色(6位hex) | 0d0d0d |
 | btnColor | 按钮颜色(6位hex) | 166d3b |
 
+### 全局内容样式
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| page.content.align | 所有页面的默认对齐方式 | middle |
+| page.content.style | 所有页面的默认样式 | - |
+| page.content.distance | 所有页面的默认间距 | - |
+| page.animation.type | 所有页面的默认动画类型 | - |
+| page.animation.duration | 所有页面的默认动画时长(毫秒) | 300 |
+
 ### 页面配置
 
 页面索引 `x` 从 1 开始
@@ -64,51 +74,30 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.background.color | 页面背景颜色(6位hex) |
 | page.x.modal.color | 页面窗口颜色(6位hex) |
 | page.x.btn.color | 页面按钮颜色(6位hex) |
-| page.x.animation.type | 从第x页到第x+1页的过渡动画（最后一页则为消失动画）|
+| page.x.content.align | 第x页的默认对齐方式 |
+| page.x.content.style | 第x页的默认样式 |
+| page.x.content.distance | 第x页的默认间距 |
+| page.x.animation.type | 从第x页到第x+1页的过渡动画 |
 | page.x.animation.duration | 动画持续时间（毫秒，默认300）|
 
-**动画类型**：
-- slide - 滑动
-- fade - 渐隐
-- rotate - 旋转
-- zoomin - 放大进入
-- zoomout - 缩小进入
-- none - 无动画
+**动画类型**：slide/fade/rotate/zoomin/zoomout/none
 
-### 元素排序
-
-页面内的元素（内容、下拉框、输入框）按参数定义顺序显示。例如：
-```
-page.1.content.1=标题;page.1.options.1.title=选项;page.1.content.2=说明
-```
-显示顺序为：标题 → 下拉框 → 说明
+**间距类型**：none/min/1/2/3/max
 
 ### 内容配置
 
-内容索引 `y` 从 1 开始，不同 `y` 的内容之间会有换行，每个内容内可用 `\n` 换行
+内容索引 `y` 从 1 开始
 
 | 参数 | 说明 |
 |------|------|
-| page.content.align | 所有页面的默认对齐方式 (left/right/middle，默认middle) |
-| page.content.style | 所有页面的默认样式 |
-| page.x.content.align | 第x页的默认对齐方式 |
-| page.x.content.style | 第x页的默认样式 |
 | page.x.content.y | 第y个内容块的文字 |
-| page.x.content.y.align | 第y个内容块的对齐方式 (left/right/middle) |
-| page.x.content.y.style | 第y个内容块的样式 |
-| page.x.content.y.url | 当style=url时，指定要打开的链接 |
+| page.x.content.y.align | 对齐方式 (left/right/middle) |
+| page.x.content.y.style | 样式（多个用`\`分隔）|
+| page.x.content.y.distance | 间距 (none/min/1/2/3/max) |
+| page.x.content.y.url | 当style含url时，指定要打开的链接 |
 | page.x.content.y.enter | 是否在末尾换行（true/false，默认true）|
 
-**样式选项**（多个样式用 `\` 分隔）：
-- quote - 引用样式（左边框+斜体）
-- title - 标题样式（加大加粗）
-- bold - 加粗
-- tilt - 倾斜
-- underline - 下划线
-- delete - 删除线
-- url - 链接样式（蓝色下划线，点击弹出确认框后打开链接，需配合.url参数指定链接地址）
-
-**兼容模式**：也支持 `page.x.content` 作为单一内容（等同于 `page.x.content.1`）
+**样式选项**：quote/title/bold/tilt/underline/delete/url
 
 ### 下拉框配置
 
@@ -132,15 +121,106 @@ page.1.content.1=标题;page.1.options.1.title=选项;page.1.content.2=说明
 | page.x.input.y.key | 返回数据时的键名 |
 | page.x.input.y.nullable | 是否允许为空（true/false，默认false）|
 
+### 按钮元素配置
+
+按钮索引 `y` 从 1 开始
+
+| 参数 | 说明 |
+|------|------|
+| page.x.btn.y.content | 按钮文字 |
+| page.x.btn.y.color | 按钮颜色(6位hex) |
+| page.x.btn.y.align | 对齐方式 (left/right/middle) |
+| page.x.btn.y.modal | 点击后打开的页面编号 |
+| page.x.btn.y.mode | 打开模式 (redirect/cover，默认cover) |
+| page.x.btn.y.reclickable | 是否可重复点击（true/false，默认true）|
+| page.x.btn.y.death.type | 不可重复点击后的行为 (remove/disable，默认disable) |
+| page.x.btn.y.death.content | disable时替换的文字 |
+| page.x.btn.y.animation.type | 打开页面的动画类型 |
+| page.x.btn.y.animation.duration | 动画时长(毫秒) |
+
+### 图片元素配置
+
+图片索引 `y` 从 1 开始
+
+| 参数 | 说明 |
+|------|------|
+| page.x.image.y.url | 图片地址 |
+| page.x.image.y.align | 对齐方式 (left/right/middle，默认middle) |
+| page.x.image.y.click.type | 点击类型 (disable/modal/switch，默认disable) |
+
+**modal模式参数**：
+| 参数 | 说明 |
+|------|------|
+| page.x.image.y.modal.modal | 打开的页面编号 |
+| page.x.image.y.modal.mode | 打开模式 (redirect/cover) |
+| page.x.image.y.modal.animation.type | 动画类型 |
+| page.x.image.y.modal.animation.duration | 动画时长 |
+
+**switch模式参数**：
+| 参数 | 说明 |
+|------|------|
+| page.x.image.y.switch.z | 第z张切换图片的地址 |
+| page.x.image.y.switch.cycle | 是否循环（true/false，默认false）|
+
+### 行布局配置
+
+行索引 `y` 从 1 开始，列索引 `z` 从 1 开始
+
+| 参数 | 说明 |
+|------|------|
+| page.x.row.y.ratio | 列宽比例，用`:`分隔（如1:2:1）|
+| page.x.row.y.z.type | 列内容类型 (content/btn/image) |
+| page.x.row.y.z.align | 水平对齐 (left/right/middle，默认middle) |
+| page.x.row.y.z.valign | 垂直对齐 (top/middle/bottom，默认middle) |
+
+**content类型参数**：
+| 参数 | 说明 |
+|------|------|
+| page.x.row.y.z.content | 文字内容 |
+| page.x.row.y.z.content.style | 样式 |
+| page.x.row.y.z.content.url | 链接地址 |
+
+**btn类型参数**：
+| 参数 | 说明 |
+|------|------|
+| page.x.row.y.z.btn.content | 按钮文字 |
+| page.x.row.y.z.btn.color | 按钮颜色 |
+| page.x.row.y.z.btn.modal | 打开页面编号 |
+| page.x.row.y.z.btn.mode | 打开模式 |
+| page.x.row.y.z.btn.reclickable | 是否可重复点击 |
+| page.x.row.y.z.btn.death.type | 不可重复点击后行为 |
+| page.x.row.y.z.btn.death.content | disable时替换文字 |
+| page.x.row.y.z.btn.animation.type | 动画类型 |
+| page.x.row.y.z.btn.animation.duration | 动画时长 |
+
+**image类型参数**：
+| 参数 | 说明 |
+|------|------|
+| page.x.row.y.z.image.url | 图片地址 |
+| page.x.row.y.z.image.click.type | 点击类型 (disable/modal/switch) |
+| page.x.row.y.z.image.modal.modal | 打开页面编号 |
+| page.x.row.y.z.image.modal.mode | 打开模式 |
+| page.x.row.y.z.image.modal.animation.type | 动画类型 |
+| page.x.row.y.z.image.modal.animation.duration | 动画时长 |
+| page.x.row.y.z.image.switch.w | 第w张切换图片 |
+| page.x.row.y.z.image.switch.cycle | 是否循环 |
+
+### 行高度同步
+
+| 参数 | 说明 |
+|------|------|
+| page.x.row.height | 需要同步高度的行ID组，格式如`1,2:3,4`表示行1和2同高，行3和4同高 |
+
 ### 界面布局
 
 - **窗口结构**：header（标题）+ content（可滚动内容区）+ footer（按钮区）
 - **按钮排列**：上一页（左）| 隐藏（中/灰色）| 下一页/完成（右）
 - **第一页**：不显示上一页按钮
 - **最后一页**：下一页按钮显示为"完成"
+- **快捷键**：Enter=下一页，Escape=隐藏
 
 ## 示例
 
 ``` REGEX_FLAG
-[WELCOME:page.1.title=欢迎来到Nix的自定义首页;page.1.content.1.align=left;page.1.content.1=在这里您可以写入您的故事详情\n使用这个字符可以换行(而且两行会比较紧);page.1.content.2=再写一个content也可以换行(两行中间会有点空隙);page.1.content.3=align可以设置对齐方式有leftright和middle可选;page.1.content.3.align=middle;page.1.content.4=page.x.content.align/style可以设置这一页的默认对齐/样式;page.1.content.5=page.content.align/style可以设置所有页的默认对齐/样式;page.1.content.6=style可以设置样式;page.1.content.6.style=title;page.1.content.7=有bold加粗tilt倾斜title标题quote引用可选;page.1.input.1.title=这里是输入框的标题;page.1.input.1.key=input1;page.1.input.1.desc=这里可以写输入框的描述;page.1.options.1.title=这里是选项的标题;page.1.options.1.key=options1;page.1.options.1.option.1=选项A;page.1.options.1.option.2=选项B;page.1.options.1.default=1;page.1.content.8=这就是第一页的全部内容;page.2.title=这里是第二页的标题;page.2.content.1=最后一页的继续按钮如果您未设置会被自动替换为“完成”;page.2.content.3=详细介绍和参数说明请查看;page.2.content.3.enter=false;page.2.content.4.style=url;page.2.content.4=项目说明书;page.2.content.4.url=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/README.md;page.2.content.2.style=title;page.2.content.2=祝您使用愉快！]
+[WELCOME:page.1.title=欢迎来到Nix的自定义首页;page.1.content.1.align=left;page.1.content.1=在这里您可以写入您的故事详情\n使用这个字符可以换行(而且两行会比较紧);page.1.content.2=再写一个content也可以换行(两行中间会有点空隙);page.1.content.3=align可以设置对齐方式有leftright和middle可选;page.1.content.3.align=middle;page.1.content.4=page.x.content.align/style可以设置这一页的默认对齐/样式;page.1.content.5=page.content.align/style可以设置所有页的默认对齐/样式;page.1.content.6=style可以设置样式;page.1.content.6.style=title;page.1.content.7=有bold加粗tilt倾斜title标题quote引用可选;page.1.input.1.title=这里是输入框的标题;page.1.input.1.key=input1;page.1.input.1.desc=这里可以写输入框的描述;page.1.options.1.title=这里是选项的标题;page.1.options.1.key=options1;page.1.options.1.option.1=选项A;page.1.options.1.option.2=选项B;page.1.options.1.default=1;page.1.content.8=这就是第一页的全部内容;page.2.title=这里是第二页的标题;page.2.content.1=最后一页的继续按钮如果您未设置会被自动替换为"完成";page.2.content.3=详细介绍和参数说明请查看;page.2.content.3.enter=false;page.2.content.4.style=url;page.2.content.4=项目说明书;page.2.content.4.url=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/README.md;page.2.content.2.style=title;page.2.content.2=祝您使用愉快！]
 ```
