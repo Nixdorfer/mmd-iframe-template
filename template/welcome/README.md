@@ -47,7 +47,10 @@ page.1.content=第一行\n第二行\n第三行
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| backgroundColor | 背景颜色(6位hex) | 050505 |
+| background.color | 背景颜色(6位hex) | 050505 |
+| background.image.pc | PC端背景图片URL | - |
+| background.image.mobile | 移动端背景图片URL | - |
+| background.image.cut | 背景图片是否裁剪(true/false) | false |
 | modalColor | 窗口颜色(6位hex) | 0d0d0d |
 | btnColor | 按钮颜色(6位hex) | 166d3b |
 
@@ -60,6 +63,8 @@ page.1.content=第一行\n第二行\n第三行
 | page.content.distance | 所有页面的默认间距 | - |
 | page.animation.type | 所有页面的默认动画类型 | - |
 | page.animation.duration | 所有页面的默认动画时长(毫秒) | 300 |
+| page.image.size | 所有图片的默认宽度百分比(0-100) | 100 |
+| page.image.cut | 所有图片是否允许上下裁剪(true/false) | false |
 
 ### 页面配置
 
@@ -79,6 +84,8 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.content.distance | 第x页的默认间距 |
 | page.x.animation.type | 从第x页到第x+1页的过渡动画 |
 | page.x.animation.duration | 动画持续时间（毫秒，默认300）|
+| page.x.image.size | 第x页图片的默认宽度百分比(0-100) |
+| page.x.image.cut | 第x页图片是否允许上下裁剪(true/false) |
 
 **动画类型**：slide/fade/rotate/zoomin/zoomout/none
 
@@ -96,6 +103,8 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.content.y.distance | 间距 (none/min/1/2/3/max) |
 | page.x.content.y.url | 当style含url时，指定要打开的链接 |
 | page.x.content.y.enter | 是否在末尾换行（true/false，默认true）|
+| page.x.content.y.color.text | 文字颜色(6位hex) |
+| page.x.content.y.color.background | 文字背景颜色(6位hex) |
 
 **样式选项**：quote/title/bold/tilt/underline/delete/url
 
@@ -146,7 +155,9 @@ page.1.content=第一行\n第二行\n第三行
 |------|------|
 | page.x.image.y.url | 图片地址 |
 | page.x.image.y.align | 对齐方式 (left/right/middle，默认middle) |
-| page.x.image.y.click.type | 点击类型 (disable/modal/switch，默认disable) |
+| page.x.image.y.size | 图片宽度百分比(0-100) |
+| page.x.image.y.cut | 是否允许上下裁剪(true/false) |
+| page.x.image.y.click.type | 点击类型 (disable/modal/switch/detail，默认disable) |
 
 **modal模式参数**：
 | 参数 | 说明 |
@@ -160,7 +171,9 @@ page.1.content=第一行\n第二行\n第三行
 | 参数 | 说明 |
 |------|------|
 | page.x.image.y.switch.z | 第z张切换图片的地址 |
-| page.x.image.y.switch.cycle | 是否循环（true/false，默认false）|
+| page.x.image.y.switch.cycle | 是否循环（true/false，默认false，循环时原图作为第0张参与循环）|
+
+**detail模式**：点击图片后全屏展示原图，再次点击任意处关闭
 
 ### 行布局配置
 
@@ -179,6 +192,8 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.row.y.z.content | 文字内容 |
 | page.x.row.y.z.content.style | 样式 |
 | page.x.row.y.z.content.url | 链接地址 |
+| page.x.row.y.z.content.color.text | 文字颜色(6位hex) |
+| page.x.row.y.z.content.color.background | 文字背景颜色(6位hex) |
 
 **btn类型参数**：
 | 参数 | 说明 |
@@ -197,13 +212,15 @@ page.1.content=第一行\n第二行\n第三行
 | 参数 | 说明 |
 |------|------|
 | page.x.row.y.z.image.url | 图片地址 |
-| page.x.row.y.z.image.click.type | 点击类型 (disable/modal/switch) |
+| page.x.row.y.z.image.size | 图片宽度百分比(0-100) |
+| page.x.row.y.z.image.cut | 是否允许上下裁剪(true/false) |
+| page.x.row.y.z.image.click.type | 点击类型 (disable/modal/switch/detail) |
 | page.x.row.y.z.image.modal.modal | 打开页面编号 |
 | page.x.row.y.z.image.modal.mode | 打开模式 |
 | page.x.row.y.z.image.modal.animation.type | 动画类型 |
 | page.x.row.y.z.image.modal.animation.duration | 动画时长 |
 | page.x.row.y.z.image.switch.w | 第w张切换图片 |
-| page.x.row.y.z.image.switch.cycle | 是否循环 |
+| page.x.row.y.z.image.switch.cycle | 是否循环（循环时原图作为第0张参与循环）|
 
 ### 行高度同步
 

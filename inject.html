@@ -3,10 +3,10 @@
     (function(c,p){
       var g={},e=[],gK=[];p.replace(/\\n/g,'\n').split(';').forEach(function(s){var i=s.indexOf('=');if(i>0){var k=s.slice(0,i),v=s.slice(i+1);if(v==='')e.push(k+' 值为空');g[k]=decodeURIComponent(v);gK.push(k)}});
       var H=function(s){return/^[0-9a-fA-F]{6}$/.test(s)};
-      ['btnLoadColor','btnFailColor','btnContinueColor','btnDoneColor','backgroundColor','modalColor','btnColor'].forEach(function(k){if(g[k]&&!H(g[k]))e.push(k+' 颜色无效')});
+      ['btnLoadColor','btnFailColor','btnContinueColor','btnDoneColor','background.color','modalColor','btnColor'].forEach(function(k){if(g[k]&&!H(g[k]))e.push(k+' 颜色无效')});
       @PROJECT_SPECIFIC@
       if(e.length){var d=document.createElement('div');d.style.cssText='padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:14px;white-space:pre-wrap';d.textContent='配置错误:\\n'+e.join('\\n');c.appendChild(d);return}
-      var aE=g.autoExpand!=='false',aR=g.allowReplay!=='false',bLC=g.btnLoadContent||'正在获取资源...',bLo=g.btnLoadColor||'b8860b',bFC=g.btnFailContent||'获取失败 点击重试',bFo=g.btnFailColor||'8b0000',bCC=g.btnContinueContent||'打开操作面板',bCo=g.btnContinueColor||'166d3b',bDC=g.btnDoneContent||'已完成操作',bDo=g.btnDoneColor||'666666',bgC=g.backgroundColor||'050505';
+      var aE=g.autoExpand!=='false',aR=g.allowReplay!=='false',bLC=g.btnLoadContent||'正在获取资源...',bLo=g.btnLoadColor||'b8860b',bFC=g.btnFailContent||'获取失败 点击重试',bFo=g.btnFailColor||'8b0000',bCC=g.btnContinueContent||'打开操作面板',bCo=g.btnContinueColor||'166d3b',bDC=g.btnDoneContent||'已完成操作',bDo=g.btnDoneColor||'666666',bgC=g['background.color']||'050505';
       c.style.position='relative';var b=document.createElement('button');b.style.cssText='padding:12px 24px;background:#'+bLo+';border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:14px';b.textContent=bLC;b.disabled=true;c.appendChild(b);
       var o,f,mH;
       function sI(){o.style.display='flex';f.style.width='90vw';f.style.height='90vh';f.style.opacity='0';f.style.transform='translateY(-30px)';setTimeout(function(){f.style.opacity='1';f.style.transform='translateY(0)'},10)}
