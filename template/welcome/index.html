@@ -465,16 +465,24 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.1.7</div></div>';
+  html += '<div class="version">v1.1.10</div></div>';
   document.getElementById('root').innerHTML = html;
   var root = document.getElementById('root');
-  root.style.opacity = pg.modalTransparency ? (1 - pg.modalTransparency/100) : '';
+  if (pg.modalTransparency) {
+    var mc = pg.modalColor || modalColor;
+    var r = parseInt(mc.substr(0,2),16), g = parseInt(mc.substr(2,2),16), b = parseInt(mc.substr(4,2),16);
+    root.style.background = 'rgba('+r+','+g+','+b+','+(1-pg.modalTransparency/100)+')';
+  }
   root.style.backdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
   root.style.webkitBackdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
-  var btnStyle = '';
-  if (pg.btnTransparency) btnStyle += 'opacity:'+(1-pg.btnTransparency/100)+';';
-  if (pg.btnAmbiguity) btnStyle += 'backdrop-filter:blur('+pg.btnAmbiguity/5+'px);-webkit-backdrop-filter:blur('+pg.btnAmbiguity/5+'px);';
-  document.querySelectorAll('.modal-footer .btn').forEach(function(b){b.style.cssText += btnStyle});
+  if (pg.btnTransparency || pg.btnAmbiguity) {
+    var bc = pg.btnColor || btnColor;
+    var br = parseInt(bc.substr(0,2),16), bg = parseInt(bc.substr(2,2),16), bb = parseInt(bc.substr(4,2),16);
+    document.querySelectorAll('.modal-footer .btn').forEach(function(btn){
+      if (pg.btnTransparency) btn.style.background = 'rgba('+br+','+bg+','+bb+','+(1-pg.btnTransparency/100)+')';
+      if (pg.btnAmbiguity) { btn.style.backdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; btn.style.webkitBackdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; }
+    });
+  }
   if (!isFirst) document.getElementById('prevBtn').onclick = prev;
   document.getElementById('nextBtn').onclick = next;
   document.getElementById('hideBtn').onclick = hide;
@@ -820,13 +828,21 @@ function renderTo(container) {
   }
   html += '<div class="version">v1.0.0</div></div>';
   container.innerHTML = html;
-  container.style.opacity = pg.modalTransparency ? (1 - pg.modalTransparency/100) : '';
+  if (pg.modalTransparency) {
+    var mc2 = pg.modalColor || modalColor;
+    var r2 = parseInt(mc2.substr(0,2),16), g2 = parseInt(mc2.substr(2,2),16), b2 = parseInt(mc2.substr(4,2),16);
+    container.style.background = 'rgba('+r2+','+g2+','+b2+','+(1-pg.modalTransparency/100)+')';
+  }
   container.style.backdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
   container.style.webkitBackdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
-  var btnStyle2 = '';
-  if (pg.btnTransparency) btnStyle2 += 'opacity:'+(1-pg.btnTransparency/100)+';';
-  if (pg.btnAmbiguity) btnStyle2 += 'backdrop-filter:blur('+pg.btnAmbiguity/5+'px);-webkit-backdrop-filter:blur('+pg.btnAmbiguity/5+'px);';
-  container.querySelectorAll('.modal-footer .btn').forEach(function(b){b.style.cssText += btnStyle2});
+  if (pg.btnTransparency || pg.btnAmbiguity) {
+    var bc2 = pg.btnColor || btnColor;
+    var br2 = parseInt(bc2.substr(0,2),16), bg2 = parseInt(bc2.substr(2,2),16), bb2 = parseInt(bc2.substr(4,2),16);
+    container.querySelectorAll('.modal-footer .btn').forEach(function(btn){
+      if (pg.btnTransparency) btn.style.background = 'rgba('+br2+','+bg2+','+bb2+','+(1-pg.btnTransparency/100)+')';
+      if (pg.btnAmbiguity) { btn.style.backdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; btn.style.webkitBackdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; }
+    });
+  }
   if (coverStack.length > 0) {
     container.querySelector('#coverCloseBtn').onclick = closeCover;
   } else {

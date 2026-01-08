@@ -95,7 +95,7 @@ page.1.content=第一行\n第二行\n第三行
 
 **间距类型**：none/min/1/2/3/max
 
-**透明度(transparency)**：整数0-100，0为完全不透明，100为完全透明，通过CSS opacity实现
+**透明度(transparency)**：整数0-100，0为完全不透明，100为完全透明，通过rgba背景色实现（仅背景透明，内容不透明）
 
 **模糊度(ambiguity)**：整数0-100，0为不模糊，100为最大模糊(20px)，通过CSS backdrop-filter:blur实现
 
@@ -248,8 +248,8 @@ page.1.content=第一行\n第二行\n第三行
 
 ``` REGEX_FLAG
 [WELCOME:background.color=262624;
-background.image.pc=blob:https://github.com/e0d56e50-43af-4cf3-b59f-b687b36251f5;
-background.image.mobile=blob:https://github.com/24776e8d-3b3f-42a5-90d3-86f4736b62b4;
+background.image.pc=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/src/mobile.png?raw=true;
+background.image.mobile=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/src/mobile.png?raw=true;
 page.modal.color=30302e;
 page.modal.transparency=50;
 page.modal.ambiguity=100;
