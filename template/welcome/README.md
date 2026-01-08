@@ -51,8 +51,8 @@ page.1.content=第一行\n第二行\n第三行
 | background.image.pc | PC端背景图片URL | - |
 | background.image.mobile | 移动端背景图片URL | - |
 | background.image.cut | 背景图片是否裁剪(true/false) | false |
-| modalColor | 窗口颜色(6位hex) | 0d0d0d |
-| btnColor | 按钮颜色(6位hex) | 166d3b |
+| page.modal.color | 窗口颜色(6位hex) | 0d0d0d |
+| page.btn.color | 按钮颜色(6位hex) | 166d3b |
 
 ### 全局内容样式
 
@@ -94,6 +94,10 @@ page.1.content=第一行\n第二行\n第三行
 **动画类型**：slide/fade/rotate/zoomin/zoomout/none
 
 **间距类型**：none/min/1/2/3/max
+
+**透明度(transparency)**：整数0-100，0为完全不透明，100为完全透明，通过CSS opacity实现
+
+**模糊度(ambiguity)**：整数0-100，0为不模糊，100为最大模糊(20px)，通过CSS backdrop-filter:blur实现
 
 ### 内容配置
 
@@ -243,5 +247,70 @@ page.1.content=第一行\n第二行\n第三行
 ## 示例
 
 ``` REGEX_FLAG
-[WELCOME:page.1.title=欢迎来到Nix的自定义首页;page.1.content.1.align=left;page.1.content.1=在这里您可以写入您的故事详情\n使用这个字符可以换行(而且两行会比较紧);page.1.content.2=再写一个content也可以换行(两行中间会有点空隙);page.1.content.3=align可以设置对齐方式有leftright和middle可选;page.1.content.3.align=middle;page.1.content.4=page.x.content.align/style可以设置这一页的默认对齐/样式;page.1.content.5=page.content.align/style可以设置所有页的默认对齐/样式;page.1.content.6=style可以设置样式;page.1.content.6.style=title;page.1.content.7=有bold加粗tilt倾斜title标题quote引用可选;page.1.input.1.title=这里是输入框的标题;page.1.input.1.key=input1;page.1.input.1.desc=这里可以写输入框的描述;page.1.options.1.title=这里是选项的标题;page.1.options.1.key=options1;page.1.options.1.option.1=选项A;page.1.options.1.option.2=选项B;page.1.options.1.default=1;page.1.content.8=这就是第一页的全部内容;page.2.title=这里是第二页的标题;page.2.content.1=最后一页的继续按钮如果您未设置会被自动替换为"完成";page.2.content.3=详细介绍和参数说明请查看;page.2.content.3.enter=false;page.2.content.4.style=url;page.2.content.4=项目说明书;page.2.content.4.url=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/README.md;page.2.content.2.style=title;page.2.content.2=祝您使用愉快！]
+[WELCOME:background.color=262624;
+background.image.pc=blob:https://github.com/e0d56e50-43af-4cf3-b59f-b687b36251f5;
+background.image.mobile=blob:https://github.com/24776e8d-3b3f-42a5-90d3-86f4736b62b4;
+page.modal.color=30302e;
+page.modal.transparency=50;
+page.modal.ambiguity=100;
+page.btn.color=c6613f;
+page.btn.transparency=25;
+page.btn.ambiguity=100;
+page.1.title=欢迎来到Nix的自定义首页;
+page.1.content.100=哈哈🐮人 很奇妙吧！;
+page.1.content.100.style=title;
+page.1.content.100.color.text=ff0000;
+page.1.image.1.url=https://static.catai.wiki/loading.webp;
+page.1.image.1.align=middle;
+page.1.image.1.click.type=switch;
+page.1.image.1.switch.cycle=true;
+page.1.image.1.switch.2=https://static.catai.wiki/default/user.webp;
+page.1.image.1.switch.3=https://static.catai.wiki/default/install-emtry.webp;
+page.1.content.1.align=left;
+page.1.content.1=在这里您可以写入您的故事详情\n使用这个字符可以换行;
+page.1.content.2=再写一个content也可以换行;
+page.1.content.3=align可以设置对齐方式有leftright和middle可选;
+page.1.content.3.align=middle;
+page.1.content.4=pagexcontentalign/style可以设置这一页的默认对齐/样式;
+page.1.content.5=pagecontentalign/style可以设置所有页的默认对齐/样式;
+page.1.content.6=style可以设置样式;
+page.1.content.6.style=title;
+page.1.content.7=有bold加粗tilt倾斜title标题quote引用可选;
+page.1.input.1.title=这里是输入框的标题;
+page.1.input.1.key=input1;
+page.1.input.1.desc=这里可以写输入框的描述;
+page.1.options.1.title=这里是选项的标题;
+page.1.options.1.key=options1;
+page.1.options.1.option.1=选项A;
+page.1.options.1.option.2=选项B;
+page.1.options.1.default=1;
+page.1.content.8=这就是第一页的全部内容;
+page.2.title=这里是第二页的标题;
+page.2.row.1.ratio=1:2;
+page.2.row.2.ratio=1:2;
+page.2.row.1.1.type=image;
+page.2.row.1.2.type=content;
+page.2.row.2.1.type=content;
+page.2.row.2.2.type=content;
+page.2.row.1.1.image.url=https://static.catai.wiki/default/install-emtry.webp;
+page.2.row.1.1.align=middle;
+page.2.row.1.1.valign=middle;
+page.2.row.1.2.align=middle;
+page.2.row.1.2.valign=middle;
+page.2.row.2.1.align=middle;
+page.2.row.2.1.valign=middle;
+page.2.row.2.2.align=middle;
+page.2.row.2.2.valign=middle;
+page.2.row.1.2.content=Row1Line2;
+page.2.row.2.1.content=Row2Line1;
+page.2.row.2.2.content=Row2Line2;
+page.2.row.height=1,2;
+page.2.content.1=最后一页的继续按钮如果您未设置会被自动替换为“完成”;
+page.2.content.3=详细介绍和参数说明请查看：;
+page.2.content.3.enter=false;
+page.2.content.4.style=url;
+page.2.content.4=项目说明书;
+page.2.content.4.url=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/README.md;
+page.2.content.2.style=title;
+page.2.content.2=祝您使用愉快！]
 ```

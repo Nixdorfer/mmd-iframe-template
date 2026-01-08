@@ -98,8 +98,8 @@ input.error{outline:2px solid #ff4444;animation:shake 0.5s ease}
 var C = window.CONFIG || {};
 var CK = window.CONFIG_KEYS || [];
 var platform = C.platform || 'pc';
-var modalColor = C.modalColor || '0d0d0d';
-var btnColor = C.btnColor || '166d3b';
+var modalColor = C['page.modal.color'] || '0d0d0d';
+var btnColor = C['page.btn.color'] || '166d3b';
 var bgColor = C['background.color'] || '050505';
 var bgImageCut = C['background.image.cut'] === 'true';
 var bgImage = platform === 'pc' ? (C['background.image.pc'] || '') : (C['background.image.mobile'] || '');

@@ -7,6 +7,8 @@ function cV(k,v){if(v&&vV.indexOf(v)<0)e.push(k+' 必须是 top/middle/bottom')}
 function cRT(k,v){if(v&&vRT.indexOf(v)<0)e.push(k+' 必须是 content/btn/image')}
 if(g['background.color']&&!H(g['background.color']))e.push('background.color 颜色无效');
 if(g['background.image.cut']&&g['background.image.cut']!=='true'&&g['background.image.cut']!=='false')e.push('background.image.cut 必须是true/false');
+if(g['page.modal.color']&&!H(g['page.modal.color']))e.push('page.modal.color 颜色无效');
+if(g['page.btn.color']&&!H(g['page.btn.color']))e.push('page.btn.color 颜色无效');
 if(g['page.content.align'])cA('page.content.align',g['page.content.align']);
 if(g['page.content.style'])cS('page.content.style',g['page.content.style']);
 if(g['page.content.distance'])cDi('page.content.distance',g['page.content.distance']);
