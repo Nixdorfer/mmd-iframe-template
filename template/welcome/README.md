@@ -78,7 +78,11 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.hide.content | 隐藏按钮文字（默认"隐藏"）|
 | page.x.background.color | 页面背景颜色(6位hex) |
 | page.x.modal.color | 页面窗口颜色(6位hex) |
+| page.x.modal.transparency | 窗口透明度(0-100，越大越透明，默认0) |
+| page.x.modal.ambiguity | 窗口模糊度(0-100，越大越模糊，默认0) |
 | page.x.btn.color | 页面按钮颜色(6位hex) |
+| page.x.btn.transparency | 按钮透明度(0-100，越大越透明，默认0) |
+| page.x.btn.ambiguity | 按钮模糊度(0-100，越大越模糊，默认0) |
 | page.x.content.align | 第x页的默认对齐方式 |
 | page.x.content.style | 第x页的默认样式 |
 | page.x.content.distance | 第x页的默认间距 |

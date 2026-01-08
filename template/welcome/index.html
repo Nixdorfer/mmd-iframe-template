@@ -132,7 +132,7 @@ function getKeyOrder(k) {
   return idx >= 0 ? idx : 9999;
 }
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', btnColor:'', defaultAlign:'', defaultStyle:'', defaultDistance:'', animType:'', animDur:300, imgSize:0, imgCut:null};
+  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalAmbiguity:0, btnColor:'', btnTransparency:0, btnAmbiguity:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', animType:'', animDur:300, imgSize:0, imgCut:null};
   pg.title = C['page.'+n+'.title'] || '';
   pg.defaultAlign = C['page.'+n+'.content.align'] || '';
   pg.defaultStyle = C['page.'+n+'.content.style'] || '';
@@ -142,7 +142,11 @@ pageNums.forEach(function(n) {
   pg.hideContent = C['page.'+n+'.hide.content'] || '隐藏';
   pg.bgColor = C['page.'+n+'.background.color'] || '';
   pg.modalColor = C['page.'+n+'.modal.color'] || '';
+  pg.modalTransparency = parseInt(C['page.'+n+'.modal.transparency']) || 0;
+  pg.modalAmbiguity = parseInt(C['page.'+n+'.modal.ambiguity']) || 0;
   pg.btnColor = C['page.'+n+'.btn.color'] || '';
+  pg.btnTransparency = parseInt(C['page.'+n+'.btn.transparency']) || 0;
+  pg.btnAmbiguity = parseInt(C['page.'+n+'.btn.ambiguity']) || 0;
   pg.animType = C['page.'+n+'.animation.type'] || globalAnimType;
   pg.animDur = parseInt(C['page.'+n+'.animation.duration']) || globalAnimDur;
   pg.imgSize = C['page.'+n+'.image.size'] !== undefined ? parseInt(C['page.'+n+'.image.size']) : -1;
@@ -461,8 +465,16 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.1.3</div></div>';
+  html += '<div class="version">v1.1.7</div></div>';
   document.getElementById('root').innerHTML = html;
+  var root = document.getElementById('root');
+  root.style.opacity = pg.modalTransparency ? (1 - pg.modalTransparency/100) : '';
+  root.style.backdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
+  root.style.webkitBackdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
+  var btnStyle = '';
+  if (pg.btnTransparency) btnStyle += 'opacity:'+(1-pg.btnTransparency/100)+';';
+  if (pg.btnAmbiguity) btnStyle += 'backdrop-filter:blur('+pg.btnAmbiguity/5+'px);-webkit-backdrop-filter:blur('+pg.btnAmbiguity/5+'px);';
+  document.querySelectorAll('.modal-footer .btn').forEach(function(b){b.style.cssText += btnStyle});
   if (!isFirst) document.getElementById('prevBtn').onclick = prev;
   document.getElementById('nextBtn').onclick = next;
   document.getElementById('hideBtn').onclick = hide;
@@ -808,6 +820,13 @@ function renderTo(container) {
   }
   html += '<div class="version">v1.0.0</div></div>';
   container.innerHTML = html;
+  container.style.opacity = pg.modalTransparency ? (1 - pg.modalTransparency/100) : '';
+  container.style.backdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
+  container.style.webkitBackdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
+  var btnStyle2 = '';
+  if (pg.btnTransparency) btnStyle2 += 'opacity:'+(1-pg.btnTransparency/100)+';';
+  if (pg.btnAmbiguity) btnStyle2 += 'backdrop-filter:blur('+pg.btnAmbiguity/5+'px);-webkit-backdrop-filter:blur('+pg.btnAmbiguity/5+'px);';
+  container.querySelectorAll('.modal-footer .btn').forEach(function(b){b.style.cssText += btnStyle2});
   if (coverStack.length > 0) {
     container.querySelector('#coverCloseBtn').onclick = closeCover;
   } else {
