@@ -12,7 +12,7 @@ body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100
 .modal-content::-webkit-scrollbar{width:6px;background:transparent}
 .modal-content::-webkit-scrollbar-track{background:transparent}
 .modal-content::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.5);border-radius:3px}
-.modal-footer{padding:16px 24px 24px;flex-shrink:0;display:flex;gap:10px}
+.modal-footer{padding:16px 24px 24px;flex-shrink:0;display:flex;gap:10px;flex-wrap:wrap}
 .desc{display:block;color:#888;font-size:14px;margin-bottom:16px;white-space:pre-wrap}
 .desc.align-left{text-align:left}.desc.align-right{text-align:right}.desc.align-middle{text-align:center}
 .desc.style-quote{border-left:3px solid #444;padding-left:12px;color:#aaa;font-style:italic}
@@ -64,6 +64,7 @@ input:focus,select:focus{outline:2px solid var(--btn)}
 .custom-img.align-middle{display:block;margin-left:auto;margin-right:auto}
 .custom-img.clickable{cursor:pointer}
 .cover-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10001}
+.version{width:100%;text-align:center;color:#444;font-size:10px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -290,7 +291,7 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '</div>';
+  html += '<div class="version">v1.0.0</div></div>';
   document.getElementById('root').innerHTML = html;
   if (!isFirst) document.getElementById('prevBtn').onclick = prev;
   document.getElementById('nextBtn').onclick = next;
@@ -551,7 +552,7 @@ function renderTo(container) {
     html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
     html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
   }
-  html += '</div>';
+  html += '<div class="version">v1.0.0</div></div>';
   container.innerHTML = html;
   if (coverStack.length > 0) {
     container.querySelector('#coverCloseBtn').onclick = closeCover;
