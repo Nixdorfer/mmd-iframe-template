@@ -65,6 +65,7 @@ page.1.content=第一行\n第二行\n第三行
 | page.content.align | 所有页面的默认对齐方式 | middle |
 | page.content.style | 所有页面的默认样式 | - |
 | page.content.distance | 所有页面的默认间距 | - |
+| page.content.color | 所有内容的默认文字颜色(6位hex，不含title) | - |
 | page.animation.type | 所有页面的默认动画类型 | - |
 | page.animation.duration | 所有页面的默认动画时长(毫秒) | 300 |
 | page.image.size | 所有图片的默认宽度百分比(0-100) | 100 |
@@ -90,6 +91,7 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.content.align | 第x页的默认对齐方式 |
 | page.x.content.style | 第x页的默认样式 |
 | page.x.content.distance | 第x页的默认间距 |
+| page.x.content.color | 第x页的默认文字颜色(6位hex，不含title) |
 | page.x.animation.type | 从第x页到第x+1页的过渡动画 |
 | page.x.animation.duration | 动画持续时间（毫秒，默认300）|
 | page.x.image.size | 第x页图片的默认宽度百分比(0-100) |

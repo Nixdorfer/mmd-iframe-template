@@ -110,6 +110,7 @@ var bgImage = platform === 'pc' ? (C['page.background.image.pc'] || '') : (C['pa
 var globalAlign = C['page.content.align'] || 'middle';
 var globalStyle = C['page.content.style'] || '';
 var globalDistance = C['page.content.distance'] || '';
+var globalContentColor = C['page.content.color'] || '';
 var globalAnimType = C['page.animation.type'] || '';
 var globalImgSize = parseInt(C['page.image.size']) || 100;
 var globalImgCut = C['page.image.cut'] === 'true';
@@ -136,11 +137,12 @@ function getKeyOrder(k) {
   return idx >= 0 ? idx : 9999;
 }
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalBlur:0, btnColor:'', btnTransparency:0, btnBlur:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', animType:'', animDur:300, imgSize:0, imgCut:null};
+  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalBlur:0, btnColor:'', btnTransparency:0, btnBlur:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', defaultColor:'', animType:'', animDur:300, imgSize:0, imgCut:null};
   pg.title = C['page.'+n+'.title'] || '';
   pg.defaultAlign = C['page.'+n+'.content.align'] || '';
   pg.defaultStyle = C['page.'+n+'.content.style'] || '';
   pg.defaultDistance = C['page.'+n+'.content.distance'] || '';
+  pg.defaultColor = C['page.'+n+'.content.color'] || '';
   pg.nextContent = C['page.'+n+'.next.content'] || '';
   pg.lastContent = C['page.'+n+'.last.content'] || '上一页';
   pg.hideContent = C['page.'+n+'.hide.content'] || '隐藏';
@@ -395,7 +397,8 @@ function render() {
       if (prevNoEnter) cls += ' no-enter';
       prevNoEnter = !el.enter;
       var cStyle = '';
-      if (el.colorText) cStyle += 'color:#'+el.colorText+';';
+      var textColor = el.colorText || pg.defaultColor || globalContentColor;
+      if (textColor) cStyle += 'color:#'+textColor+';';
       if (el.colorBg) cStyle += 'background:#'+el.colorBg+';padding:2px 6px;border-radius:4px;';
       var styleAttr = cStyle ? ' style="'+cStyle+'"' : '';
       if (isUrl && el.url) {
@@ -447,7 +450,8 @@ function render() {
           var isUrl = false;
           if (col.style) col.style.split('\\').forEach(function(s){if(s){cCls+=' style-'+s;if(s==='url')isUrl=true}});
           var colCStyle = '';
-          if (col.colorText) colCStyle += 'color:#'+col.colorText+';';
+          var colTextColor = col.colorText || pg.defaultColor || globalContentColor;
+          if (colTextColor) colCStyle += 'color:#'+colTextColor+';';
           if (col.colorBg) colCStyle += 'background:#'+col.colorBg+';padding:2px 6px;border-radius:4px;';
           var colStyleAttr = colCStyle ? ' style="'+colCStyle+'"' : '';
           if (isUrl && col.url) html += '<span class="'+cCls+'"'+colStyleAttr+' data-url="'+esc(col.url)+'">'+esc(col.text)+'</span>';
@@ -473,7 +477,7 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.1.15</div></div>';
+  html += '<div class="version">v1.1.16</div></div>';
   document.getElementById('root').innerHTML = html;
   var root = document.getElementById('root');
   if (pg.modalTransparency) {
@@ -766,7 +770,8 @@ function renderTo(container) {
       if (prevNoEnter) cls += ' no-enter';
       prevNoEnter = !el.enter;
       var cStyle = '';
-      if (el.colorText) cStyle += 'color:#'+el.colorText+';';
+      var textColor = el.colorText || pg.defaultColor || globalContentColor;
+      if (textColor) cStyle += 'color:#'+textColor+';';
       if (el.colorBg) cStyle += 'background:#'+el.colorBg+';padding:2px 6px;border-radius:4px;';
       var styleAttr = cStyle ? ' style="'+cStyle+'"' : '';
       if (isUrl && el.url) {
@@ -818,7 +823,8 @@ function renderTo(container) {
           var isUrl = false;
           if (col.style) col.style.split('\\').forEach(function(s){if(s){cCls+=' style-'+s;if(s==='url')isUrl=true}});
           var colCStyle = '';
-          if (col.colorText) colCStyle += 'color:#'+col.colorText+';';
+          var colTextColor = col.colorText || pg.defaultColor || globalContentColor;
+          if (colTextColor) colCStyle += 'color:#'+colTextColor+';';
           if (col.colorBg) colCStyle += 'background:#'+col.colorBg+';padding:2px 6px;border-radius:4px;';
           var colStyleAttr = colCStyle ? ' style="'+colCStyle+'"' : '';
           if (isUrl && col.url) html += '<span class="'+cCls+'"'+colStyleAttr+' data-url="'+esc(col.url)+'">'+esc(col.text)+'</span>';
