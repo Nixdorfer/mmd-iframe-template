@@ -47,16 +47,16 @@ page.1.content=第一行\n第二行\n第三行
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| background.color | 背景颜色(6位hex) | 050505 |
-| background.image.pc | PC端背景图片URL | - |
-| background.image.mobile | 移动端背景图片URL | - |
-| background.image.cut | 背景图片是否裁剪(true/false) | false |
+| page.background.color | 背景颜色(6位hex) | 050505 |
+| page.background.image.pc | PC端背景图片URL | - |
+| page.background.image.mobile | 移动端背景图片URL | - |
+| page.background.image.cut | 背景图片是否裁剪(true/false) | false |
 | page.modal.color | 窗口颜色(6位hex) | 0d0d0d |
 | page.modal.transparency | 窗口透明度(0-100) | 0 |
-| page.modal.ambiguity | 窗口模糊度(0-100) | 0 |
+| page.modal.blur | 窗口模糊度(0-100) | 0 |
 | page.btn.color | 按钮颜色(6位hex) | 166d3b |
 | page.btn.transparency | 按钮透明度(0-100) | 0 |
-| page.btn.ambiguity | 按钮模糊度(0-100) | 0 |
+| page.btn.blur | 按钮模糊度(0-100) | 0 |
 
 ### 全局内容样式
 
@@ -83,10 +83,10 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.background.color | 页面背景颜色(6位hex) |
 | page.x.modal.color | 页面窗口颜色(6位hex) |
 | page.x.modal.transparency | 窗口透明度(0-100，越大越透明，默认0) |
-| page.x.modal.ambiguity | 窗口模糊度(0-100，越大越模糊，默认0) |
+| page.x.modal.blur | 窗口模糊度(0-100，越大越模糊，默认0) |
 | page.x.btn.color | 页面按钮颜色(6位hex) |
 | page.x.btn.transparency | 按钮透明度(0-100，越大越透明，默认0) |
-| page.x.btn.ambiguity | 按钮模糊度(0-100，越大越模糊，默认0) |
+| page.x.btn.blur | 按钮模糊度(0-100，越大越模糊，默认0) |
 | page.x.content.align | 第x页的默认对齐方式 |
 | page.x.content.style | 第x页的默认样式 |
 | page.x.content.distance | 第x页的默认间距 |
@@ -101,7 +101,7 @@ page.1.content=第一行\n第二行\n第三行
 
 **透明度(transparency)**：整数0-100，0为完全不透明，100为完全透明，通过rgba背景色实现（仅背景透明，内容不透明）
 
-**模糊度(ambiguity)**：整数0-100，0为不模糊，100为最大模糊(20px)，通过CSS backdrop-filter:blur实现
+**模糊度(blur)**：整数0-100，0为不模糊，100为最大模糊(20px)，通过CSS backdrop-filter:blur实现
 
 ### 内容配置
 
@@ -151,9 +151,11 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.btn.y.content | 按钮文字 |
 | page.x.btn.y.color | 按钮颜色(6位hex) |
 | page.x.btn.y.align | 对齐方式 (left/right/middle) |
-| page.x.btn.y.modal | 点击后打开的页面编号 |
+| page.x.btn.y.page | 点击后打开的页面编号 |
 | page.x.btn.y.mode | 打开模式 (redirect/cover，默认cover) |
 | page.x.btn.y.reclickable | 是否可重复点击（true/false，默认true）|
+| page.x.btn.y.killer | 是否为结束按钮(true/false，默认false，点击后视为完成) |
+| page.x.btn.y.message | 点击后附加到postMessage的内容(填入后reclickable锁定为false) |
 | page.x.btn.y.death.type | 不可重复点击后的行为 (remove/disable，默认disable) |
 | page.x.btn.y.death.content | disable时替换的文字 |
 | page.x.btn.y.animation.type | 打开页面的动画类型 |
@@ -212,9 +214,11 @@ page.1.content=第一行\n第二行\n第三行
 |------|------|
 | page.x.row.y.z.btn.content | 按钮文字 |
 | page.x.row.y.z.btn.color | 按钮颜色 |
-| page.x.row.y.z.btn.modal | 打开页面编号 |
+| page.x.row.y.z.btn.page | 打开页面编号 |
 | page.x.row.y.z.btn.mode | 打开模式 |
 | page.x.row.y.z.btn.reclickable | 是否可重复点击 |
+| page.x.row.y.z.btn.killer | 是否为结束按钮 |
+| page.x.row.y.z.btn.message | 点击后附加到postMessage的内容 |
 | page.x.row.y.z.btn.death.type | 不可重复点击后行为 |
 | page.x.row.y.z.btn.death.content | disable时替换文字 |
 | page.x.row.y.z.btn.animation.type | 动画类型 |
@@ -251,15 +255,15 @@ page.1.content=第一行\n第二行\n第三行
 ## 示例
 
 ``` REGEX_FLAG
-[WELCOME:background.color=262624;
-background.image.pc=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/src/mobile.png?raw=true;
-background.image.mobile=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/src/mobile.png?raw=true;
+[WELCOME:page.background.color=262624;
+page.background.image.pc=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/src/mobile.png?raw=true;
+page.background.image.mobile=https://github.com/Nixdorfer/mmd-iframe-template/blob/main/template/welcome/src/mobile.png?raw=true;
 page.modal.color=30302e;
 page.modal.transparency=50;
-page.modal.ambiguity=100;
+page.modal.blur=100;
 page.btn.color=c6613f;
 page.btn.transparency=25;
-page.btn.ambiguity=100;
+page.btn.blur=100;
 page.1.title=欢迎来到Nix的自定义首页;
 page.1.content.100=哈哈🐮人 很奇妙吧！;
 page.1.content.100.style=title;

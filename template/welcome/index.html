@@ -100,13 +100,13 @@ var CK = window.CONFIG_KEYS || [];
 var platform = C.platform || 'pc';
 var modalColor = C['page.modal.color'] || '0d0d0d';
 var modalTransparency = parseInt(C['page.modal.transparency']) || 0;
-var modalAmbiguity = parseInt(C['page.modal.ambiguity']) || 0;
+var modalBlur = parseInt(C['page.modal.blur']) || 0;
 var btnColor = C['page.btn.color'] || '166d3b';
 var btnTransparency = parseInt(C['page.btn.transparency']) || 0;
-var btnAmbiguity = parseInt(C['page.btn.ambiguity']) || 0;
-var bgColor = C['background.color'] || '050505';
-var bgImageCut = C['background.image.cut'] === 'true';
-var bgImage = platform === 'pc' ? (C['background.image.pc'] || '') : (C['background.image.mobile'] || '');
+var btnBlur = parseInt(C['page.btn.blur']) || 0;
+var bgColor = C['page.background.color'] || '050505';
+var bgImageCut = C['page.background.image.cut'] === 'true';
+var bgImage = platform === 'pc' ? (C['page.background.image.pc'] || '') : (C['page.background.image.mobile'] || '');
 var globalAlign = C['page.content.align'] || 'middle';
 var globalStyle = C['page.content.style'] || '';
 var globalDistance = C['page.content.distance'] || '';
@@ -136,7 +136,7 @@ function getKeyOrder(k) {
   return idx >= 0 ? idx : 9999;
 }
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalAmbiguity:0, btnColor:'', btnTransparency:0, btnAmbiguity:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', animType:'', animDur:300, imgSize:0, imgCut:null};
+  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalBlur:0, btnColor:'', btnTransparency:0, btnBlur:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', animType:'', animDur:300, imgSize:0, imgCut:null};
   pg.title = C['page.'+n+'.title'] || '';
   pg.defaultAlign = C['page.'+n+'.content.align'] || '';
   pg.defaultStyle = C['page.'+n+'.content.style'] || '';
@@ -147,10 +147,10 @@ pageNums.forEach(function(n) {
   pg.bgColor = C['page.'+n+'.background.color'] || '';
   pg.modalColor = C['page.'+n+'.modal.color'] || '';
   pg.modalTransparency = parseInt(C['page.'+n+'.modal.transparency']) || modalTransparency;
-  pg.modalAmbiguity = parseInt(C['page.'+n+'.modal.ambiguity']) || modalAmbiguity;
+  pg.modalBlur = parseInt(C['page.'+n+'.modal.blur']) || modalBlur;
   pg.btnColor = C['page.'+n+'.btn.color'] || '';
   pg.btnTransparency = parseInt(C['page.'+n+'.btn.transparency']) || btnTransparency;
-  pg.btnAmbiguity = parseInt(C['page.'+n+'.btn.ambiguity']) || btnAmbiguity;
+  pg.btnBlur = parseInt(C['page.'+n+'.btn.blur']) || btnBlur;
   pg.animType = C['page.'+n+'.animation.type'] || globalAnimType;
   pg.animDur = parseInt(C['page.'+n+'.animation.duration']) || globalAnimDur;
   pg.imgSize = C['page.'+n+'.image.size'] !== undefined ? parseInt(C['page.'+n+'.image.size']) : -1;
@@ -220,17 +220,19 @@ pageNums.forEach(function(n) {
     if (m && btnNums.indexOf(parseInt(m[1])) === -1) btnNums.push(parseInt(m[1]));
   });
   btnNums.forEach(function(y) {
-    var bt = {type:'btn', idx:y, content:'', color:'', modal:0, mode:'cover', reclickable:true, deathType:'disable', deathContent:'', animType:'', animDur:300, align:'', order:0};
+    var bt = {type:'btn', idx:y, content:'', color:'', modal:0, mode:'cover', reclickable:true, deathType:'disable', deathContent:'', animType:'', animDur:300, align:'', killer:false, message:'', order:0};
     bt.content = C['page.'+n+'.btn.'+y+'.content'] || '';
     bt.color = C['page.'+n+'.btn.'+y+'.color'] || '';
-    bt.modal = parseInt(C['page.'+n+'.btn.'+y+'.modal']) || 0;
+    bt.modal = parseInt(C['page.'+n+'.btn.'+y+'.page']) || 0;
     bt.mode = C['page.'+n+'.btn.'+y+'.mode'] || 'cover';
-    bt.reclickable = C['page.'+n+'.btn.'+y+'.reclickable'] !== 'false';
+    bt.message = C['page.'+n+'.btn.'+y+'.message'] || '';
+    bt.reclickable = bt.message ? false : C['page.'+n+'.btn.'+y+'.reclickable'] !== 'false';
     bt.deathType = C['page.'+n+'.btn.'+y+'.death.type'] || 'disable';
     bt.deathContent = C['page.'+n+'.btn.'+y+'.death.content'] || '';
     bt.animType = C['page.'+n+'.btn.'+y+'.animation.type'] || '';
     bt.animDur = parseInt(C['page.'+n+'.btn.'+y+'.animation.duration']) || 300;
     bt.align = C['page.'+n+'.btn.'+y+'.align'] || '';
+    bt.killer = C['page.'+n+'.btn.'+y+'.killer'] === 'true';
     bt.order = getKeyOrder('page.'+n+'.btn.'+y+'.content');
     pg.elements.push(bt);
   });
@@ -292,13 +294,15 @@ pageNums.forEach(function(n) {
       } else if (tp === 'btn') {
         col.content = C[P+'.btn.content'] || '';
         col.color = C[P+'.btn.color'] || '';
-        col.modal = parseInt(C[P+'.btn.modal']) || 0;
+        col.modal = parseInt(C[P+'.btn.page']) || 0;
         col.mode = C[P+'.btn.mode'] || 'cover';
-        col.reclickable = C[P+'.btn.reclickable'] !== 'false';
+        col.message = C[P+'.btn.message'] || '';
+        col.reclickable = col.message ? false : C[P+'.btn.reclickable'] !== 'false';
         col.deathType = C[P+'.btn.death.type'] || 'disable';
         col.deathContent = C[P+'.btn.death.content'] || '';
         col.animType = C[P+'.btn.animation.type'] || '';
         col.animDur = parseInt(C[P+'.btn.animation.duration']) || 300;
+        col.killer = C[P+'.btn.killer'] === 'true';
       } else if (tp === 'image') {
         col.url = C[P+'.image.url'] || '';
         col.clickType = C[P+'.image.click.type'] || 'disable';
@@ -418,7 +422,7 @@ function render() {
     } else if (el.type === 'btn') {
       prevNoEnter = false;
       var bgc = el.color || btnColor;
-      var btnHtml = '<button class="custom-btn" data-type="btn" data-idx="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" style="background:#'+bgc+'">'+esc(el.content)+'</button>';
+      var btnHtml = '<button class="custom-btn" data-type="btn" data-idx="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" data-killer="'+el.killer+'" data-message="'+esc(el.message)+'" style="background:#'+bgc+'">'+esc(el.content)+'</button>';
       if (el.align) html += '<div class="btn-wrap align-'+el.align+'">'+btnHtml+'</div>';
       else html += btnHtml;
     } else if (el.type === 'image') {
@@ -450,7 +454,7 @@ function render() {
           else html += '<span class="'+cCls+'"'+colStyleAttr+'>'+esc(col.text)+'</span>';
         } else if (col.type === 'btn') {
           var bgc2 = col.color || btnColor;
-          html += '<button class="custom-btn" data-type="btn" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" style="background:#'+bgc2+'">'+esc(col.content)+'</button>';
+          html += '<button class="custom-btn" data-type="btn" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" data-killer="'+col.killer+'" data-message="'+esc(col.message)+'" style="background:#'+bgc2+'">'+esc(col.content)+'</button>';
         } else if (col.type === 'image') {
           var colImgSize = col.size >= 0 ? col.size : (pg.imgSize >= 0 ? pg.imgSize : globalImgSize);
           var colImgCut = col.cut !== null ? col.cut : (pg.imgCut !== null ? pg.imgCut : globalImgCut);
@@ -469,7 +473,7 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.1.11</div></div>';
+  html += '<div class="version">v1.1.15</div></div>';
   document.getElementById('root').innerHTML = html;
   var root = document.getElementById('root');
   if (pg.modalTransparency) {
@@ -477,14 +481,14 @@ function render() {
     var r = parseInt(mc.substr(0,2),16), g = parseInt(mc.substr(2,2),16), b = parseInt(mc.substr(4,2),16);
     root.style.background = 'rgba('+r+','+g+','+b+','+(1-pg.modalTransparency/100)+')';
   }
-  root.style.backdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
-  root.style.webkitBackdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
-  if (pg.btnTransparency || pg.btnAmbiguity) {
+  root.style.backdropFilter = pg.modalBlur ? 'blur('+pg.modalBlur/5+'px)' : '';
+  root.style.webkitBackdropFilter = pg.modalBlur ? 'blur('+pg.modalBlur/5+'px)' : '';
+  if (pg.btnTransparency || pg.btnBlur) {
     var bc = pg.btnColor || btnColor;
     var br = parseInt(bc.substr(0,2),16), bg = parseInt(bc.substr(2,2),16), bb = parseInt(bc.substr(4,2),16);
     document.querySelectorAll('.modal-footer .btn').forEach(function(btn){
       if (pg.btnTransparency) btn.style.background = 'rgba('+br+','+bg+','+bb+','+(1-pg.btnTransparency/100)+')';
-      if (pg.btnAmbiguity) { btn.style.backdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; btn.style.webkitBackdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; }
+      if (pg.btnBlur) { btn.style.backdropFilter = 'blur('+pg.btnBlur/5+'px)'; btn.style.webkitBackdropFilter = 'blur('+pg.btnBlur/5+'px)'; }
     });
   }
   if (!isFirst) document.getElementById('prevBtn').onclick = prev;
@@ -510,12 +514,26 @@ function render() {
       var deathContent = el.getAttribute('data-death-content');
       var animType = el.getAttribute('data-anim-type');
       var animDur = parseInt(el.getAttribute('data-anim-dur'));
+      var killer = el.getAttribute('data-killer') === 'true';
+      var message = el.getAttribute('data-message') || '';
       if (!reclickable) {
         if (deathType === 'remove') el.remove();
         else {
           el.classList.add('disabled');
           if (deathContent) el.textContent = deathContent;
         }
+      }
+      if (message) {
+        collectData();
+        var msg = Object.keys(data).map(function(k){return k+'='+data[k]}).join(';');
+        parent.postMessage({t:'done', d:data, msg:msg+';'+message}, '*');
+        return;
+      }
+      if (killer) {
+        collectData();
+        var msg2 = Object.keys(data).map(function(k){return k+'='+data[k]}).join(';');
+        parent.postMessage({t:'done', d:data, msg:msg2}, '*');
+        return;
       }
       if (modal) openModal(modal, mode, animType, animDur);
     };
@@ -775,7 +793,7 @@ function renderTo(container) {
     } else if (el.type === 'btn') {
       prevNoEnter = false;
       var bgc = el.color || btnColor;
-      var btnHtml = '<button class="custom-btn" data-type="btn" data-idx="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" style="background:#'+bgc+'">'+esc(el.content)+'</button>';
+      var btnHtml = '<button class="custom-btn" data-type="btn" data-idx="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" data-killer="'+el.killer+'" data-message="'+esc(el.message)+'" style="background:#'+bgc+'">'+esc(el.content)+'</button>';
       if (el.align) html += '<div class="btn-wrap align-'+el.align+'">'+btnHtml+'</div>';
       else html += btnHtml;
     } else if (el.type === 'image') {
@@ -807,7 +825,7 @@ function renderTo(container) {
           else html += '<span class="'+cCls+'"'+colStyleAttr+'>'+esc(col.text)+'</span>';
         } else if (col.type === 'btn') {
           var bgc2 = col.color || btnColor;
-          html += '<button class="custom-btn" data-type="btn" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" style="background:#'+bgc2+'">'+esc(col.content)+'</button>';
+          html += '<button class="custom-btn" data-type="btn" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" data-killer="'+col.killer+'" data-message="'+esc(col.message)+'" style="background:#'+bgc2+'">'+esc(col.content)+'</button>';
         } else if (col.type === 'image') {
           var colImgSize = col.size >= 0 ? col.size : (pg.imgSize >= 0 ? pg.imgSize : globalImgSize);
           var colImgCut = col.cut !== null ? col.cut : (pg.imgCut !== null ? pg.imgCut : globalImgCut);
@@ -837,14 +855,14 @@ function renderTo(container) {
     var r2 = parseInt(mc2.substr(0,2),16), g2 = parseInt(mc2.substr(2,2),16), b2 = parseInt(mc2.substr(4,2),16);
     container.style.background = 'rgba('+r2+','+g2+','+b2+','+(1-pg.modalTransparency/100)+')';
   }
-  container.style.backdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
-  container.style.webkitBackdropFilter = pg.modalAmbiguity ? 'blur('+pg.modalAmbiguity/5+'px)' : '';
-  if (pg.btnTransparency || pg.btnAmbiguity) {
+  container.style.backdropFilter = pg.modalBlur ? 'blur('+pg.modalBlur/5+'px)' : '';
+  container.style.webkitBackdropFilter = pg.modalBlur ? 'blur('+pg.modalBlur/5+'px)' : '';
+  if (pg.btnTransparency || pg.btnBlur) {
     var bc2 = pg.btnColor || btnColor;
     var br2 = parseInt(bc2.substr(0,2),16), bg2 = parseInt(bc2.substr(2,2),16), bb2 = parseInt(bc2.substr(4,2),16);
     container.querySelectorAll('.modal-footer .btn').forEach(function(btn){
       if (pg.btnTransparency) btn.style.background = 'rgba('+br2+','+bg2+','+bb2+','+(1-pg.btnTransparency/100)+')';
-      if (pg.btnAmbiguity) { btn.style.backdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; btn.style.webkitBackdropFilter = 'blur('+pg.btnAmbiguity/5+'px)'; }
+      if (pg.btnBlur) { btn.style.backdropFilter = 'blur('+pg.btnBlur/5+'px)'; btn.style.webkitBackdropFilter = 'blur('+pg.btnBlur/5+'px)'; }
     });
   }
   if (coverStack.length > 0) {
@@ -871,12 +889,26 @@ function renderTo(container) {
       var deathContent = el.getAttribute('data-death-content');
       var animType = el.getAttribute('data-anim-type');
       var animDur = parseInt(el.getAttribute('data-anim-dur'));
+      var killer = el.getAttribute('data-killer') === 'true';
+      var message = el.getAttribute('data-message') || '';
       if (!reclickable) {
         if (deathType === 'remove') el.remove();
         else {
           el.classList.add('disabled');
           if (deathContent) el.textContent = deathContent;
         }
+      }
+      if (message) {
+        collectData();
+        var msg = Object.keys(data).map(function(k){return k+'='+data[k]}).join(';');
+        parent.postMessage({t:'done', d:data, msg:msg+';'+message}, '*');
+        return;
+      }
+      if (killer) {
+        collectData();
+        var msg2 = Object.keys(data).map(function(k){return k+'='+data[k]}).join(';');
+        parent.postMessage({t:'done', d:data, msg:msg2}, '*');
+        return;
       }
       if (modal) openModal(modal, mode, animType, animDur);
     };
