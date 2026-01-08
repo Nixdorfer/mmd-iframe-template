@@ -5,10 +5,10 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.container{background:var(--modal);border-radius:16px;max-width:500px;width:90%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
+.container{background:var(--modal);border-radius:16px;max-width:500px;width:90%;height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
 .modal-header{padding:24px 24px 16px;text-align:center;flex-shrink:0}
 .modal-header h1{color:#fff;margin:0}
-.modal-content{flex:1;overflow-y:auto;padding:0 24px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.5) transparent}
+.modal-content{flex:1;overflow-y:auto;padding:0 24px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.5) transparent;display:flex;flex-direction:column;justify-content:center}
 .modal-content::-webkit-scrollbar{width:6px;background:transparent}
 .modal-content::-webkit-scrollbar-track{background:transparent}
 .modal-content::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.5);border-radius:3px}
@@ -64,7 +64,7 @@ input.error{outline:2px solid #ff4444;animation:shake 0.5s ease}
 .btn-wrap.align-left{text-align:left}
 .btn-wrap.align-middle{text-align:center}
 .btn-wrap.align-right{text-align:right}
-.row{display:flex;gap:8px;margin:8px 0}
+.row{display:flex;gap:8px;margin:8px 0;max-width:100%;overflow:hidden}
 .row-col{display:flex;flex-direction:column}
 .row-col.align-left{align-items:flex-start}
 .row-col.align-middle{align-items:center}
@@ -111,6 +111,7 @@ var globalAlign = C['page.content.align'] || 'middle';
 var globalStyle = C['page.content.style'] || '';
 var globalDistance = C['page.content.distance'] || '';
 var globalContentColor = C['page.content.color'] || '';
+var globalBtnContentColor = C['page.btn.content.color'] || '';
 var globalAnimType = C['page.animation.type'] || '';
 var globalImgSize = parseInt(C['page.image.size']) || 100;
 var globalImgCut = C['page.image.cut'] === 'true';
@@ -137,12 +138,14 @@ function getKeyOrder(k) {
   return idx >= 0 ? idx : 9999;
 }
 pageNums.forEach(function(n) {
-  var pg = {n:n, title:'', elements:[], nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalBlur:0, btnColor:'', btnTransparency:0, btnBlur:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', defaultColor:'', animType:'', animDur:300, imgSize:0, imgCut:null};
+  var pg = {n:n, title:'', elements:[], nextPage:-1, lastPage:-1, nextContent:'', lastContent:'', hideContent:'', bgColor:'', modalColor:'', modalTransparency:0, modalBlur:0, btnColor:'', btnContentColor:'', btnTransparency:0, btnBlur:0, defaultAlign:'', defaultStyle:'', defaultDistance:'', defaultColor:'', animType:'', animDur:300, imgSize:0, imgCut:null, btnLockAll:[], btnLockHeight:[], btnLockWidth:[]};
   pg.title = C['page.'+n+'.title'] || '';
   pg.defaultAlign = C['page.'+n+'.content.align'] || '';
   pg.defaultStyle = C['page.'+n+'.content.style'] || '';
   pg.defaultDistance = C['page.'+n+'.content.distance'] || '';
   pg.defaultColor = C['page.'+n+'.content.color'] || '';
+  pg.nextPage = C['page.'+n+'.next'] !== undefined ? parseInt(C['page.'+n+'.next']) : -1;
+  pg.lastPage = C['page.'+n+'.last'] !== undefined ? parseInt(C['page.'+n+'.last']) : -1;
   pg.nextContent = C['page.'+n+'.next.content'] || '';
   pg.lastContent = C['page.'+n+'.last.content'] || '上一页';
   pg.hideContent = C['page.'+n+'.hide.content'] || '隐藏';
@@ -151,8 +154,12 @@ pageNums.forEach(function(n) {
   pg.modalTransparency = parseInt(C['page.'+n+'.modal.transparency']) || modalTransparency;
   pg.modalBlur = parseInt(C['page.'+n+'.modal.blur']) || modalBlur;
   pg.btnColor = C['page.'+n+'.btn.color'] || '';
+  pg.btnContentColor = C['page.'+n+'.btn.content.color'] || '';
   pg.btnTransparency = parseInt(C['page.'+n+'.btn.transparency']) || btnTransparency;
   pg.btnBlur = parseInt(C['page.'+n+'.btn.blur']) || btnBlur;
+  pg.btnLockAll = (C['page.'+n+'.btn.lock.all']||'').split(',').map(function(s){return s.trim()}).filter(function(x){return x});
+  pg.btnLockHeight = (C['page.'+n+'.btn.lock.height']||'').split(',').map(function(s){return s.trim()}).filter(function(x){return x});
+  pg.btnLockWidth = (C['page.'+n+'.btn.lock.width']||'').split(',').map(function(s){return s.trim()}).filter(function(x){return x});
   pg.animType = C['page.'+n+'.animation.type'] || globalAnimType;
   pg.animDur = parseInt(C['page.'+n+'.animation.duration']) || globalAnimDur;
   pg.imgSize = C['page.'+n+'.image.size'] !== undefined ? parseInt(C['page.'+n+'.image.size']) : -1;
@@ -222,9 +229,10 @@ pageNums.forEach(function(n) {
     if (m && btnNums.indexOf(parseInt(m[1])) === -1) btnNums.push(parseInt(m[1]));
   });
   btnNums.forEach(function(y) {
-    var bt = {type:'btn', idx:y, content:'', color:'', modal:0, mode:'cover', reclickable:true, deathType:'disable', deathContent:'', animType:'', animDur:300, align:'', killer:false, message:'', order:0};
+    var bt = {type:'btn', idx:y, content:'', color:'', contentColor:'', modal:0, mode:'cover', reclickable:true, deathType:'disable', deathContent:'', animType:'', animDur:300, align:'', killer:false, message:'', order:0};
     bt.content = C['page.'+n+'.btn.'+y+'.content'] || '';
     bt.color = C['page.'+n+'.btn.'+y+'.color'] || '';
+    bt.contentColor = C['page.'+n+'.btn.'+y+'.content.color'] || '';
     bt.modal = parseInt(C['page.'+n+'.btn.'+y+'.page']) || 0;
     bt.mode = C['page.'+n+'.btn.'+y+'.mode'] || 'cover';
     bt.message = C['page.'+n+'.btn.'+y+'.message'] || '';
@@ -286,7 +294,7 @@ pageNums.forEach(function(n) {
     colNums.forEach(function(z) {
       var P = 'page.'+n+'.row.'+y+'.'+z;
       var tp = C[P+'.type'] || 'content';
-      var col = {type:tp, align:C[P+'.align']||'middle', valign:C[P+'.valign']||'middle'};
+      var col = {type:tp, idx:z, align:C[P+'.align']||'middle', valign:C[P+'.valign']||'middle'};
       if (tp === 'content') {
         col.text = C[P+'.content'] || '';
         col.style = C[P+'.content.style'] || '';
@@ -366,8 +374,8 @@ function applyState() {
 }
 function render() {
   var pg = pages[currentPage];
-  var isFirst = currentPage === 0;
-  var isLast = currentPage === pages.length - 1;
+  var isFirst = pg.lastPage === 0 || (pg.lastPage === -1 && currentPage === 0);
+  var isLast = pg.nextPage === 0 || (pg.nextPage === -1 && currentPage === pages.length - 1);
   var nextText = pg.nextContent || (isLast ? '完成' : '下一页');
   if (pg.bgColor) document.documentElement.style.setProperty('--bg', '#'+pg.bgColor);
   else document.documentElement.style.setProperty('--bg', '#'+bgColor);
@@ -425,7 +433,9 @@ function render() {
     } else if (el.type === 'btn') {
       prevNoEnter = false;
       var bgc = el.color || btnColor;
-      var btnHtml = '<button class="custom-btn" data-type="btn" data-idx="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" data-killer="'+el.killer+'" data-message="'+esc(el.message)+'" style="background:#'+bgc+'">'+esc(el.content)+'</button>';
+      var btc = el.contentColor || pg.btnContentColor || globalBtnContentColor;
+      var btnStyle = 'background:#'+bgc+(btc?';color:#'+btc:'');
+      var btnHtml = '<button class="custom-btn" data-type="btn" data-btn-id="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" data-killer="'+el.killer+'" data-message="'+esc(el.message)+'" style="'+btnStyle+'">'+esc(el.content)+'</button>';
       if (el.align) html += '<div class="btn-wrap align-'+el.align+'">'+btnHtml+'</div>';
       else html += btnHtml;
     } else if (el.type === 'image') {
@@ -458,7 +468,9 @@ function render() {
           else html += '<span class="'+cCls+'"'+colStyleAttr+'>'+esc(col.text)+'</span>';
         } else if (col.type === 'btn') {
           var bgc2 = col.color || btnColor;
-          html += '<button class="custom-btn" data-type="btn" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" data-killer="'+col.killer+'" data-message="'+esc(col.message)+'" style="background:#'+bgc2+'">'+esc(col.content)+'</button>';
+          var btc2 = pg.btnContentColor || globalBtnContentColor;
+          var btnStyle2 = 'background:#'+bgc2+(btc2?';color:#'+btc2:'');
+          html += '<button class="custom-btn" data-type="btn" data-btn-id="row.'+el.idx+'.'+col.idx+'" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" data-killer="'+col.killer+'" data-message="'+esc(col.message)+'" style="'+btnStyle2+'">'+esc(col.content)+'</button>';
         } else if (col.type === 'image') {
           var colImgSize = col.size >= 0 ? col.size : (pg.imgSize >= 0 ? pg.imgSize : globalImgSize);
           var colImgCut = col.cut !== null ? col.cut : (pg.imgCut !== null ? pg.imgCut : globalImgCut);
@@ -477,7 +489,7 @@ function render() {
   if (!isFirst) html += '<button class="btn btn-prev" id="prevBtn">'+esc(pg.lastContent)+'</button>';
   html += '<button class="btn btn-secondary" id="hideBtn">'+esc(pg.hideContent)+'</button>';
   html += '<button class="btn btn-primary" id="nextBtn">'+esc(nextText)+'</button>';
-  html += '<div class="version">v1.1.16</div></div>';
+  html += '<div class="version">v1.2.1</div></div>';
   document.getElementById('root').innerHTML = html;
   var root = document.getElementById('root');
   if (pg.modalTransparency) {
@@ -593,6 +605,19 @@ function render() {
     });
   }
   applyState();
+  syncBtnLock(pg, document);
+}
+function syncBtnLock(pg, container) {
+  var syncSize = function(ids, syncW, syncH) {
+    var btns = ids.map(function(id){return container.querySelector('[data-type="btn"][data-btn-id="'+id+'"]')}).filter(function(b){return b});
+    if (btns.length<2) return;
+    var maxW=0, maxH=0;
+    btns.forEach(function(b){if(b.offsetWidth>maxW)maxW=b.offsetWidth;if(b.offsetHeight>maxH)maxH=b.offsetHeight});
+    btns.forEach(function(b){if(syncW)b.style.minWidth=maxW+'px';if(syncH)b.style.minHeight=maxH+'px'});
+  };
+  if(pg.btnLockAll.length>1)syncSize(pg.btnLockAll,true,true);
+  if(pg.btnLockHeight.length>1)syncSize(pg.btnLockHeight,false,true);
+  if(pg.btnLockWidth.length>1)syncSize(pg.btnLockWidth,true,false);
 }
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -658,9 +683,18 @@ function applyAnim(pg) {
     r.className = 'container anim-' + pg.animType;
   }
 }
+function findPageIdx(pageId) {
+  for (var i = 0; i < pages.length; i++) if (pages[i].n === pageId) return i;
+  return -1;
+}
 function prev() {
   collectData();
-  if (currentPage > 0) {
+  var pg = pages[currentPage];
+  if (pg.lastPage === 0) return;
+  if (pg.lastPage > 0) {
+    var idx = findPageIdx(pg.lastPage);
+    if (idx >= 0) { currentPage = idx; render(); }
+  } else if (currentPage > 0) {
     currentPage--;
     render();
   }
@@ -669,10 +703,16 @@ function next() {
   if (!validate()) return;
   collectData();
   var prevPg = pages[currentPage];
-  if (currentPage < pages.length - 1) {
-    currentPage++;
-    render();
-    applyAnim(prevPg);
+  var isLast = prevPg.nextPage === 0 || (prevPg.nextPage === -1 && currentPage === pages.length - 1);
+  if (!isLast) {
+    if (prevPg.nextPage > 0) {
+      var idx = findPageIdx(prevPg.nextPage);
+      if (idx >= 0) { currentPage = idx; render(); applyAnim(prevPg); }
+    } else {
+      currentPage++;
+      render();
+      applyAnim(prevPg);
+    }
   } else {
     var msg = Object.keys(data).map(function(k) {
       return k + '=' + data[k];
@@ -742,8 +782,8 @@ function closeCover() {
 }
 function renderTo(container) {
   var pg = pages[currentPage];
-  var isFirst = currentPage === 0;
-  var isLast = currentPage === pages.length - 1;
+  var isFirst = pg.lastPage === 0 || (pg.lastPage === -1 && currentPage === 0);
+  var isLast = pg.nextPage === 0 || (pg.nextPage === -1 && currentPage === pages.length - 1);
   var nextText = pg.nextContent || (isLast ? '完成' : '下一页');
   if (pg.bgColor) document.documentElement.style.setProperty('--bg', '#'+pg.bgColor);
   if (pg.modalColor) document.documentElement.style.setProperty('--modal', '#'+pg.modalColor);
@@ -798,7 +838,9 @@ function renderTo(container) {
     } else if (el.type === 'btn') {
       prevNoEnter = false;
       var bgc = el.color || btnColor;
-      var btnHtml = '<button class="custom-btn" data-type="btn" data-idx="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" data-killer="'+el.killer+'" data-message="'+esc(el.message)+'" style="background:#'+bgc+'">'+esc(el.content)+'</button>';
+      var btc = el.contentColor || pg.btnContentColor || globalBtnContentColor;
+      var btnStyle = 'background:#'+bgc+(btc?';color:#'+btc:'');
+      var btnHtml = '<button class="custom-btn" data-type="btn" data-btn-id="'+el.idx+'" data-modal="'+el.modal+'" data-mode="'+el.mode+'" data-reclickable="'+el.reclickable+'" data-death-type="'+el.deathType+'" data-death-content="'+esc(el.deathContent)+'" data-anim-type="'+el.animType+'" data-anim-dur="'+el.animDur+'" data-killer="'+el.killer+'" data-message="'+esc(el.message)+'" style="'+btnStyle+'">'+esc(el.content)+'</button>';
       if (el.align) html += '<div class="btn-wrap align-'+el.align+'">'+btnHtml+'</div>';
       else html += btnHtml;
     } else if (el.type === 'image') {
@@ -831,7 +873,9 @@ function renderTo(container) {
           else html += '<span class="'+cCls+'"'+colStyleAttr+'>'+esc(col.text)+'</span>';
         } else if (col.type === 'btn') {
           var bgc2 = col.color || btnColor;
-          html += '<button class="custom-btn" data-type="btn" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" data-killer="'+col.killer+'" data-message="'+esc(col.message)+'" style="background:#'+bgc2+'">'+esc(col.content)+'</button>';
+          var btc2 = pg.btnContentColor || globalBtnContentColor;
+          var btnStyle2 = 'background:#'+bgc2+(btc2?';color:#'+btc2:'');
+          html += '<button class="custom-btn" data-type="btn" data-btn-id="row.'+el.idx+'.'+col.idx+'" data-modal="'+col.modal+'" data-mode="'+col.mode+'" data-reclickable="'+col.reclickable+'" data-death-type="'+col.deathType+'" data-death-content="'+esc(col.deathContent)+'" data-anim-type="'+col.animType+'" data-anim-dur="'+col.animDur+'" data-killer="'+col.killer+'" data-message="'+esc(col.message)+'" style="'+btnStyle2+'">'+esc(col.content)+'</button>';
         } else if (col.type === 'image') {
           var colImgSize = col.size >= 0 ? col.size : (pg.imgSize >= 0 ? pg.imgSize : globalImgSize);
           var colImgCut = col.cut !== null ? col.cut : (pg.imgCut !== null ? pg.imgCut : globalImgCut);
@@ -947,6 +991,7 @@ function renderTo(container) {
       }
     };
   });
+  syncBtnLock(pg, container);
 }
 restoreState();
 render();

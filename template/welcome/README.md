@@ -55,6 +55,7 @@ page.1.content=第一行\n第二行\n第三行
 | page.modal.transparency | 窗口透明度(0-100) | 0 |
 | page.modal.blur | 窗口模糊度(0-100) | 0 |
 | page.btn.color | 按钮颜色(6位hex) | 166d3b |
+| page.btn.content.color | 按钮文字颜色(6位hex) | - |
 | page.btn.transparency | 按钮透明度(0-100) | 0 |
 | page.btn.blur | 按钮模糊度(0-100) | 0 |
 
@@ -78,6 +79,8 @@ page.1.content=第一行\n第二行\n第三行
 | 参数 | 说明 |
 |------|------|
 | page.x.title | 页面标题 |
+| page.x.next | 下一页跳转的page编号(0=最后一页，不设置=顺序) |
+| page.x.last | 上一页跳转的page编号(0=第一页，不设置=顺序) |
 | page.x.next.content | 下一步按钮文字（最后一页默认"完成"，其他默认"下一页"）|
 | page.x.last.content | 上一页按钮文字（默认"上一页"，第一页不显示）|
 | page.x.hide.content | 隐藏按钮文字（默认"隐藏"）|
@@ -86,8 +89,18 @@ page.1.content=第一行\n第二行\n第三行
 | page.x.modal.transparency | 窗口透明度(0-100，越大越透明，默认0) |
 | page.x.modal.blur | 窗口模糊度(0-100，越大越模糊，默认0) |
 | page.x.btn.color | 页面按钮颜色(6位hex) |
+| page.x.btn.content.color | 页面按钮文字颜色(6位hex) |
 | page.x.btn.transparency | 按钮透明度(0-100，越大越透明，默认0) |
 | page.x.btn.blur | 按钮模糊度(0-100，越大越模糊，默认0) |
+| page.x.btn.lock.all | 同步宽高的按钮ID，用逗号分隔(格式见下) |
+| page.x.btn.lock.height | 同步高度的按钮ID，用逗号分隔 |
+| page.x.btn.lock.width | 同步宽度的按钮ID，用逗号分隔 |
+
+**按钮ID格式**：
+- 独立按钮：直接使用编号，如 `1,2,3`
+- Row内按钮：使用 `row.行号.列号`，如 `row.1.1,row.1.2`
+- 可混合使用：`1,row.1.1,row.2.1`
+
 | page.x.content.align | 第x页的默认对齐方式 |
 | page.x.content.style | 第x页的默认样式 |
 | page.x.content.distance | 第x页的默认间距 |
@@ -152,6 +165,7 @@ page.1.content=第一行\n第二行\n第三行
 |------|------|
 | page.x.btn.y.content | 按钮文字 |
 | page.x.btn.y.color | 按钮颜色(6位hex) |
+| page.x.btn.y.content.color | 按钮文字颜色(6位hex) |
 | page.x.btn.y.align | 对齐方式 (left/right/middle) |
 | page.x.btn.y.page | 点击后打开的页面编号 |
 | page.x.btn.y.mode | 打开模式 (redirect/cover，默认cover) |
