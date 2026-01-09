@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; background: var(--bg); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.container { background: var(--modal); border-radius: 16px; max-width: 500px; width: 90%; height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+.modal-header { padding: 24px 24px 16px; text-align: center; flex-shrink: 0; }
+.modal-header h1 { color: #fff; margin: 0; }
+.modal-content { flex: 1; overflow-y: auto; padding: 0 24px; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.5) transparent; min-height: 0; }
+.modal-footer { padding: 16px 24px 24px; flex-shrink: 0; display: flex; gap: 10px; }
+.btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: filter 0.2s; }
+.btn-primary { background: var(--btn); color: #fff; }
+.btn-primary:hover { filter: brightness(1.2); }
+.btn-secondary { background: #333; color: #888; }
+.version { width: 100%; text-align: center; color: #444; font-size: 10px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="container" id="root"></div>
+<script>
+L.load(['util','content','select','input','btn','image','row'],function(){
+var C={};
+try{C=JSON.parse(atob(L.b64||'e30='))}catch(e){}
+var P=L.platform||'pc',G=C.global||{},pages=C.pages||[],curPage=0,data={},state={p:0,d:{},s:0,r:false};
+document.documentElement.style.setProperty('--bg','#'+(G.bg||'050505'));
+document.documentElement.style.setProperty('--modal','#'+(G.modal||'0d0d0d'));
+document.documentElement.style.setProperty('--btn','#'+(G.btn||'166d3b'));
+var css=[Content.css,Select.css,Input.css,Btn.css,Image.css,Row.css].join('\n');
+var style=document.createElement('style');style.textContent=css;document.head.appendChild(style);
+if(G.bgImg){
+var bi=P==='pc'?G.bgImg.pc:G.bgImg.mobile;
+if(bi){document.body.style.backgroundImage='url('+bi+')';document.body.style.backgroundSize='cover'}
+}
+function render(){
+var pg=pages[curPage]||{title:'',elements:[]};
+var isFirst=curPage===0,isLast=curPage===pages.length-1;
+var h='<div class="modal-header">';
+if(pg.title)h+='<h1>'+U.esc(pg.title)+'</h1>';
+h+='</div><div class="modal-content">';
+(pg.elements||[]).forEach(function(el){
+if(el.type==='text')h+=Content.render(el);
+else if(el.type==='select')h+=Select.render(el);
+else if(el.type==='input')h+=Input.render(el);
+else if(el.type==='btn')h+=Btn.render(el);
+else if(el.type==='image')h+=Image.render(el);
+else if(el.type==='row')h+=Row.render(el);
+});
+h+='</div><div class="modal-footer">';
+if(!isFirst)h+='<button class="btn btn-secondary" id="prevBtn">'+(pg.prevText||'上一页')+'</button>';
+h+='<button class="btn btn-secondary" id="hideBtn">'+(pg.hideText||'隐藏')+'</button>';
+h+='<button class="btn btn-primary" id="nextBtn">'+(pg.nextText||(isLast?'完成':'下一页'))+'</button>';
+h+='<div class="version">v2.0.0</div></div>';
+document.getElementById('root').innerHTML=h;
+if(!isFirst)document.getElementById('prevBtn').onclick=prev;
+document.getElementById('hideBtn').onclick=hide;
+document.getElementById('nextBtn').onclick=next;
+document.querySelectorAll('[data-url]').forEach(function(el){el.onclick=function(){window.open(el.dataset.url,'_blank')}});
+document.querySelectorAll('.custom-btn').forEach(function(el){
+Btn.bind(el,function(r){
+if(r.msg){collect();parent.postMessage({t:'done',d:data,msg:toMsg()+';'+r.msg},'*')}
+else if(r.killer){collect();state={p:0,d:{},s:0,r:true};parent.postMessage({t:'done',d:data,msg:toMsg()},'*')}
+else if(r.page){var idx=r.page-1;if(idx>=0&&idx<pages.length){curPage=idx;render()}}
+});
+});
+document.querySelectorAll('img[data-detail="true"]').forEach(function(el){el.onclick=function(){Image.showDetail(el.src)}});
+applyState();
+}
+function collect(){
+document.querySelectorAll('select[data-key]').forEach(function(s){data[s.dataset.key]=s.value});
+document.querySelectorAll('input[data-key]').forEach(function(i){data[i.dataset.key]=i.value});
+}
+function toMsg(){return Object.keys(data).map(function(k){return k+'='+data[k]}).join(';')}
+function validate(){
+var inputs=document.querySelectorAll('input[data-required="true"]');
+for(var i=0;i<inputs.length;i++){
+if(!inputs[i].value.trim()){inputs[i].classList.add('error');inputs[i].focus();setTimeout(function(){inputs[i].classList.remove('error')},500);return false}
+}
+return true;
+}
+function prev(){collect();if(curPage>0){curPage--;render()}}
+function next(){
+if(!validate())return;
+collect();
+if(curPage<pages.length-1){curPage++;render()}
+else{parent.postMessage({t:'done',d:data,msg:toMsg()},'*')}
+}
+function hide(){collect();state.p=curPage;state.d=JSON.parse(JSON.stringify(data));var mc=document.querySelector('.modal-content');state.s=mc?mc.scrollTop:0;parent.postMessage({t:'cancel'},'*')}
+function applyState(){
+if(!state.r&&Object.keys(state.d).length>0){curPage=state.p;data=JSON.parse(JSON.stringify(state.d))}
+state.r=true;
+Object.keys(data).forEach(function(k){
+var sel=document.querySelector('select[data-key="'+k+'"]');if(sel)sel.value=data[k];
+var inp=document.querySelector('input[data-key="'+k+'"]');if(inp)inp.value=data[k];
+});
+var mc=document.querySelector('.modal-content');if(mc&&state.s)mc.scrollTop=state.s;
+}
+render();
+document.addEventListener('keydown',function(e){if(e.key==='Enter')next();else if(e.key==='Escape')hide()});
+if(L.edit){
+L.load(['editor'],function(){
+var es=document.createElement('style');es.textContent=Editor.css;document.head.appendChild(es);
+Editor.init(L.base+'template/modal/module.json',pages.length);
+});
+}
+});
+</script>
+</body>
+</html>

@@ -1,3 +1,6 @@
 .claude/
-CLAUDE.md
 *.cfg
+.ref/
+
+*.md
+README.md

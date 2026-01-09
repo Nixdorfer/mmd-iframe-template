@@ -1,0 +1,27 @@
+{
+  "component": {
+  },
+  "library": {
+    "loader": "library/loader.js",
+    "util": "library/util.js",
+    "content": "library/content.js",
+    "select": "library/select.js",
+    "input": "library/input.js",
+    "btn": "library/btn.js",
+    "image": "library/image.js",
+    "row": "library/row.js",
+    "yaml": "library/yaml.js",
+    "editor": "library/editor.js"
+  },
+  "projects": {
+    "WELCOME_V2": {
+      "index": "template/welcome_v2/index.html"
+    },
+    "WELCOME": {
+      "index": "template/welcome/index.html"
+    },
+    "POKEMON": {
+      "index": "instance/pokemon/index.html"
+    }
+  }
+}

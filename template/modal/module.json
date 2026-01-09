@@ -1,0 +1,69 @@
+{
+  "text": {
+    "name": "文本",
+    "desc": "文本内容模块",
+    "props": {
+      "value": {"type":"string","display":"input","desc":"文本内容","nullable":false,"default":""},
+      "align": {"type":"string","display":"select","range":["left","center","right"],"desc":"对齐","nullable":true,"default":"center"},
+      "style": {"type":"string","display":"select","range":["","title","bold","italic","quote","link"],"desc":"样式","nullable":true,"default":""},
+      "color": {"type":"string","display":"input","desc":"颜色(hex)","nullable":true,"default":""}
+    }
+  },
+  "btn": {
+    "name": "按钮",
+    "desc": "可交互按钮",
+    "props": {
+      "value": {"type":"string","display":"input","desc":"按钮文字","nullable":false,"default":"按钮"},
+      "color": {"type":"string","display":"input","desc":"背景色(hex)","nullable":true,"default":""},
+      "page": {"type":"int","display":"page","desc":"跳转页码","nullable":true,"default":0},
+      "message": {"type":"string","display":"input","desc":"发送消息","nullable":true,"default":""},
+      "align": {"type":"string","display":"select","range":["left","center","right"],"desc":"对齐","nullable":true,"default":"center"},
+      "killer": {"type":"bool","display":"toggle","desc":"关闭弹窗","nullable":true,"default":false}
+    }
+  },
+  "image": {
+    "name": "图片",
+    "desc": "图片展示",
+    "props": {
+      "url": {"type":"string","display":"upload","desc":"图片","nullable":false,"default":""},
+      "size": {"type":"int","display":"slider","range":"10-100","desc":"宽度%","nullable":true,"default":100},
+      "align": {"type":"string","display":"select","range":["left","center","right"],"desc":"对齐","nullable":true,"default":"center"},
+      "detail": {"type":"bool","display":"toggle","desc":"点击放大","nullable":true,"default":true}
+    }
+  },
+  "input": {
+    "name": "输入框",
+    "desc": "文本输入",
+    "props": {
+      "key": {"type":"string","display":"input","desc":"数据键名","nullable":false,"default":""},
+      "title": {"type":"string","display":"input","desc":"标签","nullable":true,"default":""},
+      "placeholder": {"type":"string","display":"input","desc":"占位符","nullable":true,"default":""},
+      "required": {"type":"bool","display":"toggle","desc":"必填","nullable":true,"default":true}
+    }
+  },
+  "select": {
+    "name": "下拉框",
+    "desc": "下拉选择",
+    "props": {
+      "key": {"type":"string","display":"input","desc":"数据键名","nullable":false,"default":""},
+      "title": {"type":"string","display":"input","desc":"标签","nullable":true,"default":""},
+      "default": {"type":"int","display":"input","range":"0-99","desc":"默认索引","nullable":true,"default":0}
+    }
+  },
+  "row": {
+    "name": "多列",
+    "desc": "多列布局",
+    "props": {
+      "ratio": {"type":"string","display":"input","desc":"列宽比(如1:2:1)","nullable":true,"default":"1"}
+    }
+  },
+  "global": {
+    "name": "全局",
+    "desc": "全局样式",
+    "props": {
+      "bg": {"type":"string","display":"input","desc":"背景色","nullable":true,"default":"050505"},
+      "modal": {"type":"string","display":"input","desc":"弹窗背景色","nullable":true,"default":"0d0d0d"},
+      "btn": {"type":"string","display":"input","desc":"按钮主色","nullable":true,"default":"166d3b"}
+    }
+  }
+}
