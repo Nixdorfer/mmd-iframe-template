@@ -14,9 +14,6 @@
   "projects": {
     "MODAL": {
       "index": "template/modal/index.html"
-    },
-    "PHONE": {
-      "index": "template/phone/index.html"
     }
   }
 }
