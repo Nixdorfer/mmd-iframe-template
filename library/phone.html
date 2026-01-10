@@ -815,8 +815,9 @@ body {
 	var ICON = 'https://github.com/Nixdorfer/mmd-iframe-template/blob/main/icon/';
 	function imgUrl(u) {
 		if (!u) return '';
-		if (u.indexOf('https://sexyai.top/') === 0) return u.replace('https://sexyai.top/', 'https://r2.sexyai.top/');
-		return (u.charAt(0) === '/' ? 'https://r2.sexyai.top' : '') + u;
+		u = u.replace(/^(https?:)?\/\/sexyai\.top\//, 'https://r2.sexyai.top/');
+		if (u.charAt(0) === '/') return 'https://r2.sexyai.top' + u;
+		return u;
 	}
 	function applyScale() {
 		var s = (C.scale || 100) / 100;
