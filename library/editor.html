@@ -3457,6 +3457,7 @@
           inp.focus();
           inp.select();
           var done = function() {
+            if (!inp.parentElement) return;
             var nv = Math.max(min, Math.min(max, parseInt(inp.value) || min));
             rng.value = nv;
             sp.textContent = nv;
