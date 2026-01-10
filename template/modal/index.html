@@ -274,7 +274,8 @@ else h+=wrap+renderEl(el,pg)+wrapEnd;
 });
 h+='</div>';
 if(L.edit)h+='<div class="ed-line"></div>';
-if(!L.edit){h+='<div class="modal-footer">';h+='<button class="btn btn-secondary" id="hideBtn">'+(pg.hideText||'隐藏')+'</button>';h+='<button class="btn btn-primary" id="nextBtn">'+(pg.nextText||(isLast?'完成':'下一页'))+'</button>';h+='</div>'}
+if(L.edit)h+='<div class="modal-footer" style="pointer-events:none;opacity:0.5"><button class="btn btn-secondary">隐藏</button><button class="btn btn-primary">下一页</button></div>';
+else{h+='<div class="modal-footer">';h+='<button class="btn btn-secondary" id="hideBtn">'+(pg.hideText||'隐藏')+'</button>';h+='<button class="btn btn-primary" id="nextBtn">'+(pg.nextText||(isLast?'完成':'下一页'))+'</button>';h+='</div>'}
 document.getElementById('root').innerHTML=h;
 if(L.edit)document.body.classList.add('ed-nosel');
 if(!L.edit){var prevBtn=document.getElementById('prevBtn');if(prevBtn)prevBtn.onclick=function(){prev(pg.prevAnim)};document.getElementById('hideBtn').onclick=hide;document.getElementById('nextBtn').onclick=function(){next(pg.nextAnim)}}
@@ -392,11 +393,11 @@ if(!inputs[i].value.trim()){inputs[i].classList.add('error');inputs[i].focus();s
 }
 return true;
 }
-function prev(anim){collect();var pg=pages[curPage];var target=pg.prevPage?pg.prevPage-1:curPage-1;if(target>=0){curPage=target;render(anim||'slideRight')}}
+function prev(anim){collect();var pg=pages[curPage]||{};var target=pg.prevPage?pg.prevPage-1:curPage-1;if(target>=0){curPage=target;render(anim||'slideRight')}}
 function next(anim){
 if(!validate())return;
 collect();
-var pg=pages[curPage];
+var pg=pages[curPage]||{};
 var target=pg.nextPage?pg.nextPage-1:curPage+1;
 if(target<pages.length){curPage=target;render(anim||'slideLeft')}
 else{parent.postMessage({t:'done',d:data,msg:toMsg()},'*')}
