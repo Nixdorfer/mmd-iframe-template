@@ -5,7 +5,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.container{background:var(--modal);border-radius:16px;max-width:500px;width:90%;height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);position:relative;z-index:1}
+.container{background:var(--modal);border-radius:16px;width:min(80vw,80vh);height:80vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);position:relative;z-index:1}
 .modal-header{padding:24px 24px 16px;text-align:center;flex-shrink:0}
 .modal-header h1{color:#fff;margin:0}
 .modal-content{flex:1;overflow-y:auto;padding:0 24px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.5) transparent;min-height:0}
@@ -274,7 +274,7 @@ else h+=wrap+renderEl(el,pg)+wrapEnd;
 });
 h+='</div>';
 if(L.edit)h+='<div class="ed-line"></div>';
-if(L.edit)h+='<div class="modal-footer" style="pointer-events:none;opacity:0.5"><button class="btn btn-secondary">隐藏</button><button class="btn btn-primary">下一页</button></div>';
+if(L.edit)h+='<div class="modal-footer"></div>';
 else{h+='<div class="modal-footer">';h+='<button class="btn btn-secondary" id="hideBtn">'+(pg.hideText||'隐藏')+'</button>';h+='<button class="btn btn-primary" id="nextBtn">'+(pg.nextText||(isLast?'完成':'下一页'))+'</button>';h+='</div>'}
 document.getElementById('root').innerHTML=h;
 if(L.edit)document.body.classList.add('ed-nosel');
@@ -400,9 +400,10 @@ collect();
 var pg=pages[curPage]||{};
 var target=pg.nextPage?pg.nextPage-1:curPage+1;
 if(target<pages.length){curPage=target;render(anim||'slideLeft')}
+else if(L.preview){parent.postMessage({t:'exitPreview'},'*')}
 else{parent.postMessage({t:'done',d:data,msg:toMsg()},'*')}
 }
-function hide(){collect();state.p=curPage;state.d=JSON.parse(JSON.stringify(data));var mc=document.querySelector('.modal-content');state.s=mc?mc.scrollTop:0;parent.postMessage({t:'cancel'},'*')}
+function hide(){if(L.preview){parent.postMessage({t:'exitPreview'},'*');return}collect();state.p=curPage;state.d=JSON.parse(JSON.stringify(data));var mc=document.querySelector('.modal-content');state.s=mc?mc.scrollTop:0;parent.postMessage({t:'cancel'},'*')}
 function applyState(){
 if(!state.r&&Object.keys(state.d).length>0){curPage=state.p;data=JSON.parse(JSON.stringify(state.d))}
 state.r=true;
