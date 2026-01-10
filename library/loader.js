@@ -1,6 +1,6 @@
 window.L={
 loaded:{},
-base:'https://raw.githubusercontent.com/Nixdorfer/iframe-template/main/',
+base:'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/',
 edit:false,project:'',char:'',user:'',b64:'',
 res:window.R||window.innerWidth+'x'+window.innerHeight,
 platform:(function(){var w=window.innerWidth,h=window.innerHeight,r=w/h;return Math.abs(r-16/9)<Math.abs(r-9/19)?'pc':'mobile'})(),
