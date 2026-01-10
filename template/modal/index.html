@@ -5,7 +5,7 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: system-ui, sans-serif; background: var(--bg); color: #fff; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.container { background: var(--modal); border-radius: 16px; max-width: 500px; width: 90%; height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+.container { background: var(--modal); border-radius: 16px; max-width: 500px; width: 90%; height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.3); position: relative; z-index: 1; }
 .modal-header { padding: 24px 24px 16px; text-align: center; flex-shrink: 0; }
 .modal-header h1 { color: #fff; margin: 0; }
 .modal-content { flex: 1; overflow-y: auto; padding: 0 24px; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.5) transparent; min-height: 0; }
@@ -15,9 +15,11 @@ body { font-family: system-ui, sans-serif; background: var(--bg); color: #fff; h
 .btn-primary:hover { filter: brightness(1.2); }
 .btn-secondary { background: #333; color: #888; }
 .version { width: 100%; text-align: center; color: #444; font-size: 10px; margin-top: 8px; }
+.backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; }
 </style>
 </head>
 <body>
+<div class="backdrop" id="backdrop"></div>
 <div class="container" id="root"></div>
 <script>
 L.load(['util','content','select','input','btn','image','row'],function(){
@@ -98,7 +100,7 @@ var mc=document.querySelector('.modal-content');if(mc&&state.s)mc.scrollTop=stat
 }
 render();
 document.addEventListener('keydown',function(e){if(e.key==='Enter')next();else if(e.key==='Escape')hide()});
-document.addEventListener('click',function(e){if(!e.target.closest('.container'))hide()});
+document.getElementById('backdrop').onclick=hide;
 if(L.edit){
 L.load(['editor'],function(){
 var es=document.createElement('style');es.textContent=Editor.css;document.head.appendChild(es);
