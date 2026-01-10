@@ -1098,7 +1098,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	function renderImage(el, pg) {
 		var url = el.url || el.urlInput || '';
 		if (url && url.indexOf('https://sexyai.top/') === 0) url = url.replace('https://sexyai.top/', 'https://r2.sexyai.top/');
-		else if (url && url.charAt(0) === '/') url = 'https://r2.sexyai.top' + url;
+		else if (url && url.indexOf('://') === -1 && url) url = 'https://r2.sexyai.top/' + (url.charAt(0) === '/' ? url.slice(1) : url);
 		if (!url) {
 			if (L.edit) return '<div class="img-placeholder" style="width:' + (el.width || 100) + '%;height:' + (el.height || 100) + 'px"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>';
 			return '';
@@ -1661,7 +1661,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		function pImg(u) {
 			if (!u) return '';
 			if (u.indexOf('https://sexyai.top/') === 0) return u.replace('https://sexyai.top/', 'https://r2.sexyai.top/');
-			return (u.charAt(0) === '/' ? 'https://r2.sexyai.top' : '') + u;
+			if (u.indexOf('://') === -1) return 'https://r2.sexyai.top/' + (u.charAt(0) === '/' ? u.slice(1) : u);
+			return u;
 		}
 
 		function pScale(pg) {
