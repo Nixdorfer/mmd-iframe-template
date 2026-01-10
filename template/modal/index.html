@@ -98,6 +98,7 @@ var mc=document.querySelector('.modal-content');if(mc&&state.s)mc.scrollTop=stat
 }
 render();
 document.addEventListener('keydown',function(e){if(e.key==='Enter')next();else if(e.key==='Escape')hide()});
+document.body.addEventListener('click',function(e){if(e.target===document.body)hide()});
 if(L.edit){
 L.load(['editor'],function(){
 var es=document.createElement('style');es.textContent=Editor.css;document.head.appendChild(es);
