@@ -704,6 +704,185 @@
 	color: #888;
 	margin-top: 4px;
 }
+
+.ed-gallery-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.7);
+	z-index: 10004;
+	display: none;
+	align-items: center;
+	justify-content: center;
+}
+
+.ed-gallery-modal.open {
+	display: flex;
+}
+
+.ed-gallery-box {
+	background: #1a1a1a;
+	border-radius: 8px;
+	width: 80%;
+	max-width: 800px;
+	height: 80%;
+	display: flex;
+	flex-direction: column;
+}
+
+.ed-gallery-hd {
+	padding: 12px 16px;
+	border-bottom: 1px solid #333;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #fff;
+	flex-shrink: 0;
+}
+
+.ed-gallery-bread {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex: 1;
+}
+
+.ed-gallery-bread span {
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: 4px;
+}
+
+.ed-gallery-bread span:hover {
+	background: #333;
+}
+
+.ed-gallery-bread span.drop-target {
+	background: var(--btn);
+}
+
+.ed-gallery-bd {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+	align-content: start;
+}
+
+.ed-gallery-item {
+	aspect-ratio: 1;
+	background: #252525;
+	border-radius: 6px;
+	overflow: hidden;
+	cursor: pointer;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.ed-gallery-item:hover {
+	outline: 2px solid var(--btn);
+}
+
+.ed-gallery-item.selected {
+	outline: 2px solid var(--btn);
+}
+
+.ed-gallery-item.drag-over {
+	outline: 2px dashed var(--btn);
+	background: rgba(22, 109, 59, 0.2);
+}
+
+.ed-gallery-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.ed-gallery-item.folder {
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ed-gallery-item.folder svg {
+	width: 40%;
+	height: 40%;
+	stroke: #888;
+}
+
+.ed-gallery-item.folder span {
+	font-size: 11px;
+	color: #888;
+	text-align: center;
+	padding: 0 4px;
+	word-break: break-all;
+}
+
+.ed-gallery-ft {
+	padding: 12px 16px;
+	border-top: 1px solid #333;
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.ed-gallery-ft button {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.ed-gallery-ft .gal-upload {
+	background: #333;
+	color: #fff;
+}
+
+.ed-gallery-ft .gal-folder {
+	background: #333;
+	color: #fff;
+}
+
+.ed-gallery-ft .gal-confirm {
+	background: var(--btn);
+	color: #fff;
+}
+
+.ed-gallery-ft button:hover {
+	filter: brightness(1.2);
+}
+
+.ed-gallery-ctx {
+	position: fixed;
+	background: #252525;
+	border-radius: 6px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	z-index: 10005;
+	min-width: 100px;
+	overflow: hidden;
+}
+
+.ed-gallery-ctx div {
+	padding: 8px 12px;
+	cursor: pointer;
+	color: #fff;
+	font-size: 13px;
+}
+
+.ed-gallery-ctx div:hover {
+	background: #333;
+}
+
+.ed-gallery-ctx div.del {
+	color: #ff6b6b;
+}
 </style>
 <div id="ed-list"></div>
 <div id="ed-panel">
@@ -757,6 +936,13 @@
       <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />
     </svg>
   </button>
+  <button id="edGallery" title="图库">
+    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <circle cx="8.5" cy="8.5" r="1.5"/>
+      <path d="M21 15l-5-5L5 21"/>
+    </svg>
+  </button>
   <div class="ed-device">
     <button id="edPc" class="on" title="电脑 16:9">
       <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2">
@@ -773,6 +959,21 @@
     </button>
   </div>
 </div>
+<div class="ed-gallery-modal" id="galModal">
+  <div class="ed-gallery-box">
+    <div class="ed-gallery-hd">
+      <div class="ed-gallery-bread" id="galBread"></div>
+    </div>
+    <div class="ed-gallery-bd" id="galBody"></div>
+    <div class="ed-gallery-ft">
+      <button class="gal-upload" id="galUpload">上传</button>
+      <button class="gal-folder" id="galAddUrl">添加URL</button>
+      <button class="gal-folder" id="galNewFolder">新建文件夹</button>
+      <button class="gal-confirm" id="galConfirm">确定</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="galFileInput" multiple accept="image/*,video/*" style="display:none">
 <script>
   window.U = {
     esc: function(s) {
@@ -1668,6 +1869,9 @@
       };
       document.getElementById('edPreview').onclick = function() {
         self.togglePreview()
+      };
+      document.getElementById('edGallery').onclick = function() {
+        G.open()
       };
       window.addEventListener('message', function(e) {
         if (e.data && e.data.t === 'exitPreview' && self.preview) self.togglePreview()
@@ -3176,8 +3380,11 @@
       } else if (prop.t === 'toggle') return '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">' + prop.d + '</span><div class="ed-toggle-sw' + (v ? ' on' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '></div></div></div>';
       else if (prop.t === 'upload') {
         h += '<div class="ed-up">';
-        if (v) h += '<img src="https://r2.sexyai.top' + v + '" style="max-width:100%;max-height:80px;border-radius:4px;margin-bottom:4px"><br>';
-        h += '<input type="file" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' accept="image/*,video/*" style="display:none"><button class="ed-btn sm upload-btn" data-k="' + k + '">' + (v ? '更换' : '上传') + '</button>';
+        if (v) {
+          var imgSrc = v.indexOf('://') > -1 ? v.replace('https://sexyai.top/', 'https://r2.sexyai.top/') : 'https://r2.sexyai.top/' + (v.charAt(0) === '/' ? v.slice(1) : v);
+          h += '<img src="' + imgSrc + '" style="max-width:100%;max-height:80px;border-radius:4px;margin-bottom:4px"><br>';
+        }
+        h += '<button class="ed-btn sm upload-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>' + (v ? '更换' : '选择') + '</button>';
         if (v) h += '<button class="ed-btn sm del clear-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' style="margin-left:4px">清除</button>';
         h += '</div>'
       } else if (prop.t === 'gallery') {
@@ -3192,7 +3399,7 @@
           if (gi < urls.length - 1) h += '<button class="gallery-mv" data-gi="' + gi + '" data-d="1" style="background:none;border:none;color:#888;cursor:pointer">▶</button>';
           else h += '<span style="width:16px"></span>';
           h += '<button class="gallery-del" data-gi="' + gi + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>';
-          h += '<div style="display:flex;gap:4px;margin-top:4px"><input type="file" class="gal-file" data-gi="' + gi + '" accept="image/*,video/*" style="display:none"><button class="ed-btn sm gal-up" data-gi="' + gi + '">' + (u ? '换' : '传') + '</button><input data-gi="' + gi + '" value="' + U.esc(u) + '" placeholder="或输入URL" style="flex:1"></div></div>'
+          h += '<div style="display:flex;gap:4px;margin-top:4px"><button class="ed-btn sm gal-up" data-gi="' + gi + '">选择</button><input data-gi="' + gi + '" value="' + U.esc(u) + '" placeholder="或输入URL" style="flex:1"></div></div>'
         });
         h += '<button class="ed-btn sm gallery-add" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>' + self.icon('plus') + ' 添加图片</button></div>'
       }
@@ -3275,8 +3482,14 @@
       };
       document.querySelectorAll('.upload-btn').forEach(function(b) {
         b.onclick = function() {
-          var inp = b.parentElement.querySelector('input[type=file]');
-          if (inp) inp.click()
+          var k = b.dataset.k, s = b.dataset.s, ci = b.dataset.ci;
+          G.open(function(url) {
+            if (url) {
+              self.setProp(k, url, s, ci !== undefined ? parseInt(ci) : null);
+              if (k === 'url') self.setProp('urlInput', '', s, ci !== undefined ? parseInt(ci) : null);
+              self.renderR()
+            }
+          })
         }
       });
       document.querySelectorAll('.clear-btn').forEach(function(b) {
@@ -3337,38 +3550,16 @@
       });
       document.querySelectorAll('.gal-up').forEach(function(b) {
         b.onclick = function() {
-          var fi = b.parentElement.querySelector('.gal-file');
-          if (fi) fi.click()
-        }
-      });
-      document.querySelectorAll('.gal-file').forEach(function(fi) {
-        fi.onchange = function() {
-          var f = fi.files[0];
-          if (!f) return;
-          var gi = parseInt(fi.dataset.gi),
-            g = fi.closest('.ed-gallery'),
-            k = g.dataset.k;
-          var btn = fi.parentElement.querySelector('.gal-up');
-          if (btn) btn.textContent = '...';
-          var fd = new FormData();
-          fd.append('suffix', f.name.split('.').pop());
-          fd.append('file', f, 'file-' + Date.now());
-          fetch('https://sexyai.top/api/file/upload', {
-            method: 'POST',
-            body: fd
-          }).then(function(r) {
-            return r.json()
-          }).then(function(d) {
-            if (d.data && d.data[0]) {
+          var gi = parseInt(b.dataset.gi), g = b.closest('.ed-gallery'), k = g.dataset.k;
+          G.open(function(url) {
+            if (url) {
               var el = self.pj[self.cur].data.pages[self.pg].elements[self.sel];
               var urls = el[k] || [];
-              urls[gi] = d.data[0];
+              urls[gi] = url;
               el[k] = urls;
               self.save();
               self.renderR()
             }
-          }).catch(function() {
-            if (btn) btn.textContent = '失败'
           })
         }
       });
@@ -3738,4 +3929,256 @@
     };
     E.init(d);
   })();
+  window.G = {
+    db: null,
+    path: [],
+    items: [],
+    selected: null,
+    callback: null,
+    dragItem: null,
+    init: function() {
+      var self = this;
+      var req = indexedDB.open('editorGallery', 1);
+      req.onupgradeneeded = function(e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('items')) {
+          db.createObjectStore('items', {keyPath: 'id', autoIncrement: true});
+        }
+      };
+      req.onsuccess = function(e) {
+        self.db = e.target.result;
+      };
+      req.onerror = function() {};
+      document.getElementById('galModal').onclick = function(e) {
+        if (e.target.id === 'galModal') self.close();
+      };
+      document.getElementById('galUpload').onclick = function() {
+        document.getElementById('galFileInput').click();
+      };
+      document.getElementById('galFileInput').onchange = function() {
+        var files = this.files;
+        if (!files.length) return;
+        self.uploadFiles(files);
+        this.value = '';
+      };
+      document.getElementById('galAddUrl').onclick = function() {
+        var url = prompt('输入图片URL');
+        if (url && url.trim()) self.addUrl(url.trim());
+      };
+      document.getElementById('galNewFolder').onclick = function() {
+        var name = prompt('文件夹名称');
+        if (name && name.trim()) self.createFolder(name.trim());
+      };
+      document.getElementById('galConfirm').onclick = function() {
+        if (self.selected && self.callback) {
+          var item = self.items.find(function(i) { return i.id === self.selected; });
+          if (item && item.type === 'image') self.callback(item.url);
+        }
+        self.close();
+      };
+    },
+    open: function(cb) {
+      this.callback = cb || null;
+      this.path = [];
+      this.selected = null;
+      document.getElementById('galModal').classList.add('open');
+      this.load();
+    },
+    close: function() {
+      document.getElementById('galModal').classList.remove('open');
+      this.callback = null;
+      this.selected = null;
+      var ctx = document.querySelector('.ed-gallery-ctx');
+      if (ctx) ctx.remove();
+    },
+    load: function() {
+      var self = this;
+      if (!this.db) {
+        setTimeout(function() { self.load(); }, 100);
+        return;
+      }
+      var tx = this.db.transaction('items', 'readonly');
+      var store = tx.objectStore('items');
+      var req = store.getAll();
+      req.onsuccess = function() {
+        self.items = req.result || [];
+        self.render();
+      };
+    },
+    render: function() {
+      var self = this;
+      var parent = this.path.length ? this.path[this.path.length - 1] : null;
+      var filtered = this.items.filter(function(i) { return i.parent === parent; });
+      var bread = document.getElementById('galBread');
+      var bh = '<span data-p="">根目录</span>';
+      var cp = [];
+      this.path.forEach(function(pid) {
+        cp.push(pid);
+        var f = self.items.find(function(i) { return i.id === pid; });
+        bh += ' / <span data-p="' + cp.join(',') + '">' + (f ? f.name : '?') + '</span>';
+      });
+      bread.innerHTML = bh;
+      bread.querySelectorAll('span').forEach(function(sp) {
+        sp.onclick = function() {
+          var p = sp.dataset.p;
+          self.path = p ? p.split(',').map(Number) : [];
+          self.selected = null;
+          self.render();
+        };
+        sp.ondragover = function(e) {
+          e.preventDefault();
+          sp.classList.add('drop-target');
+        };
+        sp.ondragleave = function() {
+          sp.classList.remove('drop-target');
+        };
+        sp.ondrop = function(e) {
+          e.preventDefault();
+          sp.classList.remove('drop-target');
+          if (!self.dragItem) return;
+          var p = sp.dataset.p;
+          var newParent = p ? Number(p.split(',').pop()) : null;
+          self.moveItem(self.dragItem, newParent);
+          self.dragItem = null;
+        };
+      });
+      var body = document.getElementById('galBody');
+      var h = '';
+      filtered.forEach(function(item) {
+        if (item.type === 'folder') {
+          h += '<div class="ed-gallery-item folder' + (self.selected === item.id ? ' selected' : '') + '" data-id="' + item.id + '" draggable="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg><span>' + U.esc(item.name) + '</span></div>';
+        } else {
+          var src = item.url.indexOf('://') > -1 ? item.url.replace('https://sexyai.top/', 'https://r2.sexyai.top/') : 'https://r2.sexyai.top/' + (item.url.charAt(0) === '/' ? item.url.slice(1) : item.url);
+          h += '<div class="ed-gallery-item' + (self.selected === item.id ? ' selected' : '') + '" data-id="' + item.id + '" draggable="true"><img src="' + src + '"></div>';
+        }
+      });
+      body.innerHTML = h || '<div style="grid-column:1/-1;text-align:center;color:#666;padding:40px">空</div>';
+      body.querySelectorAll('.ed-gallery-item').forEach(function(el) {
+        var id = parseInt(el.dataset.id);
+        var item = self.items.find(function(i) { return i.id === id; });
+        el.onclick = function() {
+          if (item.type === 'folder') {
+            self.path.push(id);
+            self.selected = null;
+            self.render();
+          } else {
+            self.selected = id;
+            body.querySelectorAll('.ed-gallery-item').forEach(function(e) { e.classList.remove('selected'); });
+            el.classList.add('selected');
+          }
+        };
+        el.ondblclick = function() {
+          if (item.type === 'image' && self.callback) {
+            self.callback(item.url);
+            self.close();
+          }
+        };
+        el.oncontextmenu = function(e) {
+          e.preventDefault();
+          self.showCtx(e.clientX, e.clientY, id);
+        };
+        el.ondragstart = function(e) {
+          self.dragItem = id;
+          e.dataTransfer.effectAllowed = 'move';
+        };
+        el.ondragend = function() {
+          self.dragItem = null;
+        };
+        if (item.type === 'folder') {
+          el.ondragover = function(e) {
+            e.preventDefault();
+            el.classList.add('drag-over');
+          };
+          el.ondragleave = function() {
+            el.classList.remove('drag-over');
+          };
+          el.ondrop = function(e) {
+            e.preventDefault();
+            el.classList.remove('drag-over');
+            if (self.dragItem && self.dragItem !== id) {
+              self.moveItem(self.dragItem, id);
+              self.dragItem = null;
+            }
+          };
+        }
+      });
+    },
+    showCtx: function(x, y, id) {
+      var self = this;
+      var old = document.querySelector('.ed-gallery-ctx');
+      if (old) old.remove();
+      var ctx = document.createElement('div');
+      ctx.className = 'ed-gallery-ctx';
+      ctx.style.left = x + 'px';
+      ctx.style.top = y + 'px';
+      ctx.innerHTML = '<div class="del">删除</div>';
+      ctx.querySelector('.del').onclick = function() {
+        self.deleteItem(id);
+        ctx.remove();
+      };
+      document.body.appendChild(ctx);
+      setTimeout(function() {
+        document.addEventListener('click', function rm() {
+          ctx.remove();
+          document.removeEventListener('click', rm);
+        }, {once: true});
+      }, 0);
+    },
+    uploadFiles: function(files) {
+      var self = this;
+      var parent = this.path.length ? this.path[this.path.length - 1] : null;
+      var pending = files.length;
+      Array.from(files).forEach(function(f) {
+        var fd = new FormData();
+        fd.append('suffix', f.name.split('.').pop());
+        fd.append('file', f, 'file-' + Date.now());
+        fetch('https://sexyai.top/api/file/upload', {
+          method: 'POST',
+          body: fd
+        }).then(function(r) { return r.json(); }).then(function(d) {
+          if (d.data && d.data[0]) {
+            self.addItem({type: 'image', url: d.data[0], parent: parent});
+          }
+          if (--pending === 0) self.load();
+        }).catch(function() {
+          if (--pending === 0) self.load();
+        });
+      });
+    },
+    addUrl: function(url) {
+      var parent = this.path.length ? this.path[this.path.length - 1] : null;
+      this.addItem({type: 'image', url: url, parent: parent});
+      this.load();
+    },
+    createFolder: function(name) {
+      var parent = this.path.length ? this.path[this.path.length - 1] : null;
+      this.addItem({type: 'folder', name: name, parent: parent});
+      this.load();
+    },
+    addItem: function(item) {
+      if (!this.db) return;
+      var tx = this.db.transaction('items', 'readwrite');
+      tx.objectStore('items').add(item);
+    },
+    deleteItem: function(id) {
+      var self = this;
+      if (!this.db) return;
+      var children = this.items.filter(function(i) { return i.parent === id; });
+      children.forEach(function(c) { self.deleteItem(c.id); });
+      var tx = this.db.transaction('items', 'readwrite');
+      tx.objectStore('items').delete(id);
+      tx.oncomplete = function() { self.load(); };
+    },
+    moveItem: function(id, newParent) {
+      var self = this;
+      if (!this.db) return;
+      var item = this.items.find(function(i) { return i.id === id; });
+      if (!item || item.id === newParent) return;
+      item.parent = newParent;
+      var tx = this.db.transaction('items', 'readwrite');
+      tx.objectStore('items').put(item);
+      tx.oncomplete = function() { self.load(); };
+    }
+  };
+  G.init();
 </script>
