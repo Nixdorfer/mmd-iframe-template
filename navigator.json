@@ -14,8 +14,8 @@
     "editor": "library/editor.js"
   },
   "projects": {
-    "WELCOME_V2": {
-      "index": "template/welcome_v2/index.html"
+    "MODAL": {
+      "index": "template/modal/index.html"
     },
     "WELCOME": {
       "index": "template/welcome/index.html"
