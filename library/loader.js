@@ -19,6 +19,7 @@ document.head.appendChild(s);
 };
 (function(){
 var p=window.P;if(!p)return;
+if(p.charAt(0)==='['&&p.charAt(p.length-1)===']')p=p.slice(1,-1);
 var m=p.match(/^([^:]+):(.+)$/);
 if(!m){document.body.innerHTML='<div style="padding:16px;background:#8b0000;border-radius:8px;color:#fff">格式错误</div>';return}
 if(m[1]==='EDIT'){
