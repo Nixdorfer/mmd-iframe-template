@@ -10,8 +10,7 @@
     "btn": "library/btn.js",
     "image": "library/image.js",
     "row": "library/row.js",
-    "yaml": "library/yaml.js",
-    "editor": "library/editor.js"
+    "yaml": "library/yaml.js"
   },
   "projects": {
     "MODAL": {
