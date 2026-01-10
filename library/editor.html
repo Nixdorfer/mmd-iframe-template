@@ -41,7 +41,7 @@
 .ed-ctx{position:fixed;background:#1a1a1a;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.4);z-index:10001;min-width:120px;overflow:hidden}
 .ed-ctx div{padding:10px 14px;cursor:pointer;transition:background .2s;color:#fff}
 .ed-ctx div:hover{background:#252525}
-.ed-menu{position:fixed;left:20px;bottom:20px;background:#1a1a1a;border-radius:20px;padding:8px 14px;display:flex;gap:12px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:10000}
+.ed-menu{position:fixed;left:10px;top:50%;transform:translateY(-50%);background:#1a1a1a;border-radius:12px;padding:10px 8px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:10000}
 .ed-menu button{background:none;border:none;color:#888;cursor:pointer;padding:4px;display:flex;align-items:center;transition:color .2s}
 .ed-menu button:hover{color:#fff}
 .ed-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--btn);color:#fff;padding:10px 24px;border-radius:6px;z-index:10002;animation:edFade .3s}
@@ -63,6 +63,7 @@
 <button id="edSave" title="保存文件"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></button>
 </div>
 <script>
+window.U={esc:function(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}};
 window.E={
 pj:{},cur:null,pg:0,sel:null,tab:0,list:false,cfg:null,rowSel:null,data:null,hist:[],histIdx:-1,
 animations:['none','slideUp','slideDown','slideLeft','slideRight','flipH','flipV','fadeIn','fadeOut','zoomIn','zoomOut'],
