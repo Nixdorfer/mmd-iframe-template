@@ -1,15 +1,12 @@
 <div class="iFR">
   <img src="" onerror='
     (function(c,p){
-      var base="https://raw.githubusercontent.com/Nixdorfer/iframe-template/main/",o,f;
-      function sU(h){
-        o=document.createElement("div");o.style.cssText="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#050505;z-index:99999;display:flex;align-items:center;justify-content:center";
-        f=document.createElement("iframe");f.style.cssText="width:90vw;height:90vh;border:none;border-radius:12px";
-        f.srcdoc="<script>window.P=\""+p.replace(/"/g,"&quot;")+"\";window.R=\""+window.innerWidth+"x"+window.innerHeight+"\";<\/script>"+h;
-        o.appendChild(f);document.body.appendChild(o);
-        window.addEventListener("message",function(ev){if(!ev.data||!ev.data.t)return;if(ev.data.t==="cancel")o.remove();else if(ev.data.t==="done"){var a=document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope textarea");if(a){a.focus();a.value=ev.data.msg;a.dispatchEvent(new Event("input",{bubbles:true}))}o.remove()}})
-      }
-      fetch(base+"library/loader.js?t="+Date.now()).then(function(r){return r.text()}).then(function(h){sU("<script>"+h+"<\/script>")}).catch(function(){c.innerHTML="<div style=padding:16px;background:#8b0000;border-radius:8px;color:#fff>加载失败</div>"})
+      var base="https://raw.githubusercontent.com/Nixdorfer/iframe-template/main/",o,f,mH;
+      c.style.position="relative";var b=document.createElement("button");b.style.cssText="padding:12px 24px;background:#b8860b;border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:14px";b.textContent="加载中...";b.disabled=true;c.appendChild(b);
+      function sI(){o.style.display="flex";f.style.width="90vw";f.style.height="90vh";f.style.opacity="0";f.style.transform="translateY(-30px)";setTimeout(function(){f.style.opacity="1";f.style.transform="translateY(0)"},10)}
+      function hI(){f.style.opacity="0";setTimeout(function(){o.style.display="none";f.style.width="0";f.style.height="0"},400)}
+      function sU(h){var res=window.innerWidth+"x"+window.innerHeight,ht=h.replace("/*__INJECT__*/","window.P="+JSON.stringify(p)+";window.R=\""+res+"\";");o=document.createElement("div");o.style.cssText="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#050505;z-index:99999;display:none;align-items:center;justify-content:center";f=document.createElement("iframe");f.style.cssText="width:0;height:0;border:none;border-radius:12px;opacity:0;transform:translateY(-30px);transition:opacity 0.4s,transform 0.4s";f.srcdoc=ht;o.appendChild(f);document.body.appendChild(o);mH=function(ev){if(!ev.data||!ev.data.t)return;if(ev.data.t==="cancel")hI();else if(ev.data.t==="done"){var a=document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope textarea");if(a){a.focus();a.value=ev.data.msg;a.dispatchEvent(new Event("input",{bubbles:true}))}hI()}};window.addEventListener("message",mH);b.onclick=sI;sI()}
+      fetch(base+"library/loader.html?t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(h){b.disabled=false;b.style.background="#166d3b";b.style.cursor="pointer";b.textContent="打开";sU(h)}).catch(function(){b.disabled=false;b.style.background="#8b0000";b.style.cursor="pointer";b.textContent="加载失败";b.onclick=function(){location.reload()}})
     })(this.closest(".iFR"),"$1")
   '>
 </div>
