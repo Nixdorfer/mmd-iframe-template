@@ -6,10 +6,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .container{background:var(--modal);border-radius:16px;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);position:relative;z-index:1}
-.modal-header{padding:24px 24px 16px;text-align:center;flex-shrink:0}
-.modal-header h1{color:#fff;margin:0}
+.modal-header{padding:12px 24px;text-align:center;flex-shrink:0;overflow-y:auto}
 .modal-content{flex:1;overflow-y:auto;padding:0 24px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.5) transparent;min-height:0}
-.modal-footer{padding:16px 24px 24px;flex-shrink:0;display:flex;gap:10px}
+.modal-footer{padding:12px 24px;flex-shrink:0;overflow-y:auto}
 .btn{flex:1;padding:14px;border:none;border-radius:8px;font-size:16px;cursor:pointer;transition:filter 0.2s}
 .btn-primary{background:var(--btn);color:#fff}
 .btn-primary:hover{filter:brightness(1.2)}
@@ -267,21 +266,35 @@ var pg=pages[curPage]||{title:'',elements:[]};
 applyPage(pg);
 var isFirst=curPage===0,isLast=curPage===pages.length-1;
 var animStyle=anim?getAnim(anim,300):'';
-var h='<div class="modal-header"'+(animStyle?' style="'+animStyle+'"':'')+'>';
-if(pg.title)h+='<h1>'+U.esc(pg.title)+'</h1>';
-h+='</div>';
-if(L.edit)h+='<div class="ed-line"></div>';
-h+='<div class="modal-content"'+(animStyle?' style="'+animStyle+'"':'')+'>';
-(pg.elements||[]).forEach(function(el,idx){
-var wrap=L.edit?'<div class="ed-el" data-idx="'+idx+'">':'';
+var hPct=pg.headerPct||0,fPct=pg.footerPct||0;
+var hStyle=hPct?'flex:0 0 '+hPct+'%;':'';
+var fStyle=fPct?'flex:0 0 '+fPct+'%;':'';
+var h='<div class="modal-header" data-zone="header"'+(animStyle||hStyle?' style="'+(animStyle?animStyle+';':'')+hStyle+'"':'')+'>';
+(pg.headerElements||[]).forEach(function(el,idx){
+var wrap=L.edit?'<div class="ed-el" data-zone="header" data-idx="'+idx+'">':'';
 var wrapEnd=L.edit?'</div>':'';
 if(el.type==='row')h+=wrap+renderRow(el,pg,idx)+wrapEnd;
 else h+=wrap+renderEl(el,pg)+wrapEnd;
 });
 h+='</div>';
 if(L.edit)h+='<div class="ed-line"></div>';
-if(L.edit)h+='<div class="modal-footer"></div>';
-else{h+='<div class="modal-footer">';h+='<button class="btn btn-secondary" id="hideBtn">'+(pg.hideText||'隐藏')+'</button>';h+='<button class="btn btn-primary" id="nextBtn">'+(pg.nextText||(isLast?'完成':'下一页'))+'</button>';h+='</div>'}
+h+='<div class="modal-content" data-zone="content"'+(animStyle?' style="'+animStyle+'"':'')+'>';
+(pg.elements||[]).forEach(function(el,idx){
+var wrap=L.edit?'<div class="ed-el" data-zone="content" data-idx="'+idx+'">':'';
+var wrapEnd=L.edit?'</div>':'';
+if(el.type==='row')h+=wrap+renderRow(el,pg,idx)+wrapEnd;
+else h+=wrap+renderEl(el,pg)+wrapEnd;
+});
+h+='</div>';
+if(L.edit)h+='<div class="ed-line"></div>';
+var fCls=L.edit?'modal-footer':'modal-footer';
+h+='<div class="'+fCls+'" data-zone="footer"'+(fStyle?' style="'+fStyle+'"':'')+'>';
+if(L.edit){(pg.footerElements||[]).forEach(function(el,idx){
+var wrap='<div class="ed-el" data-zone="footer" data-idx="'+idx+'">';
+if(el.type==='row')h+=wrap+renderRow(el,pg,idx)+'</div>';
+else h+=wrap+renderEl(el,pg)+'</div>';
+})}else{h+='<button class="btn btn-secondary" id="hideBtn">'+(pg.hideText||'隐藏')+'</button>';h+='<button class="btn btn-primary" id="nextBtn">'+(pg.nextText||(isLast?'完成':'下一页'))+'</button>'}
+h+='</div>'
 document.getElementById('root').innerHTML=h;
 if(L.edit)document.body.classList.add('ed-nosel');
 if(!L.edit){document.getElementById('hideBtn').onclick=hide;document.getElementById('nextBtn').onclick=next}
