@@ -9,18 +9,11 @@
     "input": "library/input.js",
     "btn": "library/btn.js",
     "image": "library/image.js",
-    "row": "library/row.js",
-    "yaml": "library/yaml.js"
+    "row": "library/row.js"
   },
   "projects": {
     "MODAL": {
       "index": "template/modal/index.html"
-    },
-    "WELCOME": {
-      "index": "template/welcome/index.html"
-    },
-    "POKEMON": {
-      "index": "instance/pokemon/index.html"
     }
   }
 }

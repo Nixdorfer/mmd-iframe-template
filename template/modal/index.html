@@ -5,7 +5,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,sans-serif;background:var(--bg);color:#fff;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.container{background:var(--modal);border-radius:16px;width:min(80vw,80vh);height:80vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);position:relative;z-index:1}
+.container{background:var(--modal);border-radius:16px;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,0.3);position:relative;z-index:1}
 .modal-header{padding:24px 24px 16px;text-align:center;flex-shrink:0}
 .modal-header h1{color:#fff;margin:0}
 .modal-content{flex:1;overflow-y:auto;padding:0 24px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.5) transparent;min-height:0}
@@ -36,22 +36,25 @@ try{C=JSON.parse(decodeURIComponent(escape(atob(L.b64||'e30='))))}catch(e){try{C
 var P=L.platform||'pc',G=C.global||{},pages=C.pages||[],curPage=0,data={},state={p:0,d:{},s:0,r:false},btnState={};
 function hex2rgba(hex,a){if(!hex)return null;var r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);return'rgba('+r+','+g+','+b+','+a+')';}
 function applyGlobal(){
-document.documentElement.style.setProperty('--bg','#'+(G.bgColor||G.bg||'050505'));
+var bg='#'+(G.bgColor||G.bg||'050505');
+document.documentElement.style.setProperty('--bg',bg);
 document.documentElement.style.setProperty('--modal','#'+(G.defModalBg||G.modal||'0d0d0d'));
 document.documentElement.style.setProperty('--btn','#'+(G.defBtnBg||G.btn||'166d3b'));
 if(G.bgTransparent)document.body.style.background='transparent';
-else if(P==='pc'&&G.bgImgPc)document.body.style.cssText='background:url('+G.bgImgPc+') center/cover no-repeat';
-else if(P!=='pc'&&G.bgImgMobile)document.body.style.cssText='background:url('+G.bgImgMobile+') center/cover no-repeat';
+else if(P==='pc'&&G.bgImgPc)document.body.style.background='url('+G.bgImgPc+') center/cover no-repeat';
+else if(P!=='pc'&&G.bgImgMobile)document.body.style.background='url('+G.bgImgMobile+') center/cover no-repeat';
+else document.body.style.background=bg;
 }
 function applyPage(pg){
 var modalBg=pg.modalBg||G.defModalBg||G.modal||'0d0d0d';
 var opacity=(pg.modalOpacity!==undefined?pg.modalOpacity:(G.defModalOpacity!==undefined?G.defModalOpacity:100))/100;
 var blur=pg.modalBlur||G.defModalBlur||0;
+var wPct=pg.widthPct||80,hPct=pg.heightPct||80,mwPct=pg.maxWidthPct||100;
 var root=document.getElementById('root');
-var st='background:'+hex2rgba(modalBg,opacity)+';';
+var st='width:min('+wPct+'vw,'+mwPct+'vh);height:'+hPct+'vh;background:'+hex2rgba(modalBg,opacity)+';';
 if(blur>0)st+='backdrop-filter:blur('+blur+'px);';
-if(pg.modalBgImg)st='background:url('+pg.modalBgImg+') center/cover no-repeat;';
-root.style.cssText+=st;
+if(pg.modalBgImg)st='width:min('+wPct+'vw,'+mwPct+'vh);height:'+hPct+'vh;background:url('+pg.modalBgImg+') center/cover no-repeat;';
+root.style.cssText=st;
 }
 function getAnim(name,dur){if(!name||name==='none')return'';return'animation:'+name+' '+(dur||300)+'ms ease-out';}
 var css=[
@@ -279,7 +282,7 @@ if(L.edit)h+='<div class="modal-footer"></div>';
 else{h+='<div class="modal-footer">';h+='<button class="btn btn-secondary" id="hideBtn">'+(pg.hideText||'隐藏')+'</button>';h+='<button class="btn btn-primary" id="nextBtn">'+(pg.nextText||(isLast?'完成':'下一页'))+'</button>';h+='</div>'}
 document.getElementById('root').innerHTML=h;
 if(L.edit)document.body.classList.add('ed-nosel');
-if(!L.edit){var prevBtn=document.getElementById('prevBtn');if(prevBtn)prevBtn.onclick=function(){prev(pg.prevAnim)};document.getElementById('hideBtn').onclick=hide;document.getElementById('nextBtn').onclick=function(){next(pg.nextAnim)}}
+if(!L.edit){document.getElementById('hideBtn').onclick=hide;document.getElementById('nextBtn').onclick=next}
 bindBtns();
 bindImages();
 bindSwitches();
@@ -394,13 +397,11 @@ if(!inputs[i].value.trim()){inputs[i].classList.add('error');inputs[i].focus();s
 }
 return true;
 }
-function prev(anim){collect();var pg=pages[curPage]||{};var target=pg.prevPage?pg.prevPage-1:curPage-1;if(target>=0){curPage=target;render(anim||'slideRight')}}
+function prev(anim){collect();if(curPage>0){curPage--;render(anim||'slideRight')}}
 function next(anim){
 if(!validate())return;
 collect();
-var pg=pages[curPage]||{};
-var target=pg.nextPage?pg.nextPage-1:curPage+1;
-if(target<pages.length){curPage=target;render(anim||'slideLeft')}
+if(curPage<pages.length-1){curPage++;render(anim||'slideLeft')}
 else if(L.preview){parent.postMessage({t:'exitPreview'},'*')}
 else{parent.postMessage({t:'done',d:data,msg:toMsg()},'*')}
 }
@@ -419,7 +420,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Enter')next();else i
 if(!L.edit)document.getElementById('backdrop').onclick=hide;
 if(L.edit){
 window.modalRender=function(d){C=d;G=C.global||{};pages=C.pages||[];applyGlobal();render();var cb=document.querySelector('.ed-close');if(cb)cb.style.display=(C.sys&&C.sys.unload)?'none':''};
-var cb=document.createElement('button');cb.className='ed-close';cb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';cb.onclick=hide;document.body.appendChild(cb);
+var cb=document.createElement('button');cb.className='ed-close';cb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';cb.onclick=hide;if(C.sys&&C.sys.unload)cb.style.display='none';document.body.appendChild(cb);
 document.addEventListener('dblclick',function(e){var txt=e.target.closest('.text');if(!txt)return;var el=txt.closest('.ed-el');if(!el)return;var idx=parseInt(el.dataset.idx);txt.contentEditable='true';txt.classList.add('ed-editing');txt.focus();var pg=pages[curPage];txt.onblur=function(){txt.contentEditable='false';txt.classList.remove('ed-editing');if(pg&&pg.elements&&pg.elements[idx])pg.elements[idx].value=txt.textContent;parent.postMessage({t:'edUpdate',d:C},'*')};txt.onkeydown=function(ev){if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();txt.blur()}}});
 }
 });
