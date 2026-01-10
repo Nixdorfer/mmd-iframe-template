@@ -418,7 +418,7 @@ var inp=document.querySelector('input[data-key="'+k+'"]');if(inp)inp.value=data[
 var mc=document.querySelector('.modal-content');if(mc&&state.s)mc.scrollTop=state.s;
 }
 render();
-document.addEventListener('keydown',function(e){if(e.key==='Enter')next();else if(e.key==='Escape'&&!L.edit)hide()});
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&!L.edit)next();else if(e.key==='Escape'&&!L.edit)hide()});
 if(!L.edit)document.getElementById('backdrop').onclick=hide;
 if(L.edit){
 window.modalRender=function(d){C=d;G=C.global||{};pages=C.pages||[];applyGlobal();render();var cb=document.querySelector('.ed-close');if(cb)cb.style.display=(C.sys&&C.sys.unload)?'none':'block'};
