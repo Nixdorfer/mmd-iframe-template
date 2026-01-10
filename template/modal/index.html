@@ -116,6 +116,7 @@ return'<div class="text '+(el.align||'center')+'" style="'+st+'">'+U.esc(el.valu
 }
 function renderImage(el,pg){
 var url=el.url||el.urlInput||'';
+if(url&&url.charAt(0)==='/')url='https://r2.sexyai.top'+url;
 if(!url){if(L.edit)return'<div class="img-placeholder" style="width:'+(el.width||100)+'%;height:'+(el.height||100)+'px"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>';return''}
 var isVideo=/\.(mp4|webm|ogg)$/i.test(url);
 var mode=el.displayMode||'fixedWidth';
@@ -417,7 +418,7 @@ render();
 document.addEventListener('keydown',function(e){if(e.key==='Enter')next();else if(e.key==='Escape'&&!L.edit)hide()});
 if(!L.edit)document.getElementById('backdrop').onclick=hide;
 if(L.edit){
-window.modalRender=function(d){C=d;G=C.global||{};pages=C.pages||[];applyGlobal();render()};
+window.modalRender=function(d){C=d;G=C.global||{};pages=C.pages||[];applyGlobal();render();var cb=document.querySelector('.ed-close');if(cb)cb.style.display=(C.sys&&C.sys.unload)?'none':''};
 var cb=document.createElement('button');cb.className='ed-close';cb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';cb.onclick=hide;document.body.appendChild(cb);
 document.addEventListener('dblclick',function(e){var txt=e.target.closest('.text');if(!txt)return;var el=txt.closest('.ed-el');if(!el)return;var idx=parseInt(el.dataset.idx);txt.contentEditable='true';txt.classList.add('ed-editing');txt.focus();var pg=pages[curPage];txt.onblur=function(){txt.contentEditable='false';txt.classList.remove('ed-editing');if(pg&&pg.elements&&pg.elements[idx])pg.elements[idx].value=txt.textContent;parent.postMessage({t:'edUpdate',d:C},'*')};txt.onkeydown=function(ev){if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();txt.blur()}}});
 }
