@@ -816,6 +816,7 @@ body {
 	function imgUrl(u) {
 		if (!u) return '';
 		u = u.replace(/^(https?:)?\/\/sexyai\.top\//, 'https://r2.sexyai.top/');
+		if (u.indexOf('://') === -1 && u.charAt(0) !== '/') u = '/' + u;
 		if (u.charAt(0) === '/') return 'https://r2.sexyai.top' + u;
 		return u;
 	}
