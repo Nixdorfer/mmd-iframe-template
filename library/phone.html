@@ -22,7 +22,9 @@ body {
 
 .phone {
 	position: relative;
-	transform-origin: center;
+	width: 540px;
+	height: 1170px;
+	transform-origin: center center;
 }
 
 .phone-frame {
@@ -818,8 +820,6 @@ body {
 	function applyScale() {
 		var s = (C.scale || 100) / 100;
 		P.style.transform = 'scale(' + s + ')';
-		P.style.width = 540 * s + 'px';
-		P.style.height = 1170 * s + 'px';
 	}
 	function render() {
 		if (cur) renderApp(cur);
