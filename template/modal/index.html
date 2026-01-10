@@ -244,11 +244,16 @@ body {
 }
 
 .home {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	background-size: cover;
 	background-position: center;
+	overflow: hidden;
 }
 
 .home-grid {
@@ -1673,8 +1678,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 
 		function pScale(pg) {
 			var s = (pg.scale || 100) / 100;
-			PS.style.transform = 'scale(' + s + ')';
-			PS.style.transformOrigin = 'top left';
+			PP.style.transform = 'scale(' + s + ')';
+			PP.style.transformOrigin = 'center center';
 		}
 
 		function pRender(pg) {
