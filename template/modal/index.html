@@ -994,14 +994,20 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
 	}
 
+	function fixUrl(u) {
+		if (!u) return '';
+		if (u.indexOf('https://sexyai.top/') === 0) return u.replace('https://sexyai.top/', 'https://r2.sexyai.top/');
+		if (u.indexOf('://') === -1) return 'https://r2.sexyai.top/' + (u.charAt(0) === '/' ? u.slice(1) : u);
+		return u;
+	}
 	function applyGlobal() {
 		var bg = '#' + (G.bgColor || G.bg || '050505');
 		document.documentElement.style.setProperty('--bg', bg);
 		document.documentElement.style.setProperty('--modal', '#' + (G.defModalBg || G.modal || '0d0d0d'));
 		document.documentElement.style.setProperty('--btn', '#' + (G.defBtnBg || G.btn || '166d3b'));
 		if (G.bgTransparent) document.body.style.background = 'transparent';
-		else if (P === 'pc' && G.bgImgPc) document.body.style.background = 'url(' + G.bgImgPc + ') center/cover no-repeat';
-		else if (P !== 'pc' && G.bgImgMobile) document.body.style.background = 'url(' + G.bgImgMobile + ') center/cover no-repeat';
+		else if (P === 'pc' && G.bgImgPc) document.body.style.background = 'url(' + fixUrl(G.bgImgPc) + ') center/cover no-repeat';
+		else if (P !== 'pc' && G.bgImgMobile) document.body.style.background = 'url(' + fixUrl(G.bgImgMobile) + ') center/cover no-repeat';
 		else document.body.style.background = bg;
 	}
 
@@ -1020,7 +1026,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var root = document.getElementById('root');
 		var st = 'width:' + w + 'px;height:' + h + 'px;background:' + hex2rgba(modalBg, opacity) + ';';
 		if (blur > 0) st += 'backdrop-filter:blur(' + blur + 'px);';
-		if (pg.modalBgImg) st = 'width:' + w + 'px;height:' + h + 'px;background:url(' + pg.modalBgImg + ') center/cover no-repeat;';
+		if (pg.modalBgImg) st = 'width:' + w + 'px;height:' + h + 'px;background:url(' + fixUrl(pg.modalBgImg) + ') center/cover no-repeat;';
 		root.style.cssText = st;
 	}
 

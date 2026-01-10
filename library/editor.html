@@ -4008,7 +4008,12 @@
     render: function() {
       var self = this;
       var parent = this.path.length ? this.path[this.path.length - 1] : null;
-      var filtered = this.items.filter(function(i) { return i.parent === parent; });
+      var filtered = this.items.filter(function(i) { return i.parent === parent; }).sort(function(a, b) {
+        if (a.type === 'folder' && b.type !== 'folder') return -1;
+        if (a.type !== 'folder' && b.type === 'folder') return 1;
+        var na = (a.name || a.url || '').toLowerCase(), nb = (b.name || b.url || '').toLowerCase();
+        return na < nb ? -1 : na > nb ? 1 : 0;
+      });
       var bread = document.getElementById('galBread');
       var bh = '<span data-p="">根目录</span>';
       var cp = [];
@@ -4105,13 +4110,23 @@
     },
     showCtx: function(x, y, id) {
       var self = this;
+      var item = this.items.find(function(i) { return i.id === id; });
       var old = document.querySelector('.ed-gallery-ctx');
       if (old) old.remove();
       var ctx = document.createElement('div');
       ctx.className = 'ed-gallery-ctx';
       ctx.style.left = x + 'px';
       ctx.style.top = y + 'px';
-      ctx.innerHTML = '<div class="del">删除</div>';
+      var h = '';
+      if (item && item.type === 'folder') h += '<div class="rename">改名</div>';
+      h += '<div class="del">删除</div>';
+      ctx.innerHTML = h;
+      var ren = ctx.querySelector('.rename');
+      if (ren) ren.onclick = function() {
+        var name = prompt('文件夹名称', item.name || '');
+        if (name && name.trim()) self.renameFolder(id, name.trim());
+        ctx.remove();
+      };
       ctx.querySelector('.del').onclick = function() {
         self.deleteItem(id);
         ctx.remove();
@@ -4123,6 +4138,16 @@
           document.removeEventListener('click', rm);
         }, {once: true});
       }, 0);
+    },
+    renameFolder: function(id, name) {
+      var self = this;
+      if (!this.db) return;
+      var item = this.items.find(function(i) { return i.id === id; });
+      if (!item) return;
+      item.name = name;
+      var tx = this.db.transaction('items', 'readwrite');
+      tx.objectStore('items').put(item);
+      tx.oncomplete = function() { self.load(); };
     },
     uploadFiles: function(files) {
       var self = this;
