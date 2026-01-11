@@ -494,7 +494,7 @@
 }
 .ed-sel {
 	outline: 2px dashed var(--btn) !important;
-	outline-offset: 2px;
+	outline-offset: 1px;
 }
 
 .ed-el {
@@ -504,21 +504,19 @@
 
 .ed-el:hover {
 	outline: 1px dashed #666;
-	outline-offset: 2px;
+	outline-offset: 1px;
 }
-
 .ed-col {
 	cursor: pointer;
+	padding: 2px;
 }
-
 .ed-col:hover {
 	outline: 1px dashed #888;
-	outline-offset: -2px;
+	outline-offset: 0px;
 }
-
 .ed-col.ed-sel {
 	outline: 2px dashed var(--btn) !important;
-	outline-offset: -2px;
+	outline-offset: 0px;
 }
 .ed-col-ph {
 	min-height: 40px;
@@ -630,9 +628,21 @@
 .ed-drop {
 	border: 2px dashed var(--btn);
 	margin: 8px 0;
-	height: 40px;
+	min-height: 36px;
 	border-radius: 6px;
 	background: rgba(22, 109, 59, 0.1);
+}
+.ed-drop[data-type="text"] {
+	min-height: 24px;
+}
+.ed-drop[data-type="btn"] {
+	min-height: 40px;
+}
+.ed-drop[data-type="image"] {
+	min-height: 60px;
+}
+.ed-drop[data-type="row"] {
+	min-height: 50px;
 }
 
 .collapse-drop.drag-over, .ed-col.drag-over {
@@ -1866,6 +1876,10 @@
           }
         }
         if (t.closest('.ed-close')) {
+          if (self.preview) {
+            self.togglePreview();
+            return
+          }
           self.list = false;
           self.renderL()
         }
@@ -2065,6 +2079,7 @@
         }
         dp.dataset.pos = pos;
         dp.dataset.zone = zone;
+        if (self.dragType) dp.dataset.type = self.dragType;
         self.dragZone = zone;
         if (pos < els.length) container.insertBefore(dp, els[pos]);
         else container.appendChild(dp)
@@ -3900,9 +3915,61 @@
       }
       this.save()
     },
+    stripDefaults: function(data) {
+      var self = this;
+      var result = {};
+      if (data.global) {
+        var gCfg = this.cfg.global.props;
+        var g = {};
+        Object.keys(data.global).forEach(function(k) {
+          var def = gCfg[k] && gCfg[k].v;
+          if (data.global[k] !== def && data.global[k] !== undefined && data.global[k] !== '') g[k] = data.global[k]
+        });
+        if (Object.keys(g).length) result.global = g
+      }
+      if (data.sys && Object.keys(data.sys).length) result.sys = data.sys;
+      if (data.groups && Object.keys(data.groups).length) result.groups = data.groups;
+      if (data.pages) {
+        result.pages = data.pages.map(function(pg) {
+          var p = {};
+          var pgCfg = self.cfg.page.props;
+          Object.keys(pg).forEach(function(k) {
+            if (k === 'elements' || k === 'headerElements' || k === 'footerElements') {
+              var els = (pg[k] || []).map(function(el) { return self.stripEl(el) });
+              if (els.length) p[k] = els
+            } else {
+              var def = pgCfg[k] && pgCfg[k].v;
+              if (pg[k] !== def && pg[k] !== undefined && pg[k] !== '') p[k] = pg[k]
+            }
+          });
+          return p
+        })
+      }
+      return result
+    },
+    stripEl: function(el) {
+      var self = this;
+      var cfg = this.cfg[el.type];
+      if (!cfg) return {type: el.type};
+      var r = {type: el.type};
+      Object.keys(el).forEach(function(k) {
+        if (k === 'type') return;
+        if (k === 'cols' && el.cols) {
+          r.cols = el.cols.map(function(c) { return self.stripEl(c) });
+          return
+        }
+        if (k === 'items' && el.items) {
+          r.items = el.items.map(function(i) { return self.stripEl(i) });
+          return
+        }
+        var def = cfg.props && cfg.props[k] && cfg.props[k].v;
+        if (el[k] !== def && el[k] !== undefined && el[k] !== '') r[k] = el[k]
+      });
+      return r
+    },
     exp: function() {
       if (!this.cur) return '';
-      var d = this.pj[this.cur].data;
+      var d = this.stripDefaults(this.pj[this.cur].data);
       var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(d))));
       return '[' + (L.project || 'MODAL') + ':{{char}};;{{user}};;' + b64 + ']'
     },

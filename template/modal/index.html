@@ -1058,7 +1058,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		'input.error{outline:2px solid #ff4444;animation:shake .5s}',
 		'@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-8px)}50%{transform:translateX(8px)}}',
 		'.row{display:flex;margin:8px 0}',
-		'.row-col{display:flex;flex-direction:column;justify-content:center;align-items:center}',
+		'.row-col{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2px}',
 		'.switch{display:flex;align-items:center;justify-content:center;margin:8px 0;gap:10px;cursor:pointer}',
 		'.switch-track{position:relative;width:44px;height:24px;transition:background .2s}',
 		'.switch-thumb{position:absolute;top:2px;width:18px;height:18px;transition:left .2s}',
@@ -1353,23 +1353,14 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		if (L.edit) h += '<div class="ed-line"></div>';
 		var fCls = L.edit ? 'modal-footer' : 'modal-footer';
 		h += '<div class="' + fCls + '" data-zone="footer"' + (fStyle ? ' style="' + fStyle + '"' : '') + '>';
-		if (L.edit) {
-			(pg.footerElements || []).forEach(function(el, idx) {
-				var wrap = '<div class="ed-el" data-zone="footer" data-idx="' + idx + '">';
-				if (el.type === 'row') h += wrap + renderRow(el, pg, idx) + '</div>';
-				else h += wrap + renderEl(el, pg) + '</div>';
-			});
-		} else {
-			h += '<button class="btn btn-secondary" id="hideBtn">' + (pg.hideText || '隐藏') + '</button>';
-			h += '<button class="btn btn-primary" id="nextBtn">' + (pg.nextText || (isLast ? '完成' : '下一页')) + '</button>';
-		}
+		(pg.footerElements || []).forEach(function(el, idx) {
+			var wrap = L.edit ? '<div class="ed-el" data-zone="footer" data-idx="' + idx + '">' : '<div>';
+			if (el.type === 'row') h += wrap + renderRow(el, pg, idx) + '</div>';
+			else h += wrap + renderEl(el, pg) + '</div>';
+		});
 		h += '</div>';
 		document.getElementById('root').innerHTML = h;
 		if (L.edit) document.body.classList.add('ed-nosel');
-		if (!L.edit) {
-			document.getElementById('hideBtn').onclick = hide;
-			document.getElementById('nextBtn').onclick = next;
-		}
 		bindBtns();
 		bindImages();
 		bindSwitches();
