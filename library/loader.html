@@ -60,7 +60,8 @@ window.L = {
 		M("参数为空");
 		return;
 	}
-	var m = p.match(/^(?:(EDIT):)?([^:]+):(.+)$/);
+	if (p.charAt(0) === "[" && p.charAt(p.length - 1) === "]") p = p.slice(1, -1);
+	var m = p.match(/^(?:(EDIT):)?([^@:]+)(?:@(\d+))?:(.+)$/);
 	if (!m) {
 		M("格式错误");
 		parent.postMessage({t: "error", msg: "格式错误"}, "*");
@@ -68,7 +69,8 @@ window.L = {
 	}
 	L.edit = !!m[1];
 	L.project = m[2];
-	var params = m[3].split(";;");
+	L.paramMajor = m[3] || "";
+	var params = m[4].split(";;");
 	L.char = params[0] || "";
 	L.user = params[1] || "";
 	L.b64 = params[2] || "";
@@ -82,7 +84,9 @@ window.L = {
 			parent.postMessage({t: "error", msg: "未找到: " + L.project}, "*");
 			return;
 		}
-		fetch(L.base + proj.index).then(function(r) {
+		L.version = nav.version;
+		L.major = L.paramMajor || nav.version.split(".")[0];
+		fetch(L.base + proj.index + "/v" + L.major + "/index.html").then(function(r) {
 			return r.text();
 		}).then(function(h) {
 			var cfg = "window.L=" + JSON.stringify({
@@ -95,7 +99,9 @@ window.L = {
 				b64: L.b64,
 				roleId: L.roleId,
 				res: L.res,
-				platform: L.platform
+				platform: L.platform,
+				version: L.version,
+				major: L.major
 			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+\"library/\"+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
 			var W = function(e) {
 				document.open();

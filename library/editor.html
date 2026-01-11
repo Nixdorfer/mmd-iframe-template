@@ -971,7 +971,19 @@
 .ed-gallery-ctx div.del {
 	color: #ff6b6b;
 }
+
+#ed-version {
+	position: fixed;
+	bottom: 8px;
+	left: 50%;
+	transform: translateX(-50%);
+	color: #555;
+	font-size: 11px;
+	z-index: 9999;
+	pointer-events: none;
+}
 </style>
+<div id="ed-version"></div>
 <div id="ed-list"></div>
 <div id="ed-panel">
   <div class="ed-tabs">
@@ -1989,6 +2001,7 @@
           }
         }
       });
+      document.getElementById('ed-version').textContent = 'v' + (L.version || '1.0.0');
       document.getElementById('edList').onclick = function() {
         self.list = !self.list;
         self.renderL()
@@ -4022,7 +4035,7 @@
       if (!this.cur) return '';
       var d = this.stripDefaults(this.pj[this.cur].data);
       var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(d))));
-      return '[' + (L.project || 'MODAL') + ':{{char}};;{{user}};;' + b64 + ']'
+      return '[' + (L.project || 'MODAL') + '@' + (L.major || '1') + ':{{char}};;{{user}};;' + b64 + ']'
     },
     copy: function() {
       var s = this.exp();

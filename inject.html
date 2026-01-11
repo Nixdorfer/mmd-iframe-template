@@ -36,6 +36,7 @@
 		f.srcdoc = ht;
 		o.appendChild(f);
 		document.body.appendChild(o);
+		var sH = window.initStore ? window.initStore(f) : null;
 		mH = function(ev) {
 			if (!ev.data || !ev.data.t) return;
 			if (ev.data.t === "cancel") hI();
@@ -58,21 +59,22 @@
 					a.dispatchEvent(new Event("input", {bubbles: true}));
 				}
 				hI();
-			}
+			} else if (sH) sH(ev);
 		};
 		window.addEventListener("message", mH);
 		b.onclick = sI;
 		sI();
 	}
-	fetch(base + "library/loader.html").then(function(r) {
-		if (!r.ok) throw 0;
-		return r.text();
-	}).then(function(h) {
+	Promise.all([
+		fetch(base + "library/loader.html").then(function(r) { return r.ok ? r.text() : Promise.reject(); }),
+		fetch(base + "library/store.js").then(function(r) { return r.ok ? r.text() : ""; })
+	]).then(function(r) {
 		b.disabled = false;
 		b.style.background = "#166d3b";
 		b.style.cursor = "pointer";
 		b.textContent = "打开";
-		sU(h);
+		if (r[1]) new Function(r[1])();
+		sU(r[0]);
 	}).catch(function() {
 		b.disabled = false;
 		b.style.background = "#8b0000";
