@@ -64,7 +64,7 @@
 		b.onclick = sI;
 		sI();
 	}
-	fetch(base + "library/loader.html?t=" + Date.now()).then(function(r) {
+	fetch(base + "library/loader.html").then(function(r) {
 		if (!r.ok) throw 0;
 		return r.text();
 	}).then(function(h) {

@@ -40,7 +40,7 @@ window.L = {
 		var c = pending.length;
 		pending.forEach(function(n) {
 			self.loaded[n] = 1;
-			fetch(self.base + "library/" + n + ".js?t=" + Date.now()).then(function(r) {
+			fetch(self.base + "library/" + n + ".js").then(function(r) {
 				return r.text();
 			}).then(function(t) {
 				new Function(t)();
@@ -73,7 +73,7 @@ window.L = {
 	L.user = params[1] || "";
 	L.b64 = params[2] || "";
 	M("加载中...");
-	fetch(L.base + "navigator.json?t=" + Date.now(), {cache: "no-store"}).then(function(r) {
+	fetch(L.base + "navigator.json").then(function(r) {
 		return r.json();
 	}).then(function(nav) {
 		var proj = nav.projects[L.project];
@@ -82,7 +82,7 @@ window.L = {
 			parent.postMessage({t: "error", msg: "未找到: " + L.project}, "*");
 			return;
 		}
-		fetch(L.base + proj.index + "?t=" + Date.now(), {cache: "no-store"}).then(function(r) {
+		fetch(L.base + proj.index).then(function(r) {
 			return r.text();
 		}).then(function(h) {
 			var cfg = "window.L=" + JSON.stringify({
@@ -96,14 +96,14 @@ window.L = {
 				roleId: L.roleId,
 				res: L.res,
 				platform: L.platform
-			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+\"library/\"+n+\".js?t=\"+Date.now()).then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
+			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+\"library/\"+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
 			var W = function(e) {
 				document.open();
 				document.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><script>" + cfg + "<\/script>" + h + (e || "") + "</body></html>");
 				document.close();
 			};
 			if (L.edit) {
-				fetch(L.base + "library/editor.html?t=" + Date.now(), {cache: "no-store"}).then(function(r) {
+				fetch(L.base + "library/editor.html").then(function(r) {
 					return r.text();
 				}).then(function(e) {
 					W(e);
