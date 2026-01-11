@@ -28,6 +28,7 @@ window.L = {
 	char: "",
 	user: "",
 	b64: "",
+	roleId: window.ROLEID || "",
 	res: window.R || window.innerWidth + "x" + window.innerHeight,
 	platform: (function() {
 		var w = window.innerWidth, h = window.innerHeight, r = w / h;
@@ -92,6 +93,7 @@ window.L = {
 				char: L.char,
 				user: L.user,
 				b64: L.b64,
+				roleId: L.roleId,
 				res: L.res,
 				platform: L.platform
 			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+\"library/\"+n+\".js?t=\"+Date.now()).then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";

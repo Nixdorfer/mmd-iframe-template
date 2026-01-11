@@ -27,7 +27,8 @@
 		}, 400);
 	}
 	function sU(h) {
-		var ht = h.replace("/*__INJECT__*/", "window.P=" + JSON.stringify(p) + ";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";");
+		var rId = new URLSearchParams(location.search).get("roleId") || "";
+		var ht = h.replace("/*__INJECT__*/", "window.P=" + JSON.stringify(p) + ";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
 		o = document.createElement("div");
 		o.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#242424;z-index:99999;display:none;align-items:center;justify-content:center";
 		f = document.createElement("iframe");
