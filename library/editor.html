@@ -28,14 +28,13 @@
 	flex-direction: column;
 	z-index: 10000;
 	opacity: 0;
-	transform: translateY(20px);
+	transform: translateX(-100%);
 	pointer-events: none;
 	transition: opacity 0.3s, transform 0.3s;
 }
-
 #ed-list.open {
 	opacity: 1;
-	transform: translateY(0);
+	transform: translateX(0);
 	pointer-events: auto;
 }
 
@@ -168,9 +167,35 @@
 
 #ed-body {
 	flex: 1;
-	overflow-y: auto;
+	overflow-y: scroll;
 	padding: 12px;
 	transition: opacity 0.15s, transform 0.15s;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	position: relative;
+}
+#ed-body::-webkit-scrollbar {
+	display: none;
+}
+.ed-scrollbar {
+	position: absolute;
+	right: 2px;
+	top: 0;
+	width: 4px;
+	height: 100%;
+	pointer-events: none;
+}
+.ed-scrollbar-thumb {
+	position: absolute;
+	right: 0;
+	width: 4px;
+	background: rgba(255,255,255,0.3);
+	border-radius: 2px;
+	pointer-events: auto;
+	cursor: pointer;
+}
+.ed-scrollbar-thumb:hover {
+	background: rgba(255,255,255,0.5);
 }
 
 #ed-body.slide-l, #ed-body.slide-r {
@@ -449,13 +474,24 @@
 		opacity: 0;
 		transform: translateX(-50%) translateY(10px);
 	}
-
 	to {
 		opacity: 1;
 		transform: translateX(-50%) translateY(0);
 	}
 }
-
+.ed-status {
+	position: fixed;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: rgba(0,0,0,0.8);
+	color: #fff;
+	padding: 8px 16px;
+	border-radius: 4px;
+	z-index: 10002;
+	font-size: 12px;
+	pointer-events: none;
+}
 .ed-sel {
 	outline: 2px dashed var(--btn) !important;
 	outline-offset: 2px;
@@ -484,7 +520,16 @@
 	outline: 2px dashed var(--btn) !important;
 	outline-offset: -2px;
 }
-
+.ed-col-ph {
+	min-height: 40px;
+	border: 1px dashed #444;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #666;
+	font-size: 11px;
+}
 .ed-device {
 	display: flex;
 	flex-direction: column;
@@ -1025,6 +1070,11 @@
     dragType: null,
     dragZone: null,
     curApp: null,
+    clickStack: [],
+    clickIdx: 0,
+    lastClickPos: null,
+    statusEl: null,
+    displayModes: [{v:'none',l:'无'},{v:'userInput',l:'用户输入'},{v:'userAndSys',l:'用户输入和系统输入'}],
     animations: [{
       v: 'none',
       l: '无'
@@ -1363,7 +1413,8 @@
             size: {
               t: "slider",
               r: "10-48",
-              d: "字号"
+              d: "字号",
+              v: 14
             },
             font: {
               t: "select",
@@ -1388,7 +1439,8 @@
             },
             color: {
               t: "color",
-              d: "文字颜色"
+              d: "文字颜色",
+              v: "ffffff"
             },
             bgColor: {
               t: "color",
@@ -1398,7 +1450,7 @@
               t: "slider",
               r: "0-100",
               d: "文字透明度",
-              v: 100
+              v: 0
             },
             bgOpacity: {
               t: "slider",
@@ -1499,6 +1551,10 @@
               d: "系统级效果",
               v: "none"
             },
+            modelSelect: {
+              t: "model",
+              d: "选择模型"
+            },
             repeatable: {
               t: "toggle",
               d: "可重复点击",
@@ -1581,7 +1637,7 @@
             },
             width: {
               t: "slider",
-              r: "20-100",
+              r: "1-100",
               d: "宽度%"
             },
             align: {
@@ -1612,6 +1668,18 @@
               t: "toggle",
               d: "必填",
               v: false
+            },
+            displayMode: {
+              t: "select",
+              r: self.displayModes,
+              d: "显示内容",
+              v: "none"
+            },
+            width: {
+              t: "slider",
+              r: "1-100",
+              d: "宽度%",
+              v: 100
             }
           }
         },
@@ -1824,8 +1892,10 @@
         var el = e.target.closest('.ed-el');
         if (el) {
           self.zone = el.dataset.zone || 'content';
-          self.showElCtx(e.clientX, e.clientY, parseInt(el.dataset.idx))
+          self.showElCtx(e.clientX, e.clientY, parseInt(el.dataset.idx));
+          return
         }
+        self.showGlobalCtx(e.clientX, e.clientY)
       });
       document.addEventListener('click', function(e) {
         if (e.target.closest('#ed-panel') || e.target.closest('.ed-menu')) return;
@@ -1834,15 +1904,33 @@
           self.hiSel();
           return
         }
+        var clickables = [];
         var col = e.target.closest('.ed-col');
-        if (col) {
-          self.multiSel = [];
-          self.selCol(parseInt(col.dataset.ei), parseInt(col.dataset.ci), col.dataset.zone);
-          return
-        }
         var el = e.target.closest('.ed-el');
-        if (el) {
-          self.selEl(parseInt(el.dataset.idx), e.shiftKey, el.dataset.zone)
+        if (col) clickables.push({type:'col', el:col, ei:parseInt(col.dataset.ei), ci:parseInt(col.dataset.ci), zone:col.dataset.zone||'content'});
+        if (el) clickables.push({type:'el', el:el, idx:parseInt(el.dataset.idx), zone:el.dataset.zone||'content'});
+        if (clickables.length === 0) return;
+        var pos = e.clientX + ',' + e.clientY;
+        if (self.lastClickPos === pos && clickables.length > 1) {
+          self.clickIdx = (self.clickIdx + 1) % clickables.length
+        } else {
+          self.clickIdx = 0;
+          self.lastClickPos = pos
+        }
+        var item = clickables[self.clickIdx];
+        if (item.type === 'col') {
+          self.multiSel = [];
+          self.selCol(item.ei, item.ci, item.zone);
+          self.showStatus('多列 - 列' + (item.ci + 1))
+        } else {
+          self.selEl(item.idx, e.shiftKey, item.zone);
+          var pg = self.pj[self.cur]?.data?.pages?.[self.pg];
+          var els = self.getEls(item.zone);
+          var elData = els[item.idx];
+          if (elData) {
+            var cfg = self.cfg[elData.type];
+            self.showStatus(cfg ? cfg.name : elData.type)
+          }
         }
       });
       document.getElementById('edList').onclick = function() {
@@ -1958,7 +2046,7 @@
           return
         }
         e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
+        e.dataTransfer.dropEffect = self.dragEl ? 'move' : 'copy';
         var els = Array.from(container.children).filter(function(c) {
           return c.classList.contains('ed-el')
         });
@@ -2310,10 +2398,7 @@
           return parseInt(x) || 1
         });
         el.cols = ratio.map(function() {
-          return {
-            type: 'text',
-            value: '文本'
-          }
+          return {type: 'placeholder'}
         })
       }
       els.push(el);
@@ -2340,13 +2425,7 @@
       });
       if (type === 'row') {
         el.ratio = [1, 1];
-        el.cols = [{
-          type: 'text',
-          value: '文本'
-        }, {
-          type: 'text',
-          value: '文本'
-        }]
+        el.cols = [{type: 'placeholder'}, {type: 'placeholder'}]
       }
       els.splice(pos, 0, el);
       this.sel = pos;
@@ -2426,10 +2505,7 @@
       ratio.push(1);
       el.ratio = ratio;
       if (!el.cols) el.cols = [];
-      el.cols.push({
-        type: 'text',
-        value: '文本'
-      });
+      el.cols.push({type: 'placeholder'});
       this.save();
       this.renderR()
     },
@@ -2454,10 +2530,7 @@
       var els = this.getEls(this.zone);
       var el = els[this.sel];
       if (!el || el.type !== 'row' || !el.cols || !el.cols[this.rowSel]) return;
-      el.cols[this.rowSel] = {
-        type: 'text',
-        value: '文本'
-      };
+      el.cols[this.rowSel] = {type: 'placeholder'};
       this.save();
       this.renderR()
     },
@@ -2493,6 +2566,69 @@
           document.removeEventListener('click', h)
         })
       }, 10)
+    },
+    showGlobalCtx: function(x, y) {
+      var old = document.querySelector('.ed-ctx');
+      if (old) old.remove();
+      var m = document.createElement('div');
+      m.className = 'ed-ctx';
+      m.style.left = x + 'px';
+      m.style.top = y + 'px';
+      var self = this;
+      m.innerHTML = '<div data-a="undo">撤回 (Ctrl+Z)</div><div data-a="redo">重做 (Ctrl+Y)</div><div data-a="preview">全屏预览</div><div data-a="copy">复制项目 (Ctrl+S)</div><div data-a="download">下载项目</div><div data-a="import">导入项目</div>';
+      m.onclick = function(e) {
+        var a = e.target.dataset.a;
+        if (a === 'undo') self.undo();
+        else if (a === 'redo') self.redo();
+        else if (a === 'preview') self.togglePreview();
+        else if (a === 'copy') self.copy();
+        else if (a === 'download') self.download();
+        else if (a === 'import') self.importData();
+        m.remove()
+      };
+      document.body.appendChild(m);
+      setTimeout(function() {
+        document.addEventListener('click', function h() {
+          m.remove();
+          document.removeEventListener('click', h)
+        })
+      }, 10)
+    },
+    importData: function() {
+      var self = this;
+      var inp = prompt('粘贴导出的内容');
+      if (!inp || !inp.trim()) return;
+      inp = inp.trim();
+      var match = inp.match(/\[([^\]]+):([^;]*);([^;]*);([^\]]+)\]/);
+      if (!match) {
+        alert('格式无效');
+        return
+      }
+      try {
+        var d = JSON.parse(decodeURIComponent(escape(atob(match[4]))));
+        if (!d || !d.pages) throw new Error('');
+        if (this.cur) {
+          this.pj[this.cur].data = d;
+          this.save()
+        }
+      } catch (e) {
+        alert('导入失败');
+      }
+    },
+    showStatus: function(text) {
+      if (this.statusEl) this.statusEl.remove();
+      var s = document.createElement('div');
+      s.className = 'ed-status';
+      s.textContent = '当前选中: ' + text;
+      document.body.appendChild(s);
+      this.statusEl = s;
+      var self = this;
+      setTimeout(function() {
+        if (self.statusEl === s) {
+          s.remove();
+          self.statusEl = null
+        }
+      }, 2000)
     },
     selEl: function(idx, shift, zone) {
       if (shift) {
@@ -2597,11 +2733,8 @@
               idx: i,
               zone: z
             };
-            e.dataTransfer.effectAllowed = 'move'
-          };
-          mv.onclick = function(e) {
-            e.stopPropagation();
-            self.startMove()
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', '')
           };
           el.appendChild(mv)
         }
@@ -2800,7 +2933,53 @@
           var bd = hds[i].nextElementSibling;
           if (bd) bd.classList.add('open')
         }
-      })
+      });
+      this.updateScrollbar()
+    },
+    updateScrollbar: function() {
+      var p = document.getElementById('ed-body');
+      if (!p) return;
+      var sb = document.getElementById('edScrollbar');
+      if (!sb) {
+        var panel = document.getElementById('ed-panel');
+        sb = document.createElement('div');
+        sb.id = 'edScrollbar';
+        sb.className = 'ed-scrollbar';
+        sb.innerHTML = '<div class="ed-scrollbar-thumb" id="edScrollThumb"></div>';
+        panel.appendChild(sb)
+      }
+      var thumb = document.getElementById('edScrollThumb');
+      var self = this;
+      var update = function() {
+        var sh = p.scrollHeight, ch = p.clientHeight, st = p.scrollTop;
+        if (sh <= ch) {
+          thumb.style.display = 'none';
+          return
+        }
+        thumb.style.display = 'block';
+        var ratio = ch / sh;
+        var h = Math.max(30, ch * ratio);
+        thumb.style.height = h + 'px';
+        thumb.style.top = (st / (sh - ch)) * (ch - h) + 'px'
+      };
+      p.onscroll = update;
+      update();
+      thumb.onmousedown = function(e) {
+        e.preventDefault();
+        var startY = e.clientY, startTop = p.scrollTop;
+        var sh = p.scrollHeight, ch = p.clientHeight;
+        var move = function(e) {
+          var dy = e.clientY - startY;
+          var ratio = (sh - ch) / (ch - thumb.offsetHeight);
+          p.scrollTop = startTop + dy * ratio
+        };
+        var up = function() {
+          document.removeEventListener('mousemove', move);
+          document.removeEventListener('mouseup', up)
+        };
+        document.addEventListener('mousemove', move);
+        document.addEventListener('mouseup', up)
+      }
     },
     renderWin: function() {
       if (!this.cur) return '<div class="ed-sec"><div class="ed-empty">无项目</div></div>';
@@ -3126,6 +3305,15 @@
       var self = this;
       if (el.type === 'row' && this.rowSel !== null && el.cols && el.cols[this.rowSel]) {
         var col = el.cols[this.rowSel];
+        if (col.type === 'placeholder') {
+          var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
+            return parseInt(x) || 1
+          });
+          var h = '<div class="ed-sec"><div class="ed-title">列' + (this.rowSel + 1) + ' - 占位符 <button class="back-row-btn" style="float:right;background:none;border:none;color:#888;cursor:pointer">返回行</button></div>';
+          h += '<div class="ed-row"><label>宽度权重</label><input data-k="ratio" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '"></div>';
+          h += '<div style="color:#666;font-size:12px;padding:12px;text-align:center">拖入元素到此列</div></div>';
+          return h
+        }
         var colCfg = this.cfg[col.type];
         if (!colCfg) return '';
         var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
@@ -3402,6 +3590,12 @@
           h += '<div style="display:flex;gap:4px;margin-top:4px"><button class="ed-btn sm gal-up" data-gi="' + gi + '">选择</button><input data-gi="' + gi + '" value="' + U.esc(u) + '" placeholder="或输入URL" style="flex:1"></div></div>'
         });
         h += '<button class="ed-btn sm gallery-add" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>' + self.icon('plus') + ' 添加图片</button></div>'
+      } else if (prop.t === 'model') {
+        h += '<select data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '><option value=""' + ((!v) ? ' selected' : '') + '>无</option>';
+        (self.models || []).forEach(function(m) {
+          h += '<option value="' + U.esc(m.id || m) + '"' + (v === (m.id || m) ? ' selected' : '') + '>' + U.esc(m.name || m) + '</option>'
+        });
+        h += '</select>'
       }
       h += '</div>';
       return h
@@ -3866,8 +4060,8 @@
       if (!d.sys) d.sys = {};
       var g = d.global || {};
       var h = '<div class="ed-sec"><div class="ed-title">系统设定</div>';
-      h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">卸载父DOM</span><div class="ed-toggle-sw' + (d.sys.unload ? ' on' : '') + '" id="sysUnload"></div></div></div>';
-      h += '<div style="color:#666;font-size:10px;margin-top:-6px;margin-bottom:12px">开启后完全卸载父DOM，隐藏关闭按钮，禁用killer和hider</div>';
+      h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">隐藏系统效果</span><div class="ed-toggle-sw' + (d.sys.unload ? ' on' : '') + '" id="sysUnload"></div></div></div>';
+      h += '<div style="color:#666;font-size:10px;margin-top:-6px;margin-bottom:12px">开启后隐藏按钮的killer和hider选项</div>';
       h += '</div>';
       h += '<div class="ed-sec"><div class="ed-title">全局样式</div>';
       var gCfg = this.cfg.global.props;

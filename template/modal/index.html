@@ -198,6 +198,7 @@ body {
 	position: relative;
 	width: 540px;
 	height: 1170px;
+	overflow: hidden;
 }
 
 .phone-frame {
@@ -1255,6 +1256,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		if (el.type === 'select') return renderSelect(el);
 		if (el.type === 'switch') return renderSwitch(el);
 		if (el.type === 'collapse') return renderCollapse(el, pg);
+		if (el.type === 'placeholder') return L.edit ? '<div class="ed-col-ph">拖入元素</div>' : '';
 		return '';
 	}
 
@@ -2024,8 +2026,9 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 
 		PS.onmousemove = function(e) {
 			var r = PS.getBoundingClientRect();
-			PCR.style.left = (e.clientX - r.left) + 'px';
-			PCR.style.top = (e.clientY - r.top) + 'px';
+			var s = (window._curPg && window._curPg.scale || 100) / 100;
+			PCR.style.left = ((e.clientX - r.left) / s + 27) + 'px';
+			PCR.style.top = ((e.clientY - r.top) / s + 42) + 'px';
 			PCR.classList.add('show');
 		};
 
