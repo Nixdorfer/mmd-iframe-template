@@ -1118,10 +1118,12 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var isVideo = /\.(mp4|webm|ogg)$/i.test(url);
 		var mode = el.displayMode || 'fixedWidth';
 		var st = '';
-		if (mode === 'fixedWidth') st = 'width:100%;height:auto;';
-		else if (mode === 'fixedHeight') st = 'height:' + (el.height || 200) + 'px;width:auto;';
-		else if (mode === 'cover') st = 'width:100%;height:' + (el.height || 200) + 'px;object-fit:cover;';
-		else st = 'width:100%;height:' + (el.height || 200) + 'px;object-fit:contain;';
+		switch (mode) {
+			case 'fixedWidth': st = 'width:100%;height:auto;'; break;
+			case 'fixedHeight': st = 'height:' + (el.height || 200) + 'px;width:auto;'; break;
+			case 'cover': st = 'width:100%;height:' + (el.height || 200) + 'px;object-fit:cover;'; break;
+			default: st = 'width:100%;height:' + (el.height || 200) + 'px;object-fit:contain;';
+		}
 		if (el.opacity !== undefined && el.opacity < 100) st += 'opacity:' + (el.opacity / 100) + ';';
 		var attr = ' data-detail="true"';
 		if (el.clickAction === 'gallery' && el.galleryUrls) attr = ' data-gallery="' + U.esc(el.galleryUrls) + '"';
@@ -1139,9 +1141,11 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var textColor = el.textColor || pg.defBtnColor || G.defBtnColor || 'ffffff';
 		var radius = el.radius !== undefined ? el.radius : (G.defBtnRadius || 8);
 		var st = 'background:#' + bgColor + ';color:#' + textColor + ';';
-		if (shape === 'rounded') st += 'border-radius:' + radius + 'px;';
-		else if (shape === 'rect') st += 'border-radius:0;';
-		else if (shape === 'hexagon') st += 'clip-path:polygon(' + (el.hexWidth || 15) + '% 0,' + ((100 - (el.hexWidth || 15))) + '% 0,100% 50%,' + ((100 - (el.hexWidth || 15))) + '% 100%,' + (el.hexWidth || 15) + '% 100%,0 50%);';
+		switch (shape) {
+			case 'rounded': st += 'border-radius:' + radius + 'px;'; break;
+			case 'rect': st += 'border-radius:0;'; break;
+			case 'hexagon': st += 'clip-path:polygon(' + (el.hexWidth || 15) + '% 0,' + ((100 - (el.hexWidth || 15))) + '% 0,100% 50%,' + ((100 - (el.hexWidth || 15))) + '% 100%,' + (el.hexWidth || 15) + '% 100%,0 50%);'; break;
+		}
 		if (el.borderWidth) st += 'box-shadow:inset 0 0 0 ' + el.borderWidth + 'px #' + (el.borderColor || '166d3b') + ';';
 		if (el.textSize) st += 'font-size:' + el.textSize + 'px;';
 		if (el.textFont) st += 'font-family:' + el.textFont + ';';
@@ -1249,32 +1253,50 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	}
 
 	function renderEl(el, pg) {
-		if (el.type === 'text') return renderText(el, pg);
-		if (el.type === 'btn') return renderBtn(el, pg);
-		if (el.type === 'image') return renderImage(el, pg);
-		if (el.type === 'input') return renderInput(el);
-		if (el.type === 'select') return renderSelect(el);
-		if (el.type === 'switch') return renderSwitch(el);
-		if (el.type === 'collapse') return renderCollapse(el, pg);
-		if (el.type === 'placeholder') return L.edit ? '<div class="ed-col-ph">拖入元素</div>' : '';
-		return '';
+		switch (el.type) {
+			case 'text': return renderText(el, pg);
+			case 'btn': return renderBtn(el, pg);
+			case 'image': return renderImage(el, pg);
+			case 'input': return renderInput(el);
+			case 'select': return renderSelect(el);
+			case 'switch': return renderSwitch(el);
+			case 'collapse': return renderCollapse(el, pg);
+			case 'placeholder': return L.edit ? '<div class="ed-col-ph">拖入元素</div>' : '';
+			default: return '';
+		}
 	}
 
 	function renderRow(el, pg, elIdx) {
 		var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
 			return parseInt(x) || 1;
 		});
-		var total = ratio.reduce(function(a, b) {
-			return a + b;
-		}, 0);
+		var colMode = el.colMode || [];
+		var colPriority = el.colPriority || [];
 		var gap = el.gap || 8;
 		var valign = el.valign || 'center';
 		var hbind = el.heightBind ? 'data-hbind="' + el.heightBind + '"' : '';
 		var h = '<div class="row" style="gap:' + gap + 'px;align-items:' + (valign === 'top' ? 'flex-start' : valign === 'bottom' ? 'flex-end' : 'center') + '" ' + hbind + '>';
+		var ratioCols = [], fitCols = [];
 		(el.cols || []).forEach(function(col, i) {
-			var pct = (ratio[i] || 1) / total * 100;
+			if ((colMode[i] || 'ratio') === 'fit') fitCols.push(i);
+			else ratioCols.push(i);
+		});
+		var ratioTotal = ratioCols.reduce(function(sum, i) { return sum + (ratio[i] || 1); }, 0);
+		var sortedFit = colPriority.filter(function(ci) { return fitCols.indexOf(ci) > -1; });
+		fitCols.forEach(function(ci) { if (sortedFit.indexOf(ci) === -1) sortedFit.push(ci); });
+		var lastFit = sortedFit.length > 0 ? sortedFit[sortedFit.length - 1] : -1;
+		(el.cols || []).forEach(function(col, i) {
 			var colAttr = L.edit ? ' data-ei="' + elIdx + '" data-ci="' + i + '"' : '';
-			h += '<div class="row-col' + (L.edit ? ' ed-col' : '') + '" style="flex:0 0 calc(' + pct.toFixed(2) + '% - ' + gap + 'px)"' + colAttr + '>' + renderEl(col, pg) + '</div>';
+			var flex;
+			if ((colMode[i] || 'ratio') === 'fit') {
+				if (i === lastFit) flex = 'flex:1 1 0';
+				else flex = 'flex:0 0 auto';
+			} else {
+				var pct = (ratio[i] || 1) / ratioTotal * 100;
+				if (fitCols.length > 0) flex = 'flex:0 0 auto;width:' + pct.toFixed(2) + '%';
+				else flex = 'flex:0 0 calc(' + pct.toFixed(2) + '% - ' + gap + 'px)';
+			}
+			h += '<div class="row-col' + (L.edit ? ' ed-col' : '') + '" style="' + flex + '"' + colAttr + '>' + renderEl(col, pg) + '</div>';
 		});
 		return h + '</div>';
 	}

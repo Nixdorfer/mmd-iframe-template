@@ -8,9 +8,11 @@ window.Row = {
       var pct = (ratio[i] || 1) / total * 100;
       h += '<div class="row-col" style="flex:0 0 ' + pct.toFixed(2) + '%">';
       if (renderCol) h += renderCol(col);
-      else if (col.type === 'text' && window.Content) h += Content.render(col);
-      else if (col.type === 'btn' && window.Btn) h += Btn.render(col);
-      else if (col.type === 'image' && window.Image) h += Image.render(col);
+      else switch (col.type) {
+        case 'text': if (window.Content) h += Content.render(col); break;
+        case 'btn': if (window.Btn) h += Btn.render(col); break;
+        case 'image': if (window.Image) h += Image.render(col); break;
+      }
       h += '</div>';
     });
     h += '</div>';

@@ -884,17 +884,18 @@ body {
 	function bindApp(k) {
 		S.querySelectorAll('.nav-btn').forEach(function(el) {
 			el.onclick = function() {
-				var n = el.dataset.nav;
-				if (n === 'home') closeApp();
-				else if (n === 'back') {
-					if (sub) {
-						sub = null;
-						var v = S.querySelector('.app-view');
-						if (v) {
-							v.querySelector('.app-body').innerHTML = R[k] ? R[k](A[k] || {}) : '';
-							B[k] && B[k](A[k] || {});
-						}
-					} else closeApp();
+				switch (el.dataset.nav) {
+					case 'home': closeApp(); break;
+					case 'back':
+						if (sub) {
+							sub = null;
+							var v = S.querySelector('.app-view');
+							if (v) {
+								v.querySelector('.app-body').innerHTML = R[k] ? R[k](A[k] || {}) : '';
+								B[k] && B[k](A[k] || {});
+							}
+						} else closeApp();
+						break;
 				}
 			};
 		});

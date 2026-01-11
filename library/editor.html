@@ -1926,6 +1926,12 @@
           var ci = parseInt(t.closest('.del-col-btn').dataset.ci);
           self.delCol(ci)
         }
+        if (t.closest('.col-mode-opt')) {
+          var opt = t.closest('.col-mode-opt');
+          var ci = parseInt(opt.parentElement.dataset.ci);
+          var mode = opt.dataset.mode;
+          self.setColMode(ci, mode)
+        }
       });
       document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
@@ -2585,6 +2591,25 @@
       this.save();
       this.renderR()
     },
+    setColMode: function(ci, mode) {
+      if (!this.cur || this.sel === null) return;
+      var els = this.getEls(this.zone);
+      var el = els[this.sel];
+      if (!el || el.type !== 'row') return;
+      if (!el.colMode) el.colMode = [];
+      el.colMode[ci] = mode;
+      this.save();
+      this.renderR()
+    },
+    setColPriority: function(priority) {
+      if (!this.cur || this.sel === null) return;
+      var els = this.getEls(this.zone);
+      var el = els[this.sel];
+      if (!el || el.type !== 'row') return;
+      el.colPriority = priority;
+      this.save();
+      this.renderR()
+    },
     showCtx: function(x, y, id) {
       var old = document.querySelector('.ed-ctx');
       if (old) old.remove();
@@ -2628,13 +2653,14 @@
       var self = this;
       m.innerHTML = '<div data-a="undo">撤回 (Ctrl+Z)</div><div data-a="redo">重做 (Ctrl+Y)</div><div data-a="preview">全屏预览</div><div data-a="copy">复制项目 (Ctrl+S)</div><div data-a="download">下载项目</div><div data-a="import">导入项目</div>';
       m.onclick = function(e) {
-        var a = e.target.dataset.a;
-        if (a === 'undo') self.undo();
-        else if (a === 'redo') self.redo();
-        else if (a === 'preview') self.togglePreview();
-        else if (a === 'copy') self.copy();
-        else if (a === 'download') self.download();
-        else if (a === 'import') self.importData();
+        switch (e.target.dataset.a) {
+          case 'undo': self.undo(); break;
+          case 'redo': self.redo(); break;
+          case 'preview': self.togglePreview(); break;
+          case 'copy': self.copy(); break;
+          case 'download': self.download(); break;
+          case 'import': self.importData(); break;
+        }
         m.remove()
       };
       document.body.appendChild(m);
@@ -2740,15 +2766,14 @@
       } else h = '<div data-a="del">' + this.icon('trash') + ' 删除</div>';
       m.innerHTML = h;
       m.onclick = function(e) {
-        var a = e.target.closest('[data-a]')?.dataset.a;
-        if (a === 'del') {
-          self.sel = idx;
-          self.del()
-        } else if (a === 'delAll') self.delMulti();
-        else if (a === 'lockW') self.lockMulti('width');
-        else if (a === 'lockH') self.lockMulti('height');
-        else if (a === 'lockS') self.lockMulti('size');
-        else if (a === 'lockRH') self.lockMulti('rowHeight');
+        switch (e.target.closest('[data-a]')?.dataset.a) {
+          case 'del': self.sel = idx; self.del(); break;
+          case 'delAll': self.delMulti(); break;
+          case 'lockW': self.lockMulti('width'); break;
+          case 'lockH': self.lockMulti('height'); break;
+          case 'lockS': self.lockMulti('size'); break;
+          case 'lockRH': self.lockMulti('rowHeight'); break;
+        }
         m.remove()
       };
       document.body.appendChild(m);
@@ -2940,12 +2965,11 @@
       if (this.listTab === 0) m.innerHTML = '<div data-a="proj">新建项目</div>';
       else m.innerHTML = '<div data-a="page">新建对话框</div><div data-a="phone">新建手机界面</div>';
       m.onclick = function(e) {
-        var a = e.target.dataset.a;
-        if (a === 'proj') {
-          var n = prompt('项目名称', '新项目');
-          if (n) self.newP(n)
-        } else if (a === 'page') self.newPg('modal');
-        else if (a === 'phone') self.newPg('phone');
+        switch (e.target.dataset.a) {
+          case 'proj': var n = prompt('项目名称', '新项目'); if (n) self.newP(n); break;
+          case 'page': self.newPg('modal'); break;
+          case 'phone': self.newPg('phone'); break;
+        }
         m.remove()
       };
       document.body.appendChild(m);
@@ -2972,12 +2996,14 @@
         if (t.dataset.t === '1') t.textContent = isPhone ? '应用' : '模块';
         if (t.dataset.t === '4') t.classList.toggle('disabled', !chatEnabled)
       }, this);
-      if (this.tab === 0) p.innerHTML = this.renderWin();
-      else if (this.tab === 1) p.innerHTML = this.renderMod();
-      else if (this.tab === 2) p.innerHTML = this.renderStyle();
-      else if (this.tab === 3) p.innerHTML = this.renderLock();
-      else if (this.tab === 4) p.innerHTML = this.renderChat();
-      else p.innerHTML = this.renderSys();
+      switch (this.tab) {
+        case 0: p.innerHTML = this.renderWin(); break;
+        case 1: p.innerHTML = this.renderMod(); break;
+        case 2: p.innerHTML = this.renderStyle(); break;
+        case 3: p.innerHTML = this.renderLock(); break;
+        case 4: p.innerHTML = this.renderChat(); break;
+        default: p.innerHTML = this.renderSys();
+      }
       this.bindR();
       openFolds.forEach(function(i) {
         var hds = document.querySelectorAll('.ed-fold-hd');
@@ -3118,233 +3144,135 @@
       return h
     },
     renderAppSettings: function(a, app) {
-      var h = '',
-        self = this;
-      if (a === 'setting') {
-        h += '<div class="ed-title" style="margin-top:12px">设置项</div>';
-        (app.items || []).forEach(function(it, i) {
-          h += '<div class="ed-row" style="display:flex;gap:8px;align-items:center"><span style="flex:1">' + U.esc(it.label || '') + '</span><button class="del-app-item" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
-        });
-        h += '<button class="ed-btn sm add-setting-item">' + this.icon('plus') + ' 添加设置项</button>'
-      } else if (a === 'map') {
-        h += this.ctrl('bgImage', {
-          t: 'upload',
-          d: '地图背景图'
-        }, app.bgImage, 'app');
-        h += '<div class="ed-title" style="margin-top:12px">标记点</div>';
-        (app.markers || []).forEach(function(m, i) {
-          h += '<div class="ed-row" style="display:flex;gap:4px"><input data-mk="' + i + '" data-f="x" value="' + m.x + '" style="width:40px" placeholder="X%"><input data-mk="' + i + '" data-f="y" value="' + m.y + '" style="width:40px" placeholder="Y%"><input data-mk="' + i + '" data-f="label" value="' + U.esc(m.label || '') + '" style="flex:1" placeholder="标签"><button class="del-marker" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
-        });
-        h += '<button class="ed-btn sm add-marker">' + this.icon('plus') + ' 添加标记</button>'
-      } else if (a === 'album') {
-        h += '<div class="ed-title" style="margin-top:12px">照片</div>';
-        (app.photos || []).forEach(function(p, i) {
-          h += '<div class="ed-row"><div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><span>照片' + (i + 1) + '</span><button class="del-photo" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
-          h += self.ctrl('url', {
-            t: 'upload',
-            d: '图片'
-          }, p.url, 'photo-' + i);
-          h += self.ctrl('time', {
-            t: 'input',
-            d: '拍摄时间'
-          }, p.time, 'photo-' + i);
-          h += '</div>'
-        });
-        h += '<button class="ed-btn sm add-photo">' + this.icon('plus') + ' 添加照片</button>'
-      } else if (a === 'camera') {
-        h += this.ctrl('frameImage', {
-          t: 'upload',
-          d: '取景框边框图'
-        }, app.frameImage, 'app')
-      } else if (a === 'calendar') {
-        h += '<div class="ed-title" style="margin-top:12px">标记日期</div>';
-        (app.marked || []).forEach(function(d, i) {
-          h += '<div class="ed-row" style="display:flex;gap:4px"><input data-marked="' + i + '" value="' + d + '" style="flex:1" placeholder="YYYY-MM-DD"><button class="del-marked" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
-        });
-        h += '<button class="ed-btn sm add-marked">' + this.icon('plus') + ' 添加日期</button>';
-        h += '<div class="ed-title" style="margin-top:12px">日期事件</div>';
-        Object.keys(app.events || {}).forEach(function(k, i) {
-          h += '<div class="ed-row" style="display:flex;gap:4px"><input data-ev-k="' + i + '" value="' + k + '" style="width:100px" placeholder="日期"><input data-ev-v="' + k + '" value="' + U.esc(app.events[k] || '') + '" style="flex:1" placeholder="事件"><button class="del-event" data-k="' + k + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
-        });
-        h += '<button class="ed-btn sm add-event">' + this.icon('plus') + ' 添加事件</button>'
-      } else if (a === 'browser') {
-        h += this.ctrl('url', {
-          t: 'input',
-          d: '网址'
-        }, app.url, 'app');
-        h += this.ctrl('screenshot', {
-          t: 'upload',
-          d: '网页截图'
-        }, app.screenshot, 'app')
-      } else if (a === 'backpack' || a === 'warehouse') {
-        h += this.ctrl('cols', {
-          t: 'slider',
-          r: '2-8',
-          d: '列数'
-        }, app.cols, 'app');
-        h += this.ctrl('rows', {
-          t: 'slider',
-          r: '2-12',
-          d: '行数'
-        }, app.rows, 'app');
-        h += '<div class="ed-title" style="margin-top:12px">物品</div>';
-        (app.items || []).forEach(function(it, i) {
-          h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>格子' + it.slot + '</span><button class="del-item" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
-          h += self.ctrl('icon', {
-            t: 'upload',
-            d: '图标'
-          }, it.icon, 'item-' + i);
-          h += self.ctrl('name', {
-            t: 'input',
-            d: '名称'
-          }, it.name, 'item-' + i);
-          h += self.ctrl('count', {
-            t: 'slider',
-            r: '1-999',
-            d: '数量'
-          }, it.count, 'item-' + i);
-          h += '</div>'
-        });
-        h += '<button class="ed-btn sm add-item">' + this.icon('plus') + ' 添加物品</button>'
-      } else if (a === 'wechat') {
-        h += '<div class="ed-title" style="margin-top:12px">联系人</div>';
-        (app.chats || []).forEach(function(c, i) {
-          h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(c.name || '联系人' + (i + 1)) + '</span><button class="del-chat" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
-          h += self.ctrl('avatar', {
-            t: 'upload',
-            d: '头像'
-          }, c.avatar, 'chat-' + i);
-          h += self.ctrl('name', {
-            t: 'input',
-            d: '名称'
-          }, c.name, 'chat-' + i);
-          h += self.ctrl('lastMsg', {
-            t: 'input',
-            d: '最后消息'
-          }, c.lastMsg, 'chat-' + i);
-          h += '</div>'
-        });
-        h += '<button class="ed-btn sm add-chat">' + this.icon('plus') + ' 添加联系人</button>'
-      } else if (a === 'brainwash') {
-        h += '<div class="ed-title" style="margin-top:12px">洗脑文字</div>';
-        (app.texts || []).forEach(function(t, i) {
-          h += '<div class="ed-row" style="display:flex;gap:4px"><input data-txt="' + i + '" value="' + U.esc(t) + '" style="flex:1"><button class="del-txt" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
-        });
-        h += '<button class="ed-btn sm add-txt">' + this.icon('plus') + ' 添加文字</button>';
-        h += this.ctrl('speed', {
-          t: 'slider',
-          r: '1-10',
-          d: '速度'
-        }, app.speed, 'app');
-        h += this.ctrl('effect', {
-          t: 'select',
-          r: [{
-            v: 'scroll',
-            l: '滚动'
-          }, {
-            v: 'flash',
-            l: '闪烁'
-          }],
-          d: '效果'
-        }, app.effect, 'app')
-      } else if (a === 'database') {
-        h += '<div class="ed-title" style="margin-top:12px">分类</div>';
-        (app.categories || []).forEach(function(cat, i) {
-          h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(cat.name || '分类' + (i + 1)) + '</span><button class="del-cat" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
-          h += self.ctrl('name', {
-            t: 'input',
-            d: '分类名'
-          }, cat.name, 'cat-' + i);
-          h += '</div>'
-        });
-        h += '<button class="ed-btn sm add-cat">' + this.icon('plus') + ' 添加分类</button>'
-      } else if (a === 'clock') {
-        h += this.ctrl('mode', {
-          t: 'select',
-          r: [{
-            v: 'realtime',
-            l: '实时'
-          }, {
-            v: 'fixed',
-            l: '固定'
-          }],
-          d: '模式'
-        }, app.mode, 'app');
-        h += this.ctrl('fixedTime', {
-          t: 'input',
-          d: '固定时间(HH:MM)'
-        }, app.fixedTime, 'app')
-      } else if (a === 'mail') {
-        h += '<div class="ed-title" style="margin-top:12px">邮件</div>';
-        (app.mails || []).forEach(function(m, i) {
-          h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(m.subject || '邮件' + (i + 1)) + '</span><button class="del-mail" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
-          h += self.ctrl('from', {
-            t: 'input',
-            d: '发件人'
-          }, m.from, 'mail-' + i);
-          h += self.ctrl('subject', {
-            t: 'input',
-            d: '标题'
-          }, m.subject, 'mail-' + i);
-          h += self.ctrl('body', {
-            t: 'textarea',
-            d: '正文'
-          }, m.body, 'mail-' + i);
-          h += self.ctrl('time', {
-            t: 'input',
-            d: '时间'
-          }, m.time, 'mail-' + i);
-          h += '</div>'
-        });
-        h += '<button class="ed-btn sm add-mail">' + this.icon('plus') + ' 添加邮件</button>'
-      } else if (a === 'phone') {
-        h += '<div class="ed-title" style="margin-top:12px">联系人</div>';
-        (app.contacts || []).forEach(function(c, i) {
-          h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(c.name || '联系人' + (i + 1)) + '</span><button class="del-contact" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
-          h += self.ctrl('avatar', {
-            t: 'upload',
-            d: '头像'
-          }, c.avatar, 'contact-' + i);
-          h += self.ctrl('name', {
-            t: 'input',
-            d: '名称'
-          }, c.name, 'contact-' + i);
-          h += self.ctrl('number', {
-            t: 'input',
-            d: '号码'
-          }, c.number, 'contact-' + i);
-          h += '</div>'
-        });
-        h += '<button class="ed-btn sm add-contact">' + this.icon('plus') + ' 添加联系人</button>'
-      } else if (a === 'wallet') {
-        h += this.ctrl('balance', {
-          t: 'slider',
-          r: '0-99999',
-          d: '余额'
-        }, app.balance, 'app');
-        h += this.ctrl('currency', {
-          t: 'input',
-          d: '货币单位'
-        }, app.currency, 'app');
-        h += '<div class="ed-title" style="margin-top:12px">交易记录</div>';
-        (app.transactions || []).forEach(function(t, i) {
-          h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(t.desc || '交易' + (i + 1)) + '</span><button class="del-tx" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
-          h += self.ctrl('desc', {
-            t: 'input',
-            d: '描述'
-          }, t.desc, 'tx-' + i);
-          h += self.ctrl('amount', {
-            t: 'slider',
-            r: '-9999-9999',
-            d: '金额'
-          }, t.amount, 'tx-' + i);
-          h += self.ctrl('time', {
-            t: 'input',
-            d: '时间'
-          }, t.time, 'tx-' + i);
-          h += '</div>'
-        });
-        h += '<button class="ed-btn sm add-tx">' + this.icon('plus') + ' 添加交易</button>'
+      var h = '', self = this;
+      switch (a) {
+        case 'setting':
+          h += '<div class="ed-title" style="margin-top:12px">设置项</div>';
+          (app.items || []).forEach(function(it, i) {
+            h += '<div class="ed-row" style="display:flex;gap:8px;align-items:center"><span style="flex:1">' + U.esc(it.label || '') + '</span><button class="del-app-item" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
+          });
+          h += '<button class="ed-btn sm add-setting-item">' + this.icon('plus') + ' 添加设置项</button>';
+          break;
+        case 'map':
+          h += this.ctrl('bgImage', {t: 'upload', d: '地图背景图'}, app.bgImage, 'app');
+          h += '<div class="ed-title" style="margin-top:12px">标记点</div>';
+          (app.markers || []).forEach(function(m, i) {
+            h += '<div class="ed-row" style="display:flex;gap:4px"><input data-mk="' + i + '" data-f="x" value="' + m.x + '" style="width:40px" placeholder="X%"><input data-mk="' + i + '" data-f="y" value="' + m.y + '" style="width:40px" placeholder="Y%"><input data-mk="' + i + '" data-f="label" value="' + U.esc(m.label || '') + '" style="flex:1" placeholder="标签"><button class="del-marker" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
+          });
+          h += '<button class="ed-btn sm add-marker">' + this.icon('plus') + ' 添加标记</button>';
+          break;
+        case 'album':
+          h += '<div class="ed-title" style="margin-top:12px">照片</div>';
+          (app.photos || []).forEach(function(p, i) {
+            h += '<div class="ed-row"><div style="display:flex;gap:4px;align-items:center;margin-bottom:4px"><span>照片' + (i + 1) + '</span><button class="del-photo" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
+            h += self.ctrl('url', {t: 'upload', d: '图片'}, p.url, 'photo-' + i);
+            h += self.ctrl('time', {t: 'input', d: '拍摄时间'}, p.time, 'photo-' + i);
+            h += '</div>'
+          });
+          h += '<button class="ed-btn sm add-photo">' + this.icon('plus') + ' 添加照片</button>';
+          break;
+        case 'camera':
+          h += this.ctrl('frameImage', {t: 'upload', d: '取景框边框图'}, app.frameImage, 'app');
+          break;
+        case 'calendar':
+          h += '<div class="ed-title" style="margin-top:12px">标记日期</div>';
+          (app.marked || []).forEach(function(d, i) {
+            h += '<div class="ed-row" style="display:flex;gap:4px"><input data-marked="' + i + '" value="' + d + '" style="flex:1" placeholder="YYYY-MM-DD"><button class="del-marked" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
+          });
+          h += '<button class="ed-btn sm add-marked">' + this.icon('plus') + ' 添加日期</button>';
+          h += '<div class="ed-title" style="margin-top:12px">日期事件</div>';
+          Object.keys(app.events || {}).forEach(function(k, i) {
+            h += '<div class="ed-row" style="display:flex;gap:4px"><input data-ev-k="' + i + '" value="' + k + '" style="width:100px" placeholder="日期"><input data-ev-v="' + k + '" value="' + U.esc(app.events[k] || '') + '" style="flex:1" placeholder="事件"><button class="del-event" data-k="' + k + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
+          });
+          h += '<button class="ed-btn sm add-event">' + this.icon('plus') + ' 添加事件</button>';
+          break;
+        case 'browser':
+          h += this.ctrl('url', {t: 'input', d: '网址'}, app.url, 'app');
+          h += this.ctrl('screenshot', {t: 'upload', d: '网页截图'}, app.screenshot, 'app');
+          break;
+        case 'backpack':
+        case 'warehouse':
+          h += this.ctrl('cols', {t: 'slider', r: '2-8', d: '列数'}, app.cols, 'app');
+          h += this.ctrl('rows', {t: 'slider', r: '2-12', d: '行数'}, app.rows, 'app');
+          h += '<div class="ed-title" style="margin-top:12px">物品</div>';
+          (app.items || []).forEach(function(it, i) {
+            h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>格子' + it.slot + '</span><button class="del-item" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
+            h += self.ctrl('icon', {t: 'upload', d: '图标'}, it.icon, 'item-' + i);
+            h += self.ctrl('name', {t: 'input', d: '名称'}, it.name, 'item-' + i);
+            h += self.ctrl('count', {t: 'slider', r: '1-999', d: '数量'}, it.count, 'item-' + i);
+            h += '</div>'
+          });
+          h += '<button class="ed-btn sm add-item">' + this.icon('plus') + ' 添加物品</button>';
+          break;
+        case 'wechat':
+          h += '<div class="ed-title" style="margin-top:12px">联系人</div>';
+          (app.chats || []).forEach(function(c, i) {
+            h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(c.name || '联系人' + (i + 1)) + '</span><button class="del-chat" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
+            h += self.ctrl('avatar', {t: 'upload', d: '头像'}, c.avatar, 'chat-' + i);
+            h += self.ctrl('name', {t: 'input', d: '名称'}, c.name, 'chat-' + i);
+            h += self.ctrl('lastMsg', {t: 'input', d: '最后消息'}, c.lastMsg, 'chat-' + i);
+            h += '</div>'
+          });
+          h += '<button class="ed-btn sm add-chat">' + this.icon('plus') + ' 添加联系人</button>';
+          break;
+        case 'brainwash':
+          h += '<div class="ed-title" style="margin-top:12px">洗脑文字</div>';
+          (app.texts || []).forEach(function(t, i) {
+            h += '<div class="ed-row" style="display:flex;gap:4px"><input data-txt="' + i + '" value="' + U.esc(t) + '" style="flex:1"><button class="del-txt" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
+          });
+          h += '<button class="ed-btn sm add-txt">' + this.icon('plus') + ' 添加文字</button>';
+          h += this.ctrl('speed', {t: 'slider', r: '1-10', d: '速度'}, app.speed, 'app');
+          h += this.ctrl('effect', {t: 'select', r: [{v: 'scroll', l: '滚动'}, {v: 'flash', l: '闪烁'}], d: '效果'}, app.effect, 'app');
+          break;
+        case 'database':
+          h += '<div class="ed-title" style="margin-top:12px">分类</div>';
+          (app.categories || []).forEach(function(cat, i) {
+            h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(cat.name || '分类' + (i + 1)) + '</span><button class="del-cat" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
+            h += self.ctrl('name', {t: 'input', d: '分类名'}, cat.name, 'cat-' + i);
+            h += '</div>'
+          });
+          h += '<button class="ed-btn sm add-cat">' + this.icon('plus') + ' 添加分类</button>';
+          break;
+        case 'clock':
+          h += this.ctrl('mode', {t: 'select', r: [{v: 'realtime', l: '实时'}, {v: 'fixed', l: '固定'}], d: '模式'}, app.mode, 'app');
+          h += this.ctrl('fixedTime', {t: 'input', d: '固定时间(HH:MM)'}, app.fixedTime, 'app');
+          break;
+        case 'mail':
+          h += '<div class="ed-title" style="margin-top:12px">邮件</div>';
+          (app.mails || []).forEach(function(m, i) {
+            h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(m.subject || '邮件' + (i + 1)) + '</span><button class="del-mail" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
+            h += self.ctrl('from', {t: 'input', d: '发件人'}, m.from, 'mail-' + i);
+            h += self.ctrl('subject', {t: 'input', d: '标题'}, m.subject, 'mail-' + i);
+            h += self.ctrl('body', {t: 'textarea', d: '正文'}, m.body, 'mail-' + i);
+            h += self.ctrl('time', {t: 'input', d: '时间'}, m.time, 'mail-' + i);
+            h += '</div>'
+          });
+          h += '<button class="ed-btn sm add-mail">' + this.icon('plus') + ' 添加邮件</button>';
+          break;
+        case 'phone':
+          h += '<div class="ed-title" style="margin-top:12px">联系人</div>';
+          (app.contacts || []).forEach(function(c, i) {
+            h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(c.name || '联系人' + (i + 1)) + '</span><button class="del-contact" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
+            h += self.ctrl('avatar', {t: 'upload', d: '头像'}, c.avatar, 'contact-' + i);
+            h += self.ctrl('name', {t: 'input', d: '名称'}, c.name, 'contact-' + i);
+            h += self.ctrl('number', {t: 'input', d: '号码'}, c.number, 'contact-' + i);
+            h += '</div>'
+          });
+          h += '<button class="ed-btn sm add-contact">' + this.icon('plus') + ' 添加联系人</button>';
+          break;
+        case 'wallet':
+          h += this.ctrl('balance', {t: 'slider', r: '0-99999', d: '余额'}, app.balance, 'app');
+          h += this.ctrl('currency', {t: 'input', d: '货币单位'}, app.currency, 'app');
+          h += '<div class="ed-title" style="margin-top:12px">交易记录</div>';
+          (app.transactions || []).forEach(function(t, i) {
+            h += '<div class="ed-row"><div style="display:flex;gap:4px;margin-bottom:4px"><span>' + U.esc(t.desc || '交易' + (i + 1)) + '</span><button class="del-tx" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;margin-left:auto">' + self.icon('trash') + '</button></div>';
+            h += self.ctrl('desc', {t: 'input', d: '描述'}, t.desc, 'tx-' + i);
+            h += self.ctrl('amount', {t: 'slider', r: '-9999-9999', d: '金额'}, t.amount, 'tx-' + i);
+            h += self.ctrl('time', {t: 'input', d: '时间'}, t.time, 'tx-' + i);
+            h += '</div>'
+          });
+          h += '<button class="ed-btn sm add-tx">' + this.icon('plus') + ' 添加交易</button>';
+          break;
       }
       return h
     },
@@ -3358,22 +3286,35 @@
       var self = this;
       if (el.type === 'row' && this.rowSel !== null && el.cols && el.cols[this.rowSel]) {
         var col = el.cols[this.rowSel];
+        var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
+          return parseInt(x) || 1
+        });
+        var colMode = el.colMode || [];
+        var mode = colMode[this.rowSel] || 'ratio';
         if (col.type === 'placeholder') {
-          var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
-            return parseInt(x) || 1
-          });
           var h = '<div class="ed-sec"><div class="ed-title">列' + (this.rowSel + 1) + ' - 占位符 <button class="back-row-btn" style="float:right;background:none;border:none;color:#888;cursor:pointer">返回行</button></div>';
-          h += '<div class="ed-row"><label>宽度权重</label><input data-k="ratio" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '"></div>';
+          h += '<div class="ed-row" style="flex-direction:column;gap:6px"><label>宽度模式</label>';
+          h += '<div style="display:flex;align-items:center;gap:8px">';
+          h += '<div class="col-mode-toggle" data-ci="' + this.rowSel + '" style="display:flex;background:#0d0d0d;border-radius:4px;overflow:hidden;flex:1">';
+          h += '<div class="col-mode-opt' + (mode === 'ratio' ? ' active' : '') + '" data-mode="ratio" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'ratio' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">固定比例</div>';
+          h += '<div class="col-mode-opt' + (mode === 'fit' ? ' active' : '') + '" data-mode="fit" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'fit' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">适应内容</div>';
+          h += '</div>';
+          if (mode === 'ratio') h += '<input class="col-weight-inp" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
+          h += '</div></div>';
           h += '<div style="color:#666;font-size:12px;padding:12px;text-align:center">拖入元素到此列</div></div>';
           return h
         }
         var colCfg = this.cfg[col.type];
         if (!colCfg) return '';
-        var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
-          return parseInt(x) || 1
-        });
         var h = '<div class="ed-sec"><div class="ed-title">列' + (this.rowSel + 1) + ' - ' + colCfg.name + ' <button class="back-row-btn" style="float:right;background:none;border:none;color:#888;cursor:pointer">返回行</button></div>';
-        h += '<div class="ed-row"><label>宽度权重</label><input data-k="ratio" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '"></div>';
+        h += '<div class="ed-row" style="flex-direction:column;gap:6px"><label>宽度模式</label>';
+        h += '<div style="display:flex;align-items:center;gap:8px">';
+        h += '<div class="col-mode-toggle" data-ci="' + this.rowSel + '" style="display:flex;background:#0d0d0d;border-radius:4px;overflow:hidden;flex:1">';
+        h += '<div class="col-mode-opt' + (mode === 'ratio' ? ' active' : '') + '" data-mode="ratio" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'ratio' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">固定比例</div>';
+        h += '<div class="col-mode-opt' + (mode === 'fit' ? ' active' : '') + '" data-mode="fit" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'fit' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">适应内容</div>';
+        h += '</div>';
+        if (mode === 'ratio') h += '<input class="col-weight-inp" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
+        h += '</div></div>';
         Object.keys(colCfg.props).forEach(function(k) {
           var prop = colCfg.props[k],
             v = col[k];
@@ -3399,13 +3340,44 @@
         var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
           return parseInt(x) || 1
         });
+        var colMode = el.colMode || [];
+        var colPriority = el.colPriority || [];
         h += '<div class="ed-row"><label>列数</label><div style="display:flex;gap:6px;align-items:center"><span>' + ratio.length + '列</span><button class="add-col-btn ed-btn sm" style="margin:0;width:auto;padding:6px 12px">' + this.icon('plus') + ' 添加列</button></div></div>';
         (el.cols || []).forEach(function(col, ci) {
-          h += '<div class="ed-row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">';
-          h += '<span style="white-space:nowrap">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span><input class="col-weight-inp" data-ci="' + ci + '" value="' + ratio[ci] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
+          var mode = colMode[ci] || 'ratio';
+          h += '<div class="ed-row" style="flex-direction:column;align-items:stretch;gap:6px">';
+          h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">';
+          h += '<span style="white-space:nowrap">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span>';
           if ((el.cols || []).length > 1) h += '<button class="del-col-btn" data-ci="' + ci + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;flex-shrink:0">' + self.icon('trash') + '</button>';
-          h += '</div>'
-        })
+          h += '</div>';
+          h += '<div style="display:flex;align-items:center;gap:8px">';
+          h += '<div class="col-mode-toggle" data-ci="' + ci + '" style="display:flex;background:#0d0d0d;border-radius:4px;overflow:hidden;flex:1">';
+          h += '<div class="col-mode-opt' + (mode === 'ratio' ? ' active' : '') + '" data-mode="ratio" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'ratio' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">固定比例</div>';
+          h += '<div class="col-mode-opt' + (mode === 'fit' ? ' active' : '') + '" data-mode="fit" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'fit' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">适应内容</div>';
+          h += '</div>';
+          if (mode === 'ratio') h += '<input class="col-weight-inp" data-ci="' + ci + '" value="' + ratio[ci] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
+          h += '</div></div>';
+        });
+        var fitCols = [];
+        (el.cols || []).forEach(function(col, ci) {
+          if ((colMode[ci] || 'ratio') === 'fit') fitCols.push(ci);
+        });
+        if (fitCols.length > 1) {
+          var sortedFit = colPriority.filter(function(ci) { return fitCols.indexOf(ci) > -1; });
+          fitCols.forEach(function(ci) { if (sortedFit.indexOf(ci) === -1) sortedFit.push(ci); });
+          h += '<div class="ed-title" style="margin-top:12px">适应列优先级 <span style="font-weight:normal;color:#666;font-size:11px">(拖动排序，末位占剩余)</span></div>';
+          h += '<div class="col-priority-list" style="background:#0d0d0d;border-radius:6px;padding:4px">';
+          sortedFit.forEach(function(ci, pi) {
+            var col = el.cols[ci];
+            var isLast = pi === sortedFit.length - 1;
+            h += '<div class="col-priority-item" draggable="true" data-ci="' + ci + '" style="display:flex;align-items:center;gap:8px;padding:8px;margin:2px 0;background:#1a1a1a;border-radius:4px;cursor:grab' + (isLast ? ';border:1px dashed #444' : '') + '">';
+            h += '<span style="color:#666">' + self.icon('drag') + '</span>';
+            h += '<span style="flex:1">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span>';
+            if (isLast) h += '<span style="color:#888;font-size:11px">占剩余</span>';
+            h += '</div>';
+          });
+          h += '</div>';
+        }
       } else if (el.type === 'collapse') {
         Object.keys(m.props).forEach(function(k) {
           if (k === 'titleSize' || k === 'titleColor' || k === 'titleBold') return;
@@ -3415,30 +3387,37 @@
       } else {
         Object.keys(m.props).forEach(function(k) {
           if (el.type === 'btn') {
-            if (k === 'clickTarget' && el.clickAction !== 'jumpModal') return;
-            if (k === 'message' && el.clickAction !== 'message') return;
-            if (k === 'sysEffect' && d.sys && d.sys.unload) return;
-            if (k === 'afterClick' && el.repeatable !== false) return;
-            if (k === 'disabledStyle' && el.afterClick !== 'disable') return;
-            if (k === 'logicMax' && !el.logicGroup) return;
-            if (k === 'radius' && el.shape !== 'rounded') return;
-            if (k === 'hexWidth' && el.shape !== 'hexagon') return;
-            if (k === 'textSize' || k === 'textColor' || k === 'textBold') return
+            switch (k) {
+              case 'clickTarget': if (el.clickAction !== 'jumpModal') return; break;
+              case 'message': if (el.clickAction !== 'message') return; break;
+              case 'sysEffect': if (d.sys && d.sys.unload) return; break;
+              case 'afterClick': if (el.repeatable !== false) return; break;
+              case 'disabledStyle': if (el.afterClick !== 'disable') return; break;
+              case 'logicMax': if (!el.logicGroup) return; break;
+              case 'radius': if (el.shape !== 'rounded') return; break;
+              case 'hexWidth': if (el.shape !== 'hexagon') return; break;
+              case 'textSize': case 'textColor': case 'textBold': return;
+            }
           }
           if (el.type === 'image') {
-            if (k === 'clickTarget' && el.clickAction !== 'jumpModal') return;
-            if (k === 'galleryUrls' && el.clickAction !== 'gallery') return
+            switch (k) {
+              case 'clickTarget': if (el.clickAction !== 'jumpModal') return; break;
+              case 'galleryUrls': if (el.clickAction !== 'gallery') return; break;
+            }
           }
-          var prop = m.props[k],
-            v = el[k];
-          if (k === 'options' && Array.isArray(v)) v = v.join('\n');
-          if (k === 'ratio' && Array.isArray(v)) v = v.join(':');
+          var prop = m.props[k], v = el[k];
+          switch (k) {
+            case 'options': if (Array.isArray(v)) v = v.join('\n'); break;
+            case 'ratio': if (Array.isArray(v)) v = v.join(':'); break;
+          }
           h += self.ctrl(k, prop, v, 'el')
         });
-        if (el.type === 'btn') h += self.ctrlFold('按钮文本', el, 'text', 'el');
-        if (el.type === 'input') h += self.ctrlFold('输入框标题', el, 'title', 'el');
-        if (el.type === 'select') h += self.ctrlFold('下拉框标题', el, 'title', 'el');
-        if (el.type === 'switch') h += self.ctrlFold('滑块标题', el, 'title', 'el')
+        switch (el.type) {
+          case 'btn': h += self.ctrlFold('按钮文本', el, 'text', 'el'); break;
+          case 'input': h += self.ctrlFold('输入框标题', el, 'title', 'el'); break;
+          case 'select': h += self.ctrlFold('下拉框标题', el, 'title', 'el'); break;
+          case 'switch': h += self.ctrlFold('滑块标题', el, 'title', 'el'); break;
+        }
       }
       h += '<button class="ed-btn del" id="delElBtn">' + this.icon('trash') + ' 删除元素</button></div>';
       return h
@@ -3910,6 +3889,40 @@
           };
           inp.onblur = done
         }
+      });
+      var dragCi = null;
+      document.querySelectorAll('.col-priority-item').forEach(function(it) {
+        it.ondragstart = function(e) {
+          dragCi = parseInt(it.dataset.ci);
+          it.style.opacity = '0.5'
+        };
+        it.ondragend = function() {
+          it.style.opacity = '1';
+          dragCi = null
+        };
+        it.ondragover = function(e) {
+          e.preventDefault();
+          it.style.background = '#333'
+        };
+        it.ondragleave = function() {
+          it.style.background = '#1a1a1a'
+        };
+        it.ondrop = function(e) {
+          e.preventDefault();
+          it.style.background = '#1a1a1a';
+          if (dragCi === null) return;
+          var targetCi = parseInt(it.dataset.ci);
+          if (dragCi === targetCi) return;
+          var list = document.querySelector('.col-priority-list');
+          if (!list) return;
+          var items = Array.from(list.querySelectorAll('.col-priority-item'));
+          var order = items.map(function(el) { return parseInt(el.dataset.ci) });
+          var fromIdx = order.indexOf(dragCi);
+          var toIdx = order.indexOf(targetCi);
+          order.splice(fromIdx, 1);
+          order.splice(toIdx, 0, dragCi);
+          self.setColPriority(order)
+        }
       })
     },
     setColRatio: function(ci, v) {
@@ -4278,7 +4291,8 @@
         switch: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><rect x="1" y="7" width="22" height="10" rx="5"/><circle cx="16" cy="12" r="3"/></svg>',
         collapse: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12h6M12 9v6"/></svg>',
         row: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg>',
-        move: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>'
+        move: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>',
+        drag: '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg>'
       };
       return icons[n] || ''
     }
@@ -4310,7 +4324,7 @@
     E.init(d);
   })();
   window.G = {
-    db: null,
+    ready: false,
     path: [],
     items: [],
     selected: null,
@@ -4318,17 +4332,22 @@
     dragItem: null,
     init: function() {
       var self = this;
-      var req = indexedDB.open('editorGallery', 1);
-      req.onupgradeneeded = function(e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('items')) {
-          db.createObjectStore('items', {keyPath: 'id', autoIncrement: true});
+      window.addEventListener('message', function(ev) {
+        if (!ev.data || !ev.data.t) return;
+        switch (ev.data.t) {
+          case 'store:data':
+            self.items = ev.data.items || [];
+            self.ready = true;
+            self.render();
+            break;
+          case 'store:added':
+          case 'store:updated':
+          case 'store:deleted':
+            self.load();
+            break;
         }
-      };
-      req.onsuccess = function(e) {
-        self.db = e.target.result;
-      };
-      req.onerror = function() {};
+      });
+      self.ready = true;
       document.getElementById('galModal').onclick = function(e) {
         if (e.target.id === 'galModal') self.close();
       };
@@ -4372,18 +4391,7 @@
       if (ctx) ctx.remove();
     },
     load: function() {
-      var self = this;
-      if (!this.db) {
-        setTimeout(function() { self.load(); }, 100);
-        return;
-      }
-      var tx = this.db.transaction('items', 'readonly');
-      var store = tx.objectStore('items');
-      var req = store.getAll();
-      req.onsuccess = function() {
-        self.items = req.result || [];
-        self.render();
-      };
+      parent.postMessage({t: 'store:load'}, '*');
     },
     render: function() {
       var self = this;
@@ -4520,18 +4528,14 @@
       }, 0);
     },
     renameFolder: function(id, name) {
-      var self = this;
-      if (!this.db) return;
       var item = this.items.find(function(i) { return i.id === id; });
       if (!item) return;
       item.name = name;
-      var tx = this.db.transaction('items', 'readwrite');
-      tx.objectStore('items').put(item);
-      tx.oncomplete = function() { self.load(); };
+      parent.postMessage({t: 'store:put', item: item}, '*');
     },
     uploadFiles: function(files) {
       var self = this;
-      var parent = this.path.length ? this.path[this.path.length - 1] : null;
+      var pid = this.path.length ? this.path[this.path.length - 1] : null;
       var pending = files.length;
       Array.from(files).forEach(function(f) {
         var fd = new FormData();
@@ -4542,7 +4546,7 @@
           body: fd
         }).then(function(r) { return r.json(); }).then(function(d) {
           if (d.data && d.data[0]) {
-            self.addItem({type: 'image', url: d.data[0], parent: parent});
+            self.addItem({type: 'image', url: d.data[0], parent: pid});
           }
           if (--pending === 0) self.load();
         }).catch(function() {
@@ -4551,38 +4555,29 @@
       });
     },
     addUrl: function(url) {
-      var parent = this.path.length ? this.path[this.path.length - 1] : null;
-      this.addItem({type: 'image', url: url, parent: parent});
+      var pid = this.path.length ? this.path[this.path.length - 1] : null;
+      this.addItem({type: 'image', url: url, parent: pid});
       this.load();
     },
     createFolder: function(name) {
-      var parent = this.path.length ? this.path[this.path.length - 1] : null;
-      this.addItem({type: 'folder', name: name, parent: parent});
+      var pid = this.path.length ? this.path[this.path.length - 1] : null;
+      this.addItem({type: 'folder', name: name, parent: pid});
       this.load();
     },
     addItem: function(item) {
-      if (!this.db) return;
-      var tx = this.db.transaction('items', 'readwrite');
-      tx.objectStore('items').add(item);
+      parent.postMessage({t: 'store:add', item: item}, '*');
     },
     deleteItem: function(id) {
       var self = this;
-      if (!this.db) return;
       var children = this.items.filter(function(i) { return i.parent === id; });
       children.forEach(function(c) { self.deleteItem(c.id); });
-      var tx = this.db.transaction('items', 'readwrite');
-      tx.objectStore('items').delete(id);
-      tx.oncomplete = function() { self.load(); };
+      parent.postMessage({t: 'store:delete', id: id}, '*');
     },
     moveItem: function(id, newParent) {
-      var self = this;
-      if (!this.db) return;
       var item = this.items.find(function(i) { return i.id === id; });
       if (!item || item.id === newParent) return;
       item.parent = newParent;
-      var tx = this.db.transaction('items', 'readwrite');
-      tx.objectStore('items').put(item);
-      tx.oncomplete = function() { self.load(); };
+      parent.postMessage({t: 'store:put', item: item}, '*');
     }
   };
   G.init();
