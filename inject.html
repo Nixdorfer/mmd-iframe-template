@@ -38,59 +38,26 @@
 		document.body.appendChild(o);
 		mH = function(ev) {
 			if (!ev.data || !ev.data.t) return;
-			var KEY = "editorGallery", st, items, maxId, idx;
-			switch (ev.data.t) {
-				case "cancel": hI(); break;
-				case "unload":
-					document.body.innerHTML = "";
-					f.style.cssText = "width:100vw;height:100vh;border:none;position:fixed;top:0;left:0;z-index:99999";
-					document.body.appendChild(f);
-					break;
-				case "error":
-					o.remove();
-					b.remove();
-					var d = document.createElement("div");
-					d.style.cssText = "padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:14px";
-					d.textContent = ev.data.msg;
-					c.appendChild(d);
-					break;
-				case "done":
-					var a = document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope textarea");
-					if (a) {
-						a.focus();
-						a.value = ev.data.msg;
-						a.dispatchEvent(new Event("input", {bubbles: true}));
-					}
-					hI();
-					break;
-				case "store:load":
-					st = localStorage.getItem(KEY);
-					f.contentWindow.postMessage({t: "store:data", items: st ? JSON.parse(st) : []}, "*");
-					break;
-				case "store:add":
-					st = localStorage.getItem(KEY);
-					items = st ? JSON.parse(st) : [];
-					maxId = items.reduce(function(m, i) { return Math.max(m, i.id || 0); }, 0);
-					ev.data.item.id = maxId + 1;
-					items.push(ev.data.item);
-					localStorage.setItem(KEY, JSON.stringify(items));
-					f.contentWindow.postMessage({t: "store:added", id: ev.data.item.id}, "*");
-					break;
-				case "store:put":
-					st = localStorage.getItem(KEY);
-					items = st ? JSON.parse(st) : [];
-					idx = items.findIndex(function(i) { return i.id === ev.data.item.id; });
-					if (idx > -1) items[idx] = ev.data.item;
-					localStorage.setItem(KEY, JSON.stringify(items));
-					f.contentWindow.postMessage({t: "store:updated"}, "*");
-					break;
-				case "store:delete":
-					st = localStorage.getItem(KEY);
-					items = st ? JSON.parse(st) : [];
-					items = items.filter(function(i) { return i.id !== ev.data.id; });
-					localStorage.setItem(KEY, JSON.stringify(items));
-					f.contentWindow.postMessage({t: "store:deleted"}, "*");
-					break;
+			if (ev.data.t === "cancel") hI();
+			else if (ev.data.t === "unload") {
+				document.body.innerHTML = "";
+				f.style.cssText = "width:100vw;height:100vh;border:none;position:fixed;top:0;left:0;z-index:99999";
+				document.body.appendChild(f);
+			} else if (ev.data.t === "error") {
+				o.remove();
+				b.remove();
+				var d = document.createElement("div");
+				d.style.cssText = "padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:14px";
+				d.textContent = ev.data.msg;
+				c.appendChild(d);
+			} else if (ev.data.t === "done") {
+				var a = document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope textarea");
+				if (a) {
+					a.focus();
+					a.value = ev.data.msg;
+					a.dispatchEvent(new Event("input", {bubbles: true}));
+				}
+				hI();
 			}
 		};
 		window.addEventListener("message", mH);
