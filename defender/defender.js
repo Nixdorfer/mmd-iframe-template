@@ -144,17 +144,35 @@
     }
     bD();
     function sB() {
+        function pos(d) {
+            var header = document.querySelector('.chat .page-header-scope');
+            if (header) {
+                var rect = header.getBoundingClientRect();
+                d.style.cssText = 'position:fixed!important;top:' + (rect.bottom + 10) + 'px!important;right:10px!important;background:#166d3b!important;color:#fff!important;padding:8px 16px!important;border-radius:20px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:14px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0;transition:opacity 0.3s ease!important';
+            } else {
+                d.style.cssText = 'position:fixed!important;top:10px!important;right:10px!important;background:#166d3b!important;color:#fff!important;padding:8px 16px!important;border-radius:20px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:14px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0;transition:opacity 0.3s ease!important';
+            }
+        }
         function cr() {
             if (document.getElementById('__db__')) return;
             var d = document.createElement('div');
-            d.id = '__db__'; d.textContent = '[已保护]';
-            d.style.cssText = 'position:fixed!important;top:10px!important;right:10px!important;background:#166d3b!important;color:#fff!important;padding:8px 16px!important;border-radius:20px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:14px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0;transition:opacity 0.3s ease!important';
+            d.id = '__db__'; d.textContent = '🛡️';
+            pos(d);
             document.body.appendChild(d);
             setTimeout(function() { d.style.opacity = '1'; }, 10);
             setTimeout(function() { d.style.opacity = '0.6'; }, 3000);
             new MutationObserver(function(m) { m.forEach(function(mu) { mu.removedNodes.forEach(function(n) { if (n.id === '__db__') setTimeout(cr, 0); }); }); }).observe(document.body, { childList: true });
+            window.addEventListener('resize', function() { var el = document.getElementById('__db__'); if (el) pos(el); });
         }
-        if (document.body) cr(); else { var w = setInterval(function() { if (document.body) { clearInterval(w); cr(); } }, 10); }
+        function tip() {
+            var t = document.createElement('div');
+            t.textContent = '让茶壶来为您戴套哟~ 狗修金sama~ ❤';
+            t.style.cssText = 'position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;background:#166d3b!important;color:#fff!important;padding:12px 24px!important;border-radius:12px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:16px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0;transition:opacity 0.3s ease!important';
+            document.body.appendChild(t);
+            setTimeout(function() { t.style.opacity = '1'; }, 10);
+            setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 1000);
+        }
+        if (document.body) { cr(); tip(); } else { var w = setInterval(function() { if (document.body) { clearInterval(w); cr(); tip(); } }, 10); }
     }
     sB();
     console.log('[Defender] 防护已启动');
