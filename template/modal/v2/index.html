@@ -1069,21 +1069,28 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	}
 
 	function applyPage(pg) {
-		var bg = '#' + (G.bgColor || G.bg || '050505');
+		var bg = '#' + (pg.parentBgColor || G.bgColor || G.bg || '050505');
 		var bd = document.getElementById('backdrop');
 		if (G.bgTransparent) {
-			document.body.style.background = 'transparent';
 			if (bd) bd.style.background = 'transparent';
-		} else if (P === 'pc' && pg.bgImgPc) {
-			document.body.style.background = 'url(' + fixUrl(pg.bgImgPc) + ') center/cover no-repeat';
-		} else if (P !== 'pc' && pg.bgImgMobile) {
-			document.body.style.background = 'url(' + fixUrl(pg.bgImgMobile) + ') center/cover no-repeat';
+		} else if (P === 'pc' && pg.parentBgImgPc) {
+			var mode = pg.parentBgImgPcMode || 'cover';
+			var align = pg.parentBgImgPcAlign || 'height';
+			var offset = pg.parentBgImgPcOffset || 0;
+			var pos = mode === 'contain' ? 'center' : (align === 'height' ? (offset + '% center') : ('center ' + offset + '%'));
+			if (bd) bd.style.background = 'url(' + fixUrl(pg.parentBgImgPc) + ') ' + pos + '/' + mode + ' no-repeat ' + bg;
+		} else if (P !== 'pc' && pg.parentBgImgMobile) {
+			var mode = pg.parentBgImgMobileMode || 'cover';
+			var align = pg.parentBgImgMobileAlign || 'height';
+			var offset = pg.parentBgImgMobileOffset || 0;
+			var pos = mode === 'contain' ? 'center' : (align === 'height' ? (offset + '% center') : ('center ' + offset + '%'));
+			if (bd) bd.style.background = 'url(' + fixUrl(pg.parentBgImgMobile) + ') ' + pos + '/' + mode + ' no-repeat ' + bg;
 		} else {
-			document.body.style.background = bg;
+			if (bd) bd.style.background = bg;
 		}
 		var modalBg = pg.modalBg || G.defModalBg || G.modal || '0d0d0d';
 		var opacity = (100 - (pg.modalOpacity !== undefined ? pg.modalOpacity : (G.defModalOpacity !== undefined ? G.defModalOpacity : 0))) / 100;
-		var blur = pg.modalBlur || G.defModalBlur || 0;
+		var blur = (pg.modalBlur || G.defModalBlur || 0) * 0.2;
 		var wPct = pg.widthPct || 80;
 		var hPct = pg.heightPct || 80;
 		var mwPct = pg.maxWidthPct || 100;
@@ -1095,6 +1102,13 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var st = 'width:' + w + 'px;height:' + h + 'px;background:' + hex2rgba(modalBg, opacity) + ';';
 		if (blur > 0) st += 'backdrop-filter:blur(' + blur + 'px);';
 		if (pg.modalBgImg) st = 'width:' + w + 'px;height:' + h + 'px;background:url(' + fixUrl(pg.modalBgImg) + ') center/cover no-repeat;';
+		var oxPct = pg.modalOffsetX || 0;
+		var oyPct = pg.modalOffsetY || 0;
+		var maxOx = (bw - w) / 2;
+		var maxOy = (bh - h) / 2;
+		var ox = Math.max(-maxOx, Math.min(maxOx, bw * oxPct / 100));
+		var oy = Math.max(-maxOy, Math.min(maxOy, bh * oyPct / 100));
+		if (ox !== 0 || oy !== 0) st += 'transform:translate(' + ox + 'px,' + oy + 'px);';
 		var minSize = Math.min(w, h);
 		if (pg.modalCornerType === 'cut') {
 			var cutPx = (pg.modalHexOffset || 0) * minSize / 200;
@@ -1227,7 +1241,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		if (el.textItalic) ts += 'font-style:italic;';
 		if (el.textUnderline) ts += 'text-decoration:underline;';
 		if (el.textStrike) ts += 'text-decoration:line-through;';
-		if (el.textBg) ts += 'background:#000000;padding:2px 6px;border-radius:4px;';
+		if (el.textBg === 'on') ts += 'background:#000000;padding:2px 6px;border-radius:4px;';
+		if (el.textBorder === 'on') ts += 'border:1px solid #ffffff;padding:2px 6px;border-radius:4px;';
 		if (el.textOpacity) ts += 'opacity:' + ((100 - el.textOpacity) / 100) + ';';
 		var attr = ' data-action="' + (el.clickAction || 'none') + '"';
 		if (el.clickTarget) attr += ' data-target="' + el.clickTarget + '"';
@@ -1386,7 +1401,18 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 				else flex = 'flex:0 0 calc(' + pct.toFixed(2) + '% - ' + gap + 'px)';
 			}
 			var content = isMulti ? col.map(function(c) { return '<div class="row-col-item">' + renderEl(c, pg) + '</div>'; }).join('') : renderEl(col, pg);
-			h += '<div class="' + colCls + '" style="' + flex + '"' + colAttr + '>' + content + '</div>';
+			var colStyle = flex;
+			if (!isMulti && col.useBorder) {
+				var bw = col.borderWidth !== undefined ? col.borderWidth : 2;
+				var bc = col.borderColor || '000000';
+				var bo = col.borderOpacity !== undefined ? (100 - col.borderOpacity) / 100 : 1;
+				var bb = col.borderBlur || 0;
+				var r = parseInt(bc.substr(0, 2), 16);
+				var g = parseInt(bc.substr(2, 2), 16);
+				var b = parseInt(bc.substr(4, 2), 16);
+				colStyle += ';box-shadow:inset 0 0 ' + bb + 'px ' + bw + 'px rgba(' + r + ',' + g + ',' + b + ',' + bo + ')';
+			}
+			h += '<div class="' + colCls + '" style="' + colStyle + '"' + colAttr + '>' + content + '</div>';
 		});
 		return h + '</div>';
 	}

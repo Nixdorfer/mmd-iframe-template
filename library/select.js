@@ -4,8 +4,10 @@ window.Select = {
     var h = '<div class="form-group"' + dc + '>';
     if (cfg.title) h += '<label>' + U.esc(cfg.title) + '</label>';
     h += '<select data-key="' + U.esc(cfg.key) + '">';
+    var defIdx = cfg.default !== undefined && cfg.default !== '' ? parseInt(cfg.default) : -1;
     (cfg.options || []).forEach(function(o, i) {
-      h += '<option value="' + U.esc(o) + '"' + (i === (cfg.default || 0) ? ' selected' : '') + '>' + U.esc(o) + '</option>';
+      var val = typeof o === 'object' ? (o.value || '') : o;
+      h += '<option value="' + U.esc(val) + '"' + (i === defIdx ? ' selected' : '') + '>' + U.esc(val) + '</option>';
     });
     h += '</select></div>';
     return h;

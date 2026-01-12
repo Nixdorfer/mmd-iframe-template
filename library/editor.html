@@ -205,6 +205,7 @@
 
 .ed-sec {
 	margin-bottom: 20px;
+	animation: edFadeIn 0.2s ease-out;
 }
 
 .ed-title {
@@ -597,10 +598,16 @@
 	color: #fff;
 }
 
+@keyframes edFadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
 .ed-fold {
 	background: #1a1a1a;
 	border-radius: 6px;
 	margin-bottom: 18px;
+	animation: edFadeIn 0.2s ease-out;
 }
 
 .ed-fold-hd {
@@ -626,22 +633,26 @@
 }
 
 .ed-fold-bd {
-	max-height: 0;
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.25s ease-out;
+}
+
+.ed-fold-inner {
 	overflow: hidden;
-	transition: max-height 0.3s;
 }
 
 .ed-fold-bd.open {
-	max-height: 800px;
+	grid-template-rows: 1fr;
 }
 
-.ed-fold-bd>.ed-row,
-.ed-fold-bd>.ed-row-wrap {
+.ed-fold-inner>.ed-row,
+.ed-fold-inner>.ed-row-wrap {
 	padding: 0 10px;
 }
 
-.ed-fold-bd>.ed-row:last-child,
-.ed-fold-bd>.ed-row-wrap:last-child {
+.ed-fold-inner>.ed-row:last-child,
+.ed-fold-inner>.ed-row-wrap:last-child {
 	padding-bottom: 10px;
 }
 
@@ -930,6 +941,11 @@
 }
 
 .ed-gallery-item.drag-over {
+	outline: 2px dashed var(--btn);
+	background: rgba(22, 109, 59, 0.2);
+}
+
+.gallery-item.drag-over {
 	outline: 2px dashed var(--btn);
 	background: rgba(22, 109, 59, 0.2);
 }
@@ -1344,7 +1360,7 @@
   </div>
 </div>
 <input type="file" id="galFileInput" multiple accept="image/*,video/*" style="display:none">
-<script src="https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/icon/icons.js"></script>
+<script src="../icon/icons.js"></script>
 <script>
   window.LZS = (function() {
     var k = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -1826,34 +1842,34 @@
               t: "upload",
               d: "手机端背景图"
             },
-            widthPct: {
-              t: "slider",
-              r: "10-100",
-              d: "宽度%",
-              v: 80
-            },
             heightPct: {
               t: "slider",
               r: "10-100",
-              d: "高度%",
+              d: "对话框高度%",
+              v: 80
+            },
+            widthPct: {
+              t: "slider",
+              r: "10-100",
+              d: "最大宽度(页面%)",
               v: 80
             },
             maxWidthPct: {
               t: "slider",
-              r: "10-200",
+              r: "1-500",
               d: "最大宽度(高度%)",
               v: 100
             },
             headerPct: {
               t: "slider",
-              r: "0-50",
-              d: "头部%",
+              r: "0-100",
+              d: "标题栏高度%",
               v: 0
             },
             footerPct: {
               t: "slider",
-              r: "0-50",
-              d: "底部%",
+              r: "0-100",
+              d: "结尾栏高度%",
               v: 0
             },
             modalBg: {
@@ -1867,12 +1883,12 @@
             modalOpacity: {
               t: "slider",
               r: "0-100",
-              d: "弹窗透明度"
+              d: "对话框透明度"
             },
             modalBlur: {
               t: "slider",
-              r: "0-20",
-              d: "弹窗模糊度"
+              r: "0-100",
+              d: "对话框模糊度"
             },
             modalCornerType: {
               t: "slide",
@@ -1914,7 +1930,7 @@
             },
             modalBorderBlur: {
               t: "slider",
-              r: "0-20",
+              r: "0-100",
               d: "边框模糊度"
             },
             modalOffsetX: {
@@ -2114,17 +2130,9 @@
         "image": {
           name: "图片",
           props: {
-            url: {
-              t: "upload",
-              d: "图片/视频"
-            },
-            urlInput: {
-              t: "input",
-              d: "或输入URL"
-            },
             gallerySelect: {
               t: "gallerySelect",
-              d: "选择"
+              d: "图片/视频"
             },
             clickAction: {
               t: "select",
@@ -2290,7 +2298,7 @@
             },
             blur: {
               t: "slider",
-              r: "0-20",
+              r: "0-100",
               d: "模糊度",
               v: 0
             },
@@ -2331,13 +2339,13 @@
             borderColor: {
               t: "color",
               d: "边框色",
-              v: "166d3b"
+              v: "000000"
             },
             borderWidth: {
               t: "slider",
               r: "0-100",
               d: "边框宽度",
-              v: 0
+              v: 2
             },
             borderOpacity: {
               t: "slider",
@@ -2389,8 +2397,20 @@
               v: "ffffff"
             },
             textBg: {
-              t: "toggle",
+              t: "slide",
+              ll: "关闭",
+              lv: "",
+              rl: "开启",
+              rv: "on",
               d: "文字背景"
+            },
+            textBorder: {
+              t: "slide",
+              ll: "关闭",
+              lv: "",
+              rl: "开启",
+              rv: "on",
+              d: "文字边框"
             },
             textOpacity: {
               t: "slider",
@@ -2595,7 +2615,7 @@
             },
             blur: {
               t: "slider",
-              r: "0-20",
+              r: "0-100",
               d: "模糊度",
               v: 0
             },
@@ -3458,7 +3478,7 @@
             },
             blur: {
               t: "slider",
-              r: "0-20",
+              r: "0-100",
               d: "模糊度"
             },
             useBg: {
@@ -4890,11 +4910,6 @@
       h += '</div></div>';
       h += '<div class="ed-fold"><div class="ed-fold-hd"><span>对话框背景</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
       h += self.ctrl('modalBg', pgCfg.modalBg, pg.modalBg, 'pg');
-      h += self.ctrl('widthPct', pgCfg.widthPct, pg.widthPct, 'pg');
-      h += self.ctrl('heightPct', pgCfg.heightPct, pg.heightPct, 'pg');
-      h += self.ctrl('modalOffsetX', pgCfg.modalOffsetX, pg.modalOffsetX, 'pg');
-      h += self.ctrl('modalOffsetY', pgCfg.modalOffsetY, pg.modalOffsetY, 'pg');
-      h += self.ctrl('modalOpacity', pgCfg.modalOpacity, pg.modalOpacity, 'pg');
       h += self.ctrl('modalCornerType', pgCfg.modalCornerType, pg.modalCornerType, 'pg');
       if (pg.modalCornerType === 'cut') {
         h += self.ctrl('modalHexOffset', pgCfg.modalHexOffset, pg.modalHexOffset, 'pg');
@@ -4926,9 +4941,14 @@
       }
       h += '</div></div>';
       h += '<div class="ed-fold"><div class="ed-fold-hd"><span>布局</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+      h += self.ctrl('heightPct', pgCfg.heightPct, pg.heightPct, 'pg');
+      h += self.ctrl('widthPct', pgCfg.widthPct, pg.widthPct, 'pg');
       h += self.ctrl('maxWidthPct', pgCfg.maxWidthPct, pg.maxWidthPct, 'pg');
+      h += self.ctrl('modalOffsetX', pgCfg.modalOffsetX, pg.modalOffsetX, 'pg');
+      h += self.ctrl('modalOffsetY', pgCfg.modalOffsetY, pg.modalOffsetY, 'pg');
       h += self.ctrl('headerPct', pgCfg.headerPct, pg.headerPct, 'pg');
       h += self.ctrl('footerPct', pgCfg.footerPct, pg.footerPct, 'pg');
+      h += self.ctrl('modalOpacity', pgCfg.modalOpacity, pg.modalOpacity, 'pg');
       h += self.ctrl('modalBlur', pgCfg.modalBlur, pg.modalBlur, 'pg');
       h += '</div></div>';
       return h
@@ -5172,8 +5192,7 @@
           h += self.ctrl('blur', cm.props.blur, col.blur, 'col', self.rowSel);
           h += self.ctrl('radius', cm.props.radius, col.radius, 'col', self.rowSel);
           h += self.ctrl('hexOffset', cm.props.hexOffset, col.hexOffset, 'col', self.rowSel);
-          h += self.ctrl('useBg', cm.props.useBg, col.useBg, 'col', self.rowSel);
-          if (col.useBg) h += self.ctrl('bgColor', cm.props.bgColor, col.bgColor, 'col', self.rowSel);
+          h += self.ctrl('bgColor', cm.props.bgColor, col.bgColor, 'col', self.rowSel);
           h += self.ctrl('useBorder', cm.props.useBorder, col.useBorder, 'col', self.rowSel);
           if (col.useBorder) {
             h += self.ctrl('borderColor', cm.props.borderColor, col.borderColor, 'col', self.rowSel);
@@ -5380,8 +5399,7 @@
         h += self.ctrl('blur', m.props.blur, el.blur, 'el');
         h += self.ctrl('radius', m.props.radius, el.radius, 'el');
         h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
-        h += self.ctrl('useBg', m.props.useBg, el.useBg, 'el');
-        if (el.useBg) h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
         h += self.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
         if (el.useBorder) {
           h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
@@ -5441,9 +5459,7 @@
           h += '</div></div>';
         }
       } else if (el.type === 'image') {
-        h += self.ctrl('url', m.props.url, el.url, 'el');
-        h += self.ctrl('urlInput', m.props.urlInput, el.urlInput, 'el');
-        h += self.ctrl('gallerySelect', m.props.gallerySelect, el.gallerySelect, 'el');
+        h += self.ctrl('gallerySelect', m.props.gallerySelect, el.url, 'el');
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('clickAction', m.props.clickAction, el.clickAction, 'el');
         if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
@@ -5476,8 +5492,7 @@
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
         h += self.ctrl('blur', m.props.blur, el.blur, 'el');
-        h += self.ctrl('useBg', m.props.useBg, el.useBg, 'el');
-        if (el.useBg) h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
         h += self.ctrl('radius', m.props.radius, el.radius, 'el');
         h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
         h += self.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
@@ -5505,6 +5520,7 @@
         h += '<button class="ed-btn sm add-opt-btn" style="margin-top:8px">' + self.icon('plus') + ' 添加选项</button>';
         h += '</div></div>';
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>标题文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('title', {t: 'input', d: '标题'}, el.title, 'el');
         h += self.ctrl('titleSize', m.props.titleSize, el.titleSize, 'el');
         h += self.ctrl('titleColor', m.props.titleColor, el.titleColor, 'el');
         h += self.ctrl('titleFont', m.props.titleFont, el.titleFont, 'el');
@@ -5651,8 +5667,7 @@
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
         h += self.ctrl('blur', m.props.blur, el.blur, 'el');
-        h += self.ctrl('useBg', m.props.useBg, el.useBg, 'el');
-        if (el.useBg) h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
         h += self.ctrl('radius', m.props.radius, el.radius, 'el');
         h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
         h += self.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
@@ -5911,15 +5926,13 @@
         h += '<div class="ed-gallery" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>';
         var urls = v || [];
         urls.forEach(function(u, gi) {
-          h += '<div style="margin-bottom:8px;padding:8px;background:#1a1a1a;border-radius:6px">';
-          h += '<div style="display:flex;gap:4px;align-items:center">';
-          if (gi > 0) h += '<button class="gallery-mv" data-gi="' + gi + '" data-d="-1" style="background:none;border:none;color:#888;cursor:pointer">◀</button>';
-          else h += '<span style="width:16px"></span>';
-          h += '<span style="flex:1;text-align:center;color:#666;font-size:11px">' + (gi + 1) + '</span>';
-          if (gi < urls.length - 1) h += '<button class="gallery-mv" data-gi="' + gi + '" data-d="1" style="background:none;border:none;color:#888;cursor:pointer">▶</button>';
-          else h += '<span style="width:16px"></span>';
-          h += '<button class="gallery-del" data-gi="' + gi + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>';
-          h += '<div style="display:flex;gap:4px;margin-top:4px"><button class="ed-btn sm gal-up" data-gi="' + gi + '">选择</button><input data-gi="' + gi + '" value="' + U.esc(u) + '" placeholder="或输入URL" style="flex:1"></div></div>'
+          h += '<div class="gallery-item" data-gi="' + gi + '" draggable="true" style="margin-bottom:8px;padding:8px;background:#1a1a1a;border-radius:6px;display:flex;gap:8px;align-items:center">';
+          h += '<div class="gallery-drag-handle" style="cursor:grab;color:#666;display:grid;grid-template-columns:repeat(2,4px);gap:3px;padding:4px">';
+          for (var di = 0; di < 6; di++) h += '<span style="width:4px;height:4px;background:#666;border-radius:50%"></span>';
+          h += '</div>';
+          h += '<span style="color:#666;font-size:11px;min-width:16px;text-align:center">' + (gi + 1) + '</span>';
+          h += '<button class="ed-btn sm gal-up" data-gi="' + gi + '" style="flex:1">选择图片</button>';
+          h += '<button class="gallery-del" data-gi="' + gi + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
         });
         h += '<button class="ed-btn sm gallery-add" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>' + self.icon('plus') + ' 添加图片</button></div>'
       } else if (prop.t === 'model') {
@@ -5960,6 +5973,12 @@
     },
     bindR: function() {
       var self = this;
+      document.querySelectorAll('.ed-fold-bd').forEach(function(bd) {
+        var inner = document.createElement('div');
+        inner.className = 'ed-fold-inner';
+        while (bd.firstChild) inner.appendChild(bd.firstChild);
+        bd.appendChild(inner);
+      });
       var db = document.getElementById('delElBtn');
       if (db) db.onclick = function() {
         self.del()
@@ -6049,7 +6068,6 @@
           G.open(function(url) {
             if (url) {
               self.setProp(k, url, s, ci !== undefined ? parseInt(ci) : null);
-              if (k === 'url') self.setProp('urlInput', '', s, ci !== undefined ? parseInt(ci) : null);
               self.renderR()
             }
           })
@@ -6104,23 +6122,41 @@
           self.renderR()
         }
       });
-      document.querySelectorAll('.gallery-mv').forEach(function(b) {
-        b.onclick = function() {
-          var gi = parseInt(b.dataset.gi),
-            d = parseInt(b.dataset.d),
-            g = b.closest('.ed-gallery'),
-            k = g.dataset.k;
-          var el = self.pj[self.cur].data.pages[self.pg].elements[self.sel];
-          var urls = el[k] || [];
-          var ni = gi + d;
-          if (ni < 0 || ni >= urls.length) return;
-          var tmp = urls[gi];
-          urls[gi] = urls[ni];
-          urls[ni] = tmp;
-          el[k] = urls;
-          self.save();
-          self.renderR()
-        }
+      document.querySelectorAll('.ed-gallery').forEach(function(gallery) {
+        var dragItem = null, dragGi = null;
+        gallery.querySelectorAll('.gallery-item').forEach(function(item) {
+          item.addEventListener('dragstart', function(e) {
+            if (!e.target.closest('.gallery-drag-handle')) { e.preventDefault(); return; }
+            dragItem = item;
+            dragGi = parseInt(item.dataset.gi);
+            item.style.opacity = '0.5';
+          });
+          item.addEventListener('dragend', function() {
+            item.style.opacity = '1';
+            gallery.querySelectorAll('.gallery-item').forEach(function(el) { el.classList.remove('drag-over'); });
+            dragItem = null;
+            dragGi = null;
+          });
+          item.addEventListener('dragover', function(e) { e.preventDefault(); });
+          item.addEventListener('dragenter', function(e) {
+            e.preventDefault();
+            if (dragItem && item !== dragItem) item.classList.add('drag-over');
+          });
+          item.addEventListener('dragleave', function() { item.classList.remove('drag-over'); });
+          item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            item.classList.remove('drag-over');
+            if (!dragItem || item === dragItem) return;
+            var targetGi = parseInt(item.dataset.gi), k = gallery.dataset.k;
+            var el = self.pj[self.cur].data.pages[self.pg].elements[self.sel];
+            var urls = el[k] || [];
+            var moved = urls.splice(dragGi, 1)[0];
+            urls.splice(targetGi, 0, moved);
+            el[k] = urls;
+            self.save();
+            self.renderR();
+          });
+        });
       });
       document.querySelectorAll('.gal-up').forEach(function(b) {
         b.onclick = function() {
@@ -6135,18 +6171,6 @@
               self.renderR()
             }
           })
-        }
-      });
-      document.querySelectorAll('.ed-gallery input[data-gi]').forEach(function(inp) {
-        inp.oninput = function() {
-          var gi = parseInt(inp.dataset.gi),
-            g = inp.closest('.ed-gallery'),
-            k = g.dataset.k;
-          var el = self.pj[self.cur].data.pages[self.pg].elements[self.sel];
-          var urls = el[k] || [];
-          urls[gi] = inp.value;
-          el[k] = urls;
-          self.save()
         }
       });
       document.querySelectorAll('[data-k]').forEach(function(c) {
@@ -6171,7 +6195,6 @@
             }).then(function(d) {
               if (d.data && d.data[0]) {
                 self.setProp(k, d.data[0], s, ci);
-                if (k === 'url') self.setProp('urlInput', '', s, ci);
                 self.renderR()
               } else if (btn) btn.textContent = '失败'
             }).catch(function() {
@@ -6185,16 +6208,27 @@
             var txt = c.parentElement.querySelector('.ed-ctxt');
             if (txt) txt.value = hex
           }
+        } else if (c.type === 'range') {
+          c.oninput = function() {
+            var v = parseInt(c.value) || 0;
+            var edv = c.parentElement && c.parentElement.querySelector('.ed-v');
+            if (edv) edv.textContent = v;
+            var wrap = c.closest('.ed-row-wrap');
+            if (wrap) {
+              var btns = wrap.querySelector('.ed-mod-btns');
+              var dv = btns ? btns.dataset.dv : '';
+              if (String(v) === String(dv)) wrap.classList.remove('modified');
+              else wrap.classList.add('modified');
+            }
+            self.setProp(k, v, s, ci, true);
+          };
+          c.onchange = function() {
+            self.save()
+          }
         } else {
           c.oninput = c.onchange = function() {
-            var v = c.type === 'checkbox' ? c.checked : c.type === 'range' ? (parseInt(c.value) || 0) : c.value;
+            var v = c.type === 'checkbox' ? c.checked : c.value;
             if (c.tagName === 'SELECT' && k === 'clickTarget') v = parseInt(v);
-            if (c.type === 'range') {
-              var edv = c.parentElement && c.parentElement.querySelector('.ed-v');
-              if (edv) edv.textContent = v;
-              var wrap = c.closest('.ed-row-wrap');
-              if (wrap) wrap.classList.add('modified');
-            }
             if (c.classList.contains('ed-ctxt')) {
               var cp = c.parentElement.querySelector('input[type=color]');
               if (cp) cp.value = '#' + v
@@ -6203,7 +6237,6 @@
               self.setColRatio(ci, parseInt(v) || 1);
               return
             }
-            if (k === 'urlInput' && v) self.setProp('url', '', s, ci);
             self.setProp(k, v, s, ci);
             if (k === 'clickAction' || k === 'disableAfterClick' || k === 'logicGroup') self.renderR()
           }
@@ -6469,7 +6502,7 @@
       el.ratio = ratio;
       this.save()
     },
-    setProp: function(k, v, scope, ci) {
+    setProp: function(k, v, scope, ci, noHist) {
       if (!this.cur) return;
       var d = this.pj[this.cur].data;
       if (scope === 'g') d.global[k] = v;
@@ -6500,7 +6533,7 @@
           el[k] = v
         }
       }
-      this.save()
+      this.save(noHist)
     },
     stripDefaults: function(data) {
       var self = this;
