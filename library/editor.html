@@ -204,7 +204,7 @@
 }
 
 .ed-sec {
-	margin-bottom: 16px;
+	margin-bottom: 20px;
 }
 
 .ed-title {
@@ -228,7 +228,7 @@
 	justify-content: center;
 	gap: 6px;
 	transition: background 0.2s;
-	margin-bottom: 6px;
+	margin-bottom: 10px;
 }
 
 .ed-btn:hover {
@@ -238,6 +238,11 @@
 .ed-btn.sm {
 	font-size: 12px;
 	padding: 8px;
+	background: #252525;
+}
+
+.ed-btn.sm:hover {
+	background: #303030;
 }
 
 .ed-btn.del {
@@ -249,7 +254,7 @@
 }
 
 .ed-row {
-	margin-bottom: 14px;
+	margin-bottom: 18px;
 }
 
 .ed-row label {
@@ -595,7 +600,7 @@
 .ed-fold {
 	background: #1a1a1a;
 	border-radius: 6px;
-	margin-bottom: 14px;
+	margin-bottom: 18px;
 }
 
 .ed-fold-hd {
@@ -1472,6 +1477,7 @@
     zone: 'content',
     multiSel: [],
     tab: 0,
+    foldStates: {},
     list: false,
     listTab: 0,
     cfg: null,
@@ -3382,6 +3388,7 @@
           var nt = parseInt(t.closest('.ed-tab').dataset.t);
           if (nt !== self.tab) {
             var dir = nt > self.tab ? 'l' : 'r';
+            self.saveFoldState();
             self.tab = nt;
             self.rowSel = null;
             self.slideR(dir)
@@ -4499,15 +4506,18 @@
         })
       }, 10)
     },
+    saveFoldState: function() {
+      var states = [];
+      document.querySelectorAll('.ed-fold-hd').forEach(function(hd) {
+        states.push(hd.classList.contains('open'))
+      });
+      this.foldStates[this.tab] = states
+    },
     renderR: function() {
       var p = document.getElementById('ed-body'),
         d = this.cur ? this.pj[this.cur].data : null,
         pg = d && d.pages && d.pages[this.pg],
         isPhone = pg && pg.type === 'phone';
-      var openFolds = [];
-      document.querySelectorAll('.ed-fold-hd.open').forEach(function(hd, i) {
-        openFolds.push(i)
-      });
       var tabs = document.querySelectorAll('.ed-tab');
       var chatEnabled = L.roleId === '174750' || L.roleId === '230974';
       tabs.forEach(function(t) {
@@ -4523,14 +4533,16 @@
         case 4: p.innerHTML = this.renderChat(); break;
       }
       this.bindR();
-      openFolds.forEach(function(i) {
-        var hds = document.querySelectorAll('.ed-fold-hd');
-        if (hds[i]) {
-          hds[i].classList.add('open');
-          var bd = hds[i].nextElementSibling;
-          if (bd) bd.classList.add('open')
-        }
-      });
+      var states = this.foldStates[this.tab];
+      if (states) {
+        document.querySelectorAll('.ed-fold-hd').forEach(function(hd, i) {
+          if (states[i]) {
+            hd.classList.add('open');
+            var bd = hd.nextElementSibling;
+            if (bd) bd.classList.add('open')
+          }
+        })
+      }
       this.updateScrollbar()
     },
     updateScrollbar: function() {
