@@ -31,7 +31,6 @@ body {
 	text-align: center;
 	flex-shrink: 0;
 	overflow: visible;
-	cursor: move;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
@@ -1078,6 +1077,41 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		document.documentElement.style.setProperty('--btn', '#' + (G.defBtnBg || G.btn || '166d3b'));
 	}
 
+	function applyBgImg(el, url, mode, offset, bgColor) {
+		if (!el) return;
+		var bg = bgColor || '#050505';
+		if (mode === 'contain') {
+			el.style.background = 'url(' + url + ') center/contain no-repeat ' + bg;
+			return;
+		}
+		var img = new Image();
+		img.onload = function() {
+			var sx = el.offsetWidth, sy = el.offsetHeight;
+			var ix = img.naturalWidth, iy = img.naturalHeight;
+			var sLandscape = sx > sy, iLandscape = ix > iy;
+			var pos;
+			if (sLandscape === iLandscape) {
+				var sr = sx / sy, ir = ix / iy;
+				if (ir > sr) {
+					pos = offset + '% center';
+				} else {
+					pos = 'center ' + offset + '%';
+				}
+			} else {
+				if (sLandscape) {
+					pos = 'center ' + offset + '%';
+				} else {
+					pos = offset + '% center';
+				}
+			}
+			el.style.background = 'url(' + url + ') ' + pos + '/cover no-repeat ' + bg;
+		};
+		img.onerror = function() {
+			el.style.background = bg;
+		};
+		el.style.background = bg;
+		img.src = url;
+	}
 	function applyPage(pg) {
 		var bg = '#' + (pg.parentBgColor || G.bgColor || G.bg || '050505');
 		var bd = document.getElementById('backdrop');
@@ -1085,16 +1119,12 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			if (bd) bd.style.background = 'transparent';
 		} else if (P === 'pc' && pg.parentBgImgPc) {
 			var mode = pg.parentBgImgPcMode || 'cover';
-			var align = pg.parentBgImgPcAlign || 'height';
 			var offset = pg.parentBgImgPcOffset || 0;
-			var pos = mode === 'contain' ? 'center' : (align === 'height' ? (offset + '% center') : ('center ' + offset + '%'));
-			if (bd) bd.style.background = 'url(' + fixUrl(pg.parentBgImgPc) + ') ' + pos + '/' + mode + ' no-repeat ' + bg;
+			applyBgImg(bd, fixUrl(pg.parentBgImgPc), mode, offset, bg);
 		} else if (P !== 'pc' && pg.parentBgImgMobile) {
 			var mode = pg.parentBgImgMobileMode || 'cover';
-			var align = pg.parentBgImgMobileAlign || 'height';
 			var offset = pg.parentBgImgMobileOffset || 0;
-			var pos = mode === 'contain' ? 'center' : (align === 'height' ? (offset + '% center') : ('center ' + offset + '%'));
-			if (bd) bd.style.background = 'url(' + fixUrl(pg.parentBgImgMobile) + ') ' + pos + '/' + mode + ' no-repeat ' + bg;
+			applyBgImg(bd, fixUrl(pg.parentBgImgMobile), mode, offset, bg);
 		} else {
 			if (bd) bd.style.background = bg;
 		}
@@ -1209,7 +1239,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		if (url && url.indexOf('https://sexyai.top/') === 0) url = url.replace('https://sexyai.top/', 'https://r2.sexyai.top/');
 		else if (url && url.indexOf('://') === -1 && url) url = 'https://r2.sexyai.top/' + (url.charAt(0) === '/' ? url.slice(1) : url);
 		if (!url) {
-			if (L.edit) return '<div class="img-placeholder" style="width:' + (el.width || 100) + '%;height:' + (el.height || 100) + 'px"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>';
+			if (L.edit) return '<div class="img-wrap ' + (el.align || 'center') + '" style="width:' + (el.width || 100) + '%"><div class="img-placeholder" style="width:100%;height:' + (el.height || 100) + 'px"><svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div></div>';
 			return '';
 		}
 		var isVideo = /\.(mp4|webm|ogg)$/i.test(url);
@@ -1243,7 +1273,15 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			case 'rect': st += 'border-radius:0;'; break;
 			case 'hexagon': st += 'clip-path:polygon(' + (el.hexWidth || 15) + '% 0,' + ((100 - (el.hexWidth || 15))) + '% 0,100% 50%,' + ((100 - (el.hexWidth || 15))) + '% 100%,' + (el.hexWidth || 15) + '% 100%,0 50%);'; break;
 		}
-		if (el.borderWidth) st += 'box-shadow:inset 0 0 0 ' + el.borderWidth + 'px #' + (el.borderColor || '166d3b') + ';';
+		if (el.useBorder && el.borderWidth) {
+			var bc = el.borderColor || '166d3b';
+			var bo = el.borderOpacity !== undefined ? (100 - el.borderOpacity) / 100 : 1;
+			var bb = el.borderBlur || 0;
+			var r = parseInt(bc.substr(0, 2), 16);
+			var g = parseInt(bc.substr(2, 2), 16);
+			var b = parseInt(bc.substr(4, 2), 16);
+			st += 'box-shadow:inset 0 0 ' + bb + 'px ' + el.borderWidth + 'px rgba(' + r + ',' + g + ',' + b + ',' + bo + ');';
+		}
 		if (el.width) st += 'width:' + el.width + '%;';
 		var ts = '';
 		if (el.textSize) ts += 'font-size:' + el.textSize + 'px;';
@@ -1304,7 +1342,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		h += '<select data-key="' + U.esc(el.key || '') + '">';
 		var opts = Array.isArray(el.options) ? el.options : (el.options ? el.options.split('\n') : []);
 		opts.forEach(function(o, i) {
-			h += '<option value="' + U.esc(o) + '"' + (i === (el.default || 0) ? ' selected' : '') + '>' + U.esc(o) + '</option>';
+			var val = typeof o === 'object' ? (o.value || '') : o;
+			h += '<option value="' + U.esc(val) + '"' + (i === (el.default || 0) ? ' selected' : '') + '>' + U.esc(val) + '</option>';
 		});
 		return h + '</select></div>';
 	}
@@ -1522,7 +1561,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		bindImages();
 		bindSwitches();
 		bindCollapse();
-		bindDrag();
+		bindDrag(pg);
 		applyState();
 		syncBtnSizes();
 		syncRowHeights();
@@ -1653,10 +1692,16 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	}
 
 	var dragOff = {x: 0, y: 0};
-	function bindDrag() {
+	function bindDrag(pg) {
 		var hd = document.querySelector('.modal-header');
 		var ct = document.getElementById('root');
 		if (!hd || !ct) return;
+		if (!pg.draggable) {
+			hd.style.cursor = '';
+			hd.onmousedown = null;
+			return;
+		}
+		hd.style.cursor = 'move';
 		hd.onmousedown = function(e) {
 			if (e.target.closest('button, input, select, .switch')) return;
 			var rect = ct.getBoundingClientRect();
@@ -1714,11 +1759,42 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	function showModelPicker() {
 		var d = document.createElement('div');
 		d.className = 'detail';
-		d.innerHTML = '<div style="background:#1a1a1a;padding:20px;border-radius:12px;max-width:90vw;max-height:80vh;overflow-y:auto"><div style="color:#fff;font-size:16px;margin-bottom:16px">选择模型</div><div id="model-list" style="color:#888">加载中...</div></div>';
+		var tempSelected = null;
+		var streamOn = true;
+		d.innerHTML = '<div style="background:#1a1a1a;padding:20px;border-radius:12px;width:480px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column">' +
+			'<div style="color:#fff;font-size:16px;margin-bottom:16px">选择模型</div>' +
+			'<div id="model-list" style="color:#888;flex:1;overflow-y:auto;min-height:200px">加载中...</div>' +
+			'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid #333">' +
+				'<div style="display:flex;align-items:center;gap:10px">' +
+					'<span style="color:#888;font-size:14px">流式输出</span>' +
+					'<div id="stream-toggle" style="position:relative;width:44px;height:24px;background:#166d3b;border-radius:12px;cursor:pointer">' +
+						'<div style="position:absolute;top:3px;left:23px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .2s"></div>' +
+					'</div>' +
+				'</div>' +
+				'<div style="display:flex;gap:10px">' +
+					'<button id="model-cancel" style="padding:10px 20px;background:#333;border:none;border-radius:8px;color:#888;cursor:pointer;font-size:14px">关闭</button>' +
+					'<button id="model-confirm" style="padding:10px 20px;background:#333;border:none;border-radius:8px;color:#666;cursor:not-allowed;font-size:14px" disabled>确定</button>' +
+				'</div>' +
+			'</div>' +
+		'</div>';
 		d.onclick = function(e) {
 			if (e.target === d) d.remove();
 		};
 		document.body.appendChild(d);
+		var toggle = document.getElementById('stream-toggle');
+		var thumb = toggle.querySelector('div');
+		toggle.onclick = function() {
+			streamOn = !streamOn;
+			toggle.style.background = streamOn ? '#166d3b' : '#333';
+			thumb.style.left = streamOn ? '23px' : '3px';
+		};
+		document.getElementById('model-cancel').onclick = function() { d.remove(); };
+		document.getElementById('model-confirm').onclick = function() {
+			if (tempSelected) {
+				selectedModel = {id: tempSelected.id, name: tempSelected.name, stream: streamOn && tempSelected.enableStream === 1, maxToken: tempSelected.maxTokenList[0]?.maxToken || 4000};
+				d.remove();
+			}
+		};
 		fetch('https://sexyai.top/api/model/list', {
 			method: 'POST',
 			headers: {'Content-Type': 'application/json', 'lang': 'ZH'},
@@ -1729,17 +1805,21 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			list.innerHTML = '';
 			res.data.forEach(function(m) {
 				var row = document.createElement('div');
-				row.style.cssText = 'padding:12px;margin:8px 0;background:#252525;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between';
-				var left = '<div><div style="color:#fff;font-size:14px">' + m.name + '</div><div style="color:#666;font-size:12px">' + m.deductNum + '电/次</div></div>';
-				var right = '';
-				if (m.enableStream === 1) {
-					right = '<label style="display:flex;align-items:center;color:#888;font-size:12px" onclick="event.stopPropagation()"><input type="checkbox" data-stream="' + m.id + '" checked style="margin-right:4px">流式</label>';
-				}
-				row.innerHTML = left + right;
+				row.style.cssText = 'padding:12px;margin:8px 0;background:#252525;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border:2px solid transparent;transition:border-color .2s,background .2s';
+				row.innerHTML = '<div><div style="color:#fff;font-size:14px">' + m.name + '</div><div style="color:#666;font-size:12px">' + m.deductNum + '电/次</div></div>';
 				row.onclick = function() {
-					var streamCheck = row.querySelector('input[data-stream]');
-					selectedModel = {id: m.id, name: m.name, stream: streamCheck ? streamCheck.checked : false, maxToken: m.maxTokenList[0]?.maxToken || 4000};
-					d.remove();
+					list.querySelectorAll('div[style*="border"]').forEach(function(r) {
+						r.style.borderColor = 'transparent';
+						r.style.background = '#252525';
+					});
+					row.style.borderColor = '#166d3b';
+					row.style.background = '#1a2e1f';
+					tempSelected = m;
+					var confirmBtn = document.getElementById('model-confirm');
+					confirmBtn.disabled = false;
+					confirmBtn.style.background = '#166d3b';
+					confirmBtn.style.color = '#fff';
+					confirmBtn.style.cursor = 'pointer';
 				};
 				list.appendChild(row);
 			});
@@ -1901,10 +1981,12 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	};
 
 	if (L.edit) {
-		window.modalRender = function(d) {
+		window.modalRender = function(d, pgIdx) {
 			C = d;
 			G = C.global || {};
 			pages = C.pages || [];
+			if (typeof pgIdx === 'number') curPage = pgIdx;
+			document.getElementById('root').innerHTML = '';
 			document.getElementById('phoneWrap').style.display = 'none';
 			document.getElementById('root').style.display = '';
 			document.getElementById('backdrop').style.display = '';

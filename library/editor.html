@@ -93,19 +93,6 @@
 	background: #1a1a1a;
 }
 
-.ed-ladd {
-	background: none;
-	border: none;
-	color: #666;
-	cursor: pointer;
-	padding: 8px;
-	margin-left: auto;
-}
-
-.ed-ladd:hover {
-	color: #fff;
-}
-
 .ed-lbody {
 	flex: 1;
 	overflow-y: auto;
@@ -850,6 +837,34 @@
 	font-size: 11px;
 	color: #888;
 	margin-top: 4px;
+}
+
+.ed-anim-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 8px;
+}
+
+.ed-anim-item {
+	padding: 12px 8px;
+	cursor: pointer;
+	border-radius: 6px;
+	text-align: center;
+	color: #888;
+	background: #252525;
+	border: 2px solid transparent;
+	transition: all 0.15s;
+}
+
+.ed-anim-item:hover {
+	color: #fff;
+	background: #333;
+}
+
+.ed-anim-item.on {
+	color: #fff;
+	border-color: #4a4;
+	background: rgba(68, 170, 68, 0.15);
 }
 
 .ed-gallery-modal {
@@ -1888,18 +1903,6 @@
               r: "-50-50",
               d: "垂直偏移%"
             },
-            mobileHeaderPct: {
-              t: "slider",
-              r: "0-100",
-              d: "标题栏高度%",
-              v: 0
-            },
-            mobileFooterPct: {
-              t: "slider",
-              r: "0-100",
-              d: "结尾栏高度%",
-              v: 0
-            },
             pcHeightPct: {
               t: "slider",
               r: "10-100",
@@ -1928,17 +1931,17 @@
               r: "-50-50",
               d: "垂直偏移%"
             },
-            pcHeaderPct: {
+            headerPct: {
               t: "slider",
               r: "0-100",
               d: "标题栏高度%",
-              v: 0
+              v: 10
             },
-            pcFooterPct: {
+            footerPct: {
               t: "slider",
               r: "0-100",
               d: "结尾栏高度%",
-              v: 0
+              v: 10
             },
             modalBg: {
               t: "color",
@@ -2011,56 +2014,6 @@
               r: "-50-50",
               d: "垂直偏移%"
             },
-            modalBgImgPc: {
-              t: "upload",
-              d: "电脑背景图"
-            },
-            modalBgImgPcMode: {
-              t: "slide",
-              d: "显示模式",
-              ll: "裁剪",
-              rl: "缩放",
-              lv: "cover",
-              rv: "contain"
-            },
-            modalBgImgPcAlign: {
-              t: "slide",
-              d: "对齐标准",
-              ll: "高度",
-              rl: "宽度",
-              lv: "height",
-              rv: "width"
-            },
-            modalBgImgPcOffset: {
-              t: "slider",
-              r: "-100-100",
-              d: "裁剪偏移"
-            },
-            modalBgImgMobile: {
-              t: "upload",
-              d: "手机背景图"
-            },
-            modalBgImgMobileMode: {
-              t: "slide",
-              d: "显示模式",
-              ll: "裁剪",
-              rl: "缩放",
-              lv: "cover",
-              rv: "contain"
-            },
-            modalBgImgMobileAlign: {
-              t: "slide",
-              d: "对齐标准",
-              ll: "高度",
-              rl: "宽度",
-              lv: "height",
-              rv: "width"
-            },
-            modalBgImgMobileOffset: {
-              t: "slider",
-              r: "-100-100",
-              d: "裁剪偏移"
-            },
             coverParent: {
               t: "toggle",
               d: "添加背景覆盖父页面",
@@ -2073,6 +2026,10 @@
             clickBgReturn: {
               t: "toggle",
               d: "点击背景返回父页面"
+            },
+            draggable: {
+              t: "toggle",
+              d: "按住标题栏可拖动"
             },
             parentBgColor: {
               t: "color",
@@ -3630,6 +3587,229 @@
               d: "对齐"
             }
           }
+        },
+        "aiReplyContent": {
+          name: "AI回复内容",
+          props: {
+            showUserMsg: {
+              t: "toggle",
+              d: "展示用户消息"
+            },
+            showSysContent: {
+              t: "toggle",
+              d: "用户消息展示系统内容"
+            },
+            userMsgSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号"
+            },
+            userMsgFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            userMsgBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            userMsgItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            userMsgUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            userMsgStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            userMsgColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "ffffff"
+            },
+            userMsgAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐"
+            },
+            displayMode: {
+              t: "select",
+              r: self.aiDisplayModes,
+              d: "显示模式",
+              v: "bubble"
+            },
+            bubbleOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            bubbleBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度"
+            },
+            bubbleBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "1a1a1a"
+            },
+            bubbleRadius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 12
+            },
+            bubbleHexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移"
+            },
+            bubbleBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 100
+            },
+            bubbleBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            bubbleBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            bubbleBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 1
+            },
+            flatOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            flatBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度"
+            },
+            flatBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "0d0d0d"
+            },
+            flatBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度"
+            },
+            flatBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            flatBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            flatBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度"
+            },
+            opacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            blur: {
+              t: "slider",
+              r: "0-100",
+              d: "模糊度"
+            },
+            bgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "0d0d0d"
+            },
+            radius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 8
+            },
+            hexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移"
+            },
+            borderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度"
+            },
+            borderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            borderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            borderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度"
+            },
+            replyMsgSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号"
+            },
+            replyMsgFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            replyMsgBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            replyMsgItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            replyMsgUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            replyMsgStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            replyMsgColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "ffffff"
+            },
+            replyMsgAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐"
+            }
+          }
         }
       };
       self.loadFS(d);
@@ -3693,12 +3873,12 @@
         e.preventDefault();
         var p = e.target.closest('.ed-proj');
         if (p) {
-          self.showCtx(e.clientX, e.clientY, p.dataset.id);
+          self.showCtx(e.clientX, e.clientY, p.dataset.id, p.dataset.pg);
           return
         }
-        var lh = e.target.closest('.ed-hd');
-        if (lh) {
-          self.showCtx(e.clientX, e.clientY, null);
+        var lb = e.target.closest('#ed-lbody');
+        if (lb) {
+          self.showCtx(e.clientX, e.clientY, null, null);
           return
         }
         var el = e.target.closest('.ed-el');
@@ -3711,6 +3891,7 @@
       });
       document.addEventListener('click', function(e) {
         if (e.target.closest('#ed-panel') || e.target.closest('.ed-menu')) return;
+        if (e.target.closest('#backdrop')) e.preventDefault();
         if (self.moveMode && !e.target.closest('.ed-ph')) {
           self.moveMode = false;
           self.hiSel();
@@ -3769,7 +3950,17 @@
           if (innerEl && innerEl.type) {
             var cfg = self.cfg[innerEl.type];
             var elName = cfg ? cfg.name : innerEl.type;
-            self.showColPickMenu(e.clientX, e.clientY, colItem, elItem, elName);
+            self.multiSel = [];
+            if (self.sel === colItem.ei && self.rowSel === colItem.ci && self.zone === colItem.zone) {
+              self.selEl(elItem.idx, false, elItem.zone);
+              self.showStatus('多列');
+            } else if (self.sel === elItem.idx && self.rowSel === null && self.zone === elItem.zone) {
+              self.selCol(colItem.ei, colItem.ci, colItem.zone);
+              self.showStatus(elName);
+            } else {
+              self.selCol(colItem.ei, colItem.ci, colItem.zone);
+              self.showStatus(elName);
+            }
             return
           }
         }
@@ -4053,7 +4244,7 @@
         if (pg && pg.type === 'phone') {
           if (window.phoneRender) window.phoneRender(pg)
         } else {
-          if (window.modalRender) window.modalRender(d)
+          if (window.modalRender) window.modalRender(d, this.pg)
         }
         setTimeout(function() {
           self.hiSel()
@@ -4073,7 +4264,7 @@
         if (pg && pg.type === 'phone') {
           if (window.phoneRender) window.phoneRender(pg)
         } else {
-          if (window.modalRender) window.modalRender(d)
+          if (window.modalRender) window.modalRender(d, this.pg)
         }
       }
     },
@@ -4090,7 +4281,7 @@
         if (pg && pg.type === 'phone') {
           if (window.phoneRender) window.phoneRender(pg)
         } else {
-          if (window.modalRender) window.modalRender(d)
+          if (window.modalRender) window.modalRender(d, this.pg)
         }
       }
     },
@@ -4230,6 +4421,12 @@
               transactions: []
             }
           }
+        })
+      } else if (type === 'app') {
+        d.pages.push({
+          title: 'APP' + (d.pages.length + 1),
+          type: 'app',
+          elements: []
         })
       } else {
         d.pages.push({
@@ -4439,7 +4636,7 @@
       this.save();
       this.renderR()
     },
-    showCtx: function(x, y, id) {
+    showCtx: function(x, y, id, pg) {
       var old = document.querySelector('.ed-ctx');
       if (old) old.remove();
       var m = document.createElement('div');
@@ -4447,22 +4644,73 @@
       m.style.left = x + 'px';
       m.style.top = y + 'px';
       var self = this;
-      if (id) m.innerHTML = '<div data-a="ren">重命名</div><div data-a="del">删除</div>';
-      else m.innerHTML = '<div data-a="new">新建项目</div>';
+      var h = '';
+      if (this.listTab === 0) {
+        if (id) {
+          h = '<div data-a="ren">重命名</div><div data-a="del">删除</div>';
+        } else {
+          h = '<div data-a="new">新建项目</div><div data-a="import">导入项目</div>';
+        }
+      } else {
+        if (pg !== undefined && pg !== null) {
+          h = '<div data-a="ren">重命名</div><div data-a="del">删除</div>';
+        } else {
+          h = '<div data-a="modal">新建对话框</div><div data-a="phone">新建手机模拟器</div><div data-a="app">新建APP</div>';
+        }
+      }
+      m.innerHTML = h;
       m.onclick = function(e) {
         var a = e.target.dataset.a;
         if (a === 'new') {
           var n = prompt('项目名称', '新项目');
-          if (n) self.newP(n)
+          if (n) self.newP(n);
+        }
+        if (a === 'import') {
+          self.importData();
         }
         if (a === 'ren') {
-          var n = prompt('新名称', self.pj[id].name);
-          if (n) self.renP(id, n)
+          if (self.listTab === 0) {
+            var n = prompt('新名称', self.pj[id].name);
+            if (n) self.renP(id, n);
+          } else {
+            var pgIdx = parseInt(pg);
+            var d = self.pj[self.cur].data;
+            var page = d.pages[pgIdx];
+            var n = prompt('新名称', page.title || '');
+            if (n) {
+              page.title = n;
+              self.save();
+              self.renderLContent();
+            }
+          }
         }
         if (a === 'del') {
-          if (confirm('确定删除?')) self.delP(id)
+          if (self.listTab === 0) {
+            if (confirm('确定删除?')) self.delP(id);
+          } else {
+            var pgIdx = parseInt(pg);
+            var d = self.pj[self.cur].data;
+            if (d.pages.length <= 1) return;
+            if (confirm('确定删除?')) {
+              d.pages.splice(pgIdx, 1);
+              if (self.pg >= d.pages.length) self.pg = d.pages.length - 1;
+              self.sel = null;
+              self.zone = 'content';
+              self.save();
+              self.render();
+            }
+          }
         }
-        m.remove()
+        if (a === 'modal') {
+          self.newPg('modal');
+        }
+        if (a === 'phone') {
+          self.newPg('phone');
+        }
+        if (a === 'app') {
+          self.newPg('app');
+        }
+        m.remove();
       };
       document.body.appendChild(m);
       setTimeout(function() {
@@ -4545,7 +4793,7 @@
       m.style.left = x + 'px';
       m.style.top = y + 'px';
       var self = this;
-      m.innerHTML = '<div data-a="undo">撤回 (Ctrl+Z)</div><div data-a="redo">重做 (Ctrl+Y)</div><div data-a="preview">全屏预览</div><div data-a="copy">复制项目 (Ctrl+S)</div><div data-a="download">下载项目</div><div data-a="import">导入项目</div>';
+      m.innerHTML = '<div data-a="undo">撤回 (Ctrl+Z)</div><div data-a="redo">重做 (Ctrl+Y)</div><div data-a="preview">全屏预览</div><div data-a="copy">复制项目 (Ctrl+S)</div><div data-a="download">下载项目</div>';
       m.onclick = function(e) {
         switch (e.target.dataset.a) {
           case 'undo': self.undo(); break;
@@ -4553,7 +4801,6 @@
           case 'preview': self.togglePreview(); break;
           case 'copy': self.copy(); break;
           case 'download': self.download(); break;
-          case 'import': self.importData(); break;
         }
         m.remove()
       };
@@ -4865,7 +5112,7 @@
         })
       } else if (this.cur && d && d.pages) {
         d.pages.forEach(function(p, i) {
-          h += '<div class="ed-proj' + (self.pg === i ? ' on' : '') + '" data-pg="' + i + '">' + U.esc(p.title || (p.type === 'phone' ? '手机' : '对话框') + (i + 1)) + '</div>'
+          h += '<div class="ed-proj' + (self.pg === i ? ' on' : '') + '" data-pg="' + i + '">' + U.esc(p.title || (p.type === 'phone' ? '手机' : p.type === 'app' ? 'APP' : '对话框') + (i + 1)) + '</div>'
         })
       }
       var lb = document.getElementById('ed-lbody');
@@ -4875,43 +5122,13 @@
       })
     },
     renderL: function() {
-      var self = this,
-        h = '<div class="ed-ltabs"><div class="ed-ltab' + (this.listTab === 0 ? ' on' : '') + '" data-lt="0">项目</div><div class="ed-ltab' + (this.listTab === 1 ? ' on' : '') + '" data-lt="1">页面</div><button class="ed-ladd" id="edLAdd">' + this.icon('plus') + '</button></div><div class="ed-lbody" id="ed-lbody"></div>';
+      var h = '<div class="ed-ltabs"><div class="ed-ltab' + (this.listTab === 0 ? ' on' : '') + '" data-lt="0">项目</div><div class="ed-ltab' + (this.listTab === 1 ? ' on' : '') + '" data-lt="1">页面</div></div><div class="ed-lbody" id="ed-lbody"></div>';
       document.getElementById('ed-list').innerHTML = h;
       this.renderLContent();
       document.getElementById('ed-list').classList.toggle('open', this.list);
       document.querySelector('.ed-menu').classList.toggle('shifted', this.list);
       var cb = document.querySelector('.ed-close');
       if (cb) cb.classList.toggle('shifted', this.list);
-      document.getElementById('edLAdd').onclick = function(e) {
-        self.showAddMenu(e.clientX, e.clientY)
-      }
-    },
-    showAddMenu: function(x, y) {
-      var old = document.querySelector('.ed-ctx');
-      if (old) old.remove();
-      var m = document.createElement('div');
-      m.className = 'ed-ctx';
-      m.style.left = x + 'px';
-      m.style.top = y + 'px';
-      var self = this;
-      if (this.listTab === 0) m.innerHTML = '<div data-a="proj">新建项目</div>';
-      else m.innerHTML = '<div data-a="page">新建对话框</div><div data-a="phone">新建手机界面</div>';
-      m.onclick = function(e) {
-        switch (e.target.dataset.a) {
-          case 'proj': var n = prompt('项目名称', '新项目'); if (n) self.newP(n); break;
-          case 'page': self.newPg('modal'); break;
-          case 'phone': self.newPg('phone'); break;
-        }
-        m.remove()
-      };
-      document.body.appendChild(m);
-      setTimeout(function() {
-        document.addEventListener('click', function h() {
-          m.remove();
-          document.removeEventListener('click', h)
-        })
-      }, 10)
     },
     saveFoldState: function() {
       var states = [];
@@ -5018,12 +5235,12 @@
       if (pg.coverParent !== false) {
         h += self.ctrl('unloadParent', pgCfg.unloadParent, pg.unloadParent, 'pg');
         if (!pg.unloadParent) h += self.ctrl('clickBgReturn', pgCfg.clickBgReturn, pg.clickBgReturn, 'pg');
+        h += self.ctrl('draggable', pgCfg.draggable, pg.draggable, 'pg');
         h += self.ctrl('parentBgColor', pgCfg.parentBgColor, pg.parentBgColor, 'pg');
         h += self.ctrl('parentBgImgMobile', pgCfg.parentBgImgMobile, pg.parentBgImgMobile, 'pg');
         if (pg.parentBgImgMobile) {
           h += self.ctrl('parentBgImgMobileMode', pgCfg.parentBgImgMobileMode, pg.parentBgImgMobileMode, 'pg');
           if (pg.parentBgImgMobileMode !== 'contain') {
-            h += self.ctrl('parentBgImgMobileAlign', pgCfg.parentBgImgMobileAlign, pg.parentBgImgMobileAlign, 'pg');
             h += self.ctrl('parentBgImgMobileOffset', pgCfg.parentBgImgMobileOffset, pg.parentBgImgMobileOffset, 'pg');
           }
         }
@@ -5031,7 +5248,6 @@
         if (pg.parentBgImgPc) {
           h += self.ctrl('parentBgImgPcMode', pgCfg.parentBgImgPcMode, pg.parentBgImgPcMode, 'pg');
           if (pg.parentBgImgPcMode !== 'contain') {
-            h += self.ctrl('parentBgImgPcAlign', pgCfg.parentBgImgPcAlign, pg.parentBgImgPcAlign, 'pg');
             h += self.ctrl('parentBgImgPcOffset', pgCfg.parentBgImgPcOffset, pg.parentBgImgPcOffset, 'pg');
           }
         }
@@ -5052,22 +5268,6 @@
         h += self.ctrl('modalBorderOpacity', pgCfg.modalBorderOpacity, pg.modalBorderOpacity, 'pg');
         h += self.ctrl('modalBorderBlur', pgCfg.modalBorderBlur, pg.modalBorderBlur, 'pg');
       }
-      h += self.ctrl('modalBgImgMobile', pgCfg.modalBgImgMobile, pg.modalBgImgMobile, 'pg');
-      if (pg.modalBgImgMobile) {
-        h += self.ctrl('modalBgImgMobileMode', pgCfg.modalBgImgMobileMode, pg.modalBgImgMobileMode, 'pg');
-        if (pg.modalBgImgMobileMode !== 'contain') {
-          h += self.ctrl('modalBgImgMobileAlign', pgCfg.modalBgImgMobileAlign, pg.modalBgImgMobileAlign, 'pg');
-          h += self.ctrl('modalBgImgMobileOffset', pgCfg.modalBgImgMobileOffset, pg.modalBgImgMobileOffset, 'pg');
-        }
-      }
-      h += self.ctrl('modalBgImgPc', pgCfg.modalBgImgPc, pg.modalBgImgPc, 'pg');
-      if (pg.modalBgImgPc) {
-        h += self.ctrl('modalBgImgPcMode', pgCfg.modalBgImgPcMode, pg.modalBgImgPcMode, 'pg');
-        if (pg.modalBgImgPcMode !== 'contain') {
-          h += self.ctrl('modalBgImgPcAlign', pgCfg.modalBgImgPcAlign, pg.modalBgImgPcAlign, 'pg');
-          h += self.ctrl('modalBgImgPcOffset', pgCfg.modalBgImgPcOffset, pg.modalBgImgPcOffset, 'pg');
-        }
-      }
       h += self.ctrl('modalOpacity', pgCfg.modalOpacity, pg.modalOpacity, 'pg');
       h += self.ctrl('modalBlur', pgCfg.modalBlur, pg.modalBlur, 'pg');
       h += '</div></div>';
@@ -5077,8 +5277,6 @@
       h += self.ctrl('mobileMaxWidthPct', pgCfg.mobileMaxWidthPct, pg.mobileMaxWidthPct, 'pg');
       h += self.ctrl('mobileModalOffsetX', pgCfg.mobileModalOffsetX, pg.mobileModalOffsetX, 'pg');
       h += self.ctrl('mobileModalOffsetY', pgCfg.mobileModalOffsetY, pg.mobileModalOffsetY, 'pg');
-      h += self.ctrl('mobileHeaderPct', pgCfg.mobileHeaderPct, pg.mobileHeaderPct, 'pg');
-      h += self.ctrl('mobileFooterPct', pgCfg.mobileFooterPct, pg.mobileFooterPct, 'pg');
       h += '</div></div>';
       h += '<div class="ed-fold"><div class="ed-fold-hd"><span>桌面端布局</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
       h += self.ctrl('pcHeightPct', pgCfg.pcHeightPct, pg.pcHeightPct, 'pg');
@@ -5086,8 +5284,6 @@
       h += self.ctrl('pcMaxWidthPct', pgCfg.pcMaxWidthPct, pg.pcMaxWidthPct, 'pg');
       h += self.ctrl('pcModalOffsetX', pgCfg.pcModalOffsetX, pg.pcModalOffsetX, 'pg');
       h += self.ctrl('pcModalOffsetY', pgCfg.pcModalOffsetY, pg.pcModalOffsetY, 'pg');
-      h += self.ctrl('pcHeaderPct', pgCfg.pcHeaderPct, pg.pcHeaderPct, 'pg');
-      h += self.ctrl('pcFooterPct', pgCfg.pcFooterPct, pg.pcFooterPct, 'pg');
       h += '</div></div>';
       return h
     },
@@ -5104,7 +5300,8 @@
       } else if (this.zoneSel === 'footer') {
         h += this.ctrl('footerPct', pgCfg.footerPct, pg.footerPct, 'pg');
       } else {
-        h += '<div style="color:#666;font-size:12px;padding:12px;text-align:center">内容区无单独设置</div>';
+        h += '</div>';
+        return h + this.renderWin();
       }
       h += '</div>';
       return h
@@ -5334,7 +5531,10 @@
           h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
           h += self.ctrl('clickAction', cm.props.clickAction, col.clickAction, 'col', self.rowSel);
           if (col.clickAction === 'message') h += self.ctrl('message', cm.props.message, col.message, 'col', self.rowSel);
-          if (col.clickAction === 'jumpModal' || col.clickAction === 'openModal') h += self.ctrl('clickTarget', cm.props.clickTarget, col.clickTarget, 'col', self.rowSel);
+          if (col.clickAction === 'jumpModal' || col.clickAction === 'openModal') {
+            h += self.ctrl('clickTarget', cm.props.clickTarget, col.clickTarget, 'col', self.rowSel);
+            h += '<div class="ed-row"><span class="ed-label">切换时动画</span><button class="ed-btn anim-btn" data-s="col" data-ci="' + self.rowSel + '">' + (col.transitionAnim && col.transitionAnim.length ? col.transitionAnim.length + '个' : '无') + '</button></div>';
+          }
           var pg = d.pages[self.pg];
           if (!pg.unloadParent) {
             h += self.ctrl('sysEffect', cm.props.sysEffect, col.sysEffect, 'col', self.rowSel);
@@ -5541,7 +5741,10 @@
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('clickAction', m.props.clickAction, el.clickAction, 'el');
         if (el.clickAction === 'message') h += self.ctrl('message', m.props.message, el.message, 'el');
-        if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
+        if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') {
+          h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
+          h += '<div class="ed-row"><span class="ed-label">切换时动画</span><button class="ed-btn anim-btn" data-s="el">' + (el.transitionAnim && el.transitionAnim.length ? el.transitionAnim.length + '个' : '无') + '</button></div>';
+        }
         var pg = d.pages[self.pg];
         if (!pg.unloadParent) {
           h += self.ctrl('sysEffect', m.props.sysEffect, el.sysEffect, 'el');
@@ -5620,7 +5823,10 @@
         h += self.ctrl('gallerySelect', m.props.gallerySelect, el.url, 'el');
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('clickAction', m.props.clickAction, el.clickAction, 'el');
-        if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
+        if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') {
+          h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
+          h += '<div class="ed-row"><span class="ed-label">切换时动画</span><button class="ed-btn anim-btn" data-s="el">' + (el.transitionAnim && el.transitionAnim.length ? el.transitionAnim.length + '个' : '无') + '</button></div>';
+        }
         if (el.clickAction === 'gallery') h += self.ctrl('galleryUrls', m.props.galleryUrls, el.galleryUrls, 'el');
         h += '</div></div>';
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
@@ -5835,6 +6041,66 @@
           h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
           h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
         }
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>AI回复消息文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('replyMsgSize', m.props.replyMsgSize, el.replyMsgSize, 'el');
+        h += self.ctrl('replyMsgFont', m.props.replyMsgFont, el.replyMsgFont, 'el');
+        h += self.ctrl('replyMsgBold', m.props.replyMsgBold, el.replyMsgBold, 'el');
+        h += self.ctrl('replyMsgItalic', m.props.replyMsgItalic, el.replyMsgItalic, 'el');
+        h += self.ctrl('replyMsgUnderline', m.props.replyMsgUnderline, el.replyMsgUnderline, 'el');
+        h += self.ctrl('replyMsgStrike', m.props.replyMsgStrike, el.replyMsgStrike, 'el');
+        h += self.ctrl('replyMsgColor', m.props.replyMsgColor, el.replyMsgColor, 'el');
+        h += self.ctrl('replyMsgAlign', m.props.replyMsgAlign, el.replyMsgAlign, 'el');
+        h += '</div></div>';
+      } else if (el.type === 'aiReplyContent') {
+        h += self.ctrl('showUserMsg', m.props.showUserMsg, el.showUserMsg, 'el');
+        if (el.showUserMsg) {
+          h += self.ctrl('showSysContent', m.props.showSysContent, el.showSysContent, 'el');
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>用户消息文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('userMsgSize', m.props.userMsgSize, el.userMsgSize, 'el');
+          h += self.ctrl('userMsgFont', m.props.userMsgFont, el.userMsgFont, 'el');
+          h += self.ctrl('userMsgBold', m.props.userMsgBold, el.userMsgBold, 'el');
+          h += self.ctrl('userMsgItalic', m.props.userMsgItalic, el.userMsgItalic, 'el');
+          h += self.ctrl('userMsgUnderline', m.props.userMsgUnderline, el.userMsgUnderline, 'el');
+          h += self.ctrl('userMsgStrike', m.props.userMsgStrike, el.userMsgStrike, 'el');
+          h += self.ctrl('userMsgColor', m.props.userMsgColor, el.userMsgColor, 'el');
+          h += self.ctrl('userMsgAlign', m.props.userMsgAlign, el.userMsgAlign, 'el');
+          h += '</div></div>';
+        }
+        h += self.ctrl('displayMode', m.props.displayMode, el.displayMode, 'el');
+        if (el.displayMode === 'bubble') {
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>气泡样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('bubbleOpacity', m.props.bubbleOpacity, el.bubbleOpacity, 'el');
+          h += self.ctrl('bubbleBlur', m.props.bubbleBlur, el.bubbleBlur, 'el');
+          h += self.ctrl('bubbleBgColor', m.props.bubbleBgColor, el.bubbleBgColor, 'el');
+          h += self.ctrl('bubbleRadius', m.props.bubbleRadius, el.bubbleRadius, 'el');
+          h += self.ctrl('bubbleHexOffset', m.props.bubbleHexOffset, el.bubbleHexOffset, 'el');
+          h += self.ctrl('bubbleBorderOpacity', m.props.bubbleBorderOpacity, el.bubbleBorderOpacity, 'el');
+          h += self.ctrl('bubbleBorderBlur', m.props.bubbleBorderBlur, el.bubbleBorderBlur, 'el');
+          h += self.ctrl('bubbleBorderColor', m.props.bubbleBorderColor, el.bubbleBorderColor, 'el');
+          h += self.ctrl('bubbleBorderWidth', m.props.bubbleBorderWidth, el.bubbleBorderWidth, 'el');
+          h += '</div></div>';
+        } else {
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>平铺样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('flatOpacity', m.props.flatOpacity, el.flatOpacity, 'el');
+          h += self.ctrl('flatBlur', m.props.flatBlur, el.flatBlur, 'el');
+          h += self.ctrl('flatBgColor', m.props.flatBgColor, el.flatBgColor, 'el');
+          h += self.ctrl('flatBorderOpacity', m.props.flatBorderOpacity, el.flatBorderOpacity, 'el');
+          h += self.ctrl('flatBorderBlur', m.props.flatBorderBlur, el.flatBorderBlur, 'el');
+          h += self.ctrl('flatBorderColor', m.props.flatBorderColor, el.flatBorderColor, 'el');
+          h += self.ctrl('flatBorderWidth', m.props.flatBorderWidth, el.flatBorderWidth, 'el');
+          h += '</div></div>';
+        }
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
+        h += self.ctrl('blur', m.props.blur, el.blur, 'el');
+        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('radius', m.props.radius, el.radius, 'el');
+        h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
+        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
         h += '</div></div>';
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>AI回复消息文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('replyMsgSize', m.props.replyMsgSize, el.replyMsgSize, 'el');
@@ -6067,7 +6333,8 @@
         return '<div class="' + tWrap + '">' + modBtns + '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">' + prop.d + '</span><div class="ed-toggle-sw' + (v ? ' on' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '></div></div></div></div>'
       } else if (prop.t === 'slide') {
         var isRight = v === prop.rv;
-        var sMod = origV !== undefined && origV !== null && String(origV) !== String(dv === undefined ? '' : dv);
+        var sDefault = dv !== undefined ? dv : prop.lv;
+        var sMod = origV !== undefined && origV !== null && origV !== '' && String(origV) !== String(sDefault);
         var sWrap = 'ed-row-wrap' + (sMod ? ' modified' : '');
         return '<div class="' + sWrap + '">' + modBtns + '<div class="ed-row"><div class="ed-slide"><span class="ed-slide-label' + (!isRight ? ' active' : '') + '">' + prop.ll + '</span><div class="ed-slide-track' + (isRight ? ' right' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' data-lv="' + prop.lv + '" data-rv="' + prop.rv + '"></div><span class="ed-slide-label' + (isRight ? ' active' : '') + '">' + prop.rl + '</span></div></div></div>'
       } else if (prop.t === 'upload') {
@@ -6246,6 +6513,22 @@
         b.onclick = function() {
           self.setProp(b.dataset.k, 'none', b.dataset.s, b.dataset.ci !== undefined ? parseInt(b.dataset.ci) : null);
           self.renderR()
+        }
+      });
+      document.querySelectorAll('.anim-btn').forEach(function(b) {
+        b.onclick = function() {
+          self.showAnimModal(b.dataset.s, b.dataset.ci !== undefined ? parseInt(b.dataset.ci) : null)
+        }
+      });
+      document.querySelectorAll('.gallery-select-btn').forEach(function(b) {
+        b.onclick = function() {
+          var k = b.dataset.k, s = b.dataset.s, ci = b.dataset.ci;
+          G.open(function(url) {
+            if (url) {
+              self.setProp('url', url, s, ci !== undefined ? parseInt(ci) : null);
+              self.renderR()
+            }
+          })
         }
       });
       document.querySelectorAll('.col-weight-inp').forEach(function(inp) {
@@ -6831,13 +7114,15 @@
         l = document.getElementById('ed-list'),
         m = document.querySelector('.ed-menu'),
         fr = document.getElementById('ed-device-frame'),
-        bd = document.getElementById('backdrop');
+        bd = document.getElementById('backdrop'),
+        cb = document.querySelector('.ed-close');
       if (this.preview) {
         p.style.display = 'none';
         l.style.display = 'none';
         m.style.display = 'none';
         fr.style.display = 'none';
         bd.style.cssText = '';
+        if (cb) cb.classList.remove('shifted');
         L.edit = false;
         L.preview = true;
         if (window.modalRender) window.modalRender(this.pj[this.cur].data)
@@ -6846,6 +7131,7 @@
         l.style.display = '';
         m.style.display = '';
         fr.style.display = '';
+        if (cb) cb.classList.toggle('shifted', this.list);
         L.edit = true;
         L.preview = false;
         this.setDevice(L.platform || 'pc')
@@ -6892,6 +7178,53 @@
           if (cb) cb()
         }
       }).catch(function() {})
+    },
+    ANIM_TYPES: [
+      {id: 'fade', name: '淡入'},
+      {id: 'slideLeft', name: '左滑'},
+      {id: 'slideRight', name: '右滑'},
+      {id: 'slideUp', name: '上滑'},
+      {id: 'slideDown', name: '下滑'},
+      {id: 'scale', name: '缩放'},
+      {id: 'flip', name: '翻转'},
+      {id: 'rotate', name: '旋转'}
+    ],
+    showAnimModal: function(s, ci) {
+      var self = this,
+        old = document.querySelector('.ed-modal');
+      if (old) old.remove();
+      var el = s === 'col' ? this.pj[this.cur].data.pages[this.pg].elements[this.sel].cols[ci] : this.pj[this.cur].data.pages[this.pg].elements[this.sel];
+      var cur = el.transitionAnim || [];
+      var m = document.createElement('div');
+      m.className = 'ed-modal';
+      var h = '<div class="ed-modal-box"><div class="ed-modal-hd">切换时动画</div><div class="ed-modal-bd"><div class="ed-anim-grid">';
+      this.ANIM_TYPES.forEach(function(a) {
+        var isOn = cur.indexOf(a.id) !== -1;
+        h += '<div class="ed-anim-item' + (isOn ? ' on' : '') + '" data-id="' + a.id + '">' + a.name + '</div>';
+      });
+      h += '</div></div></div>';
+      m.innerHTML = h;
+      m.onclick = function(e) {
+        if (e.target === m) {
+          m.remove();
+          return;
+        }
+        var it = e.target.closest('.ed-anim-item');
+        if (it) {
+          var id = it.dataset.id;
+          var idx = cur.indexOf(id);
+          if (idx === -1) {
+            cur.push(id);
+            it.classList.add('on');
+          } else {
+            cur.splice(idx, 1);
+            it.classList.remove('on');
+          }
+          el.transitionAnim = cur;
+          self.save();
+        }
+      };
+      document.body.appendChild(m);
     },
     showModelModal: function() {
       var self = this,
