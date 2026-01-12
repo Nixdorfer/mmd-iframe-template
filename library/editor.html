@@ -982,6 +982,59 @@
 	z-index: 9999;
 	pointer-events: none;
 }
+
+.ed-row-wrap {
+	display: flex;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.ed-row-wrap > .ed-row {
+	flex: 1;
+	margin-bottom: 0;
+}
+
+.ed-mod-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #166d3b;
+	cursor: pointer;
+	flex-shrink: 0;
+	margin-top: 6px;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.ed-row-wrap.modified .ed-mod-dot {
+	opacity: 1;
+}
+
+.ed-mod-dot:hover {
+	background: #1a8f4a;
+}
+
+.ed-style-menu {
+	position: fixed;
+	background: #1a1a1a;
+	border-radius: 6px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	z-index: 10006;
+	min-width: 140px;
+	overflow: hidden;
+}
+
+.ed-style-menu div {
+	padding: 10px 14px;
+	cursor: pointer;
+	transition: background 0.2s;
+	color: #fff;
+	font-size: 12px;
+}
+
+.ed-style-menu div:hover {
+	background: #252525;
+}
 </style>
 <div id="ed-version"></div>
 <div id="ed-list"></div>
@@ -3573,10 +3626,14 @@
     ctrl: function(k, prop, v, scope, ci) {
       if (!prop) return '';
       var dv = prop.v;
+      var origV = v;
       if (v === undefined || v === null || v === '') v = dv;
       var ciAttr = ci !== undefined ? ' data-ci="' + ci + '"' : '';
       var self = this;
-      var h = '<div class="ed-row"><label>' + prop.d + '</label>';
+      var modified = origV !== undefined && origV !== null && origV !== '' && origV !== dv;
+      var dotAttr = ' data-pk="' + k + '" data-ps="' + scope + '"' + ciAttr;
+      var wrapCls = 'ed-row-wrap' + (modified ? ' modified' : '');
+      var h = '<div class="' + wrapCls + '"><div class="ed-mod-dot"' + dotAttr + '></div><div class="ed-row"><label>' + prop.d + '</label>';
       if (prop.t === 'input') h += '<input data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' value="' + U.esc(String(v || '')) + '">';
       else if (prop.t === 'textarea') h += '<textarea data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' rows="3">' + U.esc(String(v || '')) + '</textarea>';
       else if (prop.t === 'num') h += '<input type="number" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' value="' + (v || 1) + '" min="1" style="width:60px">';
@@ -3610,8 +3667,11 @@
         var rg = (prop.r || '0-100').split('-'),
           dv = v !== undefined && v !== '' ? v : (prop.v !== undefined ? prop.v : rg[0]);
         h += '<div class="ed-slider"><input type="range" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' min="' + rg[0] + '" max="' + rg[1] + '" value="' + dv + '"><span class="ed-v">' + dv + '</span></div>'
-      } else if (prop.t === 'toggle') return '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">' + prop.d + '</span><div class="ed-toggle-sw' + (v ? ' on' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '></div></div></div>';
-      else if (prop.t === 'upload') {
+      } else if (prop.t === 'toggle') {
+        var tMod = origV !== undefined && origV !== null && origV !== dv;
+        var tWrap = 'ed-row-wrap' + (tMod ? ' modified' : '');
+        return '<div class="' + tWrap + '"><div class="ed-mod-dot"' + dotAttr + '></div><div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">' + prop.d + '</span><div class="ed-toggle-sw' + (v ? ' on' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '></div></div></div></div>'
+      } else if (prop.t === 'upload') {
         h += '<div class="ed-up">';
         if (v) {
           var imgSrc = v.indexOf('://') > -1 ? v.replace('https://sexyai.top/', 'https://r2.sexyai.top/') : 'https://r2.sexyai.top/' + (v.charAt(0) === '/' ? v.slice(1) : v);
@@ -3642,7 +3702,7 @@
         });
         h += '</select>'
       }
-      h += '</div>';
+      h += '</div></div>';
       return h
     },
     ctrlFold: function(title, el, prefix, scope, ci) {
@@ -3936,6 +3996,116 @@
           order.splice(toIdx, 0, dragCi);
           self.setColPriority(order)
         }
+      });
+      document.querySelectorAll('.ed-mod-dot').forEach(function(dot) {
+        dot.onclick = function(e) {
+          e.stopPropagation();
+          self.showStyleMenu(dot, e)
+        }
+      })
+    },
+    showStyleMenu: function(dot, e) {
+      var self = this;
+      var old = document.querySelector('.ed-style-menu');
+      if (old) old.remove();
+      var pk = dot.dataset.pk;
+      var ps = dot.dataset.ps;
+      var ci = dot.dataset.ci !== undefined ? parseInt(dot.dataset.ci) : null;
+      var menu = document.createElement('div');
+      menu.className = 'ed-style-menu';
+      menu.innerHTML = '<div data-act="pageDef">设为该页默认</div><div data-act="globalDef">设为全局默认</div><div data-act="applyPage">应用到该页已有</div><div data-act="applyGlobal">应用到全局已有</div>';
+      var r = dot.getBoundingClientRect();
+      menu.style.left = (r.left + 12) + 'px';
+      menu.style.top = r.top + 'px';
+      document.body.appendChild(menu);
+      var closeMenu = function() {
+        menu.remove();
+        document.removeEventListener('click', closeMenu)
+      };
+      setTimeout(function() {
+        document.addEventListener('click', closeMenu)
+      }, 0);
+      menu.querySelectorAll('[data-act]').forEach(function(it) {
+        it.onclick = function(ev) {
+          ev.stopPropagation();
+          self.applyStyleAction(it.dataset.act, pk, ps, ci);
+          closeMenu()
+        }
+      })
+    },
+    applyStyleAction: function(act, pk, ps, ci) {
+      if (!this.cur) return;
+      var d = this.pj[this.cur].data;
+      var pg = d.pages[this.pg];
+      var val;
+      if (ps === 'el' && this.sel !== null) {
+        var els = this.getEls(this.zone);
+        var el = els[this.sel];
+        if (el) val = el[pk]
+      } else if (ps === 'col' && ci !== null && this.sel !== null) {
+        var els = this.getEls(this.zone);
+        var el = els[this.sel];
+        if (el && el.cols && el.cols[ci]) val = el.cols[ci][pk]
+      }
+      if (val === undefined) return;
+      var defKey = this.getDefKey(pk);
+      var elType = this.getElType(ps, ci);
+      if (act === 'pageDef' && defKey) {
+        pg[defKey] = val;
+        this.toast('已设为该页默认')
+      } else if (act === 'globalDef' && defKey) {
+        if (!d.global) d.global = {};
+        d.global[defKey] = val;
+        this.toast('已设为全局默认')
+      } else if (act === 'applyPage') {
+        this.applyToElements(pg, pk, val, elType);
+        this.toast('已应用到该页')
+      } else if (act === 'applyGlobal') {
+        var self = this;
+        d.pages.forEach(function(p) {
+          self.applyToElements(p, pk, val, elType)
+        });
+        this.toast('已应用到全局')
+      }
+      this.save();
+      this.renderR()
+    },
+    getDefKey: function(pk) {
+      var map = {
+        size: 'defTextSize', color: 'defTextColor', font: 'defTextFont',
+        bgColor: 'defBtnBg', textColor: 'defBtnColor', shape: 'defBtnShape', radius: 'defBtnRadius'
+      };
+      return map[pk] || null
+    },
+    getElType: function(ps, ci) {
+      if (ps === 'col' && ci !== null && this.sel !== null) {
+        var els = this.getEls(this.zone);
+        var el = els[this.sel];
+        if (el && el.cols && el.cols[ci]) return el.cols[ci].type
+      } else if (ps === 'el' && this.sel !== null) {
+        var els = this.getEls(this.zone);
+        var el = els[this.sel];
+        if (el) return el.type
+      }
+      return null
+    },
+    applyToElements: function(pg, pk, val, elType) {
+      var self = this;
+      var zones = ['headerElements', 'elements', 'footerElements'];
+      zones.forEach(function(z) {
+        (pg[z] || []).forEach(function(el) {
+          if (el.type === elType) el[pk] = val;
+          else if (el.type === 'row' && el.cols) {
+            el.cols.forEach(function(col) {
+              if (col.type === elType) col[pk] = val
+            })
+          }
+          if (el.type === 'collapse' && el.items) {
+            el.items.forEach(function(it) {
+              if (it.type === elType) it[pk] = val
+            })
+          }
+        })
       })
     },
     setColRatio: function(ci, v) {
