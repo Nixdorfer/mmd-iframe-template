@@ -47,16 +47,7 @@
             return true;
         } catch (e) { return false; }
     }
-    function gC() {
-        var f = document.createElement('iframe');
-        f.style.display = 'none';
-        (document.documentElement || document.head || document.body || document).appendChild(f);
-        var c = { f: f.contentWindow.fetch, X: f.contentWindow.XMLHttpRequest, d: f.contentWindow.Object.defineProperty, gd: f.contentWindow.Object.getOwnPropertyDescriptor, W: f.contentWindow.WebSocket, E: f.contentWindow.EventSource };
-        f.remove();
-        return c;
-    }
-    var c;
-    try { c = gC(); } catch (e) { c = { f: fetch, X: XMLHttpRequest, d: Object.defineProperty, gd: Object.getOwnPropertyDescriptor, W: WebSocket, E: typeof EventSource !== 'undefined' ? EventSource : null }; }
+    var c = { f: fetch.bind(window), X: XMLHttpRequest, d: Object.defineProperty, gd: Object.getOwnPropertyDescriptor, W: WebSocket, E: typeof EventSource !== 'undefined' ? EventSource : null };
     function lk(o, k, v) {
         try { c.d(o, k, { value: v, writable: false, configurable: false, enumerable: true }); } catch (e) { o[k] = v; }
     }
