@@ -177,7 +177,7 @@
                 if (!txt) txt = '🛡️';
                 var t = document.createElement('div');
                 t.textContent = txt;
-                t.style.cssText = 'position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%) scale(1)!important;background:#166d3b!important;color:#fff!important;padding:12px 24px!important;border-radius:12px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:16px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0!important;transition:all 0.5s ease!important';
+                t.style.cssText = 'position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;background:#166d3b!important;color:#fff!important;padding:12px 24px!important;border-radius:12px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:16px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0!important;transition:opacity 0.3s ease!important';
                 document.body.appendChild(t);
                 setTimeout(function() { t.style.opacity = '1'; }, 10);
                 setTimeout(function() {
@@ -185,18 +185,23 @@
                     t.style.padding = '8px 16px';
                     t.style.borderRadius = '20px';
                     t.style.fontSize = '14px';
+                    t.style.transition = 'all 0.3s ease';
                     setTimeout(function() {
                         var ps = gP();
-                        t.style.top = ps.top + 'px';
-                        t.style.left = 'auto';
-                        t.style.right = ps.right + 'px';
-                        t.style.transform = 'scale(1)';
+                        var tx = window.innerWidth - ps.right - t.offsetWidth / 2 - window.innerWidth / 2;
+                        var ty = ps.top + t.offsetHeight / 2 - window.innerHeight / 2;
+                        t.style.transform = 'translate(calc(-50% + ' + tx + 'px), calc(-50% + ' + ty + 'px))';
                         setTimeout(function() {
+                            t.style.transition = 'none';
+                            t.style.top = ps.top + 'px';
+                            t.style.left = 'auto';
+                            t.style.right = ps.right + 'px';
+                            t.style.transform = 'none';
                             t.id = '__db__';
                             rdy = true;
                             setTimeout(function() { op = 0.3; eB(); }, 1000);
-                        }, 500);
-                    }, 300);
+                        }, 300);
+                    }, 50);
                 }, 1000);
             });
         }
