@@ -6,6 +6,34 @@
     var P = [new RegExp('^' + e + '$'), new RegExp('^.+\\.' + e + '$'), /^raw\.githubusercontent\.com$/];
     var A = { 'raw.githubusercontent.com': '/Nixdorfer/mmd-iframe-template/refs/heads/main/' };
     var eventAttrs = ['ontoggle','onerror','onload','onmouseover','onfocus','onblur','onchange','onclick','ondblclick','onmouseenter','onmouseleave','onkeydown','onkeyup','onkeypress','onsubmit','oninput','onanimationend','onanimationstart','ontransitionend','onpointerdown','onpointerup','onpointermove','onwheel','onscroll','onresize','onbeforeunload','onunload','onhashchange','onpopstate','onstorage','onmessage','ondrag','ondrop','ondragstart','ondragend','ondragover','ondragenter','ondragleave','oncontextmenu','oncopy','oncut','onpaste','onselect','onselectstart'];
+    var alertQueue = [], alertShowing = false;
+    function showAlert(type) {
+        alertQueue.push(type);
+        if (alertShowing) return;
+        function show() {
+            if (!alertQueue.length) { alertShowing = false; return; }
+            alertShowing = true;
+            var msg = alertQueue.shift();
+            var wrap = document.getElementById('__da__');
+            if (!wrap) {
+                wrap = document.createElement('div');
+                wrap.id = '__da__';
+                wrap.style.cssText = 'position:fixed!important;top:50px!important;right:10px!important;z-index:2147483646!important;display:flex!important;flex-direction:column!important;gap:8px!important;pointer-events:none!important';
+                (document.body || document.documentElement).appendChild(wrap);
+            }
+            var d = document.createElement('div');
+            d.style.cssText = 'background:#8b0000!important;color:#fff!important;padding:10px 16px!important;border-radius:8px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:13px!important;font-weight:500!important;box-shadow:0 4px 12px rgba(139,0,0,0.4)!important;opacity:0!important;transform:translateX(20px)!important;transition:opacity 0.3s,transform 0.3s!important;white-space:nowrap!important';
+            d.textContent = '[拦截] ' + msg;
+            wrap.appendChild(d);
+            setTimeout(function() { d.style.opacity = '1'; d.style.transform = 'translateX(0)'; }, 10);
+            setTimeout(function() {
+                d.style.opacity = '0';
+                d.style.transform = 'translateX(20px)';
+                setTimeout(function() { d.remove(); show(); }, 300);
+            }, 5000);
+        }
+        show();
+    }
     function chk(u) {
         try {
             var x = new URL(u, location.origin);
@@ -30,13 +58,13 @@
     }
     var sF = function(i, n) {
         var u = i instanceof Request ? i.url : String(i);
-        if (!chk(u)) return Promise.reject(new Error('blocked'));
+        if (!chk(u)) { showAlert('外域Fetch请求'); return Promise.reject(new Error('blocked')); }
         return c.f.call(window, i, n);
     };
     var oX = c.X;
     var sX = function() {
         var x = new oX(), oO = x.open.bind(x), oS = x.send.bind(x), bl = false;
-        x.open = function(m, u) { bl = !chk(u); if (bl) return; return oO.apply(this, arguments); };
+        x.open = function(m, u) { bl = !chk(u); if (bl) { showAlert('外域XHR请求'); return; } return oO.apply(this, arguments); };
         x.send = function() {
             if (bl) { var s = this; setTimeout(function() { Object.defineProperty(s, 'status', { value: 0 }); Object.defineProperty(s, 'readyState', { value: 4 }); Object.defineProperty(s, 'responseText', { value: '' }); Object.defineProperty(s, 'response', { value: '' }); s.dispatchEvent(new ProgressEvent('error')); if (s.onerror) s.onerror(new ProgressEvent('error')); }, 0); return; }
             return oS.apply(this, arguments);
@@ -45,15 +73,15 @@
     };
     sX.prototype = oX.prototype; sX.UNSENT = 0; sX.OPENED = 1; sX.HEADERS_RECEIVED = 2; sX.LOADING = 3; sX.DONE = 4;
     var oW = c.W;
-    var sW = function(u, p) { if (!chk(u)) throw new DOMException('blocked', 'SecurityError'); return p ? new oW(u, p) : new oW(u); };
+    var sW = function(u, p) { if (!chk(u)) { showAlert('外域WebSocket'); throw new DOMException('blocked', 'SecurityError'); } return p ? new oW(u, p) : new oW(u); };
     sW.prototype = oW.prototype; sW.CONNECTING = 0; sW.OPEN = 1; sW.CLOSING = 2; sW.CLOSED = 3;
     var oE = c.E;
-    var sE = oE ? function(u, cfg) { if (!chk(u)) throw new DOMException('blocked', 'SecurityError'); return cfg ? new oE(u, cfg) : new oE(u); } : null;
+    var sE = oE ? function(u, cfg) { if (!chk(u)) { showAlert('外域EventSource'); throw new DOMException('blocked', 'SecurityError'); } return cfg ? new oE(u, cfg) : new oE(u); } : null;
     if (sE && oE) sE.prototype = oE.prototype;
     function ap() {
         lk(window, 'fetch', sF); lk(window, 'XMLHttpRequest', sX); lk(window, 'WebSocket', sW);
         if (sE) lk(window, 'EventSource', sE);
-        if (navigator.sendBeacon) { var oB = navigator.sendBeacon.bind(navigator); lk(navigator, 'sendBeacon', function(u, d) { if (!chk(u)) return false; return oB(u, d); }); }
+        if (navigator.sendBeacon) { var oB = navigator.sendBeacon.bind(navigator); lk(navigator, 'sendBeacon', function(u, d) { if (!chk(u)) { showAlert('外域Beacon'); return false; } return oB(u, d); }); }
     }
     ap();
     setInterval(function() { if (window.fetch !== sF || window.XMLHttpRequest !== sX) ap(); }, 100);
@@ -65,13 +93,13 @@
         var t = tag.toLowerCase();
         if (t === 'script') {
             c.d(el, 'src', {
-                set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); },
+                set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); else showAlert('外域Script注入'); },
                 get: function() { return scriptSrcDesc.get.call(this); },
                 configurable: false
             });
         } else if (t === 'iframe') {
             c.d(el, 'src', {
-                set: function(v) { if (!v || v === 'about:blank' || v === '' || chk(v)) iframeSrcDesc.set.call(this, v); },
+                set: function(v) { if (!v || v === 'about:blank' || v === '' || chk(v)) iframeSrcDesc.set.call(this, v); else showAlert('外域Iframe注入'); },
                 get: function() { return iframeSrcDesc.get.call(this); },
                 configurable: false
             });
@@ -80,26 +108,28 @@
     };
     try {
         c.d(HTMLScriptElement.prototype, 'src', {
-            set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); },
+            set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); else showAlert('外域Script注入'); },
             get: function() { return scriptSrcDesc.get.call(this); },
             configurable: false
         });
     } catch (e) {}
-    function ckEvent(n) {
+    function ckEvent(n, silent) {
         if (n.nodeType !== 1) return;
-        eventAttrs.forEach(function(attr) { if (n.hasAttribute(attr)) n.removeAttribute(attr); });
+        var found = false;
+        eventAttrs.forEach(function(attr) { if (n.hasAttribute(attr)) { n.removeAttribute(attr); found = true; } });
+        if (found && !silent) showAlert('内联事件注入');
     }
-    function ckEventDeep(n) {
-        ckEvent(n);
-        if (n.querySelectorAll) n.querySelectorAll('*').forEach(ckEvent);
+    function ckEventDeep(n, silent) {
+        ckEvent(n, silent);
+        if (n.querySelectorAll) n.querySelectorAll('*').forEach(function(el) { ckEvent(el, silent); });
     }
     function bD() {
-        function ck(n) {
+        function ck(n, silent) {
             if (!n.tagName) return;
             var t = n.tagName.toUpperCase(), s;
-            if (t === 'SCRIPT') { s = n.src || n.getAttribute('src'); if (s && !chk(s)) n.remove(); }
-            if (t === 'IFRAME') { s = n.src || n.getAttribute('src'); if (s && s !== 'about:blank' && s !== '' && !chk(s)) n.remove(); }
-            if (t === 'LINK' && n.rel === 'preconnect') { s = n.href || n.getAttribute('href'); if (s && !chk(s)) n.remove(); }
+            if (t === 'SCRIPT') { s = n.src || n.getAttribute('src'); if (s && !chk(s)) { n.remove(); if (!silent) showAlert('外域Script'); } }
+            if (t === 'IFRAME') { s = n.src || n.getAttribute('src'); if (s && s !== 'about:blank' && s !== '' && !chk(s)) { n.remove(); if (!silent) showAlert('外域Iframe'); } }
+            if (t === 'LINK' && n.rel === 'preconnect') { s = n.href || n.getAttribute('href'); if (s && !chk(s)) { n.remove(); if (!silent) showAlert('外域Preconnect'); } }
         }
         var ob = new MutationObserver(function(m) {
             m.forEach(function(mu) {
@@ -107,27 +137,28 @@
                     mu.addedNodes.forEach(function(n) {
                         ck(n);
                         ckEventDeep(n);
-                        if (n.querySelectorAll) n.querySelectorAll('script, iframe, link').forEach(ck);
+                        if (n.querySelectorAll) n.querySelectorAll('script, iframe, link').forEach(function(el) { ck(el); });
                     });
                 } else if (mu.type === 'attributes') {
                     var attr = mu.attributeName;
                     if (attr && attr.toLowerCase().startsWith('on')) {
                         mu.target.removeAttribute(attr);
+                        showAlert('内联事件注入');
                     } else if (attr === 'src') {
                         var t = mu.target.tagName.toUpperCase();
                         var s = mu.target.getAttribute('src');
-                        if (t === 'SCRIPT' && s && !chk(s)) mu.target.remove();
-                        if (t === 'IFRAME' && s && s !== 'about:blank' && s !== '' && !chk(s)) mu.target.remove();
+                        if (t === 'SCRIPT' && s && !chk(s)) { mu.target.remove(); showAlert('外域Script'); }
+                        if (t === 'IFRAME' && s && s !== 'about:blank' && s !== '' && !chk(s)) { mu.target.remove(); showAlert('外域Iframe'); }
                     } else if (attr === 'href' && mu.target.tagName === 'LINK' && mu.target.rel === 'preconnect') {
                         var hr = mu.target.getAttribute('href');
-                        if (hr && !chk(hr)) mu.target.remove();
+                        if (hr && !chk(hr)) { mu.target.remove(); showAlert('外域Preconnect'); }
                     }
                 }
             });
         });
         if (document.documentElement) {
             ob.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
-            document.querySelectorAll('*').forEach(function(el) { ckEvent(el); ck(el); });
+            document.querySelectorAll('*').forEach(function(el) { ckEvent(el, true); ck(el, true); });
         }
     }
     bD();
