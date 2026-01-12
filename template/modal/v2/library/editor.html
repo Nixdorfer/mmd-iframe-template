@@ -4181,22 +4181,24 @@
     },
     save: function(noHist) {
       var self = this;
-      this.saveFS();
-      localStorage.setItem('d_pj', JSON.stringify(this.pj));
-      localStorage.setItem('d_cur', this.cur || '');
-      if (!noHist && this.cur) {
-        var s = JSON.stringify(this.pj[this.cur].data);
-        if (this.hist.length === 0 || this.hist[this.histIdx] !== s) {
-          this.hist = this.hist.slice(0, this.histIdx + 1);
-          this.hist.push(s);
-          this.histIdx = this.hist.length - 1;
-          if (this.hist.length > 50) {
-            this.hist.shift();
-            this.histIdx--
+      if (!noHist) {
+        this.saveFS();
+        localStorage.setItem('d_pj', JSON.stringify(this.pj));
+        localStorage.setItem('d_cur', this.cur || '');
+        if (this.cur) {
+          var s = JSON.stringify(this.pj[this.cur].data);
+          if (this.hist.length === 0 || this.hist[this.histIdx] !== s) {
+            this.hist = this.hist.slice(0, this.histIdx + 1);
+            this.hist.push(s);
+            this.histIdx = this.hist.length - 1;
+            if (this.hist.length > 50) {
+              this.hist.shift();
+              this.histIdx--
+            }
           }
         }
       }
-      if (this.cur) {
+      if (this.cur && !noHist) {
         var d = this.pj[this.cur].data,
           pg = d && d.pages && d.pages[this.pg];
         if (pg && pg.type === 'phone') {
