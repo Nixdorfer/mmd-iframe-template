@@ -19,7 +19,6 @@ body {
 
 .container {
 	background: var(--modal);
-	border-radius: 16px;
 	display: flex;
 	flex-direction: column;
 	box-shadow: 0 10px 40px rgba(0,0,0,0.3);
@@ -32,6 +31,7 @@ body {
 	text-align: center;
 	flex-shrink: 0;
 	overflow: visible;
+	cursor: move;
 }
 
 .modal-content {
@@ -1082,7 +1082,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			document.body.style.background = bg;
 		}
 		var modalBg = pg.modalBg || G.defModalBg || G.modal || '0d0d0d';
-		var opacity = (pg.modalOpacity !== undefined ? pg.modalOpacity : (G.defModalOpacity !== undefined ? G.defModalOpacity : 100)) / 100;
+		var opacity = (100 - (pg.modalOpacity !== undefined ? pg.modalOpacity : (G.defModalOpacity !== undefined ? G.defModalOpacity : 0))) / 100;
 		var blur = pg.modalBlur || G.defModalBlur || 0;
 		var wPct = pg.widthPct || 80;
 		var hPct = pg.heightPct || 80;
@@ -1095,6 +1095,14 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var st = 'width:' + w + 'px;height:' + h + 'px;background:' + hex2rgba(modalBg, opacity) + ';';
 		if (blur > 0) st += 'backdrop-filter:blur(' + blur + 'px);';
 		if (pg.modalBgImg) st = 'width:' + w + 'px;height:' + h + 'px;background:url(' + fixUrl(pg.modalBgImg) + ') center/cover no-repeat;';
+		var minSize = Math.min(w, h);
+		if (pg.modalCornerType === 'cut') {
+			var cutPx = (pg.modalHexOffset || 0) * minSize / 200;
+			if (cutPx > 0) st += 'clip-path:polygon(' + cutPx + 'px 0,calc(100% - ' + cutPx + 'px) 0,100% ' + cutPx + 'px,100% calc(100% - ' + cutPx + 'px),calc(100% - ' + cutPx + 'px) 100%,' + cutPx + 'px 100%,0 calc(100% - ' + cutPx + 'px),0 ' + cutPx + 'px);';
+		} else {
+			var radiusPx = (pg.modalRadius || 0) * minSize / 200;
+			if (radiusPx > 0) st += 'border-radius:' + radiusPx + 'px;';
+		}
 		root.style.cssText = st;
 	}
 
@@ -1121,6 +1129,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		'@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-8px)}50%{transform:translateX(8px)}}',
 		'.row{display:flex;margin:8px 0}',
 		'.row-col{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2px}',
+		'.row-col-fit-multi{flex-direction:row}',
+		'.row-col-fit-multi>.row-col-item{flex:1}',
 		'.switch{display:flex;align-items:center;justify-content:center;margin:8px 0;gap:10px;cursor:pointer}',
 		'.switch-track{position:relative;width:44px;height:24px;transition:background .2s}',
 		'.switch-thumb{position:absolute;top:2px;width:18px;height:18px;transition:left .2s}',
@@ -1186,7 +1196,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			case 'cover': st = 'width:100%;height:' + (el.height || 200) + 'px;object-fit:cover;'; break;
 			default: st = 'width:100%;height:' + (el.height || 200) + 'px;object-fit:contain;';
 		}
-		if (el.opacity !== undefined && el.opacity < 100) st += 'opacity:' + (el.opacity / 100) + ';';
+		if (el.opacity !== undefined && el.opacity > 0) st += 'opacity:' + ((100 - el.opacity) / 100) + ';';
 		var attr = ' data-detail="true"';
 		if (el.clickAction === 'gallery' && el.galleryUrls) attr = ' data-gallery="' + U.esc(el.galleryUrls) + '"';
 		else if (el.clickAction && el.clickAction !== 'none') attr = ' data-click="' + el.clickAction + '" data-target="' + (el.clickTarget || 0) + '"';
@@ -1209,14 +1219,16 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			case 'hexagon': st += 'clip-path:polygon(' + (el.hexWidth || 15) + '% 0,' + ((100 - (el.hexWidth || 15))) + '% 0,100% 50%,' + ((100 - (el.hexWidth || 15))) + '% 100%,' + (el.hexWidth || 15) + '% 100%,0 50%);'; break;
 		}
 		if (el.borderWidth) st += 'box-shadow:inset 0 0 0 ' + el.borderWidth + 'px #' + (el.borderColor || '166d3b') + ';';
-		if (el.textSize) st += 'font-size:' + el.textSize + 'px;';
-		if (el.textFont) st += 'font-family:' + el.textFont + ';';
-		if (el.textBold) st += 'font-weight:bold;';
-		if (el.textItalic) st += 'font-style:italic;';
-		if (el.textUnderline) st += 'text-decoration:underline;';
-		if (el.textStrike) st += 'text-decoration:line-through;';
-		if (el.textOpacity) st += 'opacity:' + ((100 - el.textOpacity) / 100) + ';';
 		if (el.width) st += 'width:' + el.width + '%;';
+		var ts = '';
+		if (el.textSize) ts += 'font-size:' + el.textSize + 'px;';
+		if (el.textFont) ts += 'font-family:' + el.textFont + ';';
+		if (el.textBold) ts += 'font-weight:bold;';
+		if (el.textItalic) ts += 'font-style:italic;';
+		if (el.textUnderline) ts += 'text-decoration:underline;';
+		if (el.textStrike) ts += 'text-decoration:line-through;';
+		if (el.textBg) ts += 'background:#000000;padding:2px 6px;border-radius:4px;';
+		if (el.textOpacity) ts += 'opacity:' + ((100 - el.textOpacity) / 100) + ';';
 		var attr = ' data-action="' + (el.clickAction || 'none') + '"';
 		if (el.clickTarget) attr += ' data-target="' + el.clickTarget + '"';
 		if (el.message) attr += ' data-msg="' + U.esc(el.message) + '"';
@@ -1225,7 +1237,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		if (el.logicGroup) attr += ' data-group="' + U.esc(el.logicGroup) + '" data-max="' + (el.logicMax || 1) + '"';
 		if (el.styleGroup) attr += ' data-style="' + U.esc(el.styleGroup) + '"';
 		if (!el.repeatable && el.repeatable !== undefined) attr += ' data-once="true" data-after="' + (el.afterClick || 'none') + '" data-disabled="' + U.esc(el.disabledStyle || '333333') + '"';
-		var h = '<button class="custom-btn" style="' + st + '"' + attr + '>' + U.esc(el.value || '按钮') + '</button>';
+		var txt = ts ? '<span style="' + ts + '">' + U.esc(el.value || '按钮') + '</span>' : U.esc(el.value || '按钮');
+		var h = '<button class="custom-btn" style="' + st + '"' + attr + '>' + txt + '</button>';
 		if (el.align) return '<div class="btn-wrap ' + el.align + '">' + h + '</div>';
 		return h;
 	}
@@ -1360,16 +1373,20 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var lastFit = sortedFit.length > 0 ? sortedFit[sortedFit.length - 1] : -1;
 		(el.cols || []).forEach(function(col, i) {
 			var colAttr = L.edit ? ' data-ei="' + elIdx + '" data-ci="' + i + '"' : '';
-			var flex;
-			if ((colMode[i] || 'ratio') === 'fit') {
+			var flex, colCls = 'row-col' + (L.edit ? ' ed-col' : '');
+			var isFit = (colMode[i] || 'ratio') === 'fit';
+			var isMulti = Array.isArray(col);
+			if (isFit) {
 				if (i === lastFit) flex = 'flex:1 1 0';
 				else flex = 'flex:0 0 auto';
+				if (isMulti) colCls += ' row-col-fit-multi';
 			} else {
 				var pct = (ratio[i] || 1) / ratioTotal * 100;
 				if (fitCols.length > 0) flex = 'flex:0 0 auto;width:' + pct.toFixed(2) + '%';
 				else flex = 'flex:0 0 calc(' + pct.toFixed(2) + '% - ' + gap + 'px)';
 			}
-			h += '<div class="row-col' + (L.edit ? ' ed-col' : '') + '" style="' + flex + '"' + colAttr + '>' + renderEl(col, pg) + '</div>';
+			var content = isMulti ? col.map(function(c) { return '<div class="row-col-item">' + renderEl(c, pg) + '</div>'; }).join('') : renderEl(col, pg);
+			h += '<div class="' + colCls + '" style="' + flex + '"' + colAttr + '>' + content + '</div>';
 		});
 		return h + '</div>';
 	}
@@ -1460,6 +1477,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		bindImages();
 		bindSwitches();
 		bindCollapse();
+		bindDrag();
 		applyState();
 		syncBtnSizes();
 		syncRowHeights();
@@ -1587,6 +1605,29 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 				if (bd) bd.classList.toggle('open');
 			};
 		});
+	}
+
+	var dragOff = {x: 0, y: 0};
+	function bindDrag() {
+		var hd = document.querySelector('.modal-header');
+		var ct = document.getElementById('root');
+		if (!hd || !ct) return;
+		hd.onmousedown = function(e) {
+			if (e.target.closest('button, input, select, .switch')) return;
+			var rect = ct.getBoundingClientRect();
+			dragOff.x = e.clientX - rect.left;
+			dragOff.y = e.clientY - rect.top;
+			document.onmousemove = function(ev) {
+				ct.style.position = 'fixed';
+				ct.style.left = (ev.clientX - dragOff.x) + 'px';
+				ct.style.top = (ev.clientY - dragOff.y) + 'px';
+				ct.style.transform = 'none';
+			};
+			document.onmouseup = function() {
+				document.onmousemove = null;
+				document.onmouseup = null;
+			};
+		};
 	}
 
 	function showDetail(src) {
@@ -1968,8 +2009,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 				var h = '';
 				(a.items || []).forEach(function(it, i) {
 					h += '<div class="setting-item"><label>' + U.esc(it.label || '') + '</label>';
-					if (it.type === 'slider') h += '<input type="range" min="' + (it.min || 0) + '" max="' + (it.max || 100) + '" value="' + (it.value || 50) + '">';
-					else h += '<div class="setting-toggle' + (it.value ? ' on' : '') + '"></div>';
+					if (it.type === 'slider') h += '<input type="range" min="' + (it.min || 0) + '" max="' + (it.max || 100) + '" value="' + (it.value || 50) + '" data-i="' + i + '">';
+					else h += '<div class="setting-toggle' + (it.value ? ' on' : '') + '" data-i="' + i + '"></div>';
 					h += '</div>';
 				});
 				return h || '<div style="color:#666;text-align:center">无设置项</div>';
@@ -2117,6 +2158,12 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 				PS.querySelectorAll('.setting-toggle').forEach(function(el) {
 					el.onclick = function() {
 						el.classList.toggle('on');
+					};
+				});
+				PS.querySelectorAll('.setting-item input[type="range"]').forEach(function(inp) {
+					inp.oninput = function() {
+						var i = parseInt(inp.dataset.i);
+						if (a.items && a.items[i]) a.items[i].value = parseInt(inp.value) || 0;
 					};
 				});
 			},

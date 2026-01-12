@@ -1031,6 +1031,12 @@ body {
 			S.querySelectorAll('.setting-toggle').forEach(function(el) {
 				el.onclick = function() { el.classList.toggle('on'); };
 			});
+			S.querySelectorAll('.setting-item input[type="range"]').forEach(function(inp) {
+				inp.oninput = function() {
+					var i = parseInt(inp.dataset.i);
+					if (a.items && a.items[i]) a.items[i].value = parseInt(inp.value) || 0;
+				};
+			});
 		},
 		album: function(a) {
 			S.querySelectorAll('.album-item').forEach(function(el) {

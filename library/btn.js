@@ -19,8 +19,8 @@ window.Btn = {
     '.custom-btn:hover { filter: brightness(1.2); }',
     '.custom-btn.disabled { opacity: 0.5; cursor: not-allowed; }',
     '.btn-wrap { display: block; margin: 8px 0; }',
-    '.btn-wrap.left { text-align: left; }',
-    '.btn-wrap.center { text-align: center; }',
-    '.btn-wrap.right { text-align: right; }'
+    '.btn-wrap.left .custom-btn { text-align: left; }',
+    '.btn-wrap.center .custom-btn { text-align: center; }',
+    '.btn-wrap.right .custom-btn { text-align: right; }'
   ].join('\n')
 };

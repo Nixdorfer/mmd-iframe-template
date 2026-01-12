@@ -635,11 +635,13 @@
 	max-height: 800px;
 }
 
-.ed-fold-bd>.ed-row {
+.ed-fold-bd>.ed-row,
+.ed-fold-bd>.ed-row-wrap {
 	padding: 0 10px;
 }
 
-.ed-fold-bd>.ed-row:last-child {
+.ed-fold-bd>.ed-row:last-child,
+.ed-fold-bd>.ed-row-wrap:last-child {
 	padding-bottom: 10px;
 }
 
@@ -1151,6 +1153,7 @@
 	display: flex;
 	align-items: flex-start;
 	gap: 6px;
+	margin-bottom: 18px;
 }
 
 .ed-row-wrap > .ed-row {
@@ -1158,46 +1161,76 @@
 	margin-bottom: 0;
 }
 
-.ed-mod-dot {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: #166d3b;
-	cursor: pointer;
+.ed-mod-btns {
+	display: flex;
+	gap: 4px;
 	flex-shrink: 0;
-	margin-top: 6px;
+	margin-top: 4px;
 	opacity: 0;
 	transition: opacity 0.2s;
 }
 
-.ed-row-wrap.modified .ed-mod-dot {
+.ed-row-wrap.modified .ed-mod-btns {
 	opacity: 1;
 }
 
-.ed-mod-dot:hover {
+.ed-mod-deploy,
+.ed-mod-undo {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	padding: 0;
+}
+
+.ed-mod-deploy {
+	background: #166d3b;
+}
+
+.ed-mod-deploy:hover {
 	background: #1a8f4a;
 }
 
-.ed-style-menu {
+.ed-mod-undo {
+	background: #6b4c1e;
+}
+
+.ed-mod-undo:hover {
+	background: #8f6628;
+}
+
+.ed-mod-deploy svg,
+.ed-mod-undo svg {
+	width: 10px;
+	height: 10px;
+	stroke: #fff;
+	fill: none;
+	stroke-width: 2;
+}
+
+.ed-deploy-menu {
 	position: fixed;
 	background: #1a1a1a;
 	border-radius: 6px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 	z-index: 10006;
-	min-width: 140px;
-	overflow: hidden;
+	min-width: 180px;
+	padding: 4px 0;
 }
 
-.ed-style-menu div {
-	padding: 10px 14px;
+.ed-deploy-menu-item {
+	padding: 8px 12px;
 	cursor: pointer;
-	transition: background 0.2s;
-	color: #fff;
 	font-size: 12px;
+	color: #ccc;
 }
 
-.ed-style-menu div:hover {
-	background: #252525;
+.ed-deploy-menu-item:hover {
+	background: #2a2a2a;
 }
 
 #ed-device-frame {
@@ -1477,7 +1510,7 @@
     zone: 'content',
     multiSel: [],
     tab: 0,
-    foldStates: {},
+    foldStates: JSON.parse(localStorage.getItem('edFoldStates') || '{}'),
     list: false,
     listTab: 0,
     cfg: null,
@@ -1493,6 +1526,8 @@
     chatMessages: [],
     chatSending: false,
     dragType: null,
+    dragEl: null,
+    dragCol: null,
     dragZone: null,
     curApp: null,
     clickStack: [],
@@ -1837,15 +1872,28 @@
               r: "0-20",
               d: "弹窗模糊度"
             },
+            modalCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             modalRadius: {
               t: "slider",
               r: "0-100",
-              d: "角半径"
+              d: "角弧度"
             },
             modalHexOffset: {
               t: "slider",
               r: "0-100",
               d: "角偏移"
+            },
+            useBorder: {
+              t: "toggle",
+              d: "边框"
             },
             modalBorderColor: {
               t: "color",
@@ -2108,10 +2156,19 @@
               d: "透明度",
               v: 0
             },
+            cornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             radius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 0
             },
             hexOffset: {
@@ -2128,6 +2185,10 @@
               rv: "contain",
               d: "显示模式",
               v: "contain"
+            },
+            useBorder: {
+              t: "toggle",
+              d: "边框"
             },
             borderColor: {
               t: "color",
@@ -2231,10 +2292,19 @@
               d: "模糊度",
               v: 0
             },
+            cornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             radius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 20
             },
             hexOffset: {
@@ -2243,10 +2313,18 @@
               d: "角偏移",
               v: 0
             },
+            useBg: {
+              t: "toggle",
+              d: "底色"
+            },
             bgColor: {
               t: "color",
               d: "底色",
               v: "166d3b"
+            },
+            useBorder: {
+              t: "toggle",
+              d: "边框"
             },
             borderColor: {
               t: "color",
@@ -2308,21 +2386,14 @@
               d: "文字颜色",
               v: "ffffff"
             },
-            textBgColor: {
-              t: "color",
-              d: "文字背景颜色",
-              v: "000000"
+            textBg: {
+              t: "toggle",
+              d: "文字背景"
             },
             textOpacity: {
               t: "slider",
               r: "0-100",
               d: "文字透明度",
-              v: 0
-            },
-            textBgOpacity: {
-              t: "slider",
-              r: "0-100",
-              d: "文字背景透明度",
               v: 0
             },
             textAlign: {
@@ -2354,10 +2425,19 @@
               d: "模糊度",
               v: 0
             },
+            disCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             disRadius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 20
             },
             disHexOffset: {
@@ -2366,10 +2446,18 @@
               d: "角偏移",
               v: 0
             },
+            disUseBg: {
+              t: "toggle",
+              d: "底色"
+            },
             disBgColor: {
               t: "color",
               d: "底色",
               v: "333333"
+            },
+            disUseBorder: {
+              t: "toggle",
+              d: "边框"
             },
             disBorderColor: {
               t: "color",
@@ -2431,21 +2519,14 @@
               d: "文字颜色",
               v: "666666"
             },
-            disTextBgColor: {
-              t: "color",
-              d: "文字背景颜色",
-              v: "000000"
+            disTextBg: {
+              t: "toggle",
+              d: "文字背景"
             },
             disTextOpacity: {
               t: "slider",
               r: "0-100",
               d: "文字透明度",
-              v: 0
-            },
-            disTextBgOpacity: {
-              t: "slider",
-              r: "0-100",
-              d: "文字背景透明度",
               v: 0
             },
             disTextAlign: {
@@ -2475,12 +2556,6 @@
               t: "toggle",
               d: "必填",
               v: false
-            },
-            prerenderText: {
-              t: "select",
-              r: self.prerenderTexts,
-              d: "预渲染文本",
-              v: "none"
             },
             displayMode: {
               t: "select",
@@ -2522,15 +2597,28 @@
               d: "模糊度",
               v: 0
             },
+            useBg: {
+              t: "toggle",
+              d: "背景"
+            },
             bgColor: {
               t: "color",
               d: "背景颜色",
               v: "1a1a1a"
             },
+            cornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             radius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 16
             },
             hexOffset: {
@@ -2538,6 +2626,10 @@
               r: "0-100",
               d: "角偏移",
               v: 0
+            },
+            useBorder: {
+              t: "toggle",
+              d: "边框"
             },
             borderOpacity: {
               t: "slider",
@@ -2723,16 +2815,25 @@
               d: "背景颜色",
               v: "166d3b"
             },
+            onCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             onRadius: {
               t: "slider",
-              r: "0-30",
-              d: "圆角",
+              r: "0-100",
+              d: "角弧度",
               v: 15
             },
             onHexOffset: {
               t: "slider",
-              r: "0-15",
-              d: "六边形偏移"
+              r: "0-100",
+              d: "角偏移"
             },
             onThumbOpacity: {
               t: "slider",
@@ -2750,16 +2851,25 @@
               d: "滑块颜色",
               v: "ffffff"
             },
+            onThumbCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             onThumbRadius: {
               t: "slider",
-              r: "0-15",
-              d: "滑块圆角",
+              r: "0-100",
+              d: "角弧度",
               v: 10
             },
             onThumbHexOffset: {
               t: "slider",
-              r: "0-15",
-              d: "滑块六边形偏移"
+              r: "0-100",
+              d: "角偏移"
             },
             onBorderOpacity: {
               t: "slider",
@@ -2799,16 +2909,25 @@
               d: "背景颜色",
               v: "333333"
             },
+            offCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             offRadius: {
               t: "slider",
-              r: "0-30",
-              d: "圆角",
+              r: "0-100",
+              d: "角弧度",
               v: 15
             },
             offHexOffset: {
               t: "slider",
-              r: "0-15",
-              d: "六边形偏移"
+              r: "0-100",
+              d: "角偏移"
             },
             offThumbOpacity: {
               t: "slider",
@@ -2826,16 +2945,25 @@
               d: "滑块颜色",
               v: "ffffff"
             },
+            offThumbCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             offThumbRadius: {
               t: "slider",
-              r: "0-15",
-              d: "滑块圆角",
+              r: "0-100",
+              d: "角弧度",
               v: 10
             },
             offThumbHexOffset: {
               t: "slider",
-              r: "0-15",
-              d: "滑块六边形偏移"
+              r: "0-100",
+              d: "角偏移"
             },
             offBorderOpacity: {
               t: "slider",
@@ -2930,10 +3058,19 @@
               d: "背景颜色",
               v: "1a1a1a"
             },
+            hdCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             hdRadius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 8
             },
             hdHexOffset: {
@@ -2982,10 +3119,19 @@
               d: "背景颜色",
               v: "1a1a1a"
             },
+            openHdCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             openHdRadius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 8
             },
             openHdHexOffset: {
@@ -3034,10 +3180,19 @@
               d: "背景颜色",
               v: "0d0d0d"
             },
+            bdCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             bdRadius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 8
             },
             bdHexOffset: {
@@ -3109,6 +3264,10 @@
         "row": {
           name: "多列",
           props: {
+            useBorder: {
+              t: "toggle",
+              d: "边框"
+            },
             borderOpacity: {
               t: "slider",
               r: "0-100",
@@ -3211,10 +3370,19 @@
               d: "背景颜色",
               v: "1a1a1a"
             },
+            bubbleCornerType: {
+              t: "slide",
+              ll: "圆角",
+              lv: "rounded",
+              rl: "切角",
+              rv: "cut",
+              v: "rounded",
+              d: "角类型"
+            },
             bubbleRadius: {
               t: "slider",
               r: "0-100",
-              d: "角半径",
+              d: "角弧度",
               v: 12
             },
             bubbleHexOffset: {
@@ -3291,6 +3459,10 @@
               r: "0-20",
               d: "模糊度"
             },
+            useBg: {
+              t: "toggle",
+              d: "背景"
+            },
             bgColor: {
               t: "color",
               d: "背景颜色",
@@ -3306,6 +3478,10 @@
               t: "slider",
               r: "0-100",
               d: "角偏移"
+            },
+            useBorder: {
+              t: "toggle",
+              d: "边框"
             },
             borderOpacity: {
               t: "slider",
@@ -3450,27 +3626,33 @@
           self.hiSel();
           return
         }
-        var clickables = [];
         var col = e.target.closest('.ed-col');
         var el = e.target.closest('.ed-el');
+        if (col && self.rowSel !== null) {
+          var clickedEi = parseInt(col.dataset.ei);
+          var clickedZone = col.dataset.zone || 'content';
+          if (self.sel === clickedEi && self.zone === clickedZone) {
+            self.selEl(clickedEi, e.shiftKey, clickedZone);
+            var els = self.getEls(clickedZone);
+            var elData = els[clickedEi];
+            if (elData) {
+              var cfg = self.cfg[elData.type];
+              self.showStatus(cfg ? cfg.name : elData.type)
+            }
+            return
+          }
+        }
+        var clickables = [];
         if (col) clickables.push({type:'col', el:col, ei:parseInt(col.dataset.ei), ci:parseInt(col.dataset.ci), zone:col.dataset.zone||'content'});
         if (el) clickables.push({type:'el', el:el, idx:parseInt(el.dataset.idx), zone:el.dataset.zone||'content'});
         if (clickables.length === 0) return;
-        var pos = e.clientX + ',' + e.clientY;
-        if (self.lastClickPos === pos && clickables.length > 1) {
-          self.clickIdx = (self.clickIdx + 1) % clickables.length
-        } else {
-          self.clickIdx = 0;
-          self.lastClickPos = pos
-        }
-        var item = clickables[self.clickIdx];
+        var item = clickables[0];
         if (item.type === 'col') {
           self.multiSel = [];
           self.selCol(item.ei, item.ci, item.zone);
           self.showStatus('多列 - 列' + (item.ci + 1))
         } else {
           self.selEl(item.idx, e.shiftKey, item.zone);
-          var pg = self.pj[self.cur]?.data?.pages?.[self.pg];
           var els = self.getEls(item.zone);
           var elData = els[item.idx];
           if (elData) {
@@ -3535,7 +3717,7 @@
         }
       });
       document.addEventListener('dragover', function(e) {
-        if (!self.dragType && !self.dragEl) return;
+        if (!self.dragType && !self.dragEl && !self.dragCol) return;
         var root = document.getElementById('root');
         if (!root) return;
         var rr = root.getBoundingClientRect();
@@ -3562,9 +3744,9 @@
             return
           }
           var edc = cd.closest('.ed-col');
-          if (edc && self.dragType) {
+          if (edc && (self.dragType || self.dragEl)) {
             e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
+            e.dataTransfer.dropEffect = self.dragEl ? 'move' : 'copy';
             edc.classList.add('drag-over');
             document.querySelectorAll('.ed-drop').forEach(function(d) {
               d.remove()
@@ -3593,7 +3775,7 @@
           return
         }
         e.preventDefault();
-        e.dataTransfer.dropEffect = self.dragEl ? 'move' : 'copy';
+        e.dataTransfer.dropEffect = (self.dragEl || self.dragCol) ? 'move' : 'copy';
         var els = Array.from(container.children).filter(function(c) {
           return c.classList.contains('ed-el')
         });
@@ -3604,6 +3786,10 @@
             pos = i;
             break
           }
+        }
+        if (self.dragEl && zone === self.dragEl.zone && (pos === self.dragEl.idx || pos === self.dragEl.idx + 1)) {
+          document.querySelectorAll('.ed-drop').forEach(function(d) { d.remove() });
+          return
         }
         var dp = document.querySelector('.ed-drop');
         if (!dp) {
@@ -3618,14 +3804,25 @@
         else container.appendChild(dp)
       });
       document.addEventListener('drop', function(e) {
-        if (!self.dragType && !self.dragEl) return;
+        if (!self.dragType && !self.dragEl && !self.dragCol) return;
         e.preventDefault();
         var dp = document.querySelector('.ed-drop');
-        if (self.dragEl && dp) {
-          self.moveElTo(self.dragEl.idx, self.dragEl.zone, parseInt(dp.dataset.pos), dp.dataset.zone)
+        var ec = e.target.closest('.ed-col');
+        if (self.dragCol) {
+          if (dp) {
+            self.moveFromCol(self.dragCol.ei, self.dragCol.ci, self.dragCol.zone, parseInt(dp.dataset.pos), dp.dataset.zone)
+          }
+        } else if (self.dragEl) {
+          if (ec) {
+            var ei = parseInt(ec.dataset.ei),
+              ci = parseInt(ec.dataset.ci),
+              zone = ec.closest('.ed-el').dataset.zone || 'content';
+            self.moveToCol(self.dragEl.idx, self.dragEl.zone, ei, ci, zone)
+          } else if (dp) {
+            self.moveElTo(self.dragEl.idx, self.dragEl.zone, parseInt(dp.dataset.pos), dp.dataset.zone)
+          }
         } else if (self.dragType) {
           var cd = e.target.closest('.collapse-drop');
-          var ec = e.target.closest('.ed-col');
           if (cd) {
             var wrap = cd.closest('.ed-el');
             if (wrap) {
@@ -3644,6 +3841,7 @@
         }
         self.dragType = null;
         self.dragEl = null;
+        self.dragCol = null;
         self.dragZone = null;
         document.querySelectorAll('.ed-drop').forEach(function(d) {
           d.remove()
@@ -3652,6 +3850,7 @@
       document.addEventListener('dragend', function() {
         self.dragType = null;
         self.dragEl = null;
+        self.dragCol = null;
         document.querySelectorAll('.ed-drop').forEach(function(d) {
           d.remove()
         });
@@ -4343,7 +4542,24 @@
       });
       document.querySelectorAll('.ed-col').forEach(function(c) {
         var z = c.dataset.zone || 'content';
-        c.classList.toggle('ed-sel', parseInt(c.dataset.ei) === self.sel && z === self.zone && parseInt(c.dataset.ci) === self.rowSel)
+        var ei = parseInt(c.dataset.ei);
+        var ci = parseInt(c.dataset.ci);
+        var isSel = ei === self.sel && z === self.zone && ci === self.rowSel;
+        c.classList.toggle('ed-sel', isSel);
+        if (isSel && !self.moveMode) {
+          c.style.position = 'relative';
+          var mv = document.createElement('div');
+          mv.className = 'ed-move';
+          mv.innerHTML = self.icon('move');
+          mv.draggable = true;
+          mv.ondragstart = function(e) {
+            e.stopPropagation();
+            self.dragCol = { ei: ei, ci: ci, zone: z };
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', '')
+          };
+          c.appendChild(mv)
+        }
       })
     },
     startMove: function() {
@@ -4421,6 +4637,45 @@
       if (srcKey === dstKey && dstPos > srcIdx) dstPos--;
       pg[dstKey].splice(dstPos, 0, el);
       this.sel = dstPos;
+      this.zone = dstZone;
+      this.save();
+      this.hiSel()
+    },
+    moveToCol: function(srcIdx, srcZone, rowIdx, ci, rowZone) {
+      if (!this.cur) return;
+      var pg = this.pj[this.cur].data.pages[this.pg];
+      if (!pg) return;
+      var srcKey = srcZone === 'header' ? 'headerElements' : (srcZone === 'footer' ? 'footerElements' : 'elements');
+      var rowKey = rowZone === 'header' ? 'headerElements' : (rowZone === 'footer' ? 'footerElements' : 'elements');
+      if (!pg[srcKey]) return;
+      var el = pg[srcKey][srcIdx];
+      if (!el) return;
+      var row = (pg[rowKey] || [])[rowIdx];
+      if (!row || row.type !== 'row' || !row.cols) return;
+      pg[srcKey].splice(srcIdx, 1);
+      row.cols[ci] = el;
+      this.sel = rowIdx;
+      this.rowSel = ci;
+      this.zone = rowZone;
+      this.save();
+      this.hiSel()
+    },
+    moveFromCol: function(rowIdx, ci, rowZone, dstPos, dstZone) {
+      if (!this.cur) return;
+      var pg = this.pj[this.cur].data.pages[this.pg];
+      if (!pg) return;
+      var rowKey = rowZone === 'header' ? 'headerElements' : (rowZone === 'footer' ? 'footerElements' : 'elements');
+      var dstKey = dstZone === 'header' ? 'headerElements' : (dstZone === 'footer' ? 'footerElements' : 'elements');
+      var row = (pg[rowKey] || [])[rowIdx];
+      if (!row || row.type !== 'row' || !row.cols || !row.cols[ci]) return;
+      var el = row.cols[ci];
+      if (el.type === 'placeholder') return;
+      row.cols[ci] = {type: 'placeholder'};
+      if (!pg[dstKey]) pg[dstKey] = [];
+      if (rowKey === dstKey && dstPos > rowIdx) dstPos--;
+      pg[dstKey].splice(dstPos, 0, el);
+      this.sel = dstPos;
+      this.rowSel = null;
       this.zone = dstZone;
       this.save();
       this.hiSel()
@@ -4511,7 +4766,8 @@
       document.querySelectorAll('.ed-fold-hd').forEach(function(hd) {
         states.push(hd.classList.contains('open'))
       });
-      this.foldStates[this.tab] = states
+      this.foldStates[this.tab] = states;
+      localStorage.setItem('edFoldStates', JSON.stringify(this.foldStates))
     },
     renderR: function() {
       var p = document.getElementById('ed-body'),
@@ -4606,7 +4862,6 @@
       }
       var pgCfg = this.cfg.page.props;
       var h = '';
-      h += this.ctrl('title', pgCfg.title, pg.title, 'pg');
       h += '<div class="ed-fold"><div class="ed-fold-hd"><span>界面背景</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
       h += self.ctrl('coverParent', pgCfg.coverParent, pg.coverParent !== false, 'pg');
       if (pg.coverParent !== false) {
@@ -4638,12 +4893,19 @@
       h += self.ctrl('modalOffsetX', pgCfg.modalOffsetX, pg.modalOffsetX, 'pg');
       h += self.ctrl('modalOffsetY', pgCfg.modalOffsetY, pg.modalOffsetY, 'pg');
       h += self.ctrl('modalOpacity', pgCfg.modalOpacity, pg.modalOpacity, 'pg');
-      h += self.ctrl('modalRadius', pgCfg.modalRadius, pg.modalRadius, 'pg');
-      h += self.ctrl('modalHexOffset', pgCfg.modalHexOffset, pg.modalHexOffset, 'pg');
-      h += self.ctrl('modalBorderColor', pgCfg.modalBorderColor, pg.modalBorderColor, 'pg');
-      h += self.ctrl('modalBorderWidth', pgCfg.modalBorderWidth, pg.modalBorderWidth, 'pg');
-      h += self.ctrl('modalBorderOpacity', pgCfg.modalBorderOpacity, pg.modalBorderOpacity, 'pg');
-      h += self.ctrl('modalBorderBlur', pgCfg.modalBorderBlur, pg.modalBorderBlur, 'pg');
+      h += self.ctrl('modalCornerType', pgCfg.modalCornerType, pg.modalCornerType, 'pg');
+      if (pg.modalCornerType === 'cut') {
+        h += self.ctrl('modalHexOffset', pgCfg.modalHexOffset, pg.modalHexOffset, 'pg');
+      } else {
+        h += self.ctrl('modalRadius', pgCfg.modalRadius, pg.modalRadius, 'pg');
+      }
+      h += self.ctrl('useBorder', pgCfg.useBorder, pg.useBorder, 'pg');
+      if (pg.useBorder) {
+        h += self.ctrl('modalBorderColor', pgCfg.modalBorderColor, pg.modalBorderColor, 'pg');
+        h += self.ctrl('modalBorderWidth', pgCfg.modalBorderWidth, pg.modalBorderWidth, 'pg');
+        h += self.ctrl('modalBorderOpacity', pgCfg.modalBorderOpacity, pg.modalBorderOpacity, 'pg');
+        h += self.ctrl('modalBorderBlur', pgCfg.modalBorderBlur, pg.modalBorderBlur, 'pg');
+      }
       h += self.ctrl('modalBgImgMobile', pgCfg.modalBgImgMobile, pg.modalBgImgMobile, 'pg');
       if (pg.modalBgImgMobile) {
         h += self.ctrl('modalBgImgMobileMode', pgCfg.modalBgImgMobileMode, pg.modalBgImgMobileMode, 'pg');
@@ -4893,8 +5155,10 @@
           h += self.ctrl('clickAction', cm.props.clickAction, col.clickAction, 'col', self.rowSel);
           if (col.clickAction === 'message') h += self.ctrl('message', cm.props.message, col.message, 'col', self.rowSel);
           if (col.clickAction === 'jumpModal' || col.clickAction === 'openModal') h += self.ctrl('clickTarget', cm.props.clickTarget, col.clickTarget, 'col', self.rowSel);
-          var sysEffectProp = (d.sys && d.sys.unload) ? {t: 'select', r: self.btnEffects.filter(function(e) { return e.v !== 'killer' && e.v !== 'hider'; }), d: '系统效果'} : cm.props.sysEffect;
-          h += self.ctrl('sysEffect', sysEffectProp, col.sysEffect, 'col', self.rowSel);
+          var pg = d.pages[self.pg];
+          if (!pg.unloadParent) {
+            h += self.ctrl('sysEffect', cm.props.sysEffect, col.sysEffect, 'col', self.rowSel);
+          }
           h += self.ctrl('disableAfterClick', cm.props.disableAfterClick, col.disableAfterClick, 'col', self.rowSel);
           h += self.ctrl('logicGroup', cm.props.logicGroup, col.logicGroup, 'col', self.rowSel);
           if (col.logicGroup) h += self.ctrl('logicMax', cm.props.logicMax, col.logicMax, 'col', self.rowSel);
@@ -4906,11 +5170,15 @@
           h += self.ctrl('blur', cm.props.blur, col.blur, 'col', self.rowSel);
           h += self.ctrl('radius', cm.props.radius, col.radius, 'col', self.rowSel);
           h += self.ctrl('hexOffset', cm.props.hexOffset, col.hexOffset, 'col', self.rowSel);
-          h += self.ctrl('bgColor', cm.props.bgColor, col.bgColor, 'col', self.rowSel);
-          h += self.ctrl('borderColor', cm.props.borderColor, col.borderColor, 'col', self.rowSel);
-          h += self.ctrl('borderWidth', cm.props.borderWidth, col.borderWidth, 'col', self.rowSel);
-          h += self.ctrl('borderOpacity', cm.props.borderOpacity, col.borderOpacity, 'col', self.rowSel);
-          h += self.ctrl('borderBlur', cm.props.borderBlur, col.borderBlur, 'col', self.rowSel);
+          h += self.ctrl('useBg', cm.props.useBg, col.useBg, 'col', self.rowSel);
+          if (col.useBg) h += self.ctrl('bgColor', cm.props.bgColor, col.bgColor, 'col', self.rowSel);
+          h += self.ctrl('useBorder', cm.props.useBorder, col.useBorder, 'col', self.rowSel);
+          if (col.useBorder) {
+            h += self.ctrl('borderColor', cm.props.borderColor, col.borderColor, 'col', self.rowSel);
+            h += self.ctrl('borderWidth', cm.props.borderWidth, col.borderWidth, 'col', self.rowSel);
+            h += self.ctrl('borderOpacity', cm.props.borderOpacity, col.borderOpacity, 'col', self.rowSel);
+            h += self.ctrl('borderBlur', cm.props.borderBlur, col.borderBlur, 'col', self.rowSel);
+          }
           h += self.ctrl('styleGroup', cm.props.styleGroup, col.styleGroup, 'col', self.rowSel);
           h += '</div></div>';
           h += '<div class="ed-fold"><div class="ed-fold-hd"><span>按钮文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
@@ -4921,9 +5189,8 @@
           h += self.ctrl('textUnderline', cm.props.textUnderline, col.textUnderline, 'col', self.rowSel);
           h += self.ctrl('textStrike', cm.props.textStrike, col.textStrike, 'col', self.rowSel);
           h += self.ctrl('textColor', cm.props.textColor, col.textColor, 'col', self.rowSel);
-          h += self.ctrl('textBgColor', cm.props.textBgColor, col.textBgColor, 'col', self.rowSel);
+          h += self.ctrl('textBg', cm.props.textBg, col.textBg, 'col', self.rowSel);
           h += self.ctrl('textOpacity', cm.props.textOpacity, col.textOpacity, 'col', self.rowSel);
-          h += self.ctrl('textBgOpacity', cm.props.textBgOpacity, col.textBgOpacity, 'col', self.rowSel);
           h += self.ctrl('textAlign', cm.props.textAlign, col.textAlign, 'col', self.rowSel);
           h += '</div></div>';
           if (col.disableAfterClick) {
@@ -4932,13 +5199,21 @@
             h += self.ctrl('disAlign', cm.props.disAlign, col.disAlign, 'col', self.rowSel);
             h += self.ctrl('disOpacity', cm.props.disOpacity, col.disOpacity, 'col', self.rowSel);
             h += self.ctrl('disBlur', cm.props.disBlur, col.disBlur, 'col', self.rowSel);
-            h += self.ctrl('disRadius', cm.props.disRadius, col.disRadius, 'col', self.rowSel);
-            h += self.ctrl('disHexOffset', cm.props.disHexOffset, col.disHexOffset, 'col', self.rowSel);
-            h += self.ctrl('disBgColor', cm.props.disBgColor, col.disBgColor, 'col', self.rowSel);
-            h += self.ctrl('disBorderColor', cm.props.disBorderColor, col.disBorderColor, 'col', self.rowSel);
-            h += self.ctrl('disBorderWidth', cm.props.disBorderWidth, col.disBorderWidth, 'col', self.rowSel);
-            h += self.ctrl('disBorderOpacity', cm.props.disBorderOpacity, col.disBorderOpacity, 'col', self.rowSel);
-            h += self.ctrl('disBorderBlur', cm.props.disBorderBlur, col.disBorderBlur, 'col', self.rowSel);
+            h += self.ctrl('disCornerType', cm.props.disCornerType, col.disCornerType, 'col', self.rowSel);
+            if (col.disCornerType === 'cut') {
+              h += self.ctrl('disHexOffset', cm.props.disHexOffset, col.disHexOffset, 'col', self.rowSel);
+            } else {
+              h += self.ctrl('disRadius', cm.props.disRadius, col.disRadius, 'col', self.rowSel);
+            }
+            h += self.ctrl('disUseBg', cm.props.disUseBg, col.disUseBg, 'col', self.rowSel);
+            if (col.disUseBg) h += self.ctrl('disBgColor', cm.props.disBgColor, col.disBgColor, 'col', self.rowSel);
+            h += self.ctrl('disUseBorder', cm.props.disUseBorder, col.disUseBorder, 'col', self.rowSel);
+            if (col.disUseBorder) {
+              h += self.ctrl('disBorderColor', cm.props.disBorderColor, col.disBorderColor, 'col', self.rowSel);
+              h += self.ctrl('disBorderWidth', cm.props.disBorderWidth, col.disBorderWidth, 'col', self.rowSel);
+              h += self.ctrl('disBorderOpacity', cm.props.disBorderOpacity, col.disBorderOpacity, 'col', self.rowSel);
+              h += self.ctrl('disBorderBlur', cm.props.disBorderBlur, col.disBorderBlur, 'col', self.rowSel);
+            }
             h += self.ctrl('disStyleGroup', cm.props.disStyleGroup, col.disStyleGroup, 'col', self.rowSel);
             h += '</div></div>';
             h += '<div class="ed-fold"><div class="ed-fold-hd"><span>禁用时文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
@@ -4949,9 +5224,8 @@
             h += self.ctrl('disTextUnderline', cm.props.disTextUnderline, col.disTextUnderline, 'col', self.rowSel);
             h += self.ctrl('disTextStrike', cm.props.disTextStrike, col.disTextStrike, 'col', self.rowSel);
             h += self.ctrl('disTextColor', cm.props.disTextColor, col.disTextColor, 'col', self.rowSel);
-            h += self.ctrl('disTextBgColor', cm.props.disTextBgColor, col.disTextBgColor, 'col', self.rowSel);
+            h += self.ctrl('disTextBg', cm.props.disTextBg, col.disTextBg, 'col', self.rowSel);
             h += self.ctrl('disTextOpacity', cm.props.disTextOpacity, col.disTextOpacity, 'col', self.rowSel);
-            h += self.ctrl('disTextBgOpacity', cm.props.disTextBgOpacity, col.disTextBgOpacity, 'col', self.rowSel);
             h += self.ctrl('disTextAlign', cm.props.disTextAlign, col.disTextAlign, 'col', self.rowSel);
             h += '</div></div>';
           }
@@ -4974,10 +5248,13 @@
       var h = '<div class="ed-sec"><div class="ed-title">' + m.name + '</div>';
       if (el.type === 'row') {
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>外框</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
-        h += this.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
-        h += this.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
-        h += this.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
-        h += this.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += this.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
+        if (el.useBorder) {
+          h += this.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+          h += this.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+          h += this.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+          h += this.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        }
         h += '</div></div>';
         h += this.ctrl('heightBind', m.props.heightBind, el.heightBind, 'el');
         var colArrange = el.colArrange ? true : false;
@@ -4994,7 +5271,8 @@
         if (!colArrange) {
           (el.cols || []).forEach(function(col, ci) {
             h += '<div class="ed-row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">';
-            h += '<span style="white-space:nowrap;flex:1">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span>';
+            var colName = self.cfg[col.type] ? self.cfg[col.type].name : (col.type === 'placeholder' ? '占位符' : col.type);
+            h += '<span style="white-space:nowrap;flex:1">列' + (ci + 1) + ' - ' + colName + '</span>';
             h += '<input class="col-weight-inp" data-ci="' + ci + '" value="' + ratio[ci] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
             if ((el.cols || []).length > 1) h += '<button class="del-col-btn" data-ci="' + ci + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;flex-shrink:0">' + self.icon('trash') + '</button>';
             h += '</div>';
@@ -5010,7 +5288,8 @@
             var isLast = pi === sortedCols.length - 1;
             h += '<div class="col-priority-item" draggable="true" data-ci="' + ci + '" style="display:flex;align-items:center;gap:8px;padding:8px;margin:2px 0;background:#1a1a1a;border-radius:4px;cursor:grab' + (isLast ? ';border:1px dashed #444' : '') + '">';
             h += '<span style="color:#666">' + self.icon('drag') + '</span>';
-            h += '<span style="flex:1">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span>';
+            var colName2 = self.cfg[col.type] ? self.cfg[col.type].name : (col.type === 'placeholder' ? '占位符' : col.type);
+            h += '<span style="flex:1">列' + (ci + 1) + ' - ' + colName2 + '</span>';
             if (isLast) h += '<span style="color:#888;font-size:11px">占剩余</span>';
             if ((el.cols || []).length > 1) h += '<button class="del-col-btn" data-ci="' + ci + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;flex-shrink:0;margin-left:8px">' + self.icon('trash') + '</button>';
             h += '</div>';
@@ -5026,8 +5305,12 @@
         h += self.ctrl('hdOpacity', m.props.hdOpacity, el.hdOpacity, 'el');
         h += self.ctrl('hdBlur', m.props.hdBlur, el.hdBlur, 'el');
         h += self.ctrl('hdBgColor', m.props.hdBgColor, el.hdBgColor, 'el');
-        h += self.ctrl('hdRadius', m.props.hdRadius, el.hdRadius, 'el');
-        h += self.ctrl('hdHexOffset', m.props.hdHexOffset, el.hdHexOffset, 'el');
+        h += self.ctrl('hdCornerType', m.props.hdCornerType, el.hdCornerType, 'el');
+        if (el.hdCornerType === 'cut') {
+          h += self.ctrl('hdHexOffset', m.props.hdHexOffset, el.hdHexOffset, 'el');
+        } else {
+          h += self.ctrl('hdRadius', m.props.hdRadius, el.hdRadius, 'el');
+        }
         h += self.ctrl('hdBorderOpacity', m.props.hdBorderOpacity, el.hdBorderOpacity, 'el');
         h += self.ctrl('hdBorderBlur', m.props.hdBorderBlur, el.hdBorderBlur, 'el');
         h += self.ctrl('hdBorderColor', m.props.hdBorderColor, el.hdBorderColor, 'el');
@@ -5037,8 +5320,12 @@
         h += self.ctrl('openHdOpacity', m.props.openHdOpacity, el.openHdOpacity, 'el');
         h += self.ctrl('openHdBlur', m.props.openHdBlur, el.openHdBlur, 'el');
         h += self.ctrl('openHdBgColor', m.props.openHdBgColor, el.openHdBgColor, 'el');
-        h += self.ctrl('openHdRadius', m.props.openHdRadius, el.openHdRadius, 'el');
-        h += self.ctrl('openHdHexOffset', m.props.openHdHexOffset, el.openHdHexOffset, 'el');
+        h += self.ctrl('openHdCornerType', m.props.openHdCornerType, el.openHdCornerType, 'el');
+        if (el.openHdCornerType === 'cut') {
+          h += self.ctrl('openHdHexOffset', m.props.openHdHexOffset, el.openHdHexOffset, 'el');
+        } else {
+          h += self.ctrl('openHdRadius', m.props.openHdRadius, el.openHdRadius, 'el');
+        }
         h += self.ctrl('openHdBorderOpacity', m.props.openHdBorderOpacity, el.openHdBorderOpacity, 'el');
         h += self.ctrl('openHdBorderBlur', m.props.openHdBorderBlur, el.openHdBorderBlur, 'el');
         h += self.ctrl('openHdBorderColor', m.props.openHdBorderColor, el.openHdBorderColor, 'el');
@@ -5048,8 +5335,12 @@
         h += self.ctrl('bdOpacity', m.props.bdOpacity, el.bdOpacity, 'el');
         h += self.ctrl('bdBlur', m.props.bdBlur, el.bdBlur, 'el');
         h += self.ctrl('bdBgColor', m.props.bdBgColor, el.bdBgColor, 'el');
-        h += self.ctrl('bdRadius', m.props.bdRadius, el.bdRadius, 'el');
-        h += self.ctrl('bdHexOffset', m.props.bdHexOffset, el.bdHexOffset, 'el');
+        h += self.ctrl('bdCornerType', m.props.bdCornerType, el.bdCornerType, 'el');
+        if (el.bdCornerType === 'cut') {
+          h += self.ctrl('bdHexOffset', m.props.bdHexOffset, el.bdHexOffset, 'el');
+        } else {
+          h += self.ctrl('bdRadius', m.props.bdRadius, el.bdRadius, 'el');
+        }
         h += self.ctrl('bdBorderOpacity', m.props.bdBorderOpacity, el.bdBorderOpacity, 'el');
         h += self.ctrl('bdBorderBlur', m.props.bdBorderBlur, el.bdBorderBlur, 'el');
         h += self.ctrl('bdBorderColor', m.props.bdBorderColor, el.bdBorderColor, 'el');
@@ -5072,8 +5363,10 @@
         h += self.ctrl('clickAction', m.props.clickAction, el.clickAction, 'el');
         if (el.clickAction === 'message') h += self.ctrl('message', m.props.message, el.message, 'el');
         if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
-        var sysEffectProp = (d.sys && d.sys.unload) ? {t: 'select', r: self.btnEffects.filter(function(e) { return e.v !== 'killer' && e.v !== 'hider'; }), d: '系统效果'} : m.props.sysEffect;
-        h += self.ctrl('sysEffect', sysEffectProp, el.sysEffect, 'el');
+        var pg = d.pages[self.pg];
+        if (!pg.unloadParent) {
+          h += self.ctrl('sysEffect', m.props.sysEffect, el.sysEffect, 'el');
+        }
         h += self.ctrl('disableAfterClick', m.props.disableAfterClick, el.disableAfterClick, 'el');
         h += self.ctrl('logicGroup', m.props.logicGroup, el.logicGroup, 'el');
         if (el.logicGroup) h += self.ctrl('logicMax', m.props.logicMax, el.logicMax, 'el');
@@ -5085,14 +5378,19 @@
         h += self.ctrl('blur', m.props.blur, el.blur, 'el');
         h += self.ctrl('radius', m.props.radius, el.radius, 'el');
         h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
-        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
-        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
-        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
-        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
-        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += self.ctrl('useBg', m.props.useBg, el.useBg, 'el');
+        if (el.useBg) h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
+        if (el.useBorder) {
+          h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+          h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+          h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+          h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        }
         h += self.ctrl('styleGroup', m.props.styleGroup, el.styleGroup, 'el');
         h += '</div></div>';
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>按钮文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('value', m.props.value, el.value, 'el');
         h += self.ctrl('textSize', m.props.textSize, el.textSize, 'el');
         h += self.ctrl('textFont', m.props.textFont, el.textFont, 'el');
         h += self.ctrl('textBold', m.props.textBold, el.textBold, 'el');
@@ -5100,9 +5398,8 @@
         h += self.ctrl('textUnderline', m.props.textUnderline, el.textUnderline, 'el');
         h += self.ctrl('textStrike', m.props.textStrike, el.textStrike, 'el');
         h += self.ctrl('textColor', m.props.textColor, el.textColor, 'el');
-        h += self.ctrl('textBgColor', m.props.textBgColor, el.textBgColor, 'el');
+        h += self.ctrl('textBg', m.props.textBg, el.textBg, 'el');
         h += self.ctrl('textOpacity', m.props.textOpacity, el.textOpacity, 'el');
-        h += self.ctrl('textBgOpacity', m.props.textBgOpacity, el.textBgOpacity, 'el');
         h += self.ctrl('textAlign', m.props.textAlign, el.textAlign, 'el');
         h += '</div></div>';
         if (el.disableAfterClick) {
@@ -5111,13 +5408,21 @@
           h += self.ctrl('disAlign', m.props.disAlign, el.disAlign, 'el');
           h += self.ctrl('disOpacity', m.props.disOpacity, el.disOpacity, 'el');
           h += self.ctrl('disBlur', m.props.disBlur, el.disBlur, 'el');
-          h += self.ctrl('disRadius', m.props.disRadius, el.disRadius, 'el');
-          h += self.ctrl('disHexOffset', m.props.disHexOffset, el.disHexOffset, 'el');
-          h += self.ctrl('disBgColor', m.props.disBgColor, el.disBgColor, 'el');
-          h += self.ctrl('disBorderColor', m.props.disBorderColor, el.disBorderColor, 'el');
-          h += self.ctrl('disBorderWidth', m.props.disBorderWidth, el.disBorderWidth, 'el');
-          h += self.ctrl('disBorderOpacity', m.props.disBorderOpacity, el.disBorderOpacity, 'el');
-          h += self.ctrl('disBorderBlur', m.props.disBorderBlur, el.disBorderBlur, 'el');
+          h += self.ctrl('disCornerType', m.props.disCornerType, el.disCornerType, 'el');
+          if (el.disCornerType === 'cut') {
+            h += self.ctrl('disHexOffset', m.props.disHexOffset, el.disHexOffset, 'el');
+          } else {
+            h += self.ctrl('disRadius', m.props.disRadius, el.disRadius, 'el');
+          }
+          h += self.ctrl('disUseBg', m.props.disUseBg, el.disUseBg, 'el');
+          if (el.disUseBg) h += self.ctrl('disBgColor', m.props.disBgColor, el.disBgColor, 'el');
+          h += self.ctrl('disUseBorder', m.props.disUseBorder, el.disUseBorder, 'el');
+          if (el.disUseBorder) {
+            h += self.ctrl('disBorderColor', m.props.disBorderColor, el.disBorderColor, 'el');
+            h += self.ctrl('disBorderWidth', m.props.disBorderWidth, el.disBorderWidth, 'el');
+            h += self.ctrl('disBorderOpacity', m.props.disBorderOpacity, el.disBorderOpacity, 'el');
+            h += self.ctrl('disBorderBlur', m.props.disBorderBlur, el.disBorderBlur, 'el');
+          }
           h += self.ctrl('disStyleGroup', m.props.disStyleGroup, el.disStyleGroup, 'el');
           h += '</div></div>';
           h += '<div class="ed-fold"><div class="ed-fold-hd"><span>禁用时文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
@@ -5128,9 +5433,8 @@
           h += self.ctrl('disTextUnderline', m.props.disTextUnderline, el.disTextUnderline, 'el');
           h += self.ctrl('disTextStrike', m.props.disTextStrike, el.disTextStrike, 'el');
           h += self.ctrl('disTextColor', m.props.disTextColor, el.disTextColor, 'el');
-          h += self.ctrl('disTextBgColor', m.props.disTextBgColor, el.disTextBgColor, 'el');
+          h += self.ctrl('disTextBg', m.props.disTextBg, el.disTextBg, 'el');
           h += self.ctrl('disTextOpacity', m.props.disTextOpacity, el.disTextOpacity, 'el');
-          h += self.ctrl('disTextBgOpacity', m.props.disTextBgOpacity, el.disTextBgOpacity, 'el');
           h += self.ctrl('disTextAlign', m.props.disTextAlign, el.disTextAlign, 'el');
           h += '</div></div>';
         }
@@ -5150,28 +5454,39 @@
         h += self.ctrl('radius', m.props.radius, el.radius, 'el');
         h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
         h += self.ctrl('displayMode', m.props.displayMode, el.displayMode, 'el');
-        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
-        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
-        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
-        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += self.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
+        if (el.useBorder) {
+          h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+          h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+          h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+          h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        }
         h += self.ctrl('align', m.props.align, el.align, 'el');
         h += '</div></div>';
       } else if (el.type === 'select') {
+        if (!el.options) el.options = [];
         h += self.ctrl('key', m.props.key, el.key, 'el');
-        h += self.ctrl('default', m.props.default, el.default, 'el');
+        var defOpts = [{v: '', l: '无'}];
+        el.options.forEach(function(opt, oi) {
+          defOpts.push({v: oi, l: opt.value || '选项' + (oi + 1)});
+        });
+        h += self.ctrl('default', {t: 'select', r: defOpts, d: '默认选项', v: ''}, el.default, 'el');
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
         h += self.ctrl('blur', m.props.blur, el.blur, 'el');
-        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('useBg', m.props.useBg, el.useBg, 'el');
+        if (el.useBg) h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
         h += self.ctrl('radius', m.props.radius, el.radius, 'el');
         h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
-        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
-        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
-        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
-        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += self.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
+        if (el.useBorder) {
+          h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+          h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+          h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+          h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        }
         h += '</div></div>';
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>选项</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
-        if (!el.options) el.options = [];
         if (!Array.isArray(el.options)) el.options = String(el.options).split('\n').filter(function(s) { return s.trim(); }).map(function(s) { return {value: s.trim()}; });
         el.options.forEach(function(opt, oi) {
           h += '<div class="ed-fold"><div class="ed-fold-hd" style="padding:6px 8px"><span style="flex:1">' + U.esc(opt.value || '选项' + (oi + 1)) + '</span><button class="del-opt-btn" data-oi="' + oi + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;padding:0 4px">' + self.icon('trash') + '</button><span class="arr">▶</span></div><div class="ed-fold-bd">';
@@ -5232,13 +5547,21 @@
         h += self.ctrl('onBgOpacity', m.props.onBgOpacity, el.onBgOpacity, 'el');
         h += self.ctrl('onBgBlur', m.props.onBgBlur, el.onBgBlur, 'el');
         h += self.ctrl('onBgColor', m.props.onBgColor, el.onBgColor, 'el');
-        h += self.ctrl('onRadius', m.props.onRadius, el.onRadius, 'el');
-        h += self.ctrl('onHexOffset', m.props.onHexOffset, el.onHexOffset, 'el');
+        h += self.ctrl('onCornerType', m.props.onCornerType, el.onCornerType, 'el');
+        if (el.onCornerType === 'cut') {
+          h += self.ctrl('onHexOffset', m.props.onHexOffset, el.onHexOffset, 'el');
+        } else {
+          h += self.ctrl('onRadius', m.props.onRadius, el.onRadius, 'el');
+        }
         h += self.ctrl('onThumbOpacity', m.props.onThumbOpacity, el.onThumbOpacity, 'el');
         h += self.ctrl('onThumbBlur', m.props.onThumbBlur, el.onThumbBlur, 'el');
         h += self.ctrl('onThumbColor', m.props.onThumbColor, el.onThumbColor, 'el');
-        h += self.ctrl('onThumbRadius', m.props.onThumbRadius, el.onThumbRadius, 'el');
-        h += self.ctrl('onThumbHexOffset', m.props.onThumbHexOffset, el.onThumbHexOffset, 'el');
+        h += self.ctrl('onThumbCornerType', m.props.onThumbCornerType, el.onThumbCornerType, 'el');
+        if (el.onThumbCornerType === 'cut') {
+          h += self.ctrl('onThumbHexOffset', m.props.onThumbHexOffset, el.onThumbHexOffset, 'el');
+        } else {
+          h += self.ctrl('onThumbRadius', m.props.onThumbRadius, el.onThumbRadius, 'el');
+        }
         h += self.ctrl('onBorderOpacity', m.props.onBorderOpacity, el.onBorderOpacity, 'el');
         h += self.ctrl('onBorderBlur', m.props.onBorderBlur, el.onBorderBlur, 'el');
         h += self.ctrl('onBorderColor', m.props.onBorderColor, el.onBorderColor, 'el');
@@ -5248,13 +5571,21 @@
         h += self.ctrl('offBgOpacity', m.props.offBgOpacity, el.offBgOpacity, 'el');
         h += self.ctrl('offBgBlur', m.props.offBgBlur, el.offBgBlur, 'el');
         h += self.ctrl('offBgColor', m.props.offBgColor, el.offBgColor, 'el');
-        h += self.ctrl('offRadius', m.props.offRadius, el.offRadius, 'el');
-        h += self.ctrl('offHexOffset', m.props.offHexOffset, el.offHexOffset, 'el');
+        h += self.ctrl('offCornerType', m.props.offCornerType, el.offCornerType, 'el');
+        if (el.offCornerType === 'cut') {
+          h += self.ctrl('offHexOffset', m.props.offHexOffset, el.offHexOffset, 'el');
+        } else {
+          h += self.ctrl('offRadius', m.props.offRadius, el.offRadius, 'el');
+        }
         h += self.ctrl('offThumbOpacity', m.props.offThumbOpacity, el.offThumbOpacity, 'el');
         h += self.ctrl('offThumbBlur', m.props.offThumbBlur, el.offThumbBlur, 'el');
         h += self.ctrl('offThumbColor', m.props.offThumbColor, el.offThumbColor, 'el');
-        h += self.ctrl('offThumbRadius', m.props.offThumbRadius, el.offThumbRadius, 'el');
-        h += self.ctrl('offThumbHexOffset', m.props.offThumbHexOffset, el.offThumbHexOffset, 'el');
+        h += self.ctrl('offThumbCornerType', m.props.offThumbCornerType, el.offThumbCornerType, 'el');
+        if (el.offThumbCornerType === 'cut') {
+          h += self.ctrl('offThumbHexOffset', m.props.offThumbHexOffset, el.offThumbHexOffset, 'el');
+        } else {
+          h += self.ctrl('offThumbRadius', m.props.offThumbRadius, el.offThumbRadius, 'el');
+        }
         h += self.ctrl('offBorderOpacity', m.props.offBorderOpacity, el.offBorderOpacity, 'el');
         h += self.ctrl('offBorderBlur', m.props.offBorderBlur, el.offBorderBlur, 'el');
         h += self.ctrl('offBorderColor', m.props.offBorderColor, el.offBorderColor, 'el');
@@ -5293,8 +5624,12 @@
           h += self.ctrl('bubbleOpacity', m.props.bubbleOpacity, el.bubbleOpacity, 'el');
           h += self.ctrl('bubbleBlur', m.props.bubbleBlur, el.bubbleBlur, 'el');
           h += self.ctrl('bubbleBgColor', m.props.bubbleBgColor, el.bubbleBgColor, 'el');
-          h += self.ctrl('bubbleRadius', m.props.bubbleRadius, el.bubbleRadius, 'el');
-          h += self.ctrl('bubbleHexOffset', m.props.bubbleHexOffset, el.bubbleHexOffset, 'el');
+          h += self.ctrl('bubbleCornerType', m.props.bubbleCornerType, el.bubbleCornerType, 'el');
+          if (el.bubbleCornerType === 'cut') {
+            h += self.ctrl('bubbleHexOffset', m.props.bubbleHexOffset, el.bubbleHexOffset, 'el');
+          } else {
+            h += self.ctrl('bubbleRadius', m.props.bubbleRadius, el.bubbleRadius, 'el');
+          }
           h += self.ctrl('bubbleBorderOpacity', m.props.bubbleBorderOpacity, el.bubbleBorderOpacity, 'el');
           h += self.ctrl('bubbleBorderBlur', m.props.bubbleBorderBlur, el.bubbleBorderBlur, 'el');
           h += self.ctrl('bubbleBorderColor', m.props.bubbleBorderColor, el.bubbleBorderColor, 'el');
@@ -5314,13 +5649,17 @@
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
         h += self.ctrl('blur', m.props.blur, el.blur, 'el');
-        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('useBg', m.props.useBg, el.useBg, 'el');
+        if (el.useBg) h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
         h += self.ctrl('radius', m.props.radius, el.radius, 'el');
         h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
-        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
-        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
-        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
-        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += self.ctrl('useBorder', m.props.useBorder, el.useBorder, 'el');
+        if (el.useBorder) {
+          h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+          h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+          h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+          h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        }
         h += '</div></div>';
         h += '<div class="ed-fold"><div class="ed-fold-hd"><span>AI回复消息文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         h += self.ctrl('replyMsgSize', m.props.replyMsgSize, el.replyMsgSize, 'el');
@@ -5509,10 +5848,11 @@
       if (v === undefined || v === null || v === '') v = dv;
       var ciAttr = ci !== undefined ? ' data-ci="' + ci + '"' : '';
       var self = this;
-      var modified = origV !== undefined && origV !== null && origV !== '' && origV !== dv;
-      var dotAttr = ' data-pk="' + k + '" data-ps="' + scope + '"' + ciAttr;
+      var modified = origV !== undefined && origV !== null && origV !== '' && String(origV) !== String(dv === undefined ? '' : dv);
+      var btnAttr = ' data-pk="' + k + '" data-ps="' + scope + '"' + ciAttr + ' data-dv="' + U.esc(String(dv || '')) + '"';
+      var modBtns = '<div class="ed-mod-btns"' + btnAttr + '><button class="ed-mod-deploy"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><button class="ed-mod-undo"><svg viewBox="0 0 24 24"><path d="M3 10h10a5 5 0 0 1 0 10H9M3 10l5-5M3 10l5 5"/></svg></button></div>';
       var wrapCls = 'ed-row-wrap' + (modified ? ' modified' : '');
-      var h = '<div class="' + wrapCls + '"><div class="ed-mod-dot"' + dotAttr + '></div><div class="ed-row"><label>' + prop.d + '</label>';
+      var h = '<div class="' + wrapCls + '">' + modBtns + '<div class="ed-row"><label>' + prop.d + '</label>';
       if (prop.t === 'input') h += '<input data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' value="' + U.esc(String(v || '')) + '">';
       else if (prop.t === 'textarea') h += '<textarea data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' rows="3">' + U.esc(String(v || '')) + '</textarea>';
       else if (prop.t === 'num') h += '<input type="number" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' value="' + (v || 1) + '" min="1" style="width:60px">';
@@ -5547,22 +5887,23 @@
           dv = v !== undefined && v !== '' ? v : (prop.v !== undefined ? prop.v : rg[0]);
         h += '<div class="ed-slider"><input type="range" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' min="' + rg[0] + '" max="' + rg[1] + '" value="' + dv + '"><span class="ed-v">' + dv + '</span></div>'
       } else if (prop.t === 'toggle') {
-        var tMod = origV !== undefined && origV !== null && origV !== dv;
+        var tMod = origV !== undefined && origV !== null && String(origV) !== String(dv === undefined ? '' : dv);
         var tWrap = 'ed-row-wrap' + (tMod ? ' modified' : '');
-        return '<div class="' + tWrap + '"><div class="ed-mod-dot"' + dotAttr + '></div><div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">' + prop.d + '</span><div class="ed-toggle-sw' + (v ? ' on' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '></div></div></div></div>'
+        return '<div class="' + tWrap + '">' + modBtns + '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">' + prop.d + '</span><div class="ed-toggle-sw' + (v ? ' on' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '></div></div></div></div>'
       } else if (prop.t === 'slide') {
         var isRight = v === prop.rv;
-        var sMod = origV !== undefined && origV !== null && origV !== dv;
+        var sMod = origV !== undefined && origV !== null && String(origV) !== String(dv === undefined ? '' : dv);
         var sWrap = 'ed-row-wrap' + (sMod ? ' modified' : '');
-        return '<div class="' + sWrap + '"><div class="ed-mod-dot"' + dotAttr + '></div><div class="ed-row"><div class="ed-slide"><span class="ed-slide-label' + (!isRight ? ' active' : '') + '">' + prop.ll + '</span><div class="ed-slide-track' + (isRight ? ' right' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' data-lv="' + prop.lv + '" data-rv="' + prop.rv + '"></div><span class="ed-slide-label' + (isRight ? ' active' : '') + '">' + prop.rl + '</span></div></div></div>'
+        return '<div class="' + sWrap + '">' + modBtns + '<div class="ed-row"><div class="ed-slide"><span class="ed-slide-label' + (!isRight ? ' active' : '') + '">' + prop.ll + '</span><div class="ed-slide-track' + (isRight ? ' right' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' data-lv="' + prop.lv + '" data-rv="' + prop.rv + '"></div><span class="ed-slide-label' + (isRight ? ' active' : '') + '">' + prop.rl + '</span></div></div></div>'
       } else if (prop.t === 'upload') {
         h += '<div class="ed-up">';
         if (v) {
           var imgSrc = v.indexOf('://') > -1 ? v.replace('https://sexyai.top/', 'https://r2.sexyai.top/') : 'https://r2.sexyai.top/' + (v.charAt(0) === '/' ? v.slice(1) : v);
-          h += '<img src="' + imgSrc + '" style="max-width:100%;max-height:80px;border-radius:4px;margin-bottom:4px"><br>';
+          h += '<img src="' + imgSrc + '" style="max-width:100%;max-height:80px;border-radius:4px;margin-bottom:4px">';
+          h += '<div style="display:flex;gap:4px"><button class="ed-btn sm upload-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>更换</button><button class="ed-btn sm del clear-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>清除</button></div>';
+        } else {
+          h += '<button class="ed-btn sm upload-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>从图库选择</button>';
         }
-        h += '<button class="ed-btn sm upload-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>' + (v ? '更换' : '选择') + '</button>';
-        if (v) h += '<button class="ed-btn sm del clear-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' style="margin-left:4px">清除</button>';
         h += '</div>'
       } else if (prop.t === 'gallery') {
         h += '<div class="ed-gallery" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>';
@@ -5660,7 +6001,8 @@
         hd.onclick = function() {
           hd.classList.toggle('open');
           var bd = hd.nextElementSibling;
-          if (bd) bd.classList.toggle('open')
+          if (bd) bd.classList.toggle('open');
+          self.saveFoldState()
         }
       });
       document.querySelectorAll('.ed-toggle-sw').forEach(function(sw) {
@@ -5843,9 +6185,12 @@
           }
         } else {
           c.oninput = c.onchange = function() {
-            var v = c.type === 'checkbox' ? c.checked : c.type === 'range' ? parseInt(c.value) : c.value;
+            var v = c.type === 'checkbox' ? c.checked : c.type === 'range' ? (parseInt(c.value) || 0) : c.value;
             if (c.tagName === 'SELECT' && k === 'clickTarget') v = parseInt(v);
-            if (c.type === 'range') c.parentElement.querySelector('.ed-v').textContent = v;
+            if (c.type === 'range') {
+              var edv = c.parentElement && c.parentElement.querySelector('.ed-v');
+              if (edv) edv.textContent = v;
+            }
             if (c.classList.contains('ed-ctxt')) {
               var cp = c.parentElement.querySelector('input[type=color]');
               if (cp) cp.value = '#' + v
@@ -5879,6 +6224,7 @@
           inp.select();
           var done = function() {
             if (!inp.parentElement) return;
+            inp.onblur = null;
             var nv = Math.max(min, Math.min(max, parseInt(inp.value) || min));
             rng.value = nv;
             sp.textContent = nv;
@@ -5928,25 +6274,33 @@
           self.setColPriority(order)
         }
       });
-      document.querySelectorAll('.ed-mod-dot').forEach(function(dot) {
-        dot.onclick = function(e) {
+      document.querySelectorAll('.ed-mod-deploy').forEach(function(btn) {
+        btn.onclick = function(e) {
           e.stopPropagation();
-          self.showStyleMenu(dot, e)
+          var btns = btn.closest('.ed-mod-btns');
+          self.showDeployMenu(btns, e)
+        }
+      });
+      document.querySelectorAll('.ed-mod-undo').forEach(function(btn) {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          var btns = btn.closest('.ed-mod-btns');
+          self.undoModify(btns)
         }
       })
     },
-    showStyleMenu: function(dot, e) {
+    showDeployMenu: function(btns, e) {
       var self = this;
-      var old = document.querySelector('.ed-style-menu');
+      var old = document.querySelector('.ed-deploy-menu');
       if (old) old.remove();
-      var pk = dot.dataset.pk;
-      var ps = dot.dataset.ps;
-      var ci = dot.dataset.ci !== undefined ? parseInt(dot.dataset.ci) : null;
+      var pk = btns.dataset.pk;
+      var ps = btns.dataset.ps;
+      var ci = btns.dataset.ci !== undefined ? parseInt(btns.dataset.ci) : null;
       var menu = document.createElement('div');
-      menu.className = 'ed-style-menu';
-      menu.innerHTML = '<div data-act="pageDef">设为该页默认</div><div data-act="globalDef">设为全局默认</div><div data-act="applyPage">应用到该页已有</div><div data-act="applyGlobal">应用到全局已有</div>';
-      var r = dot.getBoundingClientRect();
-      menu.style.left = (r.left + 12) + 'px';
+      menu.className = 'ed-deploy-menu';
+      menu.innerHTML = '<div class="ed-deploy-menu-item" data-act="pageDef">设为该页默认</div><div class="ed-deploy-menu-item" data-act="globalDef">设为全局默认</div><div class="ed-deploy-menu-item" data-act="applyPage">部署到该页所有相同元素</div><div class="ed-deploy-menu-item" data-act="applyGlobal">部署到全局所有相同元素</div>';
+      var r = btns.getBoundingClientRect();
+      menu.style.left = (r.left + 20) + 'px';
       menu.style.top = r.top + 'px';
       document.body.appendChild(menu);
       var closeMenu = function() {
@@ -5963,6 +6317,41 @@
           closeMenu()
         }
       })
+    },
+    undoModify: function(btns) {
+      var pk = btns.dataset.pk;
+      var ps = btns.dataset.ps;
+      var dv = btns.dataset.dv;
+      var ci = btns.dataset.ci !== undefined ? parseInt(btns.dataset.ci) : null;
+      if (!this.cur) return;
+      var d = this.pj[this.cur].data;
+      var pg = d.pages[this.pg];
+      if (ps === 'pg') {
+        if (dv === 'true') pg[pk] = true;
+        else if (dv === 'false') pg[pk] = false;
+        else if (dv === '' || dv === 'undefined') delete pg[pk];
+        else pg[pk] = dv
+      } else if (ps === 'el' && this.sel !== null) {
+        var els = this.getEls(this.zone);
+        var el = els[this.sel];
+        if (el) {
+          if (dv === 'true') el[pk] = true;
+          else if (dv === 'false') el[pk] = false;
+          else if (dv === '' || dv === 'undefined') delete el[pk];
+          else el[pk] = dv
+        }
+      } else if (ps === 'col' && ci !== null && this.sel !== null) {
+        var els = this.getEls(this.zone);
+        var el = els[this.sel];
+        if (el && el.cols && el.cols[ci]) {
+          if (dv === 'true') el.cols[ci][pk] = true;
+          else if (dv === 'false') el.cols[ci][pk] = false;
+          else if (dv === '' || dv === 'undefined') delete el.cols[ci][pk];
+          else el.cols[ci][pk] = dv
+        }
+      }
+      this.save();
+      this.renderR()
     },
     applyStyleAction: function(act, pk, ps, ci) {
       if (!this.cur) return;
