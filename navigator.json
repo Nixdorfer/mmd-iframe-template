@@ -1,5 +1,5 @@
 {
-  "version": "2.4.1",
+  "version": "2.4.2",
   "library": {
     "loader": "library/loader.js",
     "util": "library/util.js",

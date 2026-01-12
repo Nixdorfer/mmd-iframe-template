@@ -6928,7 +6928,7 @@
       try {
         var decoded = LZS.d(L.b64.slice(1));
         console.log("[Editor] LZS解码结果长度:", decoded ? decoded.length : 0);
-        d = JSON.parse(decoded);
+        if (decoded) d = JSON.parse(decoded);
         console.log("[Editor] JSON解析成功, pages数量:", d && d.pages ? d.pages.length : 0);
       } catch (e) {
         console.error("[Editor] 配置解析失败:", e);
