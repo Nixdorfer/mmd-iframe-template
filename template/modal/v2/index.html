@@ -1101,9 +1101,10 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var modalBg = pg.modalBg || G.defModalBg || G.modal || '0d0d0d';
 		var opacity = (100 - (pg.modalOpacity !== undefined ? pg.modalOpacity : (G.defModalOpacity !== undefined ? G.defModalOpacity : 0))) / 100;
 		var blur = (pg.modalBlur || G.defModalBlur || 0) * 0.2;
-		var wPct = pg.widthPct || 80;
-		var hPct = pg.heightPct || 80;
-		var mwPct = pg.maxWidthPct || 100;
+		var isMobile = L.platform === 'mobile';
+		var wPct = (isMobile ? pg.mobileWidthPct : pg.pcWidthPct) || pg.widthPct || 80;
+		var hPct = (isMobile ? pg.mobileHeightPct : pg.pcHeightPct) || pg.heightPct || 80;
+		var mwPct = (isMobile ? pg.mobileMaxWidthPct : pg.pcMaxWidthPct) || pg.maxWidthPct || 100;
 		var bw = bd ? bd.offsetWidth : window.innerWidth;
 		var bh = bd ? bd.offsetHeight : window.innerHeight;
 		var h = bh * hPct / 100;
@@ -1112,8 +1113,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var st = 'width:' + w + 'px;height:' + h + 'px;background:' + hex2rgba(modalBg, opacity) + ';';
 		if (blur > 0) st += 'backdrop-filter:blur(' + blur + 'px);';
 		if (pg.modalBgImg) st = 'width:' + w + 'px;height:' + h + 'px;background:url(' + fixUrl(pg.modalBgImg) + ') center/cover no-repeat;';
-		var oxPct = pg.modalOffsetX || 0;
-		var oyPct = pg.modalOffsetY || 0;
+		var oxPct = (isMobile ? pg.mobileModalOffsetX : pg.pcModalOffsetX) || pg.modalOffsetX || 0;
+		var oyPct = (isMobile ? pg.mobileModalOffsetY : pg.pcModalOffsetY) || pg.modalOffsetY || 0;
 		var maxOx = (bw - w) / 2;
 		var maxOy = (bh - h) / 2;
 		var ox = Math.max(-maxOx, Math.min(maxOx, bw * oxPct / 100));
@@ -1472,10 +1473,10 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	}
 
 	function getEls(pg, zone) {
-		var prefix = pg.separateLayout ? (L.platform === 'mobile' ? 'mobile' : 'pc') : '';
-		if (zone === 'header') return pg[prefix ? prefix + 'HeaderElements' : 'headerElements'] || [];
-		if (zone === 'footer') return pg[prefix ? prefix + 'FooterElements' : 'footerElements'] || [];
-		return pg[prefix ? prefix + 'Elements' : 'elements'] || [];
+		var prefix = L.platform === 'mobile' ? 'mobile' : 'pc';
+		if (zone === 'header') return pg[prefix + 'HeaderElements'] || pg.headerElements || [];
+		if (zone === 'footer') return pg[prefix + 'FooterElements'] || pg.footerElements || [];
+		return pg[prefix + 'Elements'] || pg.elements || [];
 	}
 	function render(anim) {
 		var pg = pages[curPage] || {title: '', elements: []};
@@ -1483,8 +1484,9 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var isFirst = curPage === 0;
 		var isLast = curPage === pages.length - 1;
 		var animStyle = anim ? getAnim(anim, 300) : '';
-		var hPct = pg.headerPct || 0;
-		var fPct = pg.footerPct || 0;
+		var isMobile = L.platform === 'mobile';
+		var hPct = (isMobile ? pg.mobileHeaderPct : pg.pcHeaderPct) || pg.headerPct || 0;
+		var fPct = (isMobile ? pg.mobileFooterPct : pg.pcFooterPct) || pg.footerPct || 0;
 		var hStyle = hPct ? 'min-height:' + hPct + '%;' : '';
 		var fStyle = fPct ? 'min-height:' + fPct + '%;' : '';
 		var hEls = getEls(pg, 'header');

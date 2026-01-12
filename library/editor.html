@@ -1525,6 +1525,7 @@
     pg: 0,
     sel: null,
     zone: 'content',
+    zoneSel: null,
     multiSel: [],
     tab: 0,
     foldStates: JSON.parse(localStorage.getItem('edFoldStates') || '{}'),
@@ -1859,17 +1860,81 @@
               d: "最大宽度(高度%)",
               v: 100
             },
-            separateLayout: {
-              t: "toggle",
-              d: "分离移动端/桌面端布局"
+            mobileHeightPct: {
+              t: "slider",
+              r: "10-100",
+              d: "对话框高度%",
+              v: 80
             },
-            headerPct: {
+            mobileWidthPct: {
+              t: "slider",
+              r: "10-100",
+              d: "最大宽度(页面%)",
+              v: 80
+            },
+            mobileMaxWidthPct: {
+              t: "slider",
+              r: "1-500",
+              d: "最大宽度(高度%)",
+              v: 100
+            },
+            mobileModalOffsetX: {
+              t: "slider",
+              r: "-50-50",
+              d: "水平偏移%"
+            },
+            mobileModalOffsetY: {
+              t: "slider",
+              r: "-50-50",
+              d: "垂直偏移%"
+            },
+            mobileHeaderPct: {
               t: "slider",
               r: "0-100",
               d: "标题栏高度%",
               v: 0
             },
-            footerPct: {
+            mobileFooterPct: {
+              t: "slider",
+              r: "0-100",
+              d: "结尾栏高度%",
+              v: 0
+            },
+            pcHeightPct: {
+              t: "slider",
+              r: "10-100",
+              d: "对话框高度%",
+              v: 80
+            },
+            pcWidthPct: {
+              t: "slider",
+              r: "10-100",
+              d: "最大宽度(页面%)",
+              v: 80
+            },
+            pcMaxWidthPct: {
+              t: "slider",
+              r: "1-500",
+              d: "最大宽度(高度%)",
+              v: 100
+            },
+            pcModalOffsetX: {
+              t: "slider",
+              r: "-50-50",
+              d: "水平偏移%"
+            },
+            pcModalOffsetY: {
+              t: "slider",
+              r: "-50-50",
+              d: "垂直偏移%"
+            },
+            pcHeaderPct: {
+              t: "slider",
+              r: "0-100",
+              d: "标题栏高度%",
+              v: 0
+            },
+            pcFooterPct: {
               t: "slider",
               r: "0-100",
               d: "结尾栏高度%",
@@ -3671,11 +3736,24 @@
         if (col) clickables.push({type:'col', el:col, ei:parseInt(col.dataset.ei), ci:parseInt(col.dataset.ci), zone:col.dataset.zone||'content'});
         if (el) clickables.push({type:'el', el:el, idx:parseInt(el.dataset.idx), zone:el.dataset.zone||'content'});
         if (clickables.length === 0) {
-          var bg = e.target.closest('#backdrop') || e.target.closest('.modal-content') || e.target.closest('.modal-header') || e.target.closest('.modal-footer');
-          if (bg && self.sel !== null) {
+          var zoneEl = e.target.closest('.modal-header') || e.target.closest('.modal-content') || e.target.closest('.modal-footer');
+          var backdrop = e.target.closest('#backdrop');
+          if (zoneEl) {
+            var clickedZone = zoneEl.classList.contains('modal-header') ? 'header' : zoneEl.classList.contains('modal-footer') ? 'footer' : 'content';
             self.sel = null;
             self.rowSel = null;
             self.multiSel = [];
+            self.zoneSel = clickedZone;
+            self.tab = 1;
+            self.renderR();
+            self.hiSel();
+            var zoneNames = {header: '标题栏', content: '内容区', footer: '结尾栏'};
+            self.showStatus(zoneNames[clickedZone])
+          } else if (backdrop) {
+            self.sel = null;
+            self.rowSel = null;
+            self.multiSel = [];
+            self.zoneSel = null;
             self.tab = 1;
             self.renderR();
             self.hiSel();
@@ -4277,20 +4355,20 @@
     getEls: function(zone) {
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return [];
-      var prefix = pg.separateLayout ? (L.platform === 'mobile' ? 'mobile' : 'pc') : '';
+      var prefix = L.platform === 'mobile' ? 'mobile' : 'pc';
       var key;
-      if (zone === 'header') key = prefix ? prefix + 'HeaderElements' : 'headerElements';
-      else if (zone === 'footer') key = prefix ? prefix + 'FooterElements' : 'footerElements';
-      else key = prefix ? prefix + 'Elements' : 'elements';
+      if (zone === 'header') key = prefix + 'HeaderElements';
+      else if (zone === 'footer') key = prefix + 'FooterElements';
+      else key = prefix + 'Elements';
       return pg[key] || [];
     },
     getElsKey: function(zone) {
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return 'elements';
-      var prefix = pg.separateLayout ? (L.platform === 'mobile' ? 'mobile' : 'pc') : '';
-      if (zone === 'header') return prefix ? prefix + 'HeaderElements' : 'headerElements';
-      if (zone === 'footer') return prefix ? prefix + 'FooterElements' : 'footerElements';
-      return prefix ? prefix + 'Elements' : 'elements';
+      var prefix = L.platform === 'mobile' ? 'mobile' : 'pc';
+      if (zone === 'header') return prefix + 'HeaderElements';
+      if (zone === 'footer') return prefix + 'FooterElements';
+      return prefix + 'Elements';
     },
     del: function() {
       if (!this.cur || this.sel === null) return;
@@ -4534,6 +4612,7 @@
       this.multiSel = [];
       this.sel = idx;
       this.zone = zone || 'content';
+      this.zoneSel = null;
       this.rowSel = null;
       this.tab = 1;
       this.renderR();
@@ -4542,6 +4621,7 @@
     selCol: function(ei, ci, zone) {
       this.sel = ei;
       this.zone = zone || 'content';
+      this.zoneSel = null;
       this.rowSel = ci;
       this.tab = 1;
       this.renderR();
@@ -4988,19 +5068,45 @@
           h += self.ctrl('modalBgImgPcOffset', pgCfg.modalBgImgPcOffset, pg.modalBgImgPcOffset, 'pg');
         }
       }
-      h += '</div></div>';
-      h += '<div class="ed-fold"><div class="ed-fold-hd"><span>布局</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
-      h += self.ctrl('heightPct', pgCfg.heightPct, pg.heightPct, 'pg');
-      h += self.ctrl('widthPct', pgCfg.widthPct, pg.widthPct, 'pg');
-      h += self.ctrl('maxWidthPct', pgCfg.maxWidthPct, pg.maxWidthPct, 'pg');
-      h += self.ctrl('separateLayout', pgCfg.separateLayout, pg.separateLayout, 'pg');
-      h += self.ctrl('modalOffsetX', pgCfg.modalOffsetX, pg.modalOffsetX, 'pg');
-      h += self.ctrl('modalOffsetY', pgCfg.modalOffsetY, pg.modalOffsetY, 'pg');
-      h += self.ctrl('headerPct', pgCfg.headerPct, pg.headerPct, 'pg');
-      h += self.ctrl('footerPct', pgCfg.footerPct, pg.footerPct, 'pg');
       h += self.ctrl('modalOpacity', pgCfg.modalOpacity, pg.modalOpacity, 'pg');
       h += self.ctrl('modalBlur', pgCfg.modalBlur, pg.modalBlur, 'pg');
       h += '</div></div>';
+      h += '<div class="ed-fold"><div class="ed-fold-hd"><span>移动端布局</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+      h += self.ctrl('mobileHeightPct', pgCfg.mobileHeightPct, pg.mobileHeightPct, 'pg');
+      h += self.ctrl('mobileWidthPct', pgCfg.mobileWidthPct, pg.mobileWidthPct, 'pg');
+      h += self.ctrl('mobileMaxWidthPct', pgCfg.mobileMaxWidthPct, pg.mobileMaxWidthPct, 'pg');
+      h += self.ctrl('mobileModalOffsetX', pgCfg.mobileModalOffsetX, pg.mobileModalOffsetX, 'pg');
+      h += self.ctrl('mobileModalOffsetY', pgCfg.mobileModalOffsetY, pg.mobileModalOffsetY, 'pg');
+      h += self.ctrl('mobileHeaderPct', pgCfg.mobileHeaderPct, pg.mobileHeaderPct, 'pg');
+      h += self.ctrl('mobileFooterPct', pgCfg.mobileFooterPct, pg.mobileFooterPct, 'pg');
+      h += '</div></div>';
+      h += '<div class="ed-fold"><div class="ed-fold-hd"><span>桌面端布局</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+      h += self.ctrl('pcHeightPct', pgCfg.pcHeightPct, pg.pcHeightPct, 'pg');
+      h += self.ctrl('pcWidthPct', pgCfg.pcWidthPct, pg.pcWidthPct, 'pg');
+      h += self.ctrl('pcMaxWidthPct', pgCfg.pcMaxWidthPct, pg.pcMaxWidthPct, 'pg');
+      h += self.ctrl('pcModalOffsetX', pgCfg.pcModalOffsetX, pg.pcModalOffsetX, 'pg');
+      h += self.ctrl('pcModalOffsetY', pgCfg.pcModalOffsetY, pg.pcModalOffsetY, 'pg');
+      h += self.ctrl('pcHeaderPct', pgCfg.pcHeaderPct, pg.pcHeaderPct, 'pg');
+      h += self.ctrl('pcFooterPct', pgCfg.pcFooterPct, pg.pcFooterPct, 'pg');
+      h += '</div></div>';
+      return h
+    },
+    renderZone: function() {
+      if (!this.cur) return '';
+      var d = this.pj[this.cur].data;
+      if (!d || !d.pages) return '';
+      var pg = d.pages[this.pg] || {};
+      var pgCfg = this.cfg.page.props;
+      var zoneNames = {header: '标题栏', content: '内容区', footer: '结尾栏'};
+      var h = '<div class="ed-sec"><div class="ed-title">' + zoneNames[this.zoneSel] + '</div>';
+      if (this.zoneSel === 'header') {
+        h += this.ctrl('headerPct', pgCfg.headerPct, pg.headerPct, 'pg');
+      } else if (this.zoneSel === 'footer') {
+        h += this.ctrl('footerPct', pgCfg.footerPct, pg.footerPct, 'pg');
+      } else {
+        h += '<div style="color:#666;font-size:12px;padding:12px;text-align:center">内容区无单独设置</div>';
+      }
+      h += '</div>';
       return h
     },
     renderMod: function() {
@@ -5189,7 +5295,8 @@
     },
     renderStyle: function() {
       if (!this.cur) return '<div class="ed-sec"><div class="ed-empty">无项目</div></div>';
-      if (this.sel === null) return this.renderWin();
+      if (this.sel === null && this.zoneSel === null) return this.renderWin();
+      if (this.sel === null && this.zoneSel !== null) return this.renderZone();
       var d = this.pj[this.cur].data;
       if (!d || !d.pages || !d.pages[this.pg]) return '';
       var els = this.getEls(this.zone);

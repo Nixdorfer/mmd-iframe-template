@@ -238,6 +238,10 @@
         };
         setInterval(eB, 200);
         window.addEventListener('resize', eB);
+        if (typeof ResizeObserver !== 'undefined') {
+            var ro = new ResizeObserver(eB);
+            ro.observe(document.documentElement);
+        }
         if (document.body) { T(); } else { var w = setInterval(function() { if (document.body) { clearInterval(w); T(); } }, 10); }
     }
     B();
