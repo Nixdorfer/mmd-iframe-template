@@ -985,67 +985,27 @@ body {
 			<div class="phone-cursor" id="cursor"></div>
 		</div>
 	</div>
+	<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 	<script>
-var LZS = (function() {
-	var k = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-	var r = {};
-	for (var i = 0; i < k.length; i++) r[k.charAt(i)] = i;
-	function d(input) {
-		if (input == null || input === "") return null;
-		input = input.replace(/[^A-Za-z0-9+/=]/g, "");
-		var s = "", ol = input.length / 4 * 3;
-		if (input.charAt(input.length - 1) == "=") ol--;
-		if (input.charAt(input.length - 2) == "=") ol--;
-		var u = [];
-		for (var i = 0; i < input.length; i += 4) {
-			var n = (r[input.charAt(i)] << 18) | (r[input.charAt(i + 1)] << 12) | (r[input.charAt(i + 2)] << 6) | r[input.charAt(i + 3)];
-			u.push((n >> 16) & 255, (n >> 8) & 255, n & 255);
-		}
-		u = u.slice(0, ol);
-		var str = "";
-		for (var i = 0; i < u.length; i += 2) str += String.fromCharCode((u[i] << 8) | (u[i + 1] || 0));
-		var dic = [0, 1, 2], next = 3, ew = 2, en = 4, data = { v: 0, p: 0, i: 0, s: str };
-		function rd(n) {
-			var r = 0, mx = 1 << n;
-			for (var i = 0; i < n; i++) {
-				var b = data.v & data.p;
-				data.p >>= 1;
-				if (data.p == 0) { data.p = 32768; data.v = data.s.charCodeAt(data.i++); }
-				r |= (b > 0 ? 1 : 0) * mx / 2;
-				mx >>= 1;
-			}
-			return r;
-		}
-		data.v = str.charCodeAt(0); data.p = 32768;
-		var b = rd(2);
-		if (b == 0) { dic[3] = String.fromCharCode(rd(8)); next = 4; }
-		else if (b == 1) { dic[3] = String.fromCharCode(rd(16)); next = 4; }
-		else if (b == 2) return "";
-		var w = dic[3], result = [w], entry;
-		while (true) {
-			if (data.i > str.length) return "";
-			b = rd(ew);
-			if (b == 0) { dic[next++] = String.fromCharCode(rd(8)); b = next - 1; en--; }
-			else if (b == 1) { dic[next++] = String.fromCharCode(rd(16)); b = next - 1; en--; }
-			else if (b == 2) return result.join("");
-			if (en == 0) { en = 1 << ew; ew++; }
-			if (dic[b]) entry = dic[b];
-			else if (b == next) entry = w + w.charAt(0);
-			else return null;
-			result.push(entry);
-			dic[next++] = w + entry.charAt(0);
-			en--;
-			if (en == 0) { en = 1 << ew; ew++; }
-			w = entry;
+var Codec = {
+	d: function(b64) {
+		if (!b64) return null;
+		try {
+			var binary = atob(b64);
+			var bytes = new Uint8Array(binary.length);
+			for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+			var decompressed = pako.inflate(bytes);
+			return new TextDecoder().decode(decompressed);
+		} catch (e) {
+			return null;
 		}
 	}
-	return { d: d };
-})();
+};
 L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function() {
 	var C = {};
 	if (L.b64) {
 		try {
-			C = JSON.parse(LZS.d(L.b64.slice(1)));
+			C = JSON.parse(Codec.d(L.b64));
 		} catch (e) {}
 	}
 	var P = L.platform || 'pc';
