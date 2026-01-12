@@ -40,7 +40,7 @@ window.L = {
 		var c = pending.length;
 		pending.forEach(function(n) {
 			self.loaded[n] = 1;
-			fetch(self.base + "library/" + n + ".js").then(function(r) {
+			fetch(self.base + "template/modal/v2/library/" + n + ".js").then(function(r) {
 				return r.text();
 			}).then(function(t) {
 				new Function(t)();
@@ -57,15 +57,16 @@ window.L = {
 	console.log("[Loader] 开始加载");
 	M("加载中...");
 	var p = window.P;
-	console.log("[Loader] window.P:", p);
+	console.log("[Loader] window.P长度:", p ? p.length : 0);
 	if (!p) {
 		console.error("[Loader] 参数为空");
 		M("参数为空");
 		return;
 	}
 	if (p.charAt(0) === "[" && p.charAt(p.length - 1) === "]") p = p.slice(1, -1);
+	console.log("[Loader] 去括号后长度:", p.length);
 	var m = p.match(/^(?:(EDIT):)?([^_:]+)(?:_(\d+))?:(.+)$/);
-	console.log("[Loader] 正则匹配结果:", m);
+	console.log("[Loader] m[4]长度:", m ? m[4].length : 0);
 	if (!m) {
 		console.error("[Loader] 格式错误, p =", p);
 		M("格式错误");
@@ -117,7 +118,7 @@ window.L = {
 				platform: L.platform,
 				version: L.version,
 				major: L.major
-			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+\"library/\"+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
+			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+\"template/modal/v2/library/\"+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
 			var W = function(e) {
 				console.log("[Loader] 写入文档, 编辑器长度:", e ? e.length : 0);
 				document.open();
@@ -127,7 +128,7 @@ window.L = {
 			};
 			if (L.edit) {
 				console.log("[Loader] 编辑模式, 正在加载编辑器");
-				fetch(L.base + "library/editor.html").then(function(r) {
+				fetch(L.base + "template/modal/v2/library/editor.html").then(function(r) {
 					console.log("[Loader] 编辑器响应状态:", r.status);
 					return r.text();
 				}).then(function(e) {

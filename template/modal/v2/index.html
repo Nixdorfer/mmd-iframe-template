@@ -1084,9 +1084,9 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			el.style.background = 'url(' + url + ') center/contain no-repeat ' + bg;
 			return;
 		}
-		var img = new Image();
+		var img = typeof Image === 'function' ? new Image() : document.createElement('img');
 		img.onload = function() {
-			var sx = el.offsetWidth, sy = el.offsetHeight;
+			var sx = el.offsetWidth || window.innerWidth, sy = el.offsetHeight || window.innerHeight;
 			var ix = img.naturalWidth, iy = img.naturalHeight;
 			var sLandscape = sx > sy, iLandscape = ix > iy;
 			var pos;
@@ -1135,8 +1135,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var wPct = (isMobile ? pg.mobileWidthPct : pg.pcWidthPct) || pg.widthPct || 80;
 		var hPct = (isMobile ? pg.mobileHeightPct : pg.pcHeightPct) || pg.heightPct || 80;
 		var mwPct = (isMobile ? pg.mobileMaxWidthPct : pg.pcMaxWidthPct) || pg.maxWidthPct || 100;
-		var bw = bd ? bd.offsetWidth : window.innerWidth;
-		var bh = bd ? bd.offsetHeight : window.innerHeight;
+		var bw = (bd && bd.offsetWidth) || window.innerWidth;
+		var bh = (bd && bd.offsetHeight) || window.innerHeight;
 		var h = bh * hPct / 100;
 		var w = Math.min(bw * wPct / 100, h * mwPct / 100);
 		var root = document.getElementById('root');
@@ -1383,9 +1383,51 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		if (el.borderWidth) st += 'box-shadow:inset 0 0 0 ' + el.borderWidth + 'px #' + (el.borderColor || '444444') + ';';
 		return '<div class="ai-reply" style="padding:16px;' + st + '"></div>';
 	}
+	function renderAiReplyContent(el) {
+		if (L.edit) return '<div style="padding:16px;background:#1a1a1a;border-radius:8px;border:1px dashed #444;color:#666;text-align:center">AI回复内容区域</div>';
+		var st = '';
+		if (el.opacity) st += 'opacity:' + ((100 - el.opacity) / 100) + ';';
+		if (el.bgColor) st += 'background:#' + el.bgColor + ';';
+		if (el.radius) st += 'border-radius:' + el.radius + 'px;';
+		if (el.borderWidth) st += 'box-shadow:inset 0 0 0 ' + el.borderWidth + 'px #' + (el.borderColor || '444444') + ';';
+		return '<div class="ai-reply-content" style="padding:16px;' + st + '"></div>';
+	}
 
+	function getCornerStyle(cornerType, radius, hexOffset) {
+		if (cornerType === 'cut' && hexOffset > 0) {
+			return 'clip-path:polygon(' + hexOffset + 'px 0,calc(100% - ' + hexOffset + 'px) 0,100% ' + hexOffset + 'px,100% calc(100% - ' + hexOffset + 'px),calc(100% - ' + hexOffset + 'px) 100%,' + hexOffset + 'px 100%,0 calc(100% - ' + hexOffset + 'px),0 ' + hexOffset + 'px);';
+		}
+		return 'border-radius:' + (radius || 6) + 'px;';
+	}
+	function getHdStyle(el, isOpen) {
+		var prefix = isOpen ? 'openHd' : 'hd';
+		var bg = el[prefix + 'BgColor'] || el.hdBgColor || '1a1a1a';
+		var op = el[prefix + 'Opacity'] !== undefined ? el[prefix + 'Opacity'] : 100;
+		var blur = el[prefix + 'Blur'] || 0;
+		var cornerType = el[prefix + 'CornerType'];
+		var radius = el[prefix + 'Radius'];
+		var hexOffset = el[prefix + 'HexOffset'];
+		var borderW = el[prefix + 'BorderWidth'] || 0;
+		var borderC = el[prefix + 'BorderColor'] || '444444';
+		var borderOp = el[prefix + 'BorderOpacity'] !== undefined ? el[prefix + 'BorderOpacity'] : 0;
+		var borderBlur = el[prefix + 'BorderBlur'] || 0;
+		var st = 'background:' + hex2rgba(bg, (100 - op) / 100) + ';' + getCornerStyle(cornerType, radius, hexOffset);
+		if (blur > 0) st += 'backdrop-filter:blur(' + (blur * 0.2) + 'px);';
+		if (borderW > 0) {
+			var r = parseInt(borderC.substr(0, 2), 16);
+			var g = parseInt(borderC.substr(2, 2), 16);
+			var b = parseInt(borderC.substr(4, 2), 16);
+			st += 'box-shadow:inset 0 0 ' + borderBlur + 'px ' + borderW + 'px rgba(' + r + ',' + g + ',' + b + ',' + ((100 - borderOp) / 100) + ');';
+		}
+		return st;
+	}
 	function renderCollapse(el, pg) {
-		var h = '<div class="collapse"><div class="collapse-hd' + (el.defaultOpen ? ' open' : '') + '" style="background:#' + (el.titleBg || '1a1a1a') + ';border-radius:6px">';
+		var isOpen = el.defaultOpen;
+		var hdSt = getHdStyle(el, isOpen);
+		var hdClosedSt = getHdStyle(el, false);
+		var hdOpenSt = getHdStyle(el, true);
+		var h = '<div class="collapse" data-hd-closed="' + U.esc(hdClosedSt) + '" data-hd-open="' + U.esc(hdOpenSt) + '">';
+		h += '<div class="collapse-hd' + (isOpen ? ' open' : '') + '" style="' + hdSt + '">';
 		var txtSt = 'font-size:' + (el.titleSize || 14) + 'px;color:#' + (el.titleColor || 'ffffff') + ';';
 		if (el.titleFont) txtSt += 'font-family:' + el.titleFont + ';';
 		if (el.titleBold) txtSt += 'font-weight:bold;';
@@ -1394,7 +1436,23 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		if (el.titleStrike) txtSt += 'text-decoration:line-through;';
 		if (el.titleOpacity) txtSt += 'opacity:' + ((100 - el.titleOpacity) / 100) + ';';
 		h += '<span style="' + txtSt + '">' + U.esc(el.title || '') + '</span><span class="arrow" style="color:#' + (el.arrowColor || '888888') + '">▶</span></div>';
-		h += '<div class="collapse-bd' + (el.defaultOpen ? ' open' : '') + '" style="background:#' + (el.contentBg || '0d0d0d') + ';padding:0 12px;border-radius:0 0 6px 6px">';
+		var bdCorner = getCornerStyle(el.bdCornerType, el.bdRadius, el.bdHexOffset);
+		var bdBg = el.bdBgColor || '0d0d0d';
+		var bdOp = el.bdOpacity !== undefined ? el.bdOpacity : 100;
+		var bdBlur = el.bdBlur || 0;
+		var bdBorderW = el.bdBorderWidth || 0;
+		var bdBorderC = el.bdBorderColor || '444444';
+		var bdBorderOp = el.bdBorderOpacity !== undefined ? el.bdBorderOpacity : 0;
+		var bdBorderBlur = el.bdBorderBlur || 0;
+		var bdSt = 'background:' + hex2rgba(bdBg, (100 - bdOp) / 100) + ';padding:0 12px;' + bdCorner;
+		if (bdBlur > 0) bdSt += 'backdrop-filter:blur(' + (bdBlur * 0.2) + 'px);';
+		if (bdBorderW > 0) {
+			var r = parseInt(bdBorderC.substr(0, 2), 16);
+			var g = parseInt(bdBorderC.substr(2, 2), 16);
+			var b = parseInt(bdBorderC.substr(4, 2), 16);
+			bdSt += 'box-shadow:inset 0 0 ' + bdBorderBlur + 'px ' + bdBorderW + 'px rgba(' + r + ',' + g + ',' + b + ',' + ((100 - bdBorderOp) / 100) + ');';
+		}
+		h += '<div class="collapse-bd' + (isOpen ? ' open' : '') + '" style="' + bdSt + '">';
 		(el.items || []).forEach(function(item) {
 			h += renderEl(item, pg);
 		});
@@ -1411,6 +1469,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			case 'select': return renderSelect(el);
 			case 'switch': return renderSwitch(el);
 			case 'aiReply': return renderAiReply(el);
+			case 'aiReplyContent': return renderAiReplyContent(el);
 			case 'collapse': return renderCollapse(el, pg);
 			case 'placeholder': return L.edit ? '<div class="ed-col-ph">拖入元素</div>' : '';
 			default: return '';
@@ -1684,9 +1743,14 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	function bindCollapse() {
 		document.querySelectorAll('.collapse-hd').forEach(function(hd) {
 			hd.onclick = function() {
-				hd.classList.toggle('open');
+				var isOpen = hd.classList.toggle('open');
 				var bd = hd.nextElementSibling;
 				if (bd) bd.classList.toggle('open');
+				var wrap = hd.closest('.collapse');
+				if (wrap) {
+					var st = isOpen ? wrap.dataset.hdOpen : wrap.dataset.hdClosed;
+					if (st) hd.style.cssText = st;
+				}
 			};
 		});
 	}
