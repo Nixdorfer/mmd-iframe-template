@@ -7,7 +7,11 @@
     var A = { 'raw.githubusercontent.com': '/Nixdorfer/mmd-iframe-template/refs/heads/main/' };
     var eventAttrs = ['ontoggle','onerror','onload','onmouseover','onfocus','onblur','onchange','onclick','ondblclick','onmouseenter','onmouseleave','onkeydown','onkeyup','onkeypress','onsubmit','oninput','onanimationend','onanimationstart','ontransitionend','onpointerdown','onpointerup','onpointermove','onwheel','onscroll','onresize','onbeforeunload','onunload','onhashchange','onpopstate','onstorage','onmessage','ondrag','ondrop','ondragstart','ondragend','ondragover','ondragenter','ondragleave','oncontextmenu','oncopy','oncut','onpaste','onselect','onselectstart'];
     var alertQueue = [], alertShowing = false;
-    function showAlert(type) {
+    function log(type, detail) {
+        console.warn('[Defender] ' + type, detail || '');
+    }
+    function showAlert(type, detail) {
+        log(type, detail);
         alertQueue.push(type);
         if (alertShowing) return;
         function show() {
@@ -58,13 +62,13 @@
     }
     var sF = function(i, n) {
         var u = i instanceof Request ? i.url : String(i);
-        if (!chk(u)) { showAlert('外域Fetch请求'); return Promise.reject(new Error('blocked')); }
+        if (!chk(u)) { showAlert('外域Fetch请求', { url: u }); return Promise.reject(new Error('blocked')); }
         return c.f.call(window, i, n);
     };
     var oX = c.X;
     var sX = function() {
         var x = new oX(), oO = x.open.bind(x), oS = x.send.bind(x), bl = false;
-        x.open = function(m, u) { bl = !chk(u); if (bl) { showAlert('外域XHR请求'); return; } return oO.apply(this, arguments); };
+        x.open = function(m, u) { bl = !chk(u); if (bl) { showAlert('外域XHR请求', { method: m, url: u }); return; } return oO.apply(this, arguments); };
         x.send = function() {
             if (bl) { var s = this; setTimeout(function() { Object.defineProperty(s, 'status', { value: 0 }); Object.defineProperty(s, 'readyState', { value: 4 }); Object.defineProperty(s, 'responseText', { value: '' }); Object.defineProperty(s, 'response', { value: '' }); s.dispatchEvent(new ProgressEvent('error')); if (s.onerror) s.onerror(new ProgressEvent('error')); }, 0); return; }
             return oS.apply(this, arguments);
@@ -73,15 +77,15 @@
     };
     sX.prototype = oX.prototype; sX.UNSENT = 0; sX.OPENED = 1; sX.HEADERS_RECEIVED = 2; sX.LOADING = 3; sX.DONE = 4;
     var oW = c.W;
-    var sW = function(u, p) { if (!chk(u)) { showAlert('外域WebSocket'); throw new DOMException('blocked', 'SecurityError'); } return p ? new oW(u, p) : new oW(u); };
+    var sW = function(u, p) { if (!chk(u)) { showAlert('外域WebSocket', { url: u }); throw new DOMException('blocked', 'SecurityError'); } return p ? new oW(u, p) : new oW(u); };
     sW.prototype = oW.prototype; sW.CONNECTING = 0; sW.OPEN = 1; sW.CLOSING = 2; sW.CLOSED = 3;
     var oE = c.E;
-    var sE = oE ? function(u, cfg) { if (!chk(u)) { showAlert('外域EventSource'); throw new DOMException('blocked', 'SecurityError'); } return cfg ? new oE(u, cfg) : new oE(u); } : null;
+    var sE = oE ? function(u, cfg) { if (!chk(u)) { showAlert('外域EventSource', { url: u }); throw new DOMException('blocked', 'SecurityError'); } return cfg ? new oE(u, cfg) : new oE(u); } : null;
     if (sE && oE) sE.prototype = oE.prototype;
     function ap() {
         lk(window, 'fetch', sF); lk(window, 'XMLHttpRequest', sX); lk(window, 'WebSocket', sW);
         if (sE) lk(window, 'EventSource', sE);
-        if (navigator.sendBeacon) { var oB = navigator.sendBeacon.bind(navigator); lk(navigator, 'sendBeacon', function(u, d) { if (!chk(u)) { showAlert('外域Beacon'); return false; } return oB(u, d); }); }
+        if (navigator.sendBeacon) { var oB = navigator.sendBeacon.bind(navigator); lk(navigator, 'sendBeacon', function(u, d) { if (!chk(u)) { showAlert('外域Beacon', { url: u }); return false; } return oB(u, d); }); }
     }
     ap();
     setInterval(function() { if (window.fetch !== sF || window.XMLHttpRequest !== sX) ap(); }, 100);
@@ -93,13 +97,13 @@
         var t = tag.toLowerCase();
         if (t === 'script') {
             c.d(el, 'src', {
-                set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); else showAlert('外域Script注入'); },
+                set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); else showAlert('外域Script注入', { url: v, method: 'createElement.src' }); },
                 get: function() { return scriptSrcDesc.get.call(this); },
                 configurable: false
             });
         } else if (t === 'iframe') {
             c.d(el, 'src', {
-                set: function(v) { if (!v || v === 'about:blank' || v === '' || chk(v)) iframeSrcDesc.set.call(this, v); else showAlert('外域Iframe注入'); },
+                set: function(v) { if (!v || v === 'about:blank' || v === '' || chk(v)) iframeSrcDesc.set.call(this, v); else showAlert('外域Iframe注入', { url: v, method: 'createElement.src' }); },
                 get: function() { return iframeSrcDesc.get.call(this); },
                 configurable: false
             });
@@ -108,16 +112,16 @@
     };
     try {
         c.d(HTMLScriptElement.prototype, 'src', {
-            set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); else showAlert('外域Script注入'); },
+            set: function(v) { if (chk(v)) scriptSrcDesc.set.call(this, v); else showAlert('外域Script注入', { url: v, method: 'prototype.src' }); },
             get: function() { return scriptSrcDesc.get.call(this); },
             configurable: false
         });
     } catch (e) {}
     function ckEvent(n, silent) {
         if (n.nodeType !== 1) return;
-        var found = false;
-        eventAttrs.forEach(function(attr) { if (n.hasAttribute(attr)) { n.removeAttribute(attr); found = true; } });
-        if (found && !silent) showAlert('内联事件注入');
+        var found = [];
+        eventAttrs.forEach(function(attr) { if (n.hasAttribute(attr)) { found.push(attr); n.removeAttribute(attr); } });
+        if (found.length && !silent) showAlert('内联事件注入', { element: n.tagName, attributes: found, outerHTML: n.outerHTML.slice(0, 200) });
     }
     function ckEventDeep(n, silent) {
         ckEvent(n, silent);
@@ -127,9 +131,9 @@
         function ck(n, silent) {
             if (!n.tagName) return;
             var t = n.tagName.toUpperCase(), s;
-            if (t === 'SCRIPT') { s = n.src || n.getAttribute('src'); if (s && !chk(s)) { n.remove(); if (!silent) showAlert('外域Script'); } }
-            if (t === 'IFRAME') { s = n.src || n.getAttribute('src'); if (s && s !== 'about:blank' && s !== '' && !chk(s)) { n.remove(); if (!silent) showAlert('外域Iframe'); } }
-            if (t === 'LINK' && n.rel === 'preconnect') { s = n.href || n.getAttribute('href'); if (s && !chk(s)) { n.remove(); if (!silent) showAlert('外域Preconnect'); } }
+            if (t === 'SCRIPT') { s = n.src || n.getAttribute('src'); if (s && !chk(s)) { n.remove(); if (!silent) showAlert('外域Script', { url: s, method: 'DOM注入' }); } }
+            if (t === 'IFRAME') { s = n.src || n.getAttribute('src'); if (s && s !== 'about:blank' && s !== '' && !chk(s)) { n.remove(); if (!silent) showAlert('外域Iframe', { url: s, method: 'DOM注入' }); } }
+            if (t === 'LINK' && n.rel === 'preconnect') { s = n.href || n.getAttribute('href'); if (s && !chk(s)) { n.remove(); if (!silent) showAlert('外域Preconnect', { url: s }); } }
         }
         var ob = new MutationObserver(function(m) {
             m.forEach(function(mu) {
@@ -142,16 +146,17 @@
                 } else if (mu.type === 'attributes') {
                     var attr = mu.attributeName;
                     if (attr && attr.toLowerCase().startsWith('on')) {
+                        var val = mu.target.getAttribute(attr);
                         mu.target.removeAttribute(attr);
-                        showAlert('内联事件注入');
+                        showAlert('内联事件注入', { element: mu.target.tagName, attribute: attr, value: val ? val.slice(0, 100) : '', method: '属性修改' });
                     } else if (attr === 'src') {
                         var t = mu.target.tagName.toUpperCase();
                         var s = mu.target.getAttribute('src');
-                        if (t === 'SCRIPT' && s && !chk(s)) { mu.target.remove(); showAlert('外域Script'); }
-                        if (t === 'IFRAME' && s && s !== 'about:blank' && s !== '' && !chk(s)) { mu.target.remove(); showAlert('外域Iframe'); }
+                        if (t === 'SCRIPT' && s && !chk(s)) { mu.target.remove(); showAlert('外域Script', { url: s, method: '属性修改' }); }
+                        if (t === 'IFRAME' && s && s !== 'about:blank' && s !== '' && !chk(s)) { mu.target.remove(); showAlert('外域Iframe', { url: s, method: '属性修改' }); }
                     } else if (attr === 'href' && mu.target.tagName === 'LINK' && mu.target.rel === 'preconnect') {
                         var hr = mu.target.getAttribute('href');
-                        if (hr && !chk(hr)) { mu.target.remove(); showAlert('外域Preconnect'); }
+                        if (hr && !chk(hr)) { mu.target.remove(); showAlert('外域Preconnect', { url: hr, method: '属性修改' }); }
                     }
                 }
             });
@@ -176,4 +181,5 @@
         if (document.body) cr(); else { var w = setInterval(function() { if (document.body) { clearInterval(w); cr(); } }, 10); }
     }
     sB();
+    console.log('[Defender] 防护已启动');
 })();
