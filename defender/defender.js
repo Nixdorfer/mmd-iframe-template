@@ -5,7 +5,6 @@
     var h = location.hostname, p = h.split('.'), b = p.length >= 2 ? p.slice(-2).join('.') : h, e = b.replace(/\./g, '\\.');
     var P = [new RegExp('^' + e + '$'), new RegExp('^.+\\.' + e + '$'), /^raw\.githubusercontent\.com$/];
     var A = { 'raw.githubusercontent.com': '/Nixdorfer/mmd-iframe-template/refs/heads/main/' };
-    var eventAttrs = ['ontoggle','onerror','onload','onmouseover','onfocus','onblur','onchange','onclick','ondblclick','onmouseenter','onmouseleave','onkeydown','onkeyup','onkeypress','onsubmit','oninput','onanimationend','onanimationstart','ontransitionend','onpointerdown','onpointerup','onpointermove','onwheel','onscroll','onresize','onbeforeunload','onunload','onhashchange','onpopstate','onstorage','onmessage','ondrag','ondrop','ondragstart','ondragend','ondragover','ondragenter','ondragleave','oncontextmenu','oncopy','oncut','onpaste','onselect','onselectstart'];
     var alertQueue = [], alertShowing = false;
     function log(type, detail) {
         console.warn('[Defender] ' + type, detail || '');
@@ -117,16 +116,6 @@
             configurable: false
         });
     } catch (e) {}
-    function ckEvent(n, silent) {
-        if (n.nodeType !== 1) return;
-        var found = [];
-        eventAttrs.forEach(function(attr) { if (n.hasAttribute(attr)) { found.push(attr); n.removeAttribute(attr); } });
-        if (found.length && !silent) showAlert('内联事件注入', { element: n.tagName, attributes: found, outerHTML: n.outerHTML.slice(0, 200) });
-    }
-    function ckEventDeep(n, silent) {
-        ckEvent(n, silent);
-        if (n.querySelectorAll) n.querySelectorAll('*').forEach(function(el) { ckEvent(el, silent); });
-    }
     function bD() {
         function ck(n, silent) {
             if (!n.tagName) return;
@@ -140,16 +129,11 @@
                 if (mu.type === 'childList') {
                     mu.addedNodes.forEach(function(n) {
                         ck(n);
-                        ckEventDeep(n);
                         if (n.querySelectorAll) n.querySelectorAll('script, iframe, link').forEach(function(el) { ck(el); });
                     });
                 } else if (mu.type === 'attributes') {
                     var attr = mu.attributeName;
-                    if (attr && attr.toLowerCase().startsWith('on')) {
-                        var val = mu.target.getAttribute(attr);
-                        mu.target.removeAttribute(attr);
-                        showAlert('内联事件注入', { element: mu.target.tagName, attribute: attr, value: val ? val.slice(0, 100) : '', method: '属性修改' });
-                    } else if (attr === 'src') {
+                    if (attr === 'src') {
                         var t = mu.target.tagName.toUpperCase();
                         var s = mu.target.getAttribute('src');
                         if (t === 'SCRIPT' && s && !chk(s)) { mu.target.remove(); showAlert('外域Script', { url: s, method: '属性修改' }); }
@@ -163,7 +147,7 @@
         });
         if (document.documentElement) {
             ob.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
-            document.querySelectorAll('*').forEach(function(el) { ckEvent(el, true); ck(el, true); });
+            document.querySelectorAll('script, iframe, link').forEach(function(el) { ck(el, true); });
         }
     }
     bD();
