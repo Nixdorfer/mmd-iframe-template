@@ -892,6 +892,21 @@
 	object-fit: cover;
 }
 
+.ed-gallery-item.uploading::after {
+	content: '';
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	border: 2px solid #333;
+	border-top-color: var(--btn);
+	border-radius: 50%;
+	animation: galSpin 0.8s linear infinite;
+}
+
+@keyframes galSpin {
+	to { transform: rotate(360deg); }
+}
+
 .ed-gallery-item.folder {
 	flex-direction: column;
 	gap: 4px;
@@ -1035,7 +1050,15 @@
 .ed-style-menu div:hover {
 	background: #252525;
 }
+
+#ed-device-frame {
+	position: fixed;
+	border: 1px dashed #f44;
+	pointer-events: none;
+	z-index: 1;
+}
 </style>
+<div id="ed-device-frame"></div>
 <div id="ed-version"></div>
 <div id="ed-list"></div>
 <div id="ed-panel">
@@ -1516,18 +1539,6 @@
               d: "背景颜色",
               v: "050505"
             },
-            bgImgPc: {
-              t: "upload",
-              d: "电脑端背景图"
-            },
-            bgImgMobile: {
-              t: "upload",
-              d: "手机端背景图"
-            },
-            bgTransparent: {
-              t: "toggle",
-              d: "透明背景"
-            },
             defTextSize: {
               t: "slider",
               r: "10-48",
@@ -1592,6 +1603,14 @@
             title: {
               t: "input",
               d: "页面标题"
+            },
+            bgImgPc: {
+              t: "upload",
+              d: "电脑端背景图"
+            },
+            bgImgMobile: {
+              t: "upload",
+              d: "手机端背景图"
             },
             widthPct: {
               t: "slider",
@@ -2401,7 +2420,8 @@
         self.hist = [JSON.stringify(self.pj[self.cur].data)];
         self.histIdx = 0
       }
-      self.render()
+      self.render();
+      self.setDevice(L.platform || 'pc')
     },
     saveFS: async function() {
       if (!this.cur) return;
@@ -4336,7 +4356,7 @@
       var d = this.stripDefaults(this.pj[this.cur].data);
       var json = JSON.stringify(d);
       var lz = LZS.c(json);
-      return '[' + (L.project || 'MODAL') + '@' + (L.major || '1') + ':{{char}};;{{user}};;Z' + lz + ']'
+      return '[' + (L.project || 'MODAL') + '_' + (L.major || '1') + ':{{char}};;{{user}};;Z' + lz + ']'
     },
     copy: function() {
       var s = this.exp();
@@ -4367,33 +4387,40 @@
     setDevice: function(d) {
       var pc = document.getElementById('edPc'),
         mb = document.getElementById('edMobile'),
-        r = document.getElementById('root');
+        bd = document.getElementById('backdrop'),
+        fr = document.getElementById('ed-device-frame');
       pc.classList.toggle('on', d === 'pc');
       mb.classList.toggle('on', d === 'mobile');
+      var vw = window.innerWidth - 280,
+        vh = window.innerHeight,
+        fw, fh, fl, ft;
       if (d === 'pc') {
-        r.style.width = '';
-        r.style.height = '';
-        r.style.margin = ''
+        fh = Math.min(vh, vw * 9 / 16);
+        fw = fh * 16 / 9;
       } else {
-        var h = window.innerHeight,
-          w = Math.floor(h * 9 / 19);
-        r.style.width = w + 'px';
-        r.style.height = h + 'px';
-        r.style.margin = '0 auto'
+        fh = vh;
+        fw = fh * 9 / 19;
       }
-      L.platform = d
+      fl = (vw - fw) / 2;
+      ft = (vh - fh) / 2;
+      fr.style.cssText = 'position:fixed;left:' + fl + 'px;top:' + ft + 'px;width:' + fw + 'px;height:' + fh + 'px;border:1px dashed #f44;pointer-events:none;z-index:1';
+      bd.style.cssText = 'position:fixed;left:' + fl + 'px;top:' + ft + 'px;width:' + fw + 'px;height:' + fh + 'px';
+      L.platform = d;
+      if (this.cur && window.modalRender) window.modalRender(this.pj[this.cur].data)
     },
     togglePreview: function() {
       this.preview = !this.preview;
       var p = document.getElementById('ed-panel'),
         l = document.getElementById('ed-list'),
         m = document.querySelector('.ed-menu'),
-        r = document.getElementById('root');
+        fr = document.getElementById('ed-device-frame'),
+        bd = document.getElementById('backdrop');
       if (this.preview) {
         p.style.display = 'none';
         l.style.display = 'none';
         m.style.display = 'none';
-        r.style.marginRight = '';
+        fr.style.display = 'none';
+        bd.style.cssText = '';
         L.edit = false;
         L.preview = true;
         if (window.modalRender) window.modalRender(this.pj[this.cur].data)
@@ -4401,10 +4428,10 @@
         p.style.display = '';
         l.style.display = '';
         m.style.display = '';
-        r.style.marginRight = '280px';
+        fr.style.display = '';
         L.edit = true;
         L.preview = false;
-        if (window.modalRender) window.modalRender(this.pj[this.cur].data)
+        this.setDevice(L.platform || 'pc')
       }
     },
     renderChat: function() {
@@ -4573,14 +4600,13 @@
       if (!d.sys) d.sys = {};
       var g = d.global || {};
       var h = '<div class="ed-sec"><div class="ed-title">系统设定</div>';
-      h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">隐藏系统效果</span><div class="ed-toggle-sw' + (d.sys.unload ? ' on' : '') + '" id="sysUnload"></div></div></div>';
+      h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">卸载父DOM</span><div class="ed-toggle-sw' + (d.sys.unload ? ' on' : '') + '" id="sysUnload"></div></div></div>';
       h += '<div style="color:#666;font-size:10px;margin-top:-6px;margin-bottom:12px">开启后隐藏按钮的killer和hider选项</div>';
-      h += '</div>';
-      h += '<div class="ed-sec"><div class="ed-title">全局样式</div>';
-      var gCfg = this.cfg.global.props;
-      Object.keys(gCfg).forEach(function(k) {
-        h += self.ctrl(k, gCfg[k], g[k], 'g')
-      });
+      if (!d.sys.unload) {
+        h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">透明背景</span><div class="ed-toggle-sw' + (g.bgTransparent ? ' on' : '') + '" id="sysBgTrans"></div></div></div>';
+        h += '<div style="color:#666;font-size:10px;margin-top:-6px;margin-bottom:12px">不再使用遮罩遮挡父DOM元素</div>';
+      }
+      h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">点击空白可隐藏</span><div class="ed-toggle-sw' + (d.sys.clickToHide ? ' on' : '') + '" id="sysClickHide"></div></div></div>';
       h += '</div>';
       setTimeout(function() {
         var sw = document.getElementById('sysUnload');
@@ -4588,7 +4614,21 @@
           var on = sw.classList.toggle('on');
           d.sys.unload = on;
           self.save();
-          if (self.tab === 2) self.renderR()
+          self.renderR()
+        };
+        var bt = document.getElementById('sysBgTrans');
+        if (bt) bt.onclick = function() {
+          var on = bt.classList.toggle('on');
+          if (!d.global) d.global = {};
+          d.global.bgTransparent = on;
+          self.save();
+          if (window.modalRender) window.modalRender(d)
+        };
+        var ch = document.getElementById('sysClickHide');
+        if (ch) ch.onclick = function() {
+          var on = ch.classList.toggle('on');
+          d.sys.clickToHide = on;
+          self.save()
         }
       }, 0);
       return h
@@ -4637,6 +4677,7 @@
     ready: false,
     path: [],
     items: [],
+    uploading: [],
     selected: null,
     callback: null,
     dragItem: null,
@@ -4755,6 +4796,9 @@
           h += '<div class="ed-gallery-item' + (self.selected === item.id ? ' selected' : '') + '" data-id="' + item.id + '" draggable="true"><img src="' + src + '"></div>';
         }
       });
+      this.uploading.forEach(function() {
+        h += '<div class="ed-gallery-item uploading"></div>';
+      });
       body.innerHTML = h || '<div style="grid-column:1/-1;text-align:center;color:#666;padding:40px">空</div>';
       body.querySelectorAll('.ed-gallery-item').forEach(function(el) {
         var id = parseInt(el.dataset.id);
@@ -4846,7 +4890,9 @@
     uploadFiles: function(files) {
       var self = this;
       var pid = this.path.length ? this.path[this.path.length - 1] : null;
-      var pending = files.length;
+      var count = files.length;
+      for (var i = 0; i < count; i++) this.uploading.push(1);
+      this.render();
       Array.from(files).forEach(function(f) {
         var fd = new FormData();
         fd.append('suffix', f.name.split('.').pop());
@@ -4855,12 +4901,16 @@
           method: 'POST',
           body: fd
         }).then(function(r) { return r.json(); }).then(function(d) {
+          self.uploading.pop();
           if (d.data && d.data[0]) {
             self.addItem({type: 'image', url: d.data[0], parent: pid});
           }
-          if (--pending === 0) self.load();
+          if (self.uploading.length === 0) self.load();
+          else self.render();
         }).catch(function() {
-          if (--pending === 0) self.load();
+          self.uploading.pop();
+          if (self.uploading.length === 0) self.load();
+          else self.render();
         });
       });
     },

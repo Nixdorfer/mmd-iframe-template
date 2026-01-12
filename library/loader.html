@@ -61,7 +61,7 @@ window.L = {
 		return;
 	}
 	if (p.charAt(0) === "[" && p.charAt(p.length - 1) === "]") p = p.slice(1, -1);
-	var m = p.match(/^(?:(EDIT):)?([^@:]+)(?:@(\d+))?:(.+)$/);
+	var m = p.match(/^(?:(EDIT):)?([^_:]+)(?:_(\d+))?:(.+)$/);
 	if (!m) {
 		M("格式错误");
 		parent.postMessage({t: "error", msg: "格式错误"}, "*");

@@ -1061,17 +1061,17 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		return u;
 	}
 	function applyGlobal() {
-		var bg = '#' + (G.bgColor || G.bg || '050505');
-		document.documentElement.style.setProperty('--bg', bg);
+		document.documentElement.style.setProperty('--bg', '#' + (G.bgColor || G.bg || '050505'));
 		document.documentElement.style.setProperty('--modal', '#' + (G.defModalBg || G.modal || '0d0d0d'));
 		document.documentElement.style.setProperty('--btn', '#' + (G.defBtnBg || G.btn || '166d3b'));
-		if (G.bgTransparent) document.body.style.background = 'transparent';
-		else if (P === 'pc' && G.bgImgPc) document.body.style.background = 'url(' + fixUrl(G.bgImgPc) + ') center/cover no-repeat';
-		else if (P !== 'pc' && G.bgImgMobile) document.body.style.background = 'url(' + fixUrl(G.bgImgMobile) + ') center/cover no-repeat';
-		else document.body.style.background = bg;
 	}
 
 	function applyPage(pg) {
+		var bg = '#' + (G.bgColor || G.bg || '050505');
+		if (G.bgTransparent) document.body.style.background = 'transparent';
+		else if (P === 'pc' && pg.bgImgPc) document.body.style.background = 'url(' + fixUrl(pg.bgImgPc) + ') center/cover no-repeat';
+		else if (P !== 'pc' && pg.bgImgMobile) document.body.style.background = 'url(' + fixUrl(pg.bgImgMobile) + ') center/cover no-repeat';
+		else document.body.style.background = bg;
 		var modalBg = pg.modalBg || G.defModalBg || G.modal || '0d0d0d';
 		var opacity = (pg.modalOpacity !== undefined ? pg.modalOpacity : (G.defModalOpacity !== undefined ? G.defModalOpacity : 100)) / 100;
 		var blur = pg.modalBlur || G.defModalBlur || 0;
@@ -1697,7 +1697,9 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		else if (e.key === 'Escape' && !L.edit) hide();
 	});
 
-	if (!L.edit) document.getElementById('backdrop').onclick = hide;
+	if (!L.edit) document.getElementById('backdrop').onclick = function() {
+		if (C.sys && C.sys.clickToHide) hide();
+	};
 
 	if (L.edit) {
 		window.modalRender = function(d) {
