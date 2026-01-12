@@ -1128,6 +1128,136 @@
 </div>
 <input type="file" id="galFileInput" multiple accept="image/*,video/*" style="display:none">
 <script>
+  window.LZS = (function() {
+    var k = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var r = {};
+    for (var i = 0; i < k.length; i++) r[k.charAt(i)] = i;
+    function c(u) {
+      if (u == null) return "";
+      var o = [], c = 0, p = 0, w = 16, cc = {}, cd = {}, dv, dc = 2, cv = 0, nv = 0;
+      for (var ii = 0; ii < u.length; ii++) {
+        var ch = u.charAt(ii);
+        if (!cc.hasOwnProperty(ch)) { cc[ch] = dc++; cd[ch] = true; }
+      }
+      dv = u.charAt(0);
+      for (var ii = 1; ii <= u.length; ii++) {
+        var ch = ii < u.length ? u.charAt(ii) : null;
+        if (ch !== null && cc.hasOwnProperty(dv + ch)) { dv += ch; }
+        else {
+          if (cd.hasOwnProperty(dv)) {
+            if (dv.charCodeAt(0) < 256) {
+              for (var i = 0; i < nv; i++) { cv <<= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+              nv = 8;
+              var v = dv.charCodeAt(0);
+              for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+            } else {
+              var v = 1;
+              for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+              nv = 16;
+              v = dv.charCodeAt(0);
+              for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+            }
+            dc--;
+            if (dc == 0) { dc = 1 << c; c++; }
+            delete cd[dv];
+          } else {
+            var v = cc[dv];
+            for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+          }
+          dc--;
+          if (dc == 0) { dc = 1 << c; c++; }
+          if (ch !== null) { cc[dv + ch] = dc++; dc--; if (dc == 0) { dc = 1 << c; c++; } dv = ch; }
+        }
+        nv = c;
+      }
+      if (dv !== "") {
+        if (cd.hasOwnProperty(dv)) {
+          if (dv.charCodeAt(0) < 256) {
+            for (var i = 0; i < nv; i++) { cv <<= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+            nv = 8;
+            var v = dv.charCodeAt(0);
+            for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+          } else {
+            var v = 1;
+            for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+            nv = 16;
+            v = dv.charCodeAt(0);
+            for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+          }
+          dc--;
+          if (dc == 0) { dc = 1 << c; c++; }
+          delete cd[dv];
+        } else {
+          var v = cc[dv];
+          for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+        }
+      }
+      var v = 2;
+      for (var i = 0; i < nv; i++) { cv = (cv << 1) | (v & 1); v >>= 1; if (++p == w) { p = 0; o.push(String.fromCharCode(cv)); cv = 0; } }
+      while (true) { cv <<= 1; if (++p == w) break; }
+      o.push(String.fromCharCode(cv));
+      var s = o.join("");
+      var b = "";
+      for (var i = 0; i < s.length * 2; i += 3) {
+        var c1 = i / 2 < s.length ? s.charCodeAt(i / 2) : 0;
+        var c2 = (i + 1) / 2 < s.length ? s.charCodeAt((i + 1) / 2) : 0;
+        var n = ((i % 2 == 0 ? c1 >> 8 : c1 & 255) << 16) | ((i % 2 == 0 ? c1 & 255 : c2 >> 8) << 8) | (i % 2 == 0 ? c2 >> 8 : c2 & 255);
+        b += k.charAt((n >> 18) & 63) + k.charAt((n >> 12) & 63) + k.charAt((n >> 6) & 63) + k.charAt(n & 63);
+      }
+      switch (s.length % 3) { case 1: b = b.slice(0, -2) + "=="; break; case 2: b = b.slice(0, -1) + "="; break; }
+      return b;
+    }
+    function d(input) {
+      if (input == null || input === "") return null;
+      input = input.replace(/[^A-Za-z0-9+/=]/g, "");
+      var s = "", ol = input.length / 4 * 3;
+      if (input.charAt(input.length - 1) == "=") ol--;
+      if (input.charAt(input.length - 2) == "=") ol--;
+      var u = [];
+      for (var i = 0; i < input.length; i += 4) {
+        var n = (r[input.charAt(i)] << 18) | (r[input.charAt(i + 1)] << 12) | (r[input.charAt(i + 2)] << 6) | r[input.charAt(i + 3)];
+        u.push((n >> 16) & 255, (n >> 8) & 255, n & 255);
+      }
+      u = u.slice(0, ol);
+      var str = "";
+      for (var i = 0; i < u.length; i += 2) str += String.fromCharCode((u[i] << 8) | (u[i + 1] || 0));
+      var dic = [0, 1, 2], next = 3, ew = 2, en = 4, data = { v: 0, p: 0, i: 0, s: str };
+      function rd(n) {
+        var r = 0, mx = 1 << n;
+        for (var i = 0; i < n; i++) {
+          var b = data.v & data.p;
+          data.p >>= 1;
+          if (data.p == 0) { data.p = 32768; data.v = data.s.charCodeAt(data.i++); }
+          r |= (b > 0 ? 1 : 0) * mx / 2;
+          mx >>= 1;
+        }
+        return r;
+      }
+      data.v = str.charCodeAt(0); data.p = 32768;
+      var b = rd(2);
+      if (b == 0) { dic[3] = String.fromCharCode(rd(8)); next = 4; }
+      else if (b == 1) { dic[3] = String.fromCharCode(rd(16)); next = 4; }
+      else if (b == 2) return "";
+      var w = dic[3], result = [w], entry;
+      while (true) {
+        if (data.i > str.length) return "";
+        b = rd(ew);
+        if (b == 0) { dic[next++] = String.fromCharCode(rd(8)); b = next - 1; en--; }
+        else if (b == 1) { dic[next++] = String.fromCharCode(rd(16)); b = next - 1; en--; }
+        else if (b == 2) return result.join("");
+        if (en == 0) { en = 1 << ew; ew++; }
+        if (dic[b]) entry = dic[b];
+        else if (b == next) entry = w + w.charAt(0);
+        else return null;
+        result.push(entry);
+        dic[next++] = w + entry.charAt(0);
+        en--;
+        if (en == 0) { en = 1 << ew; ew++; }
+        w = entry;
+      }
+    }
+    return { c: c, d: d };
+  })();
   window.U = {
     esc: function(s) {
       return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
@@ -2748,7 +2878,7 @@
         return
       }
       try {
-        var d = JSON.parse(decodeURIComponent(escape(atob(match[4]))));
+        var d = JSON.parse(LZS.d(match[4].slice(1)));
         if (!d || !d.pages) throw new Error('');
         if (this.cur) {
           this.pj[this.cur].data = d;
@@ -4204,8 +4334,9 @@
     exp: function() {
       if (!this.cur) return '';
       var d = this.stripDefaults(this.pj[this.cur].data);
-      var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(d))));
-      return '[' + (L.project || 'MODAL') + '@' + (L.major || '1') + ':{{char}};;{{user}};;' + b64 + ']'
+      var json = JSON.stringify(d);
+      var lz = LZS.c(json);
+      return '[' + (L.project || 'MODAL') + '@' + (L.major || '1') + ':{{char}};;{{user}};;Z' + lz + ']'
     },
     copy: function() {
       var s = this.exp();
@@ -4484,12 +4615,8 @@
     var d = null;
     if (L.b64) {
       try {
-        d = JSON.parse(decodeURIComponent(escape(atob(L.b64))))
-      } catch (e) {
-        try {
-          d = JSON.parse(atob(L.b64))
-        } catch (e2) {}
-      }
+        d = JSON.parse(LZS.d(L.b64.slice(1)));
+      } catch (e) {}
     }
     if (!d || !d.pages || !d.pages.length) d = {
       global: {
