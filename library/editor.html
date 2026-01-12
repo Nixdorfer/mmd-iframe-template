@@ -431,7 +431,7 @@
 }
 
 .ed-slide-label.active {
-	color: #fff;
+	color: #166d3b;
 }
 
 .ed-drag {
@@ -1167,17 +1167,19 @@
 	flex-shrink: 0;
 	margin-top: 4px;
 	opacity: 0;
+	pointer-events: none;
 	transition: opacity 0.2s;
 }
 
 .ed-row-wrap.modified .ed-mod-btns {
 	opacity: 1;
+	pointer-events: auto;
 }
 
 .ed-mod-deploy,
 .ed-mod-undo {
-	width: 14px;
-	height: 14px;
+	width: 18px;
+	height: 18px;
 	border-radius: 50%;
 	cursor: pointer;
 	display: flex;
@@ -1205,8 +1207,8 @@
 
 .ed-mod-deploy svg,
 .ed-mod-undo svg {
-	width: 10px;
-	height: 10px;
+	width: 12px;
+	height: 12px;
 	stroke: #fff;
 	fill: none;
 	stroke-width: 2;
@@ -6190,6 +6192,8 @@
             if (c.type === 'range') {
               var edv = c.parentElement && c.parentElement.querySelector('.ed-v');
               if (edv) edv.textContent = v;
+              var wrap = c.closest('.ed-row-wrap');
+              if (wrap) wrap.classList.add('modified');
             }
             if (c.classList.contains('ed-ctxt')) {
               var cp = c.parentElement.querySelector('input[type=color]');
