@@ -61,8 +61,8 @@
         var x = new oX(), oO = x.open.bind(x), oS = x.send.bind(x), bl = false;
         x.open = function(m, u) { bl = !chk(u); if (bl) { showAlert('外域XHR请求', { method: m, url: u }); return; } return oO.apply(this, arguments); };
         x.send = function() {
-            if (bl) { var s = this; setTimeout(function() { Object.defineProperty(s, 'status', { value: 0 }); Object.defineProperty(s, 'readyState', { value: 4 }); Object.defineProperty(s, 'responseText', { value: '' }); Object.defineProperty(s, 'response', { value: '' }); s.dispatchEvent(new ProgressEvent('error')); if (s.onerror) s.onerror(new ProgressEvent('error')); }, 0); return; }
-            return oS.apply(this, arguments);
+            if (bl) { var s = this; setTimeout(function() { try { Object.defineProperty(s, 'status', { value: 0 }); Object.defineProperty(s, 'readyState', { value: 4 }); Object.defineProperty(s, 'responseText', { value: '' }); Object.defineProperty(s, 'response', { value: '' }); } catch(e) {} s.dispatchEvent(new ProgressEvent('error')); if (s.onerror) s.onerror(new ProgressEvent('error')); }, 0); return; }
+            try { return oS.apply(this, arguments); } catch(e) { throw e; }
         };
         return x;
     };
