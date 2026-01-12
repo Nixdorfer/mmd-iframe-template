@@ -1005,7 +1005,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	var C = {};
 	if (L.b64) {
 		try {
-			C = JSON.parse(Codec.d(L.b64));
+			C = JSON.parse(Codec.d(L.b64)) || {};
 		} catch (e) {}
 	}
 	var P = L.platform || 'pc';
