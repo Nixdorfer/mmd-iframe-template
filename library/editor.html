@@ -249,7 +249,7 @@
 }
 
 .ed-row {
-	margin-bottom: 10px;
+	margin-bottom: 14px;
 }
 
 .ed-row label {
@@ -386,6 +386,47 @@
 
 .ed-toggle-sw.on::after {
 	left: 18px;
+}
+
+.ed-slide {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ed-slide-track {
+	position: relative;
+	width: 36px;
+	height: 20px;
+	background: #333;
+	border-radius: 10px;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.ed-slide-track::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 16px;
+	height: 16px;
+	background: #fff;
+	border-radius: 50%;
+	transition: left 0.2s;
+}
+
+.ed-slide-track.right::after {
+	left: 18px;
+}
+
+.ed-slide-label {
+	font-size: 11px;
+	color: #666;
+}
+
+.ed-slide-label.active {
+	color: #fff;
 }
 
 .ed-drag {
@@ -554,7 +595,7 @@
 .ed-fold {
 	background: #1a1a1a;
 	border-radius: 6px;
-	margin-bottom: 10px;
+	margin-bottom: 14px;
 }
 
 .ed-fold-hd {
@@ -998,6 +1039,109 @@
 	pointer-events: none;
 }
 
+.ed-icon-sel {
+	display: flex;
+	align-items: center;
+}
+
+.ed-icon-preview {
+	display: inline-flex;
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+
+.ed-icon-preview svg {
+	width: 100%;
+	height: 100%;
+}
+
+.ed-icon-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.7);
+	z-index: 10004;
+	display: none;
+	align-items: center;
+	justify-content: center;
+}
+
+.ed-icon-modal.open {
+	display: flex;
+}
+
+.ed-icon-box {
+	background: #1a1a1a;
+	border-radius: 8px;
+	width: 400px;
+	max-height: 80%;
+	display: flex;
+	flex-direction: column;
+}
+
+.ed-icon-hd {
+	padding: 12px 16px;
+	border-bottom: 1px solid #333;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.ed-icon-hd span {
+	font-size: 14px;
+	color: #fff;
+}
+
+.ed-icon-hd button {
+	background: none;
+	border: none;
+	color: #888;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.ed-icon-bd {
+	padding: 16px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+.ed-icon-grid {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 8px;
+}
+
+.ed-icon-item {
+	aspect-ratio: 1;
+	background: #252525;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: #fff;
+}
+
+.ed-icon-item:hover {
+	background: #333;
+}
+
+.ed-icon-item.selected {
+	outline: 2px solid var(--btn);
+	background: rgba(22, 109, 59, 0.2);
+}
+
+.ed-icon-item svg {
+	width: 24px;
+	height: 24px;
+}
+
 .ed-row-wrap {
 	display: flex;
 	align-items: flex-start;
@@ -1068,7 +1212,6 @@
     <div class="ed-tab" data-t="2">样式</div>
     <div class="ed-tab" data-t="3">组</div>
     <div class="ed-tab" data-t="4">聊天</div>
-    <div class="ed-tab" data-t="5">系统</div>
   </div>
   <div id="ed-body"></div>
 </div>
@@ -1149,7 +1292,19 @@
     </div>
   </div>
 </div>
+<div class="ed-icon-modal" id="iconModal">
+  <div class="ed-icon-box">
+    <div class="ed-icon-hd">
+      <span>选择图标</span>
+      <button id="iconClose">×</button>
+    </div>
+    <div class="ed-icon-bd">
+      <div class="ed-icon-grid" id="iconGrid"></div>
+    </div>
+  </div>
+</div>
 <input type="file" id="galFileInput" multiple accept="image/*,video/*" style="display:none">
+<script src="https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/icon/icons.js"></script>
 <script>
   window.LZS = (function() {
     var k = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -1467,47 +1622,70 @@
       l: '底部'
     }],
     imgModes: [{
-      v: 'fixedWidth',
-      l: '固定宽度'
-    }, {
-      v: 'fixedHeight',
-      l: '固定高度'
+      v: 'contain',
+      l: '完整显示(缩放)'
     }, {
       v: 'cover',
-      l: '铺满'
-    }, {
-      v: 'contain',
-      l: '包含'
+      l: '部分显示(裁剪)'
     }],
     imgClicks: [{
-      v: 'none',
-      l: '无'
+      v: 'zoom',
+      l: '放大展示'
     }, {
       v: 'gallery',
       l: '查看轮播'
     }, {
       v: 'jumpModal',
-      l: '跳转页面'
+      l: '跳转至对话框'
+    }, {
+      v: 'openModal',
+      l: '打开对话框'
     }],
     btnClicks: [{
       v: 'none',
       l: '无'
     }, {
       v: 'jumpModal',
-      l: '跳转页面'
+      l: '跳转至对话框'
+    }, {
+      v: 'openModal',
+      l: '打开对话框'
     }, {
       v: 'message',
-      l: '添加语句'
+      l: '添加内容至用户消息'
+    }, {
+      v: 'browseModel',
+      l: '浏览模型'
+    }, {
+      v: 'sendMessage',
+      l: '发送消息'
     }],
     btnEffects: [{
       v: 'none',
-      l: '无系统级效果'
+      l: '无'
     }, {
       v: 'killer',
-      l: '点击视为结束该画面'
+      l: '关闭界面'
     }, {
       v: 'hider',
-      l: '点击视为隐藏该画面'
+      l: '隐藏界面'
+    }],
+    prerenderTexts: [{
+      v: 'none',
+      l: '无'
+    }, {
+      v: 'userMsg',
+      l: '用户发送信息'
+    }, {
+      v: 'userSysMsg',
+      l: '用户发送信息+系统信息'
+    }],
+    aiDisplayModes: [{
+      v: 'bubble',
+      l: '气泡'
+    }, {
+      v: 'flat',
+      l: '平铺'
     }],
     afterClicks: [{
       v: 'none',
@@ -1519,14 +1697,7 @@
       v: 'disable',
       l: '禁用按钮'
     }],
-    switchStyles: [{
-      v: 'capsule',
-      l: '胶囊形'
-    }, {
-      v: 'rounded',
-      l: '圆角'
-    }],
-    colTypes: ['text', 'image', 'btn', 'input', 'select', 'switch'],
+    colTypes: ['text', 'image', 'btn', 'input', 'select', 'switch', 'aiReply'],
     init: function(d) {
       var self = this;
       self.data = d;
@@ -1659,6 +1830,164 @@
               t: "slider",
               r: "0-20",
               d: "弹窗模糊度"
+            },
+            modalRadius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径"
+            },
+            modalHexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移"
+            },
+            modalBorderColor: {
+              t: "color",
+              d: "边框色",
+              v: "444444"
+            },
+            modalBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度"
+            },
+            modalBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度"
+            },
+            modalBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            modalOffsetX: {
+              t: "slider",
+              r: "-50-50",
+              d: "水平偏移%"
+            },
+            modalOffsetY: {
+              t: "slider",
+              r: "-50-50",
+              d: "垂直偏移%"
+            },
+            modalBgImgPc: {
+              t: "upload",
+              d: "电脑背景图"
+            },
+            modalBgImgPcMode: {
+              t: "slide",
+              d: "显示模式",
+              ll: "裁剪",
+              rl: "缩放",
+              lv: "cover",
+              rv: "contain"
+            },
+            modalBgImgPcAlign: {
+              t: "slide",
+              d: "对齐标准",
+              ll: "高度",
+              rl: "宽度",
+              lv: "height",
+              rv: "width"
+            },
+            modalBgImgPcOffset: {
+              t: "slider",
+              r: "-100-100",
+              d: "裁剪偏移"
+            },
+            modalBgImgMobile: {
+              t: "upload",
+              d: "手机背景图"
+            },
+            modalBgImgMobileMode: {
+              t: "slide",
+              d: "显示模式",
+              ll: "裁剪",
+              rl: "缩放",
+              lv: "cover",
+              rv: "contain"
+            },
+            modalBgImgMobileAlign: {
+              t: "slide",
+              d: "对齐标准",
+              ll: "高度",
+              rl: "宽度",
+              lv: "height",
+              rv: "width"
+            },
+            modalBgImgMobileOffset: {
+              t: "slider",
+              r: "-100-100",
+              d: "裁剪偏移"
+            },
+            coverParent: {
+              t: "toggle",
+              d: "添加背景覆盖父页面",
+              v: true
+            },
+            unloadParent: {
+              t: "toggle",
+              d: "卸载父页面"
+            },
+            clickBgReturn: {
+              t: "toggle",
+              d: "点击背景返回父页面"
+            },
+            parentBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "050505"
+            },
+            parentBgImgPc: {
+              t: "upload",
+              d: "电脑背景图"
+            },
+            parentBgImgPcMode: {
+              t: "slide",
+              d: "显示模式",
+              ll: "裁剪",
+              rl: "缩放",
+              lv: "cover",
+              rv: "contain"
+            },
+            parentBgImgPcAlign: {
+              t: "slide",
+              d: "对齐标准",
+              ll: "高度",
+              rl: "宽度",
+              lv: "height",
+              rv: "width"
+            },
+            parentBgImgPcOffset: {
+              t: "slider",
+              r: "-100-100",
+              d: "裁剪偏移"
+            },
+            parentBgImgMobile: {
+              t: "upload",
+              d: "手机背景图"
+            },
+            parentBgImgMobileMode: {
+              t: "slide",
+              d: "显示模式",
+              ll: "裁剪",
+              rl: "缩放",
+              lv: "cover",
+              rv: "contain"
+            },
+            parentBgImgMobileAlign: {
+              t: "slide",
+              d: "对齐标准",
+              ll: "高度",
+              rl: "宽度",
+              lv: "height",
+              rv: "width"
+            },
+            parentBgImgMobileOffset: {
+              t: "slider",
+              r: "-100-100",
+              d: "裁剪偏移"
             }
           }
         },
@@ -1737,48 +2066,90 @@
               t: "input",
               d: "或输入URL"
             },
+            gallerySelect: {
+              t: "gallerySelect",
+              d: "选择"
+            },
             clickAction: {
               t: "select",
               r: self.imgClicks,
-              d: "点击逻辑",
-              v: "none"
+              d: "点击功能",
+              v: "zoom"
             },
             clickTarget: {
               t: "page",
-              d: "目标页面"
+              d: "目标对话框"
             },
             galleryUrls: {
               t: "gallery",
               d: "轮播图片"
             },
-            displayMode: {
-              t: "select",
-              r: self.imgModes,
-              d: "显示模式",
-              v: "fixedWidth"
-            },
             width: {
               t: "slider",
-              r: "10-100",
-              d: "宽度%",
+              r: "0-100",
+              d: "宽度",
               v: 100
             },
             height: {
               t: "slider",
-              r: "50-500",
-              d: "高度px",
-              v: 200
+              r: "0-100",
+              d: "高度",
+              v: 50
             },
             opacity: {
               t: "slider",
               r: "0-100",
               d: "透明度",
-              v: 100
+              v: 0
+            },
+            radius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 0
+            },
+            hexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移",
+              v: 0
+            },
+            displayMode: {
+              t: "slide",
+              ll: "裁剪",
+              lv: "cover",
+              rl: "缩放",
+              rv: "contain",
+              d: "显示模式",
+              v: "contain"
+            },
+            borderColor: {
+              t: "color",
+              d: "边框色",
+              v: "ffffff"
+            },
+            borderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 0
+            },
+            borderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            borderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度",
+              v: 0
             },
             align: {
               t: "select",
               r: self.aligns,
-              d: "对齐",
+              d: "对齐方式",
               v: "center"
             }
           }
@@ -1786,6 +2157,11 @@
         "btn": {
           name: "按钮",
           props: {
+            icon: {
+              t: "icon",
+              d: "按钮图标",
+              v: "none"
+            },
             value: {
               t: "input",
               d: "按钮文字",
@@ -1797,72 +2173,69 @@
               d: "点击功能",
               v: "none"
             },
-            clickTarget: {
-              t: "page",
-              d: "目标页面"
-            },
             message: {
               t: "input",
-              d: "添加到用户消息的语句"
+              d: "添加消息"
+            },
+            clickTarget: {
+              t: "page",
+              d: "目标对话框"
             },
             sysEffect: {
               t: "select",
               r: self.btnEffects,
-              d: "系统级效果",
+              d: "系统效果",
               v: "none"
             },
-            modelSelect: {
-              t: "model",
-              d: "选择模型"
-            },
-            repeatable: {
+            disableAfterClick: {
               t: "toggle",
-              d: "可重复点击",
-              v: true
-            },
-            afterClick: {
-              t: "select",
-              r: self.afterClicks,
-              d: "禁用后效果",
-              v: "none"
-            },
-            disabledStyle: {
-              t: "color",
-              d: "禁用时颜色",
-              v: "333333"
+              d: "点击后禁用"
             },
             logicGroup: {
               t: "grp",
               g: "logic",
-              d: "按钮逻辑组"
+              d: "按钮选择组"
             },
             logicMax: {
               t: "num",
               d: "组内最多选",
               v: 1
             },
-            styleGroup: {
-              t: "grp",
-              g: "style",
-              d: "按钮格式组"
+            width: {
+              t: "slider",
+              r: "0-100",
+              d: "宽度",
+              v: 100
             },
-            shape: {
+            align: {
               t: "select",
-              r: self.shapes,
-              d: "外形",
-              v: "rounded"
+              r: self.aligns,
+              d: "对齐方式",
+              v: "center"
+            },
+            opacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 0
+            },
+            blur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度",
+              v: 0
             },
             radius: {
               t: "slider",
-              r: "0-24",
-              d: "圆角",
-              v: 8
+              r: "0-100",
+              d: "角半径",
+              v: 20
             },
-            hexWidth: {
+            hexOffset: {
               t: "slider",
-              r: "5-30",
-              d: "六边形角宽",
-              v: 15
+              r: "0-100",
+              d: "角偏移",
+              v: 0
             },
             bgColor: {
               t: "color",
@@ -1871,40 +2244,208 @@
             },
             borderColor: {
               t: "color",
-              d: "边框颜色",
+              d: "边框色",
               v: "166d3b"
             },
             borderWidth: {
               t: "slider",
-              r: "0-5",
+              r: "0-100",
               d: "边框宽度",
               v: 0
             },
+            borderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            borderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度",
+              v: 0
+            },
+            styleGroup: {
+              t: "grp",
+              g: "style",
+              d: "按钮尺寸组"
+            },
             textSize: {
               t: "slider",
-              r: "10-24",
-              d: "文字大小",
+              r: "10-48",
+              d: "字号",
               v: 14
+            },
+            textFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            textBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            textItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            textUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            textStrike: {
+              t: "toggle",
+              d: "删除线"
             },
             textColor: {
               t: "color",
               d: "文字颜色",
               v: "ffffff"
             },
-            textBold: {
-              t: "toggle",
-              d: "文字加粗"
+            textBgColor: {
+              t: "color",
+              d: "文字背景颜色",
+              v: "000000"
             },
-            width: {
+            textOpacity: {
               t: "slider",
-              r: "1-100",
-              d: "宽度%"
+              r: "0-100",
+              d: "文字透明度",
+              v: 0
             },
-            align: {
+            textBgOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "文字背景透明度",
+              v: 0
+            },
+            textAlign: {
               t: "select",
               r: self.aligns,
-              d: "对齐",
+              d: "文字对齐"
+            },
+            disWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "宽度",
+              v: 100
+            },
+            disAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐方式",
               v: "center"
+            },
+            disOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 0
+            },
+            disBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度",
+              v: 0
+            },
+            disRadius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 20
+            },
+            disHexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移",
+              v: 0
+            },
+            disBgColor: {
+              t: "color",
+              d: "底色",
+              v: "333333"
+            },
+            disBorderColor: {
+              t: "color",
+              d: "边框色",
+              v: "333333"
+            },
+            disBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 0
+            },
+            disBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            disBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度",
+              v: 0
+            },
+            disStyleGroup: {
+              t: "grp",
+              g: "style",
+              d: "禁用时尺寸组"
+            },
+            disTextSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号",
+              v: 14
+            },
+            disTextFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            disTextBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            disTextItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            disTextUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            disTextStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            disTextColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "666666"
+            },
+            disTextBgColor: {
+              t: "color",
+              d: "文字背景颜色",
+              v: "000000"
+            },
+            disTextOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "文字透明度",
+              v: 0
+            },
+            disTextBgOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "文字背景透明度",
+              v: 0
+            },
+            disTextAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "文字对齐"
             }
           }
         },
@@ -1929,6 +2470,12 @@
               d: "必填",
               v: false
             },
+            prerenderText: {
+              t: "select",
+              r: self.prerenderTexts,
+              d: "预渲染文本",
+              v: "none"
+            },
             displayMode: {
               t: "select",
               r: self.displayModes,
@@ -1951,19 +2498,98 @@
               d: "数据键名",
               v: "select1"
             },
-            title: {
-              t: "input",
-              d: "标题"
-            },
-            options: {
-              t: "textarea",
-              d: "选项(每行一个)"
-            },
             default: {
               t: "slider",
               r: "0-20",
-              d: "默认索引",
+              d: "默认选项",
               v: 0
+            },
+            opacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            blur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度",
+              v: 0
+            },
+            bgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "1a1a1a"
+            },
+            radius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 16
+            },
+            hexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移",
+              v: 0
+            },
+            borderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            borderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度",
+              v: 0
+            },
+            borderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            borderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 4
+            },
+            titleSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号",
+              v: 14
+            },
+            titleColor: {
+              t: "color",
+              d: "颜色",
+              v: "ffffff"
+            },
+            titleFont: {
+              t: "font",
+              d: "字体"
+            },
+            titleBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            titleItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            titleUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            titleStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            titleAlign: {
+              t: "align",
+              d: "对齐"
             }
           }
         },
@@ -1975,117 +2601,761 @@
               d: "数据键名",
               v: "switch1"
             },
-            title: {
-              t: "input",
-              d: "标题"
+            defaultOn: {
+              t: "toggle",
+              d: "默认开启"
             },
             leftText: {
               t: "input",
               d: "左侧文字"
             },
+            leftTextSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号"
+            },
+            leftTextFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            leftTextBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            leftTextItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            leftTextUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            leftTextStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            leftTextColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "ffffff"
+            },
+            leftTextAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐"
+            },
+            leftValue: {
+              t: "input",
+              d: "滑块位于左侧填入信息",
+              v: "off"
+            },
             rightText: {
               t: "input",
               d: "右侧文字"
             },
-            style: {
-              t: "select",
-              r: self.switchStyles,
-              d: "样式",
-              v: "capsule"
+            rightTextSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号"
             },
-            thumbColor: {
+            rightTextFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            rightTextBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            rightTextItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            rightTextUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            rightTextStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            rightTextColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "ffffff"
+            },
+            rightTextAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐"
+            },
+            rightValue: {
+              t: "input",
+              d: "滑块位于右侧填入信息",
+              v: "on"
+            },
+            align: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐方式",
+              v: "left"
+            },
+            onBgOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "背景不透明度",
+              v: 100
+            },
+            onBgBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "背景模糊"
+            },
+            onBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "166d3b"
+            },
+            onRadius: {
+              t: "slider",
+              r: "0-30",
+              d: "圆角",
+              v: 15
+            },
+            onHexOffset: {
+              t: "slider",
+              r: "0-15",
+              d: "六边形偏移"
+            },
+            onThumbOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "滑块不透明度",
+              v: 100
+            },
+            onThumbBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "滑块模糊"
+            },
+            onThumbColor: {
               t: "color",
               d: "滑块颜色",
               v: "ffffff"
             },
-            onBg: {
-              t: "color",
-              d: "开启背景色",
-              v: "166d3b"
+            onThumbRadius: {
+              t: "slider",
+              r: "0-15",
+              d: "滑块圆角",
+              v: 10
             },
-            offBg: {
-              t: "color",
-              d: "关闭背景色",
-              v: "333333"
+            onThumbHexOffset: {
+              t: "slider",
+              r: "0-15",
+              d: "滑块六边形偏移"
             },
-            borderColor: {
+            onBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框不透明度",
+              v: 100
+            },
+            onBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊"
+            },
+            onBorderColor: {
               t: "color",
               d: "边框颜色",
               v: "444444"
             },
-            onValue: {
-              t: "input",
-              d: "开启时值",
-              v: "on"
+            onBorderWidth: {
+              t: "slider",
+              r: "0-5",
+              d: "边框宽度",
+              v: 1
             },
-            offValue: {
-              t: "input",
-              d: "关闭时值",
-              v: "off"
+            offBgOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "背景不透明度",
+              v: 100
             },
-            defaultOn: {
+            offBgBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "背景模糊"
+            },
+            offBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "333333"
+            },
+            offRadius: {
+              t: "slider",
+              r: "0-30",
+              d: "圆角",
+              v: 15
+            },
+            offHexOffset: {
+              t: "slider",
+              r: "0-15",
+              d: "六边形偏移"
+            },
+            offThumbOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "滑块不透明度",
+              v: 100
+            },
+            offThumbBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "滑块模糊"
+            },
+            offThumbColor: {
+              t: "color",
+              d: "滑块颜色",
+              v: "ffffff"
+            },
+            offThumbRadius: {
+              t: "slider",
+              r: "0-15",
+              d: "滑块圆角",
+              v: 10
+            },
+            offThumbHexOffset: {
+              t: "slider",
+              r: "0-15",
+              d: "滑块六边形偏移"
+            },
+            offBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框不透明度",
+              v: 100
+            },
+            offBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊"
+            },
+            offBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            offBorderWidth: {
+              t: "slider",
+              r: "0-5",
+              d: "边框宽度",
+              v: 1
+            },
+            title: {
+              t: "input",
+              d: "标题"
+            },
+            titleSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号"
+            },
+            titleFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            titleBold: {
               t: "toggle",
-              d: "默认开启"
+              d: "加粗"
+            },
+            titleItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            titleUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            titleStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            titleColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "ffffff"
+            },
+            titleAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐"
             }
           }
         },
         "collapse": {
           name: "折叠项",
           props: {
-            title: {
-              t: "input",
-              d: "标题文字",
-              v: "点击展开"
-            },
-            titleSize: {
-              t: "slider",
-              r: "10-24",
-              d: "标题字号",
-              v: 14
-            },
-            titleColor: {
-              t: "color",
-              d: "标题颜色",
-              v: "ffffff"
-            },
-            titleBold: {
+            defaultOpen: {
               t: "toggle",
-              d: "标题加粗"
-            },
-            titleBg: {
-              t: "color",
-              d: "标题背景色",
-              v: "1a1a1a"
+              d: "默认展开"
             },
             arrowColor: {
               t: "color",
               d: "箭头颜色",
               v: "888888"
             },
-            contentBg: {
+            hdOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            hdBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度",
+              v: 0
+            },
+            hdBgColor: {
               t: "color",
-              d: "内容背景色",
+              d: "背景颜色",
+              v: "1a1a1a"
+            },
+            hdRadius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 8
+            },
+            hdHexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移",
+              v: 0
+            },
+            hdBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            hdBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度",
+              v: 0
+            },
+            hdBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            hdBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 4
+            },
+            openHdOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            openHdBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度",
+              v: 0
+            },
+            openHdBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "1a1a1a"
+            },
+            openHdRadius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 8
+            },
+            openHdHexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移",
+              v: 0
+            },
+            openHdBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            openHdBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度",
+              v: 0
+            },
+            openHdBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            openHdBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 4
+            },
+            bdOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            bdBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度",
+              v: 0
+            },
+            bdBgColor: {
+              t: "color",
+              d: "背景颜色",
               v: "0d0d0d"
             },
-            defaultOpen: {
+            bdRadius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 8
+            },
+            bdHexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移",
+              v: 0
+            },
+            bdBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            bdBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度",
+              v: 0
+            },
+            bdBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            bdBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 4
+            },
+            titleSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号",
+              v: 14
+            },
+            titleColor: {
+              t: "color",
+              d: "颜色",
+              v: "ffffff"
+            },
+            titleFont: {
+              t: "font",
+              d: "字体"
+            },
+            titleBold: {
               t: "toggle",
-              d: "默认展开"
+              d: "加粗"
+            },
+            titleItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            titleUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            titleStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            titleAlign: {
+              t: "align",
+              d: "对齐"
             }
           }
         },
         "row": {
           name: "多列",
           props: {
-            valign: {
-              t: "select",
-              r: self.valigns,
-              d: "垂直对齐",
-              v: "center"
+            borderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 0
+            },
+            borderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            borderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            borderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 0
             },
             heightBind: {
               t: "grp",
               g: "row",
-              d: "高度绑定组"
+              d: "多列结构高度组"
+            },
+            colArrange: {
+              t: "toggle",
+              d: "列排列模式"
+            }
+          }
+        },
+        "aiReply": {
+          name: "AI回复",
+          props: {
+            showUserMsg: {
+              t: "toggle",
+              d: "展示用户消息"
+            },
+            showSysContent: {
+              t: "toggle",
+              d: "用户消息展示系统内容"
+            },
+            userMsgSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号"
+            },
+            userMsgFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            userMsgBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            userMsgItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            userMsgUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            userMsgStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            userMsgColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "ffffff"
+            },
+            userMsgAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐"
+            },
+            displayMode: {
+              t: "select",
+              r: self.aiDisplayModes,
+              d: "显示模式",
+              v: "bubble"
+            },
+            bubbleOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            bubbleBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度"
+            },
+            bubbleBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "1a1a1a"
+            },
+            bubbleRadius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 12
+            },
+            bubbleHexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移"
+            },
+            bubbleBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度",
+              v: 100
+            },
+            bubbleBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            bubbleBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            bubbleBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度",
+              v: 1
+            },
+            flatOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            flatBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度"
+            },
+            flatBgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "0d0d0d"
+            },
+            flatBorderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度"
+            },
+            flatBorderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            flatBorderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            flatBorderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度"
+            },
+            opacity: {
+              t: "slider",
+              r: "0-100",
+              d: "透明度",
+              v: 100
+            },
+            blur: {
+              t: "slider",
+              r: "0-20",
+              d: "模糊度"
+            },
+            bgColor: {
+              t: "color",
+              d: "背景颜色",
+              v: "0d0d0d"
+            },
+            radius: {
+              t: "slider",
+              r: "0-100",
+              d: "角半径",
+              v: 8
+            },
+            hexOffset: {
+              t: "slider",
+              r: "0-100",
+              d: "角偏移"
+            },
+            borderOpacity: {
+              t: "slider",
+              r: "0-100",
+              d: "边框透明度"
+            },
+            borderBlur: {
+              t: "slider",
+              r: "0-20",
+              d: "边框模糊度"
+            },
+            borderColor: {
+              t: "color",
+              d: "边框颜色",
+              v: "444444"
+            },
+            borderWidth: {
+              t: "slider",
+              r: "0-100",
+              d: "边框宽度"
+            },
+            replyMsgSize: {
+              t: "slider",
+              r: "10-48",
+              d: "字号"
+            },
+            replyMsgFont: {
+              t: "select",
+              r: self.fonts,
+              d: "字体"
+            },
+            replyMsgBold: {
+              t: "toggle",
+              d: "加粗"
+            },
+            replyMsgItalic: {
+              t: "toggle",
+              d: "倾斜"
+            },
+            replyMsgUnderline: {
+              t: "toggle",
+              d: "下划线"
+            },
+            replyMsgStrike: {
+              t: "toggle",
+              d: "删除线"
+            },
+            replyMsgColor: {
+              t: "color",
+              d: "文字颜色",
+              v: "ffffff"
+            },
+            replyMsgAlign: {
+              t: "select",
+              r: self.aligns,
+              d: "对齐"
             }
           }
         }
@@ -2140,11 +3410,10 @@
           var ci = parseInt(t.closest('.del-col-btn').dataset.ci);
           self.delCol(ci)
         }
-        if (t.closest('.col-mode-opt')) {
-          var opt = t.closest('.col-mode-opt');
-          var ci = parseInt(opt.parentElement.dataset.ci);
+        if (t.closest('.row-arrange-opt')) {
+          var opt = t.closest('.row-arrange-opt');
           var mode = opt.dataset.mode;
-          self.setColMode(ci, mode)
+          self.setRowArrange(mode === 'fit')
         }
       });
       document.addEventListener('contextmenu', function(e) {
@@ -2807,13 +4076,12 @@
       this.save();
       this.renderR()
     },
-    setColMode: function(ci, mode) {
+    setRowArrange: function(isFit) {
       if (!this.cur || this.sel === null) return;
       var els = this.getEls(this.zone);
       var el = els[this.sel];
       if (!el || el.type !== 'row') return;
-      if (!el.colMode) el.colMode = [];
-      el.colMode[ci] = mode;
+      el.colArrange = isFit;
       this.save();
       this.renderR()
     },
@@ -2858,6 +4126,41 @@
           document.removeEventListener('click', h)
         })
       }, 10)
+    },
+    showIconModal: function(k, s, ci) {
+      var self = this;
+      var modal = document.getElementById('iconModal');
+      var grid = document.getElementById('iconGrid');
+      var closeBtn = document.getElementById('iconClose');
+      this.iconK = k;
+      this.iconS = s;
+      this.iconCi = ci;
+      var el = s === 'col' ? this.pj[this.cur].data.pages[this.pg].elements[this.sel].cols[ci] : this.pj[this.cur].data.pages[this.pg].elements[this.sel];
+      var curIcon = el[k] || 'none';
+      var h = '';
+      if (window.BTN_ICONS) {
+        Object.keys(window.BTN_ICONS).forEach(function(name) {
+          if (name === 'none') return;
+          var svg = window.BTN_ICONS[name];
+          h += '<div class="ed-icon-item' + (curIcon === name ? ' selected' : '') + '" data-icon="' + name + '" title="' + name + '">' + svg + '</div>';
+        });
+      }
+      grid.innerHTML = h;
+      grid.querySelectorAll('.ed-icon-item').forEach(function(item) {
+        item.onclick = function() {
+          var iconName = item.dataset.icon;
+          self.setProp(self.iconK, iconName, self.iconS, self.iconCi);
+          modal.classList.remove('open');
+          self.renderR();
+        };
+      });
+      closeBtn.onclick = function() {
+        modal.classList.remove('open');
+      };
+      modal.onclick = function(e) {
+        if (e.target === modal) modal.classList.remove('open');
+      };
+      modal.classList.add('open');
     },
     showGlobalCtx: function(x, y) {
       var old = document.querySelector('.ed-ctx');
@@ -3218,7 +4521,6 @@
         case 2: p.innerHTML = this.renderStyle(); break;
         case 3: p.innerHTML = this.renderLock(); break;
         case 4: p.innerHTML = this.renderChat(); break;
-        default: p.innerHTML = this.renderSys();
       }
       this.bindR();
       openFolds.forEach(function(i) {
@@ -3284,28 +4586,75 @@
       var pg = d.pages[this.pg] || {};
       if (pg.type === 'phone') {
         var h = '<div class="ed-sec"><div class="ed-title">手机窗口</div>';
-        h += this.ctrl('title', {
-          t: 'input',
-          d: '页面标题'
-        }, pg.title, 'pg');
-        h += this.ctrl('scale', {
-          t: 'slider',
-          r: '50-150',
-          d: '缩放%'
-        }, pg.scale || 100, 'pg');
-        h += this.ctrl('wallpaper', {
-          t: 'upload',
-          d: '手机壁纸'
-        }, pg.wallpaper, 'pg');
+        h += this.ctrl('title', {t: 'input', d: '页面标题'}, pg.title, 'pg');
+        h += this.ctrl('scale', {t: 'slider', r: '50-150', d: '缩放%'}, pg.scale || 100, 'pg');
+        h += this.ctrl('wallpaper', {t: 'upload', d: '手机壁纸'}, pg.wallpaper, 'pg');
         h += '</div>';
         return h
       }
-      var h = '<div class="ed-sec"><div class="ed-title">当前页面</div>';
       var pgCfg = this.cfg.page.props;
-      ['title', 'widthPct', 'heightPct', 'maxWidthPct', 'headerPct', 'footerPct', 'modalBg', 'modalBgImg', 'modalOpacity', 'modalBlur'].forEach(function(k) {
-        h += self.ctrl(k, pgCfg[k], pg[k], 'pg')
-      });
-      h += '</div>';
+      var h = '';
+      h += this.ctrl('title', pgCfg.title, pg.title, 'pg');
+      h += '<div class="ed-fold"><div class="ed-fold-hd"><span>界面背景</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+      h += self.ctrl('coverParent', pgCfg.coverParent, pg.coverParent !== false, 'pg');
+      if (pg.coverParent !== false) {
+        h += self.ctrl('unloadParent', pgCfg.unloadParent, pg.unloadParent, 'pg');
+        if (!pg.unloadParent) h += self.ctrl('clickBgReturn', pgCfg.clickBgReturn, pg.clickBgReturn, 'pg');
+        h += self.ctrl('parentBgColor', pgCfg.parentBgColor, pg.parentBgColor, 'pg');
+        h += self.ctrl('parentBgImgMobile', pgCfg.parentBgImgMobile, pg.parentBgImgMobile, 'pg');
+        if (pg.parentBgImgMobile) {
+          h += self.ctrl('parentBgImgMobileMode', pgCfg.parentBgImgMobileMode, pg.parentBgImgMobileMode, 'pg');
+          if (pg.parentBgImgMobileMode !== 'contain') {
+            h += self.ctrl('parentBgImgMobileAlign', pgCfg.parentBgImgMobileAlign, pg.parentBgImgMobileAlign, 'pg');
+            h += self.ctrl('parentBgImgMobileOffset', pgCfg.parentBgImgMobileOffset, pg.parentBgImgMobileOffset, 'pg');
+          }
+        }
+        h += self.ctrl('parentBgImgPc', pgCfg.parentBgImgPc, pg.parentBgImgPc, 'pg');
+        if (pg.parentBgImgPc) {
+          h += self.ctrl('parentBgImgPcMode', pgCfg.parentBgImgPcMode, pg.parentBgImgPcMode, 'pg');
+          if (pg.parentBgImgPcMode !== 'contain') {
+            h += self.ctrl('parentBgImgPcAlign', pgCfg.parentBgImgPcAlign, pg.parentBgImgPcAlign, 'pg');
+            h += self.ctrl('parentBgImgPcOffset', pgCfg.parentBgImgPcOffset, pg.parentBgImgPcOffset, 'pg');
+          }
+        }
+      }
+      h += '</div></div>';
+      h += '<div class="ed-fold"><div class="ed-fold-hd"><span>对话框背景</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+      h += self.ctrl('modalBg', pgCfg.modalBg, pg.modalBg, 'pg');
+      h += self.ctrl('widthPct', pgCfg.widthPct, pg.widthPct, 'pg');
+      h += self.ctrl('heightPct', pgCfg.heightPct, pg.heightPct, 'pg');
+      h += self.ctrl('modalOffsetX', pgCfg.modalOffsetX, pg.modalOffsetX, 'pg');
+      h += self.ctrl('modalOffsetY', pgCfg.modalOffsetY, pg.modalOffsetY, 'pg');
+      h += self.ctrl('modalOpacity', pgCfg.modalOpacity, pg.modalOpacity, 'pg');
+      h += self.ctrl('modalRadius', pgCfg.modalRadius, pg.modalRadius, 'pg');
+      h += self.ctrl('modalHexOffset', pgCfg.modalHexOffset, pg.modalHexOffset, 'pg');
+      h += self.ctrl('modalBorderColor', pgCfg.modalBorderColor, pg.modalBorderColor, 'pg');
+      h += self.ctrl('modalBorderWidth', pgCfg.modalBorderWidth, pg.modalBorderWidth, 'pg');
+      h += self.ctrl('modalBorderOpacity', pgCfg.modalBorderOpacity, pg.modalBorderOpacity, 'pg');
+      h += self.ctrl('modalBorderBlur', pgCfg.modalBorderBlur, pg.modalBorderBlur, 'pg');
+      h += self.ctrl('modalBgImgMobile', pgCfg.modalBgImgMobile, pg.modalBgImgMobile, 'pg');
+      if (pg.modalBgImgMobile) {
+        h += self.ctrl('modalBgImgMobileMode', pgCfg.modalBgImgMobileMode, pg.modalBgImgMobileMode, 'pg');
+        if (pg.modalBgImgMobileMode !== 'contain') {
+          h += self.ctrl('modalBgImgMobileAlign', pgCfg.modalBgImgMobileAlign, pg.modalBgImgMobileAlign, 'pg');
+          h += self.ctrl('modalBgImgMobileOffset', pgCfg.modalBgImgMobileOffset, pg.modalBgImgMobileOffset, 'pg');
+        }
+      }
+      h += self.ctrl('modalBgImgPc', pgCfg.modalBgImgPc, pg.modalBgImgPc, 'pg');
+      if (pg.modalBgImgPc) {
+        h += self.ctrl('modalBgImgPcMode', pgCfg.modalBgImgPcMode, pg.modalBgImgPcMode, 'pg');
+        if (pg.modalBgImgPcMode !== 'contain') {
+          h += self.ctrl('modalBgImgPcAlign', pgCfg.modalBgImgPcAlign, pg.modalBgImgPcAlign, 'pg');
+          h += self.ctrl('modalBgImgPcOffset', pgCfg.modalBgImgPcOffset, pg.modalBgImgPcOffset, 'pg');
+        }
+      }
+      h += '</div></div>';
+      h += '<div class="ed-fold"><div class="ed-fold-hd"><span>布局</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+      h += self.ctrl('maxWidthPct', pgCfg.maxWidthPct, pg.maxWidthPct, 'pg');
+      h += self.ctrl('headerPct', pgCfg.headerPct, pg.headerPct, 'pg');
+      h += self.ctrl('footerPct', pgCfg.footerPct, pg.footerPct, 'pg');
+      h += self.ctrl('modalBlur', pgCfg.modalBlur, pg.modalBlur, 'pg');
+      h += '</div></div>';
       return h
     },
     renderMod: function() {
@@ -3505,44 +4854,106 @@
         var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
           return parseInt(x) || 1
         });
-        var colMode = el.colMode || [];
-        var mode = colMode[this.rowSel] || 'ratio';
+        var colArrange = el.colArrange ? true : false;
         if (col.type === 'placeholder') {
           var h = '<div class="ed-sec"><div class="ed-title">列' + (this.rowSel + 1) + ' - 占位符 <button class="back-row-btn" style="float:right;background:none;border:none;color:#888;cursor:pointer">返回行</button></div>';
-          h += '<div class="ed-row" style="flex-direction:column;gap:6px"><label>宽度模式</label>';
-          h += '<div style="display:flex;align-items:center;gap:8px">';
-          h += '<div class="col-mode-toggle" data-ci="' + this.rowSel + '" style="display:flex;background:#0d0d0d;border-radius:4px;overflow:hidden;flex:1">';
-          h += '<div class="col-mode-opt' + (mode === 'ratio' ? ' active' : '') + '" data-mode="ratio" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'ratio' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">固定比例</div>';
-          h += '<div class="col-mode-opt' + (mode === 'fit' ? ' active' : '') + '" data-mode="fit" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'fit' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">适应内容</div>';
-          h += '</div>';
-          if (mode === 'ratio') h += '<input class="col-weight-inp" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
-          h += '</div></div>';
+          if (!colArrange) {
+            h += '<div class="ed-row"><label>列比例</label>';
+            h += '<input class="col-weight-inp" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '" style="width:60px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
+            h += '</div>';
+          }
           h += '<div style="color:#666;font-size:12px;padding:12px;text-align:center">拖入元素到此列</div></div>';
           return h
         }
         var colCfg = this.cfg[col.type];
         if (!colCfg) return '';
         var h = '<div class="ed-sec"><div class="ed-title">列' + (this.rowSel + 1) + ' - ' + colCfg.name + ' <button class="back-row-btn" style="float:right;background:none;border:none;color:#888;cursor:pointer">返回行</button></div>';
-        h += '<div class="ed-row" style="flex-direction:column;gap:6px"><label>宽度模式</label>';
-        h += '<div style="display:flex;align-items:center;gap:8px">';
-        h += '<div class="col-mode-toggle" data-ci="' + this.rowSel + '" style="display:flex;background:#0d0d0d;border-radius:4px;overflow:hidden;flex:1">';
-        h += '<div class="col-mode-opt' + (mode === 'ratio' ? ' active' : '') + '" data-mode="ratio" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'ratio' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">固定比例</div>';
-        h += '<div class="col-mode-opt' + (mode === 'fit' ? ' active' : '') + '" data-mode="fit" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'fit' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">适应内容</div>';
-        h += '</div>';
-        if (mode === 'ratio') h += '<input class="col-weight-inp" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
-        h += '</div></div>';
-        Object.keys(colCfg.props).forEach(function(k) {
-          var prop = colCfg.props[k],
-            v = col[k];
-          if (col.type === 'btn' && (k === 'textSize' || k === 'textColor' || k === 'textBold')) return;
-          if (col.type === 'btn' && k === 'sysEffect' && d.sys && d.sys.unload) return;
-          if (k === 'options' && Array.isArray(v)) v = v.join('\n');
-          h += self.ctrl(k, prop, v, 'col', self.rowSel)
-        });
-        if (col.type === 'btn') h += self.ctrlFold('按钮文本', col, 'text', 'col', self.rowSel);
-        if (col.type === 'input') h += self.ctrlFold('输入框标题', col, 'title', 'col', self.rowSel);
-        if (col.type === 'select') h += self.ctrlFold('下拉框标题', col, 'title', 'col', self.rowSel);
-        if (col.type === 'switch') h += self.ctrlFold('滑块标题', col, 'title', 'col', self.rowSel);
+        if (!colArrange) {
+          h += '<div class="ed-row"><label>列比例</label>';
+          h += '<input class="col-weight-inp" data-ci="' + this.rowSel + '" value="' + ratio[this.rowSel] + '" style="width:60px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
+          h += '</div>';
+        }
+        if (col.type === 'btn') {
+          var cm = colCfg;
+          h += self.ctrl('icon', cm.props.icon, col.icon, 'col', self.rowSel);
+          h += self.ctrl('value', cm.props.value, col.value, 'col', self.rowSel);
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('clickAction', cm.props.clickAction, col.clickAction, 'col', self.rowSel);
+          if (col.clickAction === 'message') h += self.ctrl('message', cm.props.message, col.message, 'col', self.rowSel);
+          if (col.clickAction === 'jumpModal' || col.clickAction === 'openModal') h += self.ctrl('clickTarget', cm.props.clickTarget, col.clickTarget, 'col', self.rowSel);
+          var sysEffectProp = (d.sys && d.sys.unload) ? {t: 'select', r: self.btnEffects.filter(function(e) { return e.v !== 'killer' && e.v !== 'hider'; }), d: '系统效果'} : cm.props.sysEffect;
+          h += self.ctrl('sysEffect', sysEffectProp, col.sysEffect, 'col', self.rowSel);
+          h += self.ctrl('disableAfterClick', cm.props.disableAfterClick, col.disableAfterClick, 'col', self.rowSel);
+          h += self.ctrl('logicGroup', cm.props.logicGroup, col.logicGroup, 'col', self.rowSel);
+          if (col.logicGroup) h += self.ctrl('logicMax', cm.props.logicMax, col.logicMax, 'col', self.rowSel);
+          h += '</div></div>';
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('width', cm.props.width, col.width, 'col', self.rowSel);
+          h += self.ctrl('align', cm.props.align, col.align, 'col', self.rowSel);
+          h += self.ctrl('opacity', cm.props.opacity, col.opacity, 'col', self.rowSel);
+          h += self.ctrl('blur', cm.props.blur, col.blur, 'col', self.rowSel);
+          h += self.ctrl('radius', cm.props.radius, col.radius, 'col', self.rowSel);
+          h += self.ctrl('hexOffset', cm.props.hexOffset, col.hexOffset, 'col', self.rowSel);
+          h += self.ctrl('bgColor', cm.props.bgColor, col.bgColor, 'col', self.rowSel);
+          h += self.ctrl('borderColor', cm.props.borderColor, col.borderColor, 'col', self.rowSel);
+          h += self.ctrl('borderWidth', cm.props.borderWidth, col.borderWidth, 'col', self.rowSel);
+          h += self.ctrl('borderOpacity', cm.props.borderOpacity, col.borderOpacity, 'col', self.rowSel);
+          h += self.ctrl('borderBlur', cm.props.borderBlur, col.borderBlur, 'col', self.rowSel);
+          h += self.ctrl('styleGroup', cm.props.styleGroup, col.styleGroup, 'col', self.rowSel);
+          h += '</div></div>';
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>按钮文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('textSize', cm.props.textSize, col.textSize, 'col', self.rowSel);
+          h += self.ctrl('textFont', cm.props.textFont, col.textFont, 'col', self.rowSel);
+          h += self.ctrl('textBold', cm.props.textBold, col.textBold, 'col', self.rowSel);
+          h += self.ctrl('textItalic', cm.props.textItalic, col.textItalic, 'col', self.rowSel);
+          h += self.ctrl('textUnderline', cm.props.textUnderline, col.textUnderline, 'col', self.rowSel);
+          h += self.ctrl('textStrike', cm.props.textStrike, col.textStrike, 'col', self.rowSel);
+          h += self.ctrl('textColor', cm.props.textColor, col.textColor, 'col', self.rowSel);
+          h += self.ctrl('textBgColor', cm.props.textBgColor, col.textBgColor, 'col', self.rowSel);
+          h += self.ctrl('textOpacity', cm.props.textOpacity, col.textOpacity, 'col', self.rowSel);
+          h += self.ctrl('textBgOpacity', cm.props.textBgOpacity, col.textBgOpacity, 'col', self.rowSel);
+          h += self.ctrl('textAlign', cm.props.textAlign, col.textAlign, 'col', self.rowSel);
+          h += '</div></div>';
+          if (col.disableAfterClick) {
+            h += '<div class="ed-fold"><div class="ed-fold-hd"><span>禁用时样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+            h += self.ctrl('disWidth', cm.props.disWidth, col.disWidth, 'col', self.rowSel);
+            h += self.ctrl('disAlign', cm.props.disAlign, col.disAlign, 'col', self.rowSel);
+            h += self.ctrl('disOpacity', cm.props.disOpacity, col.disOpacity, 'col', self.rowSel);
+            h += self.ctrl('disBlur', cm.props.disBlur, col.disBlur, 'col', self.rowSel);
+            h += self.ctrl('disRadius', cm.props.disRadius, col.disRadius, 'col', self.rowSel);
+            h += self.ctrl('disHexOffset', cm.props.disHexOffset, col.disHexOffset, 'col', self.rowSel);
+            h += self.ctrl('disBgColor', cm.props.disBgColor, col.disBgColor, 'col', self.rowSel);
+            h += self.ctrl('disBorderColor', cm.props.disBorderColor, col.disBorderColor, 'col', self.rowSel);
+            h += self.ctrl('disBorderWidth', cm.props.disBorderWidth, col.disBorderWidth, 'col', self.rowSel);
+            h += self.ctrl('disBorderOpacity', cm.props.disBorderOpacity, col.disBorderOpacity, 'col', self.rowSel);
+            h += self.ctrl('disBorderBlur', cm.props.disBorderBlur, col.disBorderBlur, 'col', self.rowSel);
+            h += self.ctrl('disStyleGroup', cm.props.disStyleGroup, col.disStyleGroup, 'col', self.rowSel);
+            h += '</div></div>';
+            h += '<div class="ed-fold"><div class="ed-fold-hd"><span>禁用时文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+            h += self.ctrl('disTextSize', cm.props.disTextSize, col.disTextSize, 'col', self.rowSel);
+            h += self.ctrl('disTextFont', cm.props.disTextFont, col.disTextFont, 'col', self.rowSel);
+            h += self.ctrl('disTextBold', cm.props.disTextBold, col.disTextBold, 'col', self.rowSel);
+            h += self.ctrl('disTextItalic', cm.props.disTextItalic, col.disTextItalic, 'col', self.rowSel);
+            h += self.ctrl('disTextUnderline', cm.props.disTextUnderline, col.disTextUnderline, 'col', self.rowSel);
+            h += self.ctrl('disTextStrike', cm.props.disTextStrike, col.disTextStrike, 'col', self.rowSel);
+            h += self.ctrl('disTextColor', cm.props.disTextColor, col.disTextColor, 'col', self.rowSel);
+            h += self.ctrl('disTextBgColor', cm.props.disTextBgColor, col.disTextBgColor, 'col', self.rowSel);
+            h += self.ctrl('disTextOpacity', cm.props.disTextOpacity, col.disTextOpacity, 'col', self.rowSel);
+            h += self.ctrl('disTextBgOpacity', cm.props.disTextBgOpacity, col.disTextBgOpacity, 'col', self.rowSel);
+            h += self.ctrl('disTextAlign', cm.props.disTextAlign, col.disTextAlign, 'col', self.rowSel);
+            h += '</div></div>';
+          }
+        } else {
+          Object.keys(colCfg.props).forEach(function(k) {
+            var prop = colCfg.props[k],
+              v = col[k];
+            if (k === 'options' && Array.isArray(v)) v = v.join('\n');
+            h += self.ctrl(k, prop, v, 'col', self.rowSel)
+          });
+          if (col.type === 'input') h += self.ctrlFold('输入框标题', col, 'title', 'col', self.rowSel);
+          if (col.type === 'select') h += self.ctrlFold('下拉框标题', col, 'title', 'col', self.rowSel);
+          if (col.type === 'switch') h += self.ctrlFold('滑块标题', col, 'title', 'col', self.rowSel);
+        }
         h += '<button class="ed-btn del" id="delColElBtn">' + this.icon('trash') + ' 清空此列</button></div>';
         return h
       }
@@ -3550,77 +4961,367 @@
       if (!m) return '';
       var h = '<div class="ed-sec"><div class="ed-title">' + m.name + '</div>';
       if (el.type === 'row') {
-        h += this.ctrl('valign', m.props.valign, el.valign, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>外框</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += this.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+        h += this.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += this.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+        h += this.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += '</div></div>';
         h += this.ctrl('heightBind', m.props.heightBind, el.heightBind, 'el');
-        h += '<div class="ed-title" style="margin-top:12px">列管理</div>';
+        var colArrange = el.colArrange ? true : false;
+        h += '<div class="ed-row"><label>列排列模式</label>';
+        h += '<div class="row-arrange-toggle" style="display:flex;background:#0d0d0d;border-radius:4px;overflow:hidden;flex:1">';
+        h += '<div class="row-arrange-opt' + (!colArrange ? ' active' : '') + '" data-mode="ratio" style="flex:1;padding:6px 8px;text-align:center;font-size:12px;cursor:pointer;' + (!colArrange ? 'background:#166d3b;color:#fff' : 'color:#888') + '">固定比例</div>';
+        h += '<div class="row-arrange-opt' + (colArrange ? ' active' : '') + '" data-mode="fit" style="flex:1;padding:6px 8px;text-align:center;font-size:12px;cursor:pointer;' + (colArrange ? 'background:#166d3b;color:#fff' : 'color:#888') + '">适应元素</div>';
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>列</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
         var ratio = Array.isArray(el.ratio) ? el.ratio : (el.ratio || '1').split(':').map(function(x) {
           return parseInt(x) || 1
         });
-        var colMode = el.colMode || [];
         var colPriority = el.colPriority || [];
-        h += '<div class="ed-row"><label>列数</label><div style="display:flex;gap:6px;align-items:center"><span>' + ratio.length + '列</span><button class="add-col-btn ed-btn sm" style="margin:0;width:auto;padding:6px 12px">' + this.icon('plus') + ' 添加列</button></div></div>';
-        (el.cols || []).forEach(function(col, ci) {
-          var mode = colMode[ci] || 'ratio';
-          h += '<div class="ed-row" style="flex-direction:column;align-items:stretch;gap:6px">';
-          h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">';
-          h += '<span style="white-space:nowrap">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span>';
-          if ((el.cols || []).length > 1) h += '<button class="del-col-btn" data-ci="' + ci + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;flex-shrink:0">' + self.icon('trash') + '</button>';
-          h += '</div>';
-          h += '<div style="display:flex;align-items:center;gap:8px">';
-          h += '<div class="col-mode-toggle" data-ci="' + ci + '" style="display:flex;background:#0d0d0d;border-radius:4px;overflow:hidden;flex:1">';
-          h += '<div class="col-mode-opt' + (mode === 'ratio' ? ' active' : '') + '" data-mode="ratio" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'ratio' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">固定比例</div>';
-          h += '<div class="col-mode-opt' + (mode === 'fit' ? ' active' : '') + '" data-mode="fit" style="flex:1;padding:4px 8px;text-align:center;font-size:11px;cursor:pointer;' + (mode === 'fit' ? 'background:#166d3b;color:#fff' : 'color:#888') + '">适应内容</div>';
-          h += '</div>';
-          if (mode === 'ratio') h += '<input class="col-weight-inp" data-ci="' + ci + '" value="' + ratio[ci] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
-          h += '</div></div>';
-        });
-        var fitCols = [];
-        (el.cols || []).forEach(function(col, ci) {
-          if ((colMode[ci] || 'ratio') === 'fit') fitCols.push(ci);
-        });
-        if (fitCols.length > 1) {
-          var sortedFit = colPriority.filter(function(ci) { return fitCols.indexOf(ci) > -1; });
-          fitCols.forEach(function(ci) { if (sortedFit.indexOf(ci) === -1) sortedFit.push(ci); });
-          h += '<div class="ed-title" style="margin-top:12px">适应列优先级 <span style="font-weight:normal;color:#666;font-size:11px">(拖动排序，末位占剩余)</span></div>';
+        if (!colArrange) {
+          (el.cols || []).forEach(function(col, ci) {
+            h += '<div class="ed-row" style="display:flex;justify-content:space-between;align-items:center;gap:8px">';
+            h += '<span style="white-space:nowrap;flex:1">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span>';
+            h += '<input class="col-weight-inp" data-ci="' + ci + '" value="' + ratio[ci] + '" style="width:50px;padding:4px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#fff;text-align:center">';
+            if ((el.cols || []).length > 1) h += '<button class="del-col-btn" data-ci="' + ci + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;flex-shrink:0">' + self.icon('trash') + '</button>';
+            h += '</div>';
+          });
+        } else {
+          var allCols = [];
+          (el.cols || []).forEach(function(col, ci) { allCols.push(ci); });
+          var sortedCols = colPriority.filter(function(ci) { return allCols.indexOf(ci) > -1; });
+          allCols.forEach(function(ci) { if (sortedCols.indexOf(ci) === -1) sortedCols.push(ci); });
           h += '<div class="col-priority-list" style="background:#0d0d0d;border-radius:6px;padding:4px">';
-          sortedFit.forEach(function(ci, pi) {
+          sortedCols.forEach(function(ci, pi) {
             var col = el.cols[ci];
-            var isLast = pi === sortedFit.length - 1;
+            var isLast = pi === sortedCols.length - 1;
             h += '<div class="col-priority-item" draggable="true" data-ci="' + ci + '" style="display:flex;align-items:center;gap:8px;padding:8px;margin:2px 0;background:#1a1a1a;border-radius:4px;cursor:grab' + (isLast ? ';border:1px dashed #444' : '') + '">';
             h += '<span style="color:#666">' + self.icon('drag') + '</span>';
             h += '<span style="flex:1">列' + (ci + 1) + ' - ' + self.cfg[col.type].name + '</span>';
             if (isLast) h += '<span style="color:#888;font-size:11px">占剩余</span>';
+            if ((el.cols || []).length > 1) h += '<button class="del-col-btn" data-ci="' + ci + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;flex-shrink:0;margin-left:8px">' + self.icon('trash') + '</button>';
             h += '</div>';
           });
           h += '</div>';
         }
+        h += '<button class="add-col-btn ed-btn sm" style="margin-top:8px">' + this.icon('plus') + ' 添加列</button>';
+        h += '</div></div>';
       } else if (el.type === 'collapse') {
-        Object.keys(m.props).forEach(function(k) {
-          if (k === 'titleSize' || k === 'titleColor' || k === 'titleBold') return;
-          h += self.ctrl(k, m.props[k], el[k], 'el')
+        h += self.ctrl('defaultOpen', m.props.defaultOpen, el.defaultOpen, 'el');
+        h += self.ctrl('arrowColor', m.props.arrowColor, el.arrowColor, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>折叠时标题样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('hdOpacity', m.props.hdOpacity, el.hdOpacity, 'el');
+        h += self.ctrl('hdBlur', m.props.hdBlur, el.hdBlur, 'el');
+        h += self.ctrl('hdBgColor', m.props.hdBgColor, el.hdBgColor, 'el');
+        h += self.ctrl('hdRadius', m.props.hdRadius, el.hdRadius, 'el');
+        h += self.ctrl('hdHexOffset', m.props.hdHexOffset, el.hdHexOffset, 'el');
+        h += self.ctrl('hdBorderOpacity', m.props.hdBorderOpacity, el.hdBorderOpacity, 'el');
+        h += self.ctrl('hdBorderBlur', m.props.hdBorderBlur, el.hdBorderBlur, 'el');
+        h += self.ctrl('hdBorderColor', m.props.hdBorderColor, el.hdBorderColor, 'el');
+        h += self.ctrl('hdBorderWidth', m.props.hdBorderWidth, el.hdBorderWidth, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>展开时标题样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('openHdOpacity', m.props.openHdOpacity, el.openHdOpacity, 'el');
+        h += self.ctrl('openHdBlur', m.props.openHdBlur, el.openHdBlur, 'el');
+        h += self.ctrl('openHdBgColor', m.props.openHdBgColor, el.openHdBgColor, 'el');
+        h += self.ctrl('openHdRadius', m.props.openHdRadius, el.openHdRadius, 'el');
+        h += self.ctrl('openHdHexOffset', m.props.openHdHexOffset, el.openHdHexOffset, 'el');
+        h += self.ctrl('openHdBorderOpacity', m.props.openHdBorderOpacity, el.openHdBorderOpacity, 'el');
+        h += self.ctrl('openHdBorderBlur', m.props.openHdBorderBlur, el.openHdBorderBlur, 'el');
+        h += self.ctrl('openHdBorderColor', m.props.openHdBorderColor, el.openHdBorderColor, 'el');
+        h += self.ctrl('openHdBorderWidth', m.props.openHdBorderWidth, el.openHdBorderWidth, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>展开内容样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('bdOpacity', m.props.bdOpacity, el.bdOpacity, 'el');
+        h += self.ctrl('bdBlur', m.props.bdBlur, el.bdBlur, 'el');
+        h += self.ctrl('bdBgColor', m.props.bdBgColor, el.bdBgColor, 'el');
+        h += self.ctrl('bdRadius', m.props.bdRadius, el.bdRadius, 'el');
+        h += self.ctrl('bdHexOffset', m.props.bdHexOffset, el.bdHexOffset, 'el');
+        h += self.ctrl('bdBorderOpacity', m.props.bdBorderOpacity, el.bdBorderOpacity, 'el');
+        h += self.ctrl('bdBorderBlur', m.props.bdBorderBlur, el.bdBorderBlur, 'el');
+        h += self.ctrl('bdBorderColor', m.props.bdBorderColor, el.bdBorderColor, 'el');
+        h += self.ctrl('bdBorderWidth', m.props.bdBorderWidth, el.bdBorderWidth, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>标题文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('titleSize', m.props.titleSize, el.titleSize, 'el');
+        h += self.ctrl('titleColor', m.props.titleColor, el.titleColor, 'el');
+        h += self.ctrl('titleFont', m.props.titleFont, el.titleFont, 'el');
+        h += self.ctrl('titleBold', m.props.titleBold, el.titleBold, 'el');
+        h += self.ctrl('titleItalic', m.props.titleItalic, el.titleItalic, 'el');
+        h += self.ctrl('titleUnderline', m.props.titleUnderline, el.titleUnderline, 'el');
+        h += self.ctrl('titleStrike', m.props.titleStrike, el.titleStrike, 'el');
+        h += self.ctrl('titleAlign', m.props.titleAlign, el.titleAlign, 'el');
+        h += '</div></div>';
+      } else if (el.type === 'btn') {
+        h += self.ctrl('icon', m.props.icon, el.icon, 'el');
+        h += self.ctrl('value', m.props.value, el.value, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('clickAction', m.props.clickAction, el.clickAction, 'el');
+        if (el.clickAction === 'message') h += self.ctrl('message', m.props.message, el.message, 'el');
+        if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
+        var sysEffectProp = (d.sys && d.sys.unload) ? {t: 'select', r: self.btnEffects.filter(function(e) { return e.v !== 'killer' && e.v !== 'hider'; }), d: '系统效果'} : m.props.sysEffect;
+        h += self.ctrl('sysEffect', sysEffectProp, el.sysEffect, 'el');
+        h += self.ctrl('disableAfterClick', m.props.disableAfterClick, el.disableAfterClick, 'el');
+        h += self.ctrl('logicGroup', m.props.logicGroup, el.logicGroup, 'el');
+        if (el.logicGroup) h += self.ctrl('logicMax', m.props.logicMax, el.logicMax, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('width', m.props.width, el.width, 'el');
+        h += self.ctrl('align', m.props.align, el.align, 'el');
+        h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
+        h += self.ctrl('blur', m.props.blur, el.blur, 'el');
+        h += self.ctrl('radius', m.props.radius, el.radius, 'el');
+        h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
+        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += self.ctrl('styleGroup', m.props.styleGroup, el.styleGroup, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>按钮文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('textSize', m.props.textSize, el.textSize, 'el');
+        h += self.ctrl('textFont', m.props.textFont, el.textFont, 'el');
+        h += self.ctrl('textBold', m.props.textBold, el.textBold, 'el');
+        h += self.ctrl('textItalic', m.props.textItalic, el.textItalic, 'el');
+        h += self.ctrl('textUnderline', m.props.textUnderline, el.textUnderline, 'el');
+        h += self.ctrl('textStrike', m.props.textStrike, el.textStrike, 'el');
+        h += self.ctrl('textColor', m.props.textColor, el.textColor, 'el');
+        h += self.ctrl('textBgColor', m.props.textBgColor, el.textBgColor, 'el');
+        h += self.ctrl('textOpacity', m.props.textOpacity, el.textOpacity, 'el');
+        h += self.ctrl('textBgOpacity', m.props.textBgOpacity, el.textBgOpacity, 'el');
+        h += self.ctrl('textAlign', m.props.textAlign, el.textAlign, 'el');
+        h += '</div></div>';
+        if (el.disableAfterClick) {
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>禁用时样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('disWidth', m.props.disWidth, el.disWidth, 'el');
+          h += self.ctrl('disAlign', m.props.disAlign, el.disAlign, 'el');
+          h += self.ctrl('disOpacity', m.props.disOpacity, el.disOpacity, 'el');
+          h += self.ctrl('disBlur', m.props.disBlur, el.disBlur, 'el');
+          h += self.ctrl('disRadius', m.props.disRadius, el.disRadius, 'el');
+          h += self.ctrl('disHexOffset', m.props.disHexOffset, el.disHexOffset, 'el');
+          h += self.ctrl('disBgColor', m.props.disBgColor, el.disBgColor, 'el');
+          h += self.ctrl('disBorderColor', m.props.disBorderColor, el.disBorderColor, 'el');
+          h += self.ctrl('disBorderWidth', m.props.disBorderWidth, el.disBorderWidth, 'el');
+          h += self.ctrl('disBorderOpacity', m.props.disBorderOpacity, el.disBorderOpacity, 'el');
+          h += self.ctrl('disBorderBlur', m.props.disBorderBlur, el.disBorderBlur, 'el');
+          h += self.ctrl('disStyleGroup', m.props.disStyleGroup, el.disStyleGroup, 'el');
+          h += '</div></div>';
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>禁用时文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('disTextSize', m.props.disTextSize, el.disTextSize, 'el');
+          h += self.ctrl('disTextFont', m.props.disTextFont, el.disTextFont, 'el');
+          h += self.ctrl('disTextBold', m.props.disTextBold, el.disTextBold, 'el');
+          h += self.ctrl('disTextItalic', m.props.disTextItalic, el.disTextItalic, 'el');
+          h += self.ctrl('disTextUnderline', m.props.disTextUnderline, el.disTextUnderline, 'el');
+          h += self.ctrl('disTextStrike', m.props.disTextStrike, el.disTextStrike, 'el');
+          h += self.ctrl('disTextColor', m.props.disTextColor, el.disTextColor, 'el');
+          h += self.ctrl('disTextBgColor', m.props.disTextBgColor, el.disTextBgColor, 'el');
+          h += self.ctrl('disTextOpacity', m.props.disTextOpacity, el.disTextOpacity, 'el');
+          h += self.ctrl('disTextBgOpacity', m.props.disTextBgOpacity, el.disTextBgOpacity, 'el');
+          h += self.ctrl('disTextAlign', m.props.disTextAlign, el.disTextAlign, 'el');
+          h += '</div></div>';
+        }
+      } else if (el.type === 'image') {
+        h += self.ctrl('url', m.props.url, el.url, 'el');
+        h += self.ctrl('urlInput', m.props.urlInput, el.urlInput, 'el');
+        h += self.ctrl('gallerySelect', m.props.gallerySelect, el.gallerySelect, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('clickAction', m.props.clickAction, el.clickAction, 'el');
+        if (el.clickAction === 'jumpModal' || el.clickAction === 'openModal') h += self.ctrl('clickTarget', m.props.clickTarget, el.clickTarget, 'el');
+        if (el.clickAction === 'gallery') h += self.ctrl('galleryUrls', m.props.galleryUrls, el.galleryUrls, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('width', m.props.width, el.width, 'el');
+        h += self.ctrl('height', m.props.height, el.height, 'el');
+        h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
+        h += self.ctrl('radius', m.props.radius, el.radius, 'el');
+        h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
+        h += self.ctrl('displayMode', m.props.displayMode, el.displayMode, 'el');
+        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += self.ctrl('align', m.props.align, el.align, 'el');
+        h += '</div></div>';
+      } else if (el.type === 'select') {
+        h += self.ctrl('key', m.props.key, el.key, 'el');
+        h += self.ctrl('default', m.props.default, el.default, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
+        h += self.ctrl('blur', m.props.blur, el.blur, 'el');
+        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('radius', m.props.radius, el.radius, 'el');
+        h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
+        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>选项</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        if (!el.options) el.options = [];
+        if (!Array.isArray(el.options)) el.options = String(el.options).split('\n').filter(function(s) { return s.trim(); }).map(function(s) { return {value: s.trim()}; });
+        el.options.forEach(function(opt, oi) {
+          h += '<div class="ed-fold"><div class="ed-fold-hd" style="padding:6px 8px"><span style="flex:1">' + U.esc(opt.value || '选项' + (oi + 1)) + '</span><button class="del-opt-btn" data-oi="' + oi + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer;padding:0 4px">' + self.icon('trash') + '</button><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('value', {t: 'input', d: '选项文本'}, opt.value, 'opt', oi);
+          h += self.ctrl('size', {t: 'slider', r: '10-48', d: '字号'}, opt.size, 'opt', oi);
+          h += self.ctrl('color', {t: 'color', d: '颜色'}, opt.color, 'opt', oi);
+          h += self.ctrl('font', {t: 'font', d: '字体', r: self.fonts}, opt.font, 'opt', oi);
+          h += self.ctrl('bold', {t: 'toggle', d: '加粗'}, opt.bold, 'opt', oi);
+          h += self.ctrl('italic', {t: 'toggle', d: '倾斜'}, opt.italic, 'opt', oi);
+          h += self.ctrl('underline', {t: 'toggle', d: '下划线'}, opt.underline, 'opt', oi);
+          h += self.ctrl('strike', {t: 'toggle', d: '删除线'}, opt.strike, 'opt', oi);
+          h += '</div></div>';
         });
-        h += self.ctrlFold('折叠项标题', el, 'title', 'el')
+        h += '<button class="ed-btn sm add-opt-btn" style="margin-top:8px">' + self.icon('plus') + ' 添加选项</button>';
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>标题文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('titleSize', m.props.titleSize, el.titleSize, 'el');
+        h += self.ctrl('titleColor', m.props.titleColor, el.titleColor, 'el');
+        h += self.ctrl('titleFont', m.props.titleFont, el.titleFont, 'el');
+        h += self.ctrl('titleBold', m.props.titleBold, el.titleBold, 'el');
+        h += self.ctrl('titleItalic', m.props.titleItalic, el.titleItalic, 'el');
+        h += self.ctrl('titleUnderline', m.props.titleUnderline, el.titleUnderline, 'el');
+        h += self.ctrl('titleStrike', m.props.titleStrike, el.titleStrike, 'el');
+        h += self.ctrl('titleAlign', m.props.titleAlign, el.titleAlign, 'el');
+        h += '</div></div>';
+      } else if (el.type === 'switch') {
+        h += self.ctrl('key', m.props.key, el.key, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>功能</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('defaultOn', m.props.defaultOn, el.defaultOn, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>左侧文字</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('leftText', m.props.leftText, el.leftText, 'el');
+        h += self.ctrl('leftTextSize', m.props.leftTextSize, el.leftTextSize, 'el');
+        h += self.ctrl('leftTextFont', m.props.leftTextFont, el.leftTextFont, 'el');
+        h += self.ctrl('leftTextBold', m.props.leftTextBold, el.leftTextBold, 'el');
+        h += self.ctrl('leftTextItalic', m.props.leftTextItalic, el.leftTextItalic, 'el');
+        h += self.ctrl('leftTextUnderline', m.props.leftTextUnderline, el.leftTextUnderline, 'el');
+        h += self.ctrl('leftTextStrike', m.props.leftTextStrike, el.leftTextStrike, 'el');
+        h += self.ctrl('leftTextColor', m.props.leftTextColor, el.leftTextColor, 'el');
+        h += self.ctrl('leftTextAlign', m.props.leftTextAlign, el.leftTextAlign, 'el');
+        h += '</div></div>';
+        h += self.ctrl('leftValue', m.props.leftValue, el.leftValue, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>右侧文字</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('rightText', m.props.rightText, el.rightText, 'el');
+        h += self.ctrl('rightTextSize', m.props.rightTextSize, el.rightTextSize, 'el');
+        h += self.ctrl('rightTextFont', m.props.rightTextFont, el.rightTextFont, 'el');
+        h += self.ctrl('rightTextBold', m.props.rightTextBold, el.rightTextBold, 'el');
+        h += self.ctrl('rightTextItalic', m.props.rightTextItalic, el.rightTextItalic, 'el');
+        h += self.ctrl('rightTextUnderline', m.props.rightTextUnderline, el.rightTextUnderline, 'el');
+        h += self.ctrl('rightTextStrike', m.props.rightTextStrike, el.rightTextStrike, 'el');
+        h += self.ctrl('rightTextColor', m.props.rightTextColor, el.rightTextColor, 'el');
+        h += self.ctrl('rightTextAlign', m.props.rightTextAlign, el.rightTextAlign, 'el');
+        h += '</div></div>';
+        h += self.ctrl('rightValue', m.props.rightValue, el.rightValue, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('align', m.props.align, el.align, 'el');
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>开启时样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('onBgOpacity', m.props.onBgOpacity, el.onBgOpacity, 'el');
+        h += self.ctrl('onBgBlur', m.props.onBgBlur, el.onBgBlur, 'el');
+        h += self.ctrl('onBgColor', m.props.onBgColor, el.onBgColor, 'el');
+        h += self.ctrl('onRadius', m.props.onRadius, el.onRadius, 'el');
+        h += self.ctrl('onHexOffset', m.props.onHexOffset, el.onHexOffset, 'el');
+        h += self.ctrl('onThumbOpacity', m.props.onThumbOpacity, el.onThumbOpacity, 'el');
+        h += self.ctrl('onThumbBlur', m.props.onThumbBlur, el.onThumbBlur, 'el');
+        h += self.ctrl('onThumbColor', m.props.onThumbColor, el.onThumbColor, 'el');
+        h += self.ctrl('onThumbRadius', m.props.onThumbRadius, el.onThumbRadius, 'el');
+        h += self.ctrl('onThumbHexOffset', m.props.onThumbHexOffset, el.onThumbHexOffset, 'el');
+        h += self.ctrl('onBorderOpacity', m.props.onBorderOpacity, el.onBorderOpacity, 'el');
+        h += self.ctrl('onBorderBlur', m.props.onBorderBlur, el.onBorderBlur, 'el');
+        h += self.ctrl('onBorderColor', m.props.onBorderColor, el.onBorderColor, 'el');
+        h += self.ctrl('onBorderWidth', m.props.onBorderWidth, el.onBorderWidth, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>关闭时样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('offBgOpacity', m.props.offBgOpacity, el.offBgOpacity, 'el');
+        h += self.ctrl('offBgBlur', m.props.offBgBlur, el.offBgBlur, 'el');
+        h += self.ctrl('offBgColor', m.props.offBgColor, el.offBgColor, 'el');
+        h += self.ctrl('offRadius', m.props.offRadius, el.offRadius, 'el');
+        h += self.ctrl('offHexOffset', m.props.offHexOffset, el.offHexOffset, 'el');
+        h += self.ctrl('offThumbOpacity', m.props.offThumbOpacity, el.offThumbOpacity, 'el');
+        h += self.ctrl('offThumbBlur', m.props.offThumbBlur, el.offThumbBlur, 'el');
+        h += self.ctrl('offThumbColor', m.props.offThumbColor, el.offThumbColor, 'el');
+        h += self.ctrl('offThumbRadius', m.props.offThumbRadius, el.offThumbRadius, 'el');
+        h += self.ctrl('offThumbHexOffset', m.props.offThumbHexOffset, el.offThumbHexOffset, 'el');
+        h += self.ctrl('offBorderOpacity', m.props.offBorderOpacity, el.offBorderOpacity, 'el');
+        h += self.ctrl('offBorderBlur', m.props.offBorderBlur, el.offBorderBlur, 'el');
+        h += self.ctrl('offBorderColor', m.props.offBorderColor, el.offBorderColor, 'el');
+        h += self.ctrl('offBorderWidth', m.props.offBorderWidth, el.offBorderWidth, 'el');
+        h += '</div></div>';
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>标题文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('title', m.props.title, el.title, 'el');
+        h += self.ctrl('titleSize', m.props.titleSize, el.titleSize, 'el');
+        h += self.ctrl('titleFont', m.props.titleFont, el.titleFont, 'el');
+        h += self.ctrl('titleBold', m.props.titleBold, el.titleBold, 'el');
+        h += self.ctrl('titleItalic', m.props.titleItalic, el.titleItalic, 'el');
+        h += self.ctrl('titleUnderline', m.props.titleUnderline, el.titleUnderline, 'el');
+        h += self.ctrl('titleStrike', m.props.titleStrike, el.titleStrike, 'el');
+        h += self.ctrl('titleColor', m.props.titleColor, el.titleColor, 'el');
+        h += self.ctrl('titleAlign', m.props.titleAlign, el.titleAlign, 'el');
+        h += '</div></div>';
+      } else if (el.type === 'aiReply') {
+        h += self.ctrl('showUserMsg', m.props.showUserMsg, el.showUserMsg, 'el');
+        if (el.showUserMsg) {
+          h += self.ctrl('showSysContent', m.props.showSysContent, el.showSysContent, 'el');
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>用户消息文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('userMsgSize', m.props.userMsgSize, el.userMsgSize, 'el');
+          h += self.ctrl('userMsgFont', m.props.userMsgFont, el.userMsgFont, 'el');
+          h += self.ctrl('userMsgBold', m.props.userMsgBold, el.userMsgBold, 'el');
+          h += self.ctrl('userMsgItalic', m.props.userMsgItalic, el.userMsgItalic, 'el');
+          h += self.ctrl('userMsgUnderline', m.props.userMsgUnderline, el.userMsgUnderline, 'el');
+          h += self.ctrl('userMsgStrike', m.props.userMsgStrike, el.userMsgStrike, 'el');
+          h += self.ctrl('userMsgColor', m.props.userMsgColor, el.userMsgColor, 'el');
+          h += self.ctrl('userMsgAlign', m.props.userMsgAlign, el.userMsgAlign, 'el');
+          h += '</div></div>';
+        }
+        h += self.ctrl('displayMode', m.props.displayMode, el.displayMode, 'el');
+        if (el.displayMode === 'bubble') {
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>气泡样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('bubbleOpacity', m.props.bubbleOpacity, el.bubbleOpacity, 'el');
+          h += self.ctrl('bubbleBlur', m.props.bubbleBlur, el.bubbleBlur, 'el');
+          h += self.ctrl('bubbleBgColor', m.props.bubbleBgColor, el.bubbleBgColor, 'el');
+          h += self.ctrl('bubbleRadius', m.props.bubbleRadius, el.bubbleRadius, 'el');
+          h += self.ctrl('bubbleHexOffset', m.props.bubbleHexOffset, el.bubbleHexOffset, 'el');
+          h += self.ctrl('bubbleBorderOpacity', m.props.bubbleBorderOpacity, el.bubbleBorderOpacity, 'el');
+          h += self.ctrl('bubbleBorderBlur', m.props.bubbleBorderBlur, el.bubbleBorderBlur, 'el');
+          h += self.ctrl('bubbleBorderColor', m.props.bubbleBorderColor, el.bubbleBorderColor, 'el');
+          h += self.ctrl('bubbleBorderWidth', m.props.bubbleBorderWidth, el.bubbleBorderWidth, 'el');
+          h += '</div></div>';
+        } else {
+          h += '<div class="ed-fold"><div class="ed-fold-hd"><span>平铺样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+          h += self.ctrl('flatOpacity', m.props.flatOpacity, el.flatOpacity, 'el');
+          h += self.ctrl('flatBlur', m.props.flatBlur, el.flatBlur, 'el');
+          h += self.ctrl('flatBgColor', m.props.flatBgColor, el.flatBgColor, 'el');
+          h += self.ctrl('flatBorderOpacity', m.props.flatBorderOpacity, el.flatBorderOpacity, 'el');
+          h += self.ctrl('flatBorderBlur', m.props.flatBorderBlur, el.flatBorderBlur, 'el');
+          h += self.ctrl('flatBorderColor', m.props.flatBorderColor, el.flatBorderColor, 'el');
+          h += self.ctrl('flatBorderWidth', m.props.flatBorderWidth, el.flatBorderWidth, 'el');
+          h += '</div></div>';
+        }
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>样式</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('opacity', m.props.opacity, el.opacity, 'el');
+        h += self.ctrl('blur', m.props.blur, el.blur, 'el');
+        h += self.ctrl('bgColor', m.props.bgColor, el.bgColor, 'el');
+        h += self.ctrl('radius', m.props.radius, el.radius, 'el');
+        h += self.ctrl('hexOffset', m.props.hexOffset, el.hexOffset, 'el');
+        h += self.ctrl('borderOpacity', m.props.borderOpacity, el.borderOpacity, 'el');
+        h += self.ctrl('borderBlur', m.props.borderBlur, el.borderBlur, 'el');
+        h += self.ctrl('borderColor', m.props.borderColor, el.borderColor, 'el');
+        h += self.ctrl('borderWidth', m.props.borderWidth, el.borderWidth, 'el');
+        h += '</div></div>';
+        h += '<div class="ed-fold"><div class="ed-fold-hd"><span>AI回复消息文本</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
+        h += self.ctrl('replyMsgSize', m.props.replyMsgSize, el.replyMsgSize, 'el');
+        h += self.ctrl('replyMsgFont', m.props.replyMsgFont, el.replyMsgFont, 'el');
+        h += self.ctrl('replyMsgBold', m.props.replyMsgBold, el.replyMsgBold, 'el');
+        h += self.ctrl('replyMsgItalic', m.props.replyMsgItalic, el.replyMsgItalic, 'el');
+        h += self.ctrl('replyMsgUnderline', m.props.replyMsgUnderline, el.replyMsgUnderline, 'el');
+        h += self.ctrl('replyMsgStrike', m.props.replyMsgStrike, el.replyMsgStrike, 'el');
+        h += self.ctrl('replyMsgColor', m.props.replyMsgColor, el.replyMsgColor, 'el');
+        h += self.ctrl('replyMsgAlign', m.props.replyMsgAlign, el.replyMsgAlign, 'el');
+        h += '</div></div>';
       } else {
         Object.keys(m.props).forEach(function(k) {
-          if (el.type === 'btn') {
-            switch (k) {
-              case 'clickTarget': if (el.clickAction !== 'jumpModal') return; break;
-              case 'message': if (el.clickAction !== 'message') return; break;
-              case 'sysEffect': if (d.sys && d.sys.unload) return; break;
-              case 'afterClick': if (el.repeatable !== false) return; break;
-              case 'disabledStyle': if (el.afterClick !== 'disable') return; break;
-              case 'logicMax': if (!el.logicGroup) return; break;
-              case 'radius': if (el.shape !== 'rounded') return; break;
-              case 'hexWidth': if (el.shape !== 'hexagon') return; break;
-              case 'textSize': case 'textColor': case 'textBold': return;
-            }
-          }
-          if (el.type === 'image') {
-            switch (k) {
-              case 'clickTarget': if (el.clickAction !== 'jumpModal') return; break;
-              case 'galleryUrls': if (el.clickAction !== 'gallery') return; break;
-            }
-          }
           var prop = m.props[k], v = el[k];
           switch (k) {
             case 'options': if (Array.isArray(v)) v = v.join('\n'); break;
@@ -3629,10 +5330,7 @@
           h += self.ctrl(k, prop, v, 'el')
         });
         switch (el.type) {
-          case 'btn': h += self.ctrlFold('按钮文本', el, 'text', 'el'); break;
           case 'input': h += self.ctrlFold('输入框标题', el, 'title', 'el'); break;
-          case 'select': h += self.ctrlFold('下拉框标题', el, 'title', 'el'); break;
-          case 'switch': h += self.ctrlFold('滑块标题', el, 'title', 'el'); break;
         }
       }
       h += '<button class="ed-btn del" id="delElBtn">' + this.icon('trash') + ' 删除元素</button></div>';
@@ -3658,7 +5356,7 @@
         h += '<div class="ed-row" style="display:flex;justify-content:space-between;align-items:center"><span>' + U.esc(g) + '</span><button class="del-grp-btn" data-g="logic" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
       });
       h += '</div>';
-      h += '<div class="ed-sec"><div class="ed-title">多列格式组</div><button class="ed-btn sm add-grp-btn" data-g="row">' + this.icon('plus') + ' 新建多列组</button>';
+      h += '<div class="ed-sec"><div class="ed-title">多列结构高度组</div><button class="ed-btn sm add-grp-btn" data-g="row">' + this.icon('plus') + ' 新建高度组</button>';
       (d.groups.row || []).forEach(function(g, i) {
         h += '<div class="ed-row" style="display:flex;justify-content:space-between;align-items:center"><span>' + U.esc(g) + '</span><button class="del-grp-btn" data-g="row" data-i="' + i + '" style="background:none;border:none;color:#ff6b6b;cursor:pointer">' + self.icon('trash') + '</button></div>'
       });
@@ -3690,6 +5388,25 @@
       var d = this.pj[this.cur].data;
       if (!d.groups || !d.groups[t]) return;
       d.groups[t].splice(i, 1);
+      this.save();
+      this.renderR()
+    },
+    addSelectOption: function() {
+      if (!this.cur || this.sel === null) return;
+      var els = this.getEls(this.zone);
+      var el = els[this.sel];
+      if (!el || el.type !== 'select') return;
+      if (!el.options) el.options = [];
+      el.options.push({value: '选项' + (el.options.length + 1)});
+      this.save();
+      this.renderR()
+    },
+    delSelectOption: function(oi) {
+      if (!this.cur || this.sel === null) return;
+      var els = this.getEls(this.zone);
+      var el = els[this.sel];
+      if (!el || el.type !== 'select' || !el.options) return;
+      el.options.splice(oi, 1);
       this.save();
       this.renderR()
     },
@@ -3821,6 +5538,11 @@
         var tMod = origV !== undefined && origV !== null && origV !== dv;
         var tWrap = 'ed-row-wrap' + (tMod ? ' modified' : '');
         return '<div class="' + tWrap + '"><div class="ed-mod-dot"' + dotAttr + '></div><div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">' + prop.d + '</span><div class="ed-toggle-sw' + (v ? ' on' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '></div></div></div></div>'
+      } else if (prop.t === 'slide') {
+        var isRight = v === prop.rv;
+        var sMod = origV !== undefined && origV !== null && origV !== dv;
+        var sWrap = 'ed-row-wrap' + (sMod ? ' modified' : '');
+        return '<div class="' + sWrap + '"><div class="ed-mod-dot"' + dotAttr + '></div><div class="ed-row"><div class="ed-slide"><span class="ed-slide-label' + (!isRight ? ' active' : '') + '">' + prop.ll + '</span><div class="ed-slide-track' + (isRight ? ' right' : '') + '" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' data-lv="' + prop.lv + '" data-rv="' + prop.rv + '"></div><span class="ed-slide-label' + (isRight ? ' active' : '') + '">' + prop.rl + '</span></div></div></div>'
       } else if (prop.t === 'upload') {
         h += '<div class="ed-up">';
         if (v) {
@@ -3851,6 +5573,19 @@
           h += '<option value="' + U.esc(m.id || m) + '"' + (v === (m.id || m) ? ' selected' : '') + '>' + U.esc(m.name || m) + '</option>'
         });
         h += '</select>'
+      } else if (prop.t === 'icon') {
+        var iconV = v || 'none';
+        h += '<div class="ed-icon-sel"><button class="ed-btn sm icon-pick-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>';
+        if (iconV !== 'none' && window.BTN_ICONS && window.BTN_ICONS[iconV]) {
+          h += '<span class="ed-icon-preview">' + window.BTN_ICONS[iconV] + '</span> ' + iconV;
+        } else {
+          h += '选择图标';
+        }
+        h += '</button>';
+        if (iconV !== 'none') h += '<button class="ed-btn sm del icon-clear-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + ' style="margin-left:4px">清除</button>';
+        h += '</div>'
+      } else if (prop.t === 'gallerySelect') {
+        h += '<button class="ed-btn sm gallery-select-btn" data-k="' + k + '" data-s="' + scope + '"' + ciAttr + '>从图库选择</button>'
       }
       h += '</div></div>';
       return h
@@ -3898,6 +5633,17 @@
           self.delGrp(b.dataset.g, parseInt(b.dataset.i))
         }
       });
+      document.querySelectorAll('.add-opt-btn').forEach(function(b) {
+        b.onclick = function() {
+          self.addSelectOption()
+        }
+      });
+      document.querySelectorAll('.del-opt-btn').forEach(function(b) {
+        b.onclick = function(e) {
+          e.stopPropagation();
+          self.delSelectOption(parseInt(b.dataset.oi))
+        }
+      });
       document.querySelectorAll('.ed-fold-hd').forEach(function(hd) {
         hd.onclick = function() {
           hd.classList.toggle('open');
@@ -3915,6 +5661,18 @@
             return
           }
           self.setProp(sw.dataset.k, on, sw.dataset.s, sw.dataset.ci !== undefined ? parseInt(sw.dataset.ci) : null);
+          self.renderR()
+        }
+      });
+      document.querySelectorAll('.ed-slide-track').forEach(function(tr) {
+        tr.onclick = function() {
+          var isRight = tr.classList.toggle('right');
+          var wrap = tr.closest('.ed-slide');
+          wrap.querySelectorAll('.ed-slide-label').forEach(function(lb, i) {
+            lb.classList.toggle('active', i === (isRight ? 1 : 0))
+          });
+          var val = isRight ? tr.dataset.rv : tr.dataset.lv;
+          self.setProp(tr.dataset.k, val, tr.dataset.s, tr.dataset.ci !== undefined ? parseInt(tr.dataset.ci) : null);
           self.renderR()
         }
       });
@@ -3944,6 +5702,17 @@
       document.querySelectorAll('.clear-btn').forEach(function(b) {
         b.onclick = function() {
           self.setProp(b.dataset.k, '', b.dataset.s, b.dataset.ci !== undefined ? parseInt(b.dataset.ci) : null);
+          self.renderR()
+        }
+      });
+      document.querySelectorAll('.icon-pick-btn').forEach(function(b) {
+        b.onclick = function() {
+          self.showIconModal(b.dataset.k, b.dataset.s, b.dataset.ci !== undefined ? parseInt(b.dataset.ci) : null)
+        }
+      });
+      document.querySelectorAll('.icon-clear-btn').forEach(function(b) {
+        b.onclick = function() {
+          self.setProp(b.dataset.k, 'none', b.dataset.s, b.dataset.ci !== undefined ? parseInt(b.dataset.ci) : null);
           self.renderR()
         }
       });
@@ -4075,7 +5844,7 @@
             }
             if (k === 'urlInput' && v) self.setProp('url', '', s, ci);
             self.setProp(k, v, s, ci);
-            if (k === 'clickAction' || k === 'repeatable' || k === 'afterClick' || k === 'shape' || k === 'logicGroup') self.renderR()
+            if (k === 'clickAction' || k === 'disableAfterClick' || k === 'logicGroup') self.renderR()
           }
         }
       });
@@ -4201,10 +5970,15 @@
       var defKey = this.getDefKey(pk);
       var elType = this.getElType(ps, ci);
       if (act === 'pageDef' && defKey) {
+        this.freezeElements(pg, pk, defKey, elType, d.global);
         pg[defKey] = val;
         this.toast('已设为该页默认')
       } else if (act === 'globalDef' && defKey) {
         if (!d.global) d.global = {};
+        var self = this;
+        d.pages.forEach(function(p) {
+          self.freezeElements(p, pk, defKey, elType, d.global)
+        });
         d.global[defKey] = val;
         this.toast('已设为全局默认')
       } else if (act === 'applyPage') {
@@ -4258,6 +6032,26 @@
         })
       })
     },
+    freezeElements: function(pg, pk, defKey, elType, global) {
+      var curVal = pg[defKey] !== undefined ? pg[defKey] : (global && global[defKey]);
+      if (curVal === undefined) return;
+      var zones = ['headerElements', 'elements', 'footerElements'];
+      zones.forEach(function(z) {
+        (pg[z] || []).forEach(function(el) {
+          if (el.type === elType && el[pk] === undefined) el[pk] = curVal;
+          else if (el.type === 'row' && el.cols) {
+            el.cols.forEach(function(col) {
+              if (col.type === elType && col[pk] === undefined) col[pk] = curVal
+            })
+          }
+          if (el.type === 'collapse' && el.items) {
+            el.items.forEach(function(it) {
+              if (it.type === elType && it[pk] === undefined) it[pk] = curVal
+            })
+          }
+        })
+      })
+    },
     setColRatio: function(ci, v) {
       if (!this.cur || this.sel === null) return;
       var els = this.getEls(this.zone);
@@ -4275,7 +6069,11 @@
       var d = this.pj[this.cur].data;
       if (scope === 'g') d.global[k] = v;
       else if (scope === 'pg') d.pages[this.pg][k] = v;
-      else if (scope === 'col' && ci !== null && this.sel !== null) {
+      else if (scope === 'opt' && ci !== null && this.sel !== null) {
+        var els = this.getEls(this.zone);
+        var el = els[this.sel];
+        if (el && el.options && el.options[ci]) el.options[ci][k] = v;
+      } else if (scope === 'col' && ci !== null && this.sel !== null) {
         var els = this.getEls(this.zone);
         var el = els[this.sel];
         if (el && el.cols && el.cols[ci]) {
@@ -4302,6 +6100,7 @@
     stripDefaults: function(data) {
       var self = this;
       var result = {};
+      var globalData = data.global || {};
       if (data.global) {
         var gCfg = this.cfg.global.props;
         var g = {};
@@ -4313,17 +6112,22 @@
       }
       if (data.sys && Object.keys(data.sys).length) result.sys = data.sys;
       if (data.groups && Object.keys(data.groups).length) result.groups = data.groups;
+      var pageGlobalMap = {modalBg: 'defModalBg', modalOpacity: 'defModalOpacity', modalBlur: 'defModalBlur'};
       if (data.pages) {
         result.pages = data.pages.map(function(pg) {
           var p = {};
           var pgCfg = self.cfg.page.props;
           Object.keys(pg).forEach(function(k) {
             if (k === 'elements' || k === 'headerElements' || k === 'footerElements') {
-              var els = (pg[k] || []).map(function(el) { return self.stripEl(el) });
+              var els = (pg[k] || []).map(function(el) { return self.stripEl(el, globalData, pg) });
               if (els.length) p[k] = els
             } else {
               var def = pgCfg[k] && pgCfg[k].v;
-              if (pg[k] !== def && pg[k] !== undefined && pg[k] !== '') p[k] = pg[k]
+              if (pg[k] !== def && pg[k] !== undefined && pg[k] !== '') {
+                var gKey = pageGlobalMap[k];
+                if (gKey && globalData[gKey] !== undefined && pg[k] === globalData[gKey]) return;
+                p[k] = pg[k]
+              }
             }
           });
           return p
@@ -4331,23 +6135,38 @@
       }
       return result
     },
-    stripEl: function(el) {
+    stripEl: function(el, globalData, pgData) {
       var self = this;
+      globalData = globalData || {};
+      pgData = pgData || {};
       var cfg = this.cfg[el.type];
       if (!cfg) return {type: el.type};
       var r = {type: el.type};
+      var elGlobalMap = {
+        text: {size: 'defTextSize', color: 'defTextColor', font: 'defTextFont'},
+        btn: {bgColor: 'defBtnBg', textColor: 'defBtnColor', shape: 'defBtnShape', radius: 'defBtnRadius'}
+      };
+      var typeMap = elGlobalMap[el.type] || {};
       Object.keys(el).forEach(function(k) {
         if (k === 'type') return;
         if (k === 'cols' && el.cols) {
-          r.cols = el.cols.map(function(c) { return self.stripEl(c) });
+          r.cols = el.cols.map(function(c) { return self.stripEl(c, globalData, pgData) });
           return
         }
         if (k === 'items' && el.items) {
-          r.items = el.items.map(function(i) { return self.stripEl(i) });
+          r.items = el.items.map(function(i) { return self.stripEl(i, globalData, pgData) });
           return
         }
         var def = cfg.props && cfg.props[k] && cfg.props[k].v;
-        if (el[k] !== def && el[k] !== undefined && el[k] !== '') r[k] = el[k]
+        if (el[k] !== def && el[k] !== undefined && el[k] !== '') {
+          var gKey = typeMap[k];
+          if (gKey) {
+            var pgDefKey = 'def' + k.charAt(0).toUpperCase() + k.slice(1);
+            var effectiveDef = pgData[pgDefKey] !== undefined ? pgData[pgDefKey] : globalData[gKey];
+            if (effectiveDef !== undefined && el[k] === effectiveDef) return
+          }
+          r[k] = el[k]
+        }
       });
       return r
     },
@@ -4358,18 +6177,20 @@
       var lz = LZS.c(json);
       return '[' + (L.project || 'MODAL') + '_' + (L.major || '1') + ':{{char}};;{{user}};;Z' + lz + ']'
     },
+    toast: function(msg) {
+      var t = document.createElement('div');
+      t.className = 'ed-toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() {
+        t.remove()
+      }, 2000)
+    },
     copy: function() {
       var s = this.exp();
       if (!s) return;
-      navigator.clipboard.writeText(s).then(function() {
-        var t = document.createElement('div');
-        t.className = 'ed-toast';
-        t.textContent = '已复制';
-        document.body.appendChild(t);
-        setTimeout(function() {
-          t.remove()
-        }, 2000)
-      })
+      this.toast('已复制');
+      navigator.clipboard.writeText(s)
     },
     download: function() {
       var s = this.exp();
@@ -4592,46 +6413,6 @@
       } else {
         doSend()
       }
-    },
-    renderSys: function() {
-      var self = this;
-      if (!this.cur) return '<div class="ed-sec"><div class="ed-empty">无项目</div></div>';
-      var d = this.pj[this.cur].data;
-      if (!d.sys) d.sys = {};
-      var g = d.global || {};
-      var h = '<div class="ed-sec"><div class="ed-title">系统设定</div>';
-      h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">卸载父DOM</span><div class="ed-toggle-sw' + (d.sys.unload ? ' on' : '') + '" id="sysUnload"></div></div></div>';
-      h += '<div style="color:#666;font-size:10px;margin-top:-6px;margin-bottom:12px">开启后隐藏按钮的killer和hider选项</div>';
-      if (!d.sys.unload) {
-        h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">透明背景</span><div class="ed-toggle-sw' + (g.bgTransparent ? ' on' : '') + '" id="sysBgTrans"></div></div></div>';
-        h += '<div style="color:#666;font-size:10px;margin-top:-6px;margin-bottom:12px">不再使用遮罩遮挡父DOM元素</div>';
-      }
-      h += '<div class="ed-row"><div class="ed-toggle"><span style="color:#666;font-size:11px">点击空白可隐藏</span><div class="ed-toggle-sw' + (d.sys.clickToHide ? ' on' : '') + '" id="sysClickHide"></div></div></div>';
-      h += '</div>';
-      setTimeout(function() {
-        var sw = document.getElementById('sysUnload');
-        if (sw) sw.onclick = function() {
-          var on = sw.classList.toggle('on');
-          d.sys.unload = on;
-          self.save();
-          self.renderR()
-        };
-        var bt = document.getElementById('sysBgTrans');
-        if (bt) bt.onclick = function() {
-          var on = bt.classList.toggle('on');
-          if (!d.global) d.global = {};
-          d.global.bgTransparent = on;
-          self.save();
-          if (window.modalRender) window.modalRender(d)
-        };
-        var ch = document.getElementById('sysClickHide');
-        if (ch) ch.onclick = function() {
-          var on = ch.classList.toggle('on');
-          d.sys.clickToHide = on;
-          self.save()
-        }
-      }, 0);
-      return h
     },
     icon: function(n) {
       var icons = {

@@ -1,7 +1,5 @@
 {
-  "version": "2.0.0",
-  "component": {
-  },
+  "version": "2.1.0",
   "library": {
     "loader": "library/loader.js",
     "util": "library/util.js",

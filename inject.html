@@ -3,7 +3,7 @@
 	var base = "https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/", o, f, mH;
 	c.style.position = "relative";
 	var b = document.createElement("button");
-	b.style.cssText = "padding:12px 24px;background:#b8860b;border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:14px";
+	b.style.cssText = "padding:12px 24px;background:#b8860b;border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
 	b.textContent = "加载中...";
 	b.disabled = true;
 	c.appendChild(b);
@@ -48,7 +48,7 @@
 				o.remove();
 				b.remove();
 				var d = document.createElement("div");
-				d.style.cssText = "padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:14px";
+				d.style.cssText = "padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
 				d.textContent = ev.data.msg;
 				c.appendChild(d);
 			} else if (ev.data.t === "done") {

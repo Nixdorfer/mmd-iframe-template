@@ -14,9 +14,6 @@ body {
 	background: var(--bg);
 	color: #fff;
 	height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	overflow: hidden;
 }
 
@@ -84,6 +81,9 @@ body {
 	width: 100vw;
 	height: 100vh;
 	z-index: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 @keyframes slideUp {
@@ -966,8 +966,9 @@ body {
 	</style>
 </head>
 <body>
-	<div class="backdrop" id="backdrop"></div>
-	<div class="container" id="root"></div>
+	<div class="backdrop" id="backdrop">
+		<div class="container" id="root"></div>
+	</div>
 	<div class="phone-wrap" id="phoneWrap" style="display:none">
 		<div class="phone" id="phone">
 			<img class="phone-frame" src="https://github.com/Nixdorfer/mmd-iframe-template/blob/main/icon/phone.png?raw=true">
@@ -1045,6 +1046,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	var data = {};
 	var state = {p: 0, d: {}, s: 0, r: false};
 	var btnState = {};
+	var selectedModel = null;
 
 	function hex2rgba(hex, a) {
 		if (!hex) return null;
@@ -1068,17 +1070,23 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 
 	function applyPage(pg) {
 		var bg = '#' + (G.bgColor || G.bg || '050505');
-		if (G.bgTransparent) document.body.style.background = 'transparent';
-		else if (P === 'pc' && pg.bgImgPc) document.body.style.background = 'url(' + fixUrl(pg.bgImgPc) + ') center/cover no-repeat';
-		else if (P !== 'pc' && pg.bgImgMobile) document.body.style.background = 'url(' + fixUrl(pg.bgImgMobile) + ') center/cover no-repeat';
-		else document.body.style.background = bg;
+		var bd = document.getElementById('backdrop');
+		if (G.bgTransparent) {
+			document.body.style.background = 'transparent';
+			if (bd) bd.style.background = 'transparent';
+		} else if (P === 'pc' && pg.bgImgPc) {
+			document.body.style.background = 'url(' + fixUrl(pg.bgImgPc) + ') center/cover no-repeat';
+		} else if (P !== 'pc' && pg.bgImgMobile) {
+			document.body.style.background = 'url(' + fixUrl(pg.bgImgMobile) + ') center/cover no-repeat';
+		} else {
+			document.body.style.background = bg;
+		}
 		var modalBg = pg.modalBg || G.defModalBg || G.modal || '0d0d0d';
 		var opacity = (pg.modalOpacity !== undefined ? pg.modalOpacity : (G.defModalOpacity !== undefined ? G.defModalOpacity : 100)) / 100;
 		var blur = pg.modalBlur || G.defModalBlur || 0;
 		var wPct = pg.widthPct || 80;
 		var hPct = pg.heightPct || 80;
 		var mwPct = pg.maxWidthPct || 100;
-		var bd = document.getElementById('backdrop');
 		var bw = bd ? bd.offsetWidth : window.innerWidth;
 		var bh = bd ? bd.offsetHeight : window.innerHeight;
 		var h = bh * hPct / 100;
@@ -1288,6 +1296,16 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		return h + '</div>';
 	}
 
+	function renderAiReply(el) {
+		if (L.edit) return '<div style="padding:16px;background:#1a1a1a;border-radius:8px;border:1px dashed #444;color:#666;text-align:center">AI回复区域</div>';
+		var st = '';
+		if (el.opacity) st += 'opacity:' + ((100 - el.opacity) / 100) + ';';
+		if (el.bgColor) st += 'background:#' + el.bgColor + ';';
+		if (el.radius) st += 'border-radius:' + el.radius + 'px;';
+		if (el.borderWidth) st += 'box-shadow:inset 0 0 0 ' + el.borderWidth + 'px #' + (el.borderColor || '444444') + ';';
+		return '<div class="ai-reply" style="padding:16px;' + st + '"></div>';
+	}
+
 	function renderCollapse(el, pg) {
 		var h = '<div class="collapse"><div class="collapse-hd' + (el.defaultOpen ? ' open' : '') + '" style="background:#' + (el.titleBg || '1a1a1a') + ';border-radius:6px">';
 		var txtSt = 'font-size:' + (el.titleSize || 14) + 'px;color:#' + (el.titleColor || 'ffffff') + ';';
@@ -1314,6 +1332,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			case 'input': return renderInput(el);
 			case 'select': return renderSelect(el);
 			case 'switch': return renderSwitch(el);
+			case 'aiReply': return renderAiReply(el);
 			case 'collapse': return renderCollapse(el, pg);
 			case 'placeholder': return L.edit ? '<div class="ed-col-ph">拖入元素</div>' : '';
 			default: return '';
@@ -1502,6 +1521,15 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 					render(pages[curPage]?.prevAnim || 'slideLeft');
 					return;
 				}
+				if (action === 'browseModel') {
+					showModelPicker();
+					return;
+				}
+				if (action === 'sendMessage') {
+					collect();
+					sendAIMessage(toMsg());
+					return;
+				}
 				if (once) {
 					btnState[el.textContent] = true;
 					if (after === 'hide') el.style.display = 'none';
@@ -1591,6 +1619,91 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			};
 		}
 		upd();
+		d.onclick = function(e) {
+			if (e.target === d) d.remove();
+		};
+		document.body.appendChild(d);
+	}
+
+	function showModelPicker() {
+		var d = document.createElement('div');
+		d.className = 'detail';
+		d.innerHTML = '<div style="background:#1a1a1a;padding:20px;border-radius:12px;max-width:90vw;max-height:80vh;overflow-y:auto"><div style="color:#fff;font-size:16px;margin-bottom:16px">选择模型</div><div id="model-list" style="color:#888">加载中...</div></div>';
+		d.onclick = function(e) {
+			if (e.target === d) d.remove();
+		};
+		document.body.appendChild(d);
+		fetch('https://sexyai.top/api/model/list', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json', 'lang': 'ZH'},
+			body: '{}'
+		}).then(function(r) { return r.json(); }).then(function(res) {
+			if (res.code !== 200) throw new Error(res.message);
+			var list = document.getElementById('model-list');
+			list.innerHTML = '';
+			res.data.forEach(function(m) {
+				var row = document.createElement('div');
+				row.style.cssText = 'padding:12px;margin:8px 0;background:#252525;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between';
+				var left = '<div><div style="color:#fff;font-size:14px">' + m.name + '</div><div style="color:#666;font-size:12px">' + m.deductNum + '电/次</div></div>';
+				var right = '';
+				if (m.enableStream === 1) {
+					right = '<label style="display:flex;align-items:center;color:#888;font-size:12px" onclick="event.stopPropagation()"><input type="checkbox" data-stream="' + m.id + '" checked style="margin-right:4px">流式</label>';
+				}
+				row.innerHTML = left + right;
+				row.onclick = function() {
+					var streamCheck = row.querySelector('input[data-stream]');
+					selectedModel = {id: m.id, name: m.name, stream: streamCheck ? streamCheck.checked : false, maxToken: m.maxTokenList[0]?.maxToken || 4000};
+					d.remove();
+				};
+				list.appendChild(row);
+			});
+		}).catch(function(e) {
+			document.getElementById('model-list').innerHTML = '<div style="color:#ff4444">加载失败: ' + e.message + '</div>';
+		});
+	}
+
+	function sendAIMessage(msg) {
+		if (!selectedModel) {
+			alert('请先选择模型');
+			return;
+		}
+		var url = selectedModel.stream ? 'https://sexyai.top/api/chat/completions/stream' : 'https://sexyai.top/api/chat/completions';
+		var body = JSON.stringify({roleId: L.roleId, content: msg, modelId: selectedModel.id, maxToken: selectedModel.maxToken});
+		if (selectedModel.stream) {
+			fetch(url, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json', 'lang': 'ZH'},
+				body: body
+			}).then(function(r) { return r.text(); }).then(function(txt) {
+				var content = '';
+				txt.split('\n').forEach(function(line) {
+					if (line.startsWith('data:')) {
+						var chunk = line.slice(5);
+						if (chunk && !chunk.startsWith('{')) content += chunk;
+					}
+				});
+				showAIReply(msg, content);
+			}).catch(function(e) {
+				alert('发送失败: ' + e.message);
+			});
+		} else {
+			fetch(url, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json', 'lang': 'ZH'},
+				body: body
+			}).then(function(r) { return r.json(); }).then(function(res) {
+				if (res.code !== 200) throw new Error(res.message);
+				showAIReply(msg, res.data.content);
+			}).catch(function(e) {
+				alert('发送失败: ' + e.message);
+			});
+		}
+	}
+
+	function showAIReply(userMsg, aiMsg) {
+		var d = document.createElement('div');
+		d.className = 'detail';
+		d.innerHTML = '<div style="background:#1a1a1a;padding:20px;border-radius:12px;max-width:90vw;max-height:80vh;overflow-y:auto"><div style="color:#888;font-size:12px;margin-bottom:8px">你的消息</div><div style="color:#fff;font-size:14px;margin-bottom:16px;padding:12px;background:#252525;border-radius:8px">' + U.esc(userMsg) + '</div><div style="color:#888;font-size:12px;margin-bottom:8px">AI回复</div><div style="color:#fff;font-size:14px;padding:12px;background:#252525;border-radius:8px;white-space:pre-wrap">' + U.esc(aiMsg) + '</div><button onclick="this.parentElement.parentElement.remove()" style="margin-top:16px;padding:8px 16px;background:#166d3b;border:none;border-radius:6px;color:#fff;cursor:pointer">关闭</button></div>';
 		d.onclick = function(e) {
 			if (e.target === d) d.remove();
 		};
@@ -1712,7 +1825,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			applyGlobal();
 			render();
 			var cb = document.querySelector('.ed-close');
-			if (cb) cb.style.display = (C.sys && C.sys.unload) ? 'none' : 'block';
+			if (cb) cb.style.display = 'block';
 		};
 
 		var PA;
@@ -2129,7 +2242,6 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		cb.className = 'ed-close';
 		cb.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
 		cb.onclick = hide;
-		cb.style.display = (C.sys && C.sys.unload) ? 'none' : 'block';
 		document.body.appendChild(cb);
 
 		document.addEventListener('dblclick', function(e) {
