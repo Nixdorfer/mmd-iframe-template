@@ -27,13 +27,18 @@ body {
 }
 
 .modal-header {
-	padding: 12px 24px;
+	padding: 0 24px;
 	text-align: center;
 	flex-shrink: 0;
 	overflow: visible;
 	cursor: move;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
 }
-
+.modal-header:empty {
+	padding: 0;
+}
 .modal-content {
 	flex: 1;
 	overflow-y: auto;
@@ -43,11 +48,16 @@ body {
 	scrollbar-color: rgba(0,0,0,0.5) transparent;
 	min-height: 0;
 }
-
 .modal-footer {
-	padding: 12px 24px;
+	padding: 0 24px;
 	flex-shrink: 0;
 	overflow: visible;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+}
+.modal-footer:empty {
+	padding: 0;
 }
 
 .btn {
@@ -1126,29 +1136,29 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 	}
 
 	var css = [
-		'.text{display:block;margin-bottom:16px;white-space:pre-wrap}',
+		'.text{display:block;margin:4px 0;white-space:pre-wrap}',
 		'.text.left{text-align:left}.text.right{text-align:right}.text.center{text-align:center}',
-		'.custom-btn{display:inline-block;padding:10px 20px;border:none;color:#fff;font-size:14px;cursor:pointer;margin:8px 4px;transition:filter .2s}',
+		'.custom-btn{display:inline-block;padding:10px 20px;border:none;color:#fff;font-size:14px;cursor:pointer;margin:4px 4px;transition:filter .2s}',
 		'.custom-btn:hover{filter:brightness(1.2)}',
 		'.custom-btn.disabled{opacity:0.5;cursor:not-allowed}',
 		'.custom-btn.selected{outline:2px solid #fff;outline-offset:2px}',
-		'.btn-wrap{display:block;margin:8px 0}.btn-wrap.left{text-align:left}.btn-wrap.center{text-align:center}.btn-wrap.right{text-align:right}',
-		'.img-wrap{display:flex;margin:8px 0;overflow:hidden}.img-wrap.left{justify-content:flex-start}.img-wrap.right{justify-content:flex-end}.img-wrap.center{justify-content:center}',
+		'.btn-wrap{display:block;margin:4px 0}.btn-wrap.left{text-align:left}.btn-wrap.center{text-align:center}.btn-wrap.right{text-align:right}',
+		'.img-wrap{display:flex;margin:4px 0;overflow:hidden}.img-wrap.left{justify-content:flex-start}.img-wrap.right{justify-content:flex-end}.img-wrap.center{justify-content:center}',
 		'.img-wrap img,.img-wrap video{border-radius:8px;display:block;cursor:pointer}',
-		'.form-group{margin-bottom:16px}',
-		'.form-group label{display:block;margin-bottom:8px;color:#fff}',
+		'.form-group{margin:4px 0}',
+		'.form-group label{display:block;margin-bottom:4px;color:#fff}',
 		'.form-group select,.form-group input{width:100%;padding:12px;border:none;border-radius:8px;background:#1a1a1a;color:#fff;font-size:16px}',
 		'.form-group select:focus,.form-group input:focus{outline:2px solid var(--btn)}',
 		'input.error{outline:2px solid #ff4444;animation:shake .5s}',
 		'@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-8px)}50%{transform:translateX(8px)}}',
-		'.row{display:flex;margin:8px 0}',
+		'.row{display:flex;margin:4px 0}',
 		'.row-col{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2px}',
 		'.row-col-fit-multi{flex-direction:row}',
 		'.row-col-fit-multi>.row-col-item{flex:1}',
-		'.switch{display:flex;align-items:center;justify-content:center;margin:8px 0;gap:10px;cursor:pointer}',
+		'.switch{display:flex;align-items:center;justify-content:center;margin:4px 0;gap:10px;cursor:pointer}',
 		'.switch-track{position:relative;width:44px;height:24px;transition:background .2s}',
 		'.switch-thumb{position:absolute;top:2px;width:18px;height:18px;transition:left .2s}',
-		'.collapse{margin:8px 0}',
+		'.collapse{margin:4px 0}',
 		'.collapse-hd{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}',
 		'.collapse-hd .arrow{transition:transform .2s}',
 		'.collapse-hd.open .arrow{transform:rotate(90deg)}',
@@ -1461,6 +1471,12 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		});
 	}
 
+	function getEls(pg, zone) {
+		var prefix = pg.separateLayout ? (L.platform === 'mobile' ? 'mobile' : 'pc') : '';
+		if (zone === 'header') return pg[prefix ? prefix + 'HeaderElements' : 'headerElements'] || [];
+		if (zone === 'footer') return pg[prefix ? prefix + 'FooterElements' : 'footerElements'] || [];
+		return pg[prefix ? prefix + 'Elements' : 'elements'] || [];
+	}
 	function render(anim) {
 		var pg = pages[curPage] || {title: '', elements: []};
 		applyPage(pg);
@@ -1469,10 +1485,12 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		var animStyle = anim ? getAnim(anim, 300) : '';
 		var hPct = pg.headerPct || 0;
 		var fPct = pg.footerPct || 0;
-		var hStyle = hPct ? 'flex:0 0 ' + hPct + '%;' : '';
-		var fStyle = fPct ? 'flex:0 0 ' + fPct + '%;' : '';
+		var hStyle = hPct ? 'min-height:' + hPct + '%;' : '';
+		var fStyle = fPct ? 'min-height:' + fPct + '%;' : '';
+		var hEls = getEls(pg, 'header');
+		var fEls = getEls(pg, 'footer');
 		var h = '<div class="modal-header" data-zone="header"' + (animStyle || hStyle ? ' style="' + (animStyle ? animStyle + ';' : '') + hStyle + '"' : '') + '>';
-		(pg.headerElements || []).forEach(function(el, idx) {
+		hEls.forEach(function(el, idx) {
 			var wrap = L.edit ? '<div class="ed-el" data-zone="header" data-idx="' + idx + '">' : '';
 			var wrapEnd = L.edit ? '</div>' : '';
 			if (el.type === 'row') h += wrap + renderRow(el, pg, idx) + wrapEnd;
@@ -1481,7 +1499,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		h += '</div>';
 		if (L.edit) h += '<div class="ed-line"></div>';
 		h += '<div class="modal-content" data-zone="content"' + (animStyle ? ' style="' + animStyle + '"' : '') + '>';
-		(pg.elements || []).forEach(function(el, idx) {
+		getEls(pg, 'content').forEach(function(el, idx) {
 			var wrap = L.edit ? '<div class="ed-el" data-zone="content" data-idx="' + idx + '">' : '';
 			var wrapEnd = L.edit ? '</div>' : '';
 			if (el.type === 'row') h += wrap + renderRow(el, pg, idx) + wrapEnd;
@@ -1489,9 +1507,8 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		});
 		h += '</div>';
 		if (L.edit) h += '<div class="ed-line"></div>';
-		var fCls = L.edit ? 'modal-footer' : 'modal-footer';
-		h += '<div class="' + fCls + '" data-zone="footer"' + (fStyle ? ' style="' + fStyle + '"' : '') + '>';
-		(pg.footerElements || []).forEach(function(el, idx) {
+		h += '<div class="modal-footer" data-zone="footer"' + (fStyle ? ' style="' + fStyle + '"' : '') + '>';
+		fEls.forEach(function(el, idx) {
 			var wrap = L.edit ? '<div class="ed-el" data-zone="footer" data-idx="' + idx + '">' : '<div>';
 			if (el.type === 'row') h += wrap + renderRow(el, pg, idx) + '</div>';
 			else h += wrap + renderEl(el, pg) + '</div>';

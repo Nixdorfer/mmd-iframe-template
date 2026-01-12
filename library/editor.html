@@ -1263,11 +1263,10 @@
 <div id="ed-list"></div>
 <div id="ed-panel">
   <div class="ed-tabs">
-    <div class="ed-tab on" data-t="0">窗口</div>
-    <div class="ed-tab" data-t="1">模块</div>
-    <div class="ed-tab" data-t="2">样式</div>
-    <div class="ed-tab" data-t="3">组</div>
-    <div class="ed-tab" data-t="4">聊天</div>
+    <div class="ed-tab on" data-t="0">模块</div>
+    <div class="ed-tab" data-t="1">样式</div>
+    <div class="ed-tab" data-t="2">组</div>
+    <div class="ed-tab" data-t="3">聊天</div>
   </div>
   <div id="ed-body"></div>
 </div>
@@ -1360,7 +1359,7 @@
   </div>
 </div>
 <input type="file" id="galFileInput" multiple accept="image/*,video/*" style="display:none">
-<script src="../icon/icons.js"></script>
+<script src="https://r2.sexyai.top/icon/icons.js"></script>
 <script>
   window.LZS = (function() {
     var k = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -1859,6 +1858,10 @@
               r: "1-500",
               d: "最大宽度(高度%)",
               v: 100
+            },
+            separateLayout: {
+              t: "toggle",
+              d: "分离移动端/桌面端布局"
             },
             headerPct: {
               t: "slider",
@@ -3667,7 +3670,31 @@
         var clickables = [];
         if (col) clickables.push({type:'col', el:col, ei:parseInt(col.dataset.ei), ci:parseInt(col.dataset.ci), zone:col.dataset.zone||'content'});
         if (el) clickables.push({type:'el', el:el, idx:parseInt(el.dataset.idx), zone:el.dataset.zone||'content'});
-        if (clickables.length === 0) return;
+        if (clickables.length === 0) {
+          var bg = e.target.closest('#backdrop') || e.target.closest('.modal-content') || e.target.closest('.modal-header') || e.target.closest('.modal-footer');
+          if (bg && self.sel !== null) {
+            self.sel = null;
+            self.rowSel = null;
+            self.multiSel = [];
+            self.tab = 1;
+            self.renderR();
+            self.hiSel();
+            self.showStatus('窗口')
+          }
+          return
+        }
+        if (col && clickables.length > 1) {
+          var colItem = clickables.find(function(c) { return c.type === 'col'; });
+          var elItem = clickables.find(function(c) { return c.type === 'el'; });
+          var elData = elItem ? self.getEls(elItem.zone)[elItem.idx] : null;
+          var innerEl = elData && elData.type === 'row' && elData.cols ? elData.cols[colItem.ci] : null;
+          if (innerEl && innerEl.type) {
+            var cfg = self.cfg[innerEl.type];
+            var elName = cfg ? cfg.name : innerEl.type;
+            self.showColPickMenu(e.clientX, e.clientY, colItem, elItem, elName);
+            return
+          }
+        }
         var item = clickables[0];
         if (item.type === 'col') {
           self.multiSel = [];
@@ -4173,7 +4200,7 @@
       }
       els.push(el);
       this.sel = els.length - 1;
-      this.tab = 2;
+      this.tab = 1;
       this.save();
       this.renderR()
     },
@@ -4183,7 +4210,7 @@
       if (!d || !d.pages || !d.pages[this.pg]) return;
       var pg = d.pages[this.pg];
       zone = zone || 'content';
-      var key = zone === 'header' ? 'headerElements' : (zone === 'footer' ? 'footerElements' : 'elements');
+      var key = this.getElsKey(zone);
       if (!pg[key]) pg[key] = [];
       var els = pg[key];
       var el = {
@@ -4200,7 +4227,7 @@
       els.splice(pos, 0, el);
       this.sel = pos;
       this.zone = zone;
-      this.tab = 2;
+      this.tab = 1;
       this.save();
       this.renderR()
     },
@@ -4208,7 +4235,7 @@
       if (!this.cur) return;
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return;
-      var key = zone === 'header' ? 'headerElements' : (zone === 'footer' ? 'footerElements' : 'elements');
+      var key = this.getElsKey(zone);
       var els = pg[key] || [];
       var col = els[idx];
       if (!col || col.type !== 'collapse') return;
@@ -4228,7 +4255,7 @@
       if (!this.cur) return;
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return;
-      var key = zone === 'header' ? 'headerElements' : (zone === 'footer' ? 'footerElements' : 'elements');
+      var key = this.getElsKey(zone);
       var els = pg[key] || [];
       var row = els[ei];
       if (!row || row.type !== 'row' || !row.cols) return;
@@ -4243,21 +4270,33 @@
       this.sel = ei;
       this.rowSel = ci;
       this.zone = zone;
-      this.tab = 2;
+      this.tab = 1;
       this.save();
       this.renderR()
     },
     getEls: function(zone) {
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return [];
-      var key = zone === 'header' ? 'headerElements' : (zone === 'footer' ? 'footerElements' : 'elements');
-      return pg[key] || []
+      var prefix = pg.separateLayout ? (L.platform === 'mobile' ? 'mobile' : 'pc') : '';
+      var key;
+      if (zone === 'header') key = prefix ? prefix + 'HeaderElements' : 'headerElements';
+      else if (zone === 'footer') key = prefix ? prefix + 'FooterElements' : 'footerElements';
+      else key = prefix ? prefix + 'Elements' : 'elements';
+      return pg[key] || [];
+    },
+    getElsKey: function(zone) {
+      var pg = this.pj[this.cur].data.pages[this.pg];
+      if (!pg) return 'elements';
+      var prefix = pg.separateLayout ? (L.platform === 'mobile' ? 'mobile' : 'pc') : '';
+      if (zone === 'header') return prefix ? prefix + 'HeaderElements' : 'headerElements';
+      if (zone === 'footer') return prefix ? prefix + 'FooterElements' : 'footerElements';
+      return prefix ? prefix + 'Elements' : 'elements';
     },
     del: function() {
       if (!this.cur || this.sel === null) return;
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return;
-      var key = this.zone === 'header' ? 'headerElements' : (this.zone === 'footer' ? 'footerElements' : 'elements');
+      var key = this.getElsKey(this.zone);
       if (!pg[key]) return;
       pg[key].splice(this.sel, 1);
       this.sel = null;
@@ -4390,6 +4429,36 @@
       };
       modal.classList.add('open');
     },
+    showColPickMenu: function(x, y, colItem, elItem, elName) {
+      var old = document.querySelector('.ed-ctx');
+      if (old) old.remove();
+      var m = document.createElement('div');
+      m.className = 'ed-ctx';
+      m.style.left = x + 'px';
+      m.style.top = y + 'px';
+      var self = this;
+      m.innerHTML = '<div data-a="row">多列</div><div data-a="el">' + elName + '</div>';
+      m.onclick = function(e) {
+        var a = e.target.dataset.a;
+        if (a === 'row') {
+          self.multiSel = [];
+          self.selCol(colItem.ei, colItem.ci, colItem.zone);
+          self.showStatus('多列 - 列' + (colItem.ci + 1));
+        } else if (a === 'el') {
+          self.multiSel = [];
+          self.selCol(colItem.ei, colItem.ci, colItem.zone);
+          self.showStatus(elName);
+        }
+        m.remove();
+      };
+      document.body.appendChild(m);
+      setTimeout(function() {
+        document.addEventListener('click', function h() {
+          m.remove();
+          document.removeEventListener('click', h);
+        });
+      }, 10);
+    },
     showGlobalCtx: function(x, y) {
       var old = document.querySelector('.ed-ctx');
       if (old) old.remove();
@@ -4466,7 +4535,7 @@
       this.sel = idx;
       this.zone = zone || 'content';
       this.rowSel = null;
-      this.tab = 2;
+      this.tab = 1;
       this.renderR();
       this.hiSel()
     },
@@ -4474,7 +4543,7 @@
       this.sel = ei;
       this.zone = zone || 'content';
       this.rowSel = ci;
-      this.tab = 2;
+      this.tab = 1;
       this.renderR();
       this.hiSel()
     },
@@ -4627,31 +4696,12 @@
       this.save();
       this.hiSel()
     },
-    moveElTo: function(fi, fz, ti, tz) {
-      if (!this.cur) return;
-      var pg = this.pj[this.cur].data.pages[this.pg];
-      if (!pg) return;
-      var fk = fz === 'header' ? 'headerElements' : (fz === 'footer' ? 'footerElements' : 'elements');
-      var tk = tz === 'header' ? 'headerElements' : (tz === 'footer' ? 'footerElements' : 'elements');
-      var fa = pg[fk] || [],
-        ta = pg[tk] || [];
-      var el = fa.splice(fi, 1)[0];
-      if (!el) return;
-      if (fk === tk && ti > fi) ti--;
-      ta.splice(ti, 0, el);
-      pg[fk] = fa;
-      pg[tk] = ta;
-      this.sel = ti;
-      this.zone = tz;
-      this.save();
-      this.hiSel()
-    },
     moveElTo: function(srcIdx, srcZone, dstPos, dstZone) {
       if (!this.cur) return;
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return;
-      var srcKey = srcZone === 'header' ? 'headerElements' : (srcZone === 'footer' ? 'footerElements' : 'elements');
-      var dstKey = dstZone === 'header' ? 'headerElements' : (dstZone === 'footer' ? 'footerElements' : 'elements');
+      var srcKey = this.getElsKey(srcZone);
+      var dstKey = this.getElsKey(dstZone);
       if (!pg[srcKey]) return;
       var el = pg[srcKey].splice(srcIdx, 1)[0];
       if (!el) return;
@@ -4667,8 +4717,8 @@
       if (!this.cur) return;
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return;
-      var srcKey = srcZone === 'header' ? 'headerElements' : (srcZone === 'footer' ? 'footerElements' : 'elements');
-      var rowKey = rowZone === 'header' ? 'headerElements' : (rowZone === 'footer' ? 'footerElements' : 'elements');
+      var srcKey = this.getElsKey(srcZone);
+      var rowKey = this.getElsKey(rowZone);
       if (!pg[srcKey]) return;
       var el = pg[srcKey][srcIdx];
       if (!el) return;
@@ -4686,8 +4736,8 @@
       if (!this.cur) return;
       var pg = this.pj[this.cur].data.pages[this.pg];
       if (!pg) return;
-      var rowKey = rowZone === 'header' ? 'headerElements' : (rowZone === 'footer' ? 'footerElements' : 'elements');
-      var dstKey = dstZone === 'header' ? 'headerElements' : (dstZone === 'footer' ? 'footerElements' : 'elements');
+      var rowKey = this.getElsKey(rowZone);
+      var dstKey = this.getElsKey(dstZone);
       var row = (pg[rowKey] || [])[rowIdx];
       if (!row || row.type !== 'row' || !row.cols || !row.cols[ci]) return;
       var el = row.cols[ci];
@@ -4800,15 +4850,14 @@
       var chatEnabled = L.roleId === '174750' || L.roleId === '230974';
       tabs.forEach(function(t) {
         t.classList.toggle('on', parseInt(t.dataset.t) === this.tab);
-        if (t.dataset.t === '1') t.textContent = isPhone ? '应用' : '模块';
-        if (t.dataset.t === '4') t.classList.toggle('disabled', !chatEnabled)
+        if (t.dataset.t === '0') t.textContent = isPhone ? '应用' : '模块';
+        if (t.dataset.t === '3') t.classList.toggle('disabled', !chatEnabled)
       }, this);
       switch (this.tab) {
-        case 0: p.innerHTML = this.renderWin(); break;
-        case 1: p.innerHTML = this.renderMod(); break;
-        case 2: p.innerHTML = this.renderStyle(); break;
-        case 3: p.innerHTML = this.renderLock(); break;
-        case 4: p.innerHTML = this.renderChat(); break;
+        case 0: p.innerHTML = this.renderMod(); break;
+        case 1: p.innerHTML = this.renderStyle(); break;
+        case 2: p.innerHTML = this.renderLock(); break;
+        case 3: p.innerHTML = this.renderChat(); break;
       }
       this.bindR();
       var states = this.foldStates[this.tab];
@@ -4944,6 +4993,7 @@
       h += self.ctrl('heightPct', pgCfg.heightPct, pg.heightPct, 'pg');
       h += self.ctrl('widthPct', pgCfg.widthPct, pg.widthPct, 'pg');
       h += self.ctrl('maxWidthPct', pgCfg.maxWidthPct, pg.maxWidthPct, 'pg');
+      h += self.ctrl('separateLayout', pgCfg.separateLayout, pg.separateLayout, 'pg');
       h += self.ctrl('modalOffsetX', pgCfg.modalOffsetX, pg.modalOffsetX, 'pg');
       h += self.ctrl('modalOffsetY', pgCfg.modalOffsetY, pg.modalOffsetY, 'pg');
       h += self.ctrl('headerPct', pgCfg.headerPct, pg.headerPct, 'pg');
@@ -5138,7 +5188,8 @@
       return h
     },
     renderStyle: function() {
-      if (!this.cur || this.sel === null) return '<div class="ed-sec"><div class="ed-empty">点击元素进行编辑</div></div>';
+      if (!this.cur) return '<div class="ed-sec"><div class="ed-empty">无项目</div></div>';
+      if (this.sel === null) return this.renderWin();
       var d = this.pj[this.cur].data;
       if (!d || !d.pages || !d.pages[this.pg]) return '';
       var els = this.getEls(this.zone);
@@ -6872,24 +6923,34 @@
   };
   (function() {
     var d = null;
+    console.log("[Editor] 初始化, L.b64长度:", L.b64 ? L.b64.length : 0);
     if (L.b64) {
       try {
-        d = JSON.parse(LZS.d(L.b64.slice(1)));
-      } catch (e) {}
+        var decoded = LZS.d(L.b64.slice(1));
+        console.log("[Editor] LZS解码结果长度:", decoded ? decoded.length : 0);
+        d = JSON.parse(decoded);
+        console.log("[Editor] JSON解析成功, pages数量:", d && d.pages ? d.pages.length : 0);
+      } catch (e) {
+        console.error("[Editor] 配置解析失败:", e);
+      }
     }
-    if (!d || !d.pages || !d.pages.length) d = {
-      global: {
-        bgColor: '050505',
-        defModalBg: '0d0d0d',
-        defBtnBg: '166d3b',
-        defTextColor: '888888',
-        defBtnColor: 'ffffff'
-      },
-      pages: [{
-        title: '对话框1',
-        elements: []
-      }]
-    };
+    if (!d || !d.pages || !d.pages.length) {
+      console.log("[Editor] 使用默认配置");
+      d = {
+        global: {
+          bgColor: '050505',
+          defModalBg: '0d0d0d',
+          defBtnBg: '166d3b',
+          defTextColor: '888888',
+          defBtnColor: 'ffffff'
+        },
+        pages: [{
+          title: '对话框1',
+          elements: []
+        }]
+      };
+    }
+    console.log("[Editor] 调用E.init");
     E.init(d);
   })();
   window.G = {
