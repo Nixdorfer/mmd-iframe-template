@@ -39,6 +39,7 @@
     }
     function chk(u) {
         try {
+            if (/^(blob:|data:)/.test(u)) return true;
             var x = new URL(u, location.origin);
             var ok = P.some(function(r) { return r.test(x.hostname); });
             if (!ok) return false;
