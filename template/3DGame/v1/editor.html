@@ -3,7 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>2.5D地图编辑器</title>
+	<title>3D地图编辑器</title>
+	<link rel="stylesheet" href="modal/modal-base.css">
+	<link rel="stylesheet" href="modal/components.css">
+	<link rel="stylesheet" href="modal/gallery.css">
+	<link rel="stylesheet" href="modal/item-editor.css">
+	<link rel="stylesheet" href="modal/add-resource.css">
+	<link rel="stylesheet" href="modal/settings.css">
 	<style>
 * {
 	margin: 0;
@@ -2075,6 +2081,23 @@ body.preview-mode .preview-hint {
 				<svg viewBox="0 0 24 24"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L13.6 2.6c.8-.8 2-.8 2.8 0L21 7.2c.8.8.8 2 0 2.8L12 19"/></svg>
 			</button>
 		</div>
+		<div class="tool-group" id="terrainToolGroup">
+			<button class="tool-btn" data-tool="raise" title="升高地形">
+				<svg viewBox="0 0 24 24"><path d="M12 3L6 9h4v12h4V9h4z"/></svg>
+			</button>
+			<button class="tool-btn" data-tool="lower" title="降低地形">
+				<svg viewBox="0 0 24 24"><path d="M12 21l6-6h-4V3h-4v12H6z"/></svg>
+			</button>
+			<button class="tool-btn" data-tool="connect" title="连接 (桥/斜坡)">
+				<svg viewBox="0 0 24 24"><path d="M4 16h16M4 16l4-8M20 16l-4-8"/></svg>
+			</button>
+			<button class="tool-btn" data-tool="thicken" title="增厚桥面">
+				<svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="1"/><path d="M8 4v4M16 4v4M8 16v4M16 16v4"/></svg>
+			</button>
+			<button class="tool-btn" data-tool="thin" title="打薄桥面">
+				<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="4" rx="1"/><path d="M8 6v4M16 6v4M8 14v4M16 14v4"/></svg>
+			</button>
+		</div>
 		<div class="tool-group">
 			<button class="tool-btn" id="undoBtn" title="撤销 (Ctrl+Z)" disabled>
 				<svg viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
@@ -2148,6 +2171,54 @@ body.preview-mode .preview-hint {
 					<div class="property-col">
 						<input type="number" class="property-input" id="mapHeight" value="30" min="10" max="100">
 					</div>
+				</div>
+			</div>
+			<div class="property-section" id="terrainToolProps" style="display:none">
+				<div class="property-label">高度变化 (m)</div>
+				<div class="property-row">
+					<input type="number" class="property-input" id="terrainEditValue" value="0.5" min="0.1" max="100" step="0.1">
+				</div>
+			</div>
+			<div class="property-section" id="connectToolProps" style="display:none">
+				<div class="property-label">起点坐标</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">X</div>
+						<input type="number" class="property-input" id="connectStartX">
+					</div>
+					<div class="property-col">
+						<div class="property-label">Y</div>
+						<input type="number" class="property-input" id="connectStartY">
+					</div>
+					<div class="property-col">
+						<div class="property-label">Z</div>
+						<input type="number" class="property-input" id="connectStartZ" step="0.1">
+					</div>
+				</div>
+				<div class="property-label">终点坐标</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">X</div>
+						<input type="number" class="property-input" id="connectEndX">
+					</div>
+					<div class="property-col">
+						<div class="property-label">Y</div>
+						<input type="number" class="property-input" id="connectEndY">
+					</div>
+					<div class="property-col">
+						<div class="property-label">Z</div>
+						<input type="number" class="property-input" id="connectEndZ" step="0.1">
+					</div>
+				</div>
+				<button class="file-btn primary" id="applyConnectBtn" style="width:100%;margin-top:8px">应用连接</button>
+			</div>
+			<div class="property-section" id="brushSizeProps" style="display:none">
+				<div class="property-label">画笔尺寸 (m)</div>
+				<div class="property-row">
+					<input type="range" id="brushSizeSlider" min="-2" max="2" step="0.01" value="0" style="flex:1">
+				</div>
+				<div class="property-row">
+					<input type="number" class="property-input" id="brushSizeInput" value="1" min="0.01" max="100" step="0.01">
 				</div>
 			</div>
 			<div class="property-section" id="selectionProps" style="display:none">
@@ -2470,8 +2541,15 @@ const state = {
 	viewTransition: 1,
 	viewAnimating: false,
 	contextTarget: null,
-	mapWidth: 30,
-	mapHeight: 30,
+	tileMap: new Map(),
+	mapBounds: { minX: 0, maxX: 29, minY: 0, maxY: 29 },
+	terrainTool: null,
+	terrainEditValue: 0.5,
+	connectStart: null,
+	connectEnd: null,
+	brushSize: 1,
+	gridScales: [1000, 100, 10, 1, 0.1, 0.01],
+	visibleGridScales: [],
 	selectedLayer: 0,
 	selectedResource: null,
 	selectedEntity: null,
@@ -2522,6 +2600,7 @@ const state = {
 	previewMode: false,
 	playerX: 0,
 	playerY: 0,
+	playerZ: 0,
 	keysPressed: {},
 	showDebug: false,
 	needsRender: true,
@@ -2693,7 +2772,7 @@ const engine = {
 	lastTime: 0,
 	deltaTime: 0
 }
-function initQuadTree() { engine.quadTree = new QuadTree({ x: 0, y: 0, width: state.mapWidth * TILE_W, height: state.mapHeight * TILE_W }) }
+function initQuadTree() { engine.quadTree = new QuadTree({ x: state.mapBounds.minX * TILE_W, y: state.mapBounds.minY * TILE_W, width: getMapWidth() * TILE_W, height: getMapHeight() * TILE_W }) }
 function updateQuadTree() {
 	if (!engine.quadTree) initQuadTree()
 	engine.quadTree.clear()
@@ -2731,9 +2810,8 @@ function raycast(ox, oy, dx, dy, maxDist, layerMask = 0xFFFFFFFF) {
 	let dist = 0
 	while (dist < maxDist) {
 		const x = ox + dx * dist, y = oy + dy * dist, tx = Math.floor(x), ty = Math.floor(y)
-		if (tx >= 0 && tx < state.mapWidth && ty >= 0 && ty < state.mapHeight) {
-			if (state.layers[0].data[ty]?.[tx] === 'void') return { hit: true, x, y, distance: dist, type: 'terrain' }
-		}
+		const tile = getTile(tx, ty)
+		if (!tile || tile.terrain === 'void') return { hit: true, x, y, distance: dist, type: 'terrain' }
 		for (const entity of state.entities) if (Math.abs(entity.x - x) < 0.5 && Math.abs(entity.y - y) < 0.5) return { hit: true, x, y, distance: dist, type: 'entity', entity }
 		dist += 0.5
 	}
@@ -2864,10 +2942,10 @@ function calculateAO(x, y) {
 	let ao = 0; const neighbors = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]]
 	for (const [dx, dy] of neighbors) {
 		const nx = x + dx, ny = y + dy
-		if (nx >= 0 && nx < state.mapWidth && ny >= 0 && ny < state.mapHeight) {
-			if (state.layers[0].data[ny]?.[nx] === 'void') ao += 0.05
-			for (const entity of state.entities) if (entity.x === nx && entity.y === ny) ao += 0.03
-		}
+		const tile = getTile(nx, ny)
+		if (!tile || tile.terrain === 'void') ao += 0.05
+		else if (tile.z > 0) ao += 0.03
+		for (const entity of state.entities) if (entity.x === nx && entity.y === ny) ao += 0.03
 	}
 	return Math.min(ao, 0.4)
 }
@@ -2902,7 +2980,7 @@ function playSound(id, x, y, volume = 1) {
 	if (!engine.audioContext || !engine.sounds[id]) return
 	const source = engine.audioContext.createBufferSource(); source.buffer = engine.sounds[id]
 	const panner = engine.audioContext.createPanner(); panner.panningModel = 'HRTF'; panner.distanceModel = 'inverse'; panner.refDistance = 1; panner.maxDistance = 50; panner.rolloffFactor = 1
-	panner.setPosition(x - (state.playerX || state.mapWidth/2), 0, y - (state.playerY || state.mapHeight/2))
+	panner.setPosition(x - (state.playerX || (state.mapBounds.minX + state.mapBounds.maxX)/2), 0, y - (state.playerY || (state.mapBounds.minY + state.mapBounds.maxY)/2))
 	const gain = engine.audioContext.createGain(); gain.gain.value = volume
 	source.connect(panner); panner.connect(gain); gain.connect(engine.audioGain); source.start()
 }
@@ -2915,15 +2993,121 @@ function engineUpdate(timestamp) {
 	engine.debug.fps = Math.round(1 / engine.deltaTime); engine.debug.entities = state.entities.length
 	engine.debug.particles = engine.particles.reduce((sum, e) => sum + e.particles.length, 0); engine.debug.lights = lighting.points.length + lighting.spots.length
 }
-function initMap() {
-	for (let i = 0; i < state.layers.length; i++) {
-		state.layers[i].data = []
-		for (let y = 0; y < state.mapHeight; y++) {
-			state.layers[i].data[y] = []
-			for (let x = 0; x < state.mapWidth; x++) {
-				state.layers[i].data[y][x] = (i === 0) ? 'ground' : null
+function getTile(x, y) {
+	return state.tileMap.get(`${x},${y}`) || null
+}
+function setTile(x, y, data) {
+	state.tileMap.set(`${x},${y}`, data)
+	updateMapBounds(x, y)
+}
+function updateMapBounds(x, y) {
+	state.mapBounds.minX = Math.min(state.mapBounds.minX, x)
+	state.mapBounds.maxX = Math.max(state.mapBounds.maxX, x)
+	state.mapBounds.minY = Math.min(state.mapBounds.minY, y)
+	state.mapBounds.maxY = Math.max(state.mapBounds.maxY, y)
+}
+function getMapWidth() {
+	return state.mapBounds.maxX - state.mapBounds.minX + 1
+}
+function getMapHeight() {
+	return state.mapBounds.maxY - state.mapBounds.minY + 1
+}
+function getTilesInBrush(cx, cy, size) {
+	const tiles = []
+	const halfSize = size / 2
+	const minX = Math.floor(cx - halfSize + 0.5)
+	const maxX = Math.floor(cx + halfSize + 0.5)
+	const minY = Math.floor(cy - halfSize + 0.5)
+	const maxY = Math.floor(cy + halfSize + 0.5)
+	for (let y = minY; y < maxY; y++) {
+		for (let x = minX; x < maxX; x++) {
+			tiles.push({ x, y })
+		}
+	}
+	return tiles
+}
+function raiseTerrain(x, y, amount) {
+	const tile = getTile(x, y)
+	if (tile) {
+		tile.z = Math.round((tile.z + amount) * 10) / 10
+		state.lightingDirty = true
+		state.terrainDirty = true
+		state.needsRender = true
+	}
+}
+function lowerTerrain(x, y, amount) {
+	const tile = getTile(x, y)
+	if (tile) {
+		tile.z = Math.max(0, Math.round((tile.z - amount) * 10) / 10)
+		state.lightingDirty = true
+		state.terrainDirty = true
+		state.needsRender = true
+	}
+}
+function createBridge(x1, y1, z1, x2, y2, z2) {
+	const dx = x2 - x1
+	const dy = y2 - y1
+	const steps = Math.max(Math.abs(dx), Math.abs(dy))
+	if (steps < 2) return
+	if (Math.abs(z1 - z2) < 0.01) {
+		for (let i = 1; i < steps; i++) {
+			const x = Math.round(x1 + (dx / steps) * i)
+			const y = Math.round(y1 + (dy / steps) * i)
+			let tile = getTile(x, y)
+			if (!tile) {
+				tile = { terrain: 'stone-brick', z: z1, thickness: 0.1, isBridge: true, isSlope: false }
+				setTile(x, y, tile)
+			} else {
+				tile.z = z1
+				tile.isBridge = true
+				tile.thickness = 0.1
 			}
 		}
+	} else {
+		const dz = z2 - z1
+		for (let i = 1; i < steps; i++) {
+			const t = i / steps
+			const x = Math.round(x1 + dx * t)
+			const y = Math.round(y1 + dy * t)
+			const z = Math.round((z1 + dz * t) * 10) / 10
+			let tile = getTile(x, y)
+			if (!tile) {
+				tile = { terrain: 'stone-brick', z: z, thickness: 0, isBridge: false, isSlope: true }
+				setTile(x, y, tile)
+			} else {
+				tile.z = z
+				tile.isSlope = true
+			}
+		}
+	}
+	state.lightingDirty = true
+	state.terrainDirty = true
+	state.needsRender = true
+}
+function thickenBridge(x, y, amount) {
+	const tile = getTile(x, y)
+	if (tile && tile.isBridge) {
+		tile.thickness = Math.round((tile.thickness + amount) * 10) / 10
+		state.needsRender = true
+	}
+}
+function thinBridge(x, y, amount) {
+	const tile = getTile(x, y)
+	if (tile && tile.isBridge) {
+		tile.thickness = Math.max(0, Math.round((tile.thickness - amount) * 10) / 10)
+		state.needsRender = true
+	}
+}
+function initMap() {
+	state.tileMap.clear()
+	state.mapBounds = { minX: 0, maxX: 29, minY: 0, maxY: 29 }
+	for (let y = 0; y <= 29; y++) {
+		for (let x = 0; x <= 29; x++) {
+			setTile(x, y, { terrain: 'grass', z: 0, thickness: 0, isBridge: false, isSlope: false })
+		}
+	}
+	for (let i = 0; i < state.layers.length; i++) {
+		state.layers[i].data = []
 	}
 }
 function resizeCanvas() {
@@ -2933,10 +3117,12 @@ function resizeCanvas() {
 }
 function fitMapToView() {
 	const t = state.viewTransition
-	const sideW = state.mapWidth * TILE_W
-	const sideH = state.mapHeight * TILE_H
-	const topW = state.mapWidth * TILE_W
-	const topH = state.mapHeight * TILE_W
+	const mapW = getMapWidth()
+	const mapH = getMapHeight()
+	const sideW = mapW * TILE_W
+	const sideH = mapH * TILE_H
+	const topW = mapW * TILE_W
+	const topH = mapH * TILE_W
 	const mapPixelW = sideW + (topW - sideW) * t
 	const mapPixelH = sideH + (topH - sideH) * t
 	const padding = 40
@@ -2945,8 +3131,8 @@ function fitMapToView() {
 	const scaleX = availW / mapPixelW
 	const scaleY = availH / mapPixelH
 	state.zoom = Math.min(scaleX, scaleY, 1)
-	const centerX = state.mapWidth / 2
-	const centerY = state.mapHeight / 2
+	const centerX = (state.mapBounds.minX + state.mapBounds.maxX) / 2
+	const centerY = (state.mapBounds.minY + state.mapBounds.maxY) / 2
 	const sideX = centerX * TILE_W * state.zoom
 	const sideY = centerY * TILE_H * state.zoom
 	const topX = centerX * TILE_W * state.zoom
@@ -2957,13 +3143,17 @@ function fitMapToView() {
 }
 function worldToScreen(wx, wy) {
 	const t = state.viewTransition
-	const sideX = wx * TILE_W * state.zoom
+	const cameraX = state.playerX || (state.mapBounds.minX + state.mapBounds.maxX) / 2
+	const cameraY = state.playerY || (state.mapBounds.minY + state.mapBounds.maxY) / 2
+	const perspective = 0.015 * (1 - t)
+	const scale = 1 + (wy - cameraY) * perspective
+	const sideX = (cameraX + (wx - cameraX) * scale) * TILE_W * state.zoom
 	const sideY = wy * TILE_H * state.zoom
 	const topX = wx * TILE_W * state.zoom
 	const topY = wy * TILE_W * state.zoom
-	const x = sideX + (topX - sideX) * t + state.panX + canvas.width / 2
-	const y = sideY + (topY - sideY) * t + state.panY + canvas.height / 2
-	return { x, y }
+	let x = sideX + (topX - sideX) * t + state.panX + canvas.width / 2
+	let y = sideY + (topY - sideY) * t + state.panY + canvas.height / 2
+	return { x, y, scale }
 }
 const pivotState = {
 	active: false,
@@ -2986,8 +3176,6 @@ function animateViewTransition(toTop) {
 	pivotState.opacity = 1
 	const startT = state.viewTransition
 	const endT = toTop ? 1 : 0
-	const startPanX = state.panX
-	const startPanY = state.panY
 	const duration = 300
 	const startTime = performance.now()
 	function animate(now) {
@@ -3000,10 +3188,10 @@ function animateViewTransition(toTop) {
 		const sideY = pivotState.worldY * TILE_H * state.zoom
 		const topX = pivotState.worldX * TILE_W * state.zoom
 		const topY = pivotState.worldY * TILE_W * state.zoom
-		const worldScreenX = sideX + (topX - sideX) * currentT
-		const worldScreenY = sideY + (topY - sideY) * currentT
-		state.panX = pivotState.screenX - canvas.width / 2 - worldScreenX
-		state.panY = pivotState.screenY - canvas.height / 2 - worldScreenY
+		const baseX = sideX + (topX - sideX) * currentT
+		const baseY = sideY + (topY - sideY) * currentT
+		state.panX = -baseX
+		state.panY = -baseY
 		render()
 		if (progress < 1) {
 			requestAnimationFrame(animate)
@@ -3049,57 +3237,63 @@ function drawPivotIndicator() {
 	ctx.strokeStyle = '#ffffff'
 	ctx.lineWidth = 2
 	ctx.stroke()
+	const t = state.viewTransition
 	const axisLen = 40
+	const xEnd = worldToScreen(pivotState.worldX + 1, pivotState.worldY)
+	const yEnd = worldToScreen(pivotState.worldX, pivotState.worldY + 1)
+	const xDirX = (xEnd.x - pos.x)
+	const xDirY = (xEnd.y - pos.y)
+	const xLen = Math.sqrt(xDirX * xDirX + xDirY * xDirY)
+	const yDirX = (yEnd.x - pos.x)
+	const yDirY = (yEnd.y - pos.y)
+	const yLen = Math.sqrt(yDirX * yDirX + yDirY * yDirY)
 	ctx.lineWidth = 2
 	ctx.strokeStyle = '#ff0000'
 	ctx.beginPath()
 	ctx.moveTo(pos.x, pos.y)
-	ctx.lineTo(pos.x + axisLen, pos.y)
+	ctx.lineTo(pos.x + xDirX / xLen * axisLen, pos.y + xDirY / xLen * axisLen)
 	ctx.stroke()
 	ctx.fillStyle = '#ff0000'
 	ctx.font = '12px sans-serif'
-	ctx.fillText('X', pos.x + axisLen + 5, pos.y + 4)
+	ctx.fillText('X', pos.x + xDirX / xLen * (axisLen + 10), pos.y + xDirY / xLen * (axisLen + 10) + 4)
 	ctx.strokeStyle = '#00ff00'
+	ctx.beginPath()
+	ctx.moveTo(pos.x, pos.y)
+	ctx.lineTo(pos.x + yDirX / yLen * axisLen, pos.y + yDirY / yLen * axisLen)
+	ctx.stroke()
+	ctx.fillStyle = '#00ff00'
+	ctx.fillText('Y', pos.x + yDirX / yLen * (axisLen + 10), pos.y + yDirY / yLen * (axisLen + 10) + 4)
+	ctx.strokeStyle = '#0088ff'
 	ctx.beginPath()
 	ctx.moveTo(pos.x, pos.y)
 	ctx.lineTo(pos.x, pos.y - axisLen)
 	ctx.stroke()
-	ctx.fillStyle = '#00ff00'
-	ctx.fillText('Y', pos.x - 4, pos.y - axisLen - 5)
-	ctx.strokeStyle = '#0088ff'
-	ctx.beginPath()
-	ctx.moveTo(pos.x, pos.y)
-	ctx.lineTo(pos.x - axisLen * 0.7, pos.y + axisLen * 0.7)
-	ctx.stroke()
 	ctx.fillStyle = '#0088ff'
-	ctx.fillText('Z', pos.x - axisLen * 0.7 - 15, pos.y + axisLen * 0.7 + 4)
+	ctx.fillText('Z', pos.x + 5, pos.y - axisLen - 5)
 	ctx.globalAlpha = 1
 }
 function screenToWorld(sx, sy) {
-	const t = state.viewTransition
-	const cx = (sx - canvas.width / 2 - state.panX) / state.zoom
-	const cy = (sy - canvas.height / 2 - state.panY) / state.zoom
-	const sideWx = cx / TILE_W
-	const sideWy = cy / TILE_H
-	const topWx = cx / TILE_W
-	const topWy = cy / TILE_W
-	return {
-		x: Math.floor(sideWx + (topWx - sideWx) * t),
-		y: Math.floor(sideWy + (topWy - sideWy) * t)
-	}
+	const result = screenToWorldFloat(sx, sy)
+	return { x: Math.floor(result.x), y: Math.floor(result.y) }
 }
 function screenToWorldFloat(sx, sy) {
 	const t = state.viewTransition
+	const cameraX = state.playerX || (state.mapBounds.minX + state.mapBounds.maxX) / 2
+	const cameraY = state.playerY || (state.mapBounds.minY + state.mapBounds.maxY) / 2
+	const perspective = 0.015 * (1 - t)
 	const cx = (sx - canvas.width / 2 - state.panX) / state.zoom
 	const cy = (sy - canvas.height / 2 - state.panY) / state.zoom
-	const sideWx = cx / TILE_W
-	const sideWy = cy / TILE_H
 	const topWx = cx / TILE_W
 	const topWy = cy / TILE_W
-	return {
-		x: sideWx + (topWx - sideWx) * t,
-		y: sideWy + (topWy - sideWy) * t
+	const sideWy = cy / TILE_H
+	let wx = topWx, wy = sideWy + (topWy - sideWy) * t
+	for (let i = 0; i < 5; i++) {
+		const scale = 1 + (wy - cameraY) * perspective
+		const sideWx = cameraX + (cx / TILE_W - cameraX) / scale
+		wx = sideWx + (topWx - sideWx) * t
+		wy = sideWy + (topWy - sideWy) * t
 	}
+	return { x: wx, y: wy }
 }
 function getTileCorners(x, y) {
 	const t = state.viewTransition
@@ -3111,7 +3305,7 @@ function getTileCorners(x, y) {
 }
 function getDepthFog(y) {
 	if (state.viewTransition >= 1) return 0
-	const fogStart = (state.playerY || state.mapHeight / 2) - 3
+	const fogStart = (state.playerY || (state.mapBounds.minY + state.mapBounds.maxY) / 2) - 3
 	const fogEnd = fogStart + 20
 	const depth = Math.max(0, Math.min(1, (y - fogStart) / (fogEnd - fogStart)))
 	return depth * 0.6 * (1 - state.viewTransition)
@@ -3165,34 +3359,126 @@ function rgbToHex(rgb) {
 	if (!m) return '#808080'
 	return '#' + m.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('')
 }
+function drawIsometricTileWithHeight(x, y, color, z, thickness) {
+	const corners = getTileCorners(x, y)
+	const zOffset = z * 16 * state.zoom
+	const thickOffset = thickness * 16 * state.zoom
+	const offsetCorners = corners.map(c => ({ x: c.x, y: c.y - zOffset }))
+	ctx.beginPath()
+	ctx.moveTo(offsetCorners[0].x, offsetCorners[0].y)
+	ctx.lineTo(offsetCorners[1].x, offsetCorners[1].y)
+	ctx.lineTo(offsetCorners[2].x, offsetCorners[2].y)
+	ctx.lineTo(offsetCorners[3].x, offsetCorners[3].y)
+	ctx.closePath()
+	ctx.fillStyle = applyDepthFog(color, y)
+	ctx.fill()
+	if (z > 0 || thickness > 0) {
+		const sideColor = adjustBrightness(color, -30)
+		ctx.fillStyle = applyDepthFog(sideColor, y)
+		const h = Math.max(z, thickness) * 16 * state.zoom
+		ctx.beginPath()
+		ctx.moveTo(offsetCorners[2].x, offsetCorners[2].y)
+		ctx.lineTo(offsetCorners[3].x, offsetCorners[3].y)
+		ctx.lineTo(corners[3].x, corners[3].y)
+		ctx.lineTo(corners[2].x, corners[2].y)
+		ctx.closePath()
+		ctx.fill()
+		ctx.beginPath()
+		ctx.moveTo(offsetCorners[1].x, offsetCorners[1].y)
+		ctx.lineTo(offsetCorners[2].x, offsetCorners[2].y)
+		ctx.lineTo(corners[2].x, corners[2].y)
+		ctx.lineTo(corners[1].x, corners[1].y)
+		ctx.closePath()
+		ctx.fillStyle = applyDepthFog(adjustBrightness(color, -50), y)
+		ctx.fill()
+	}
+}
+function adjustBrightness(color, amount) {
+	const m = color.match(/\d+/g)
+	if (!m) return color
+	const r = Math.max(0, Math.min(255, parseInt(m[0]) + amount))
+	const g = Math.max(0, Math.min(255, parseInt(m[1]) + amount))
+	const b = Math.max(0, Math.min(255, parseInt(m[2]) + amount))
+	return `rgb(${r},${g},${b})`
+}
+function updateVisibleGridScales() {
+	const pixelsPerMeter = 32 * state.zoom
+	const targetPixelSpacing = 50
+	state.visibleGridScales = []
+	const scales = [1000, 100, 10, 1, 0.1, 0.01]
+	for (let i = 0; i < scales.length && state.visibleGridScales.length < 2; i++) {
+		const scale = scales[i]
+		const spacing = scale * pixelsPerMeter
+		if (spacing >= targetPixelSpacing) {
+			state.visibleGridScales.push(scale)
+		}
+	}
+	if (state.visibleGridScales.length === 0) {
+		state.visibleGridScales.push(scales[scales.length - 1])
+	}
+}
+function drawDynamicGrid() {
+	updateVisibleGridScales()
+	const viewport = getViewportBounds()
+	state.visibleGridScales.forEach((scale, idx) => {
+		const alpha = idx === 0 ? 0.15 : 0.08
+		const lineWidth = idx === 0 ? 1 : 0.5
+		ctx.strokeStyle = `rgba(255,255,255,${alpha})`
+		ctx.lineWidth = lineWidth
+		const startX = Math.floor(viewport.minX / scale) * scale
+		const startY = Math.floor(viewport.minY / scale) * scale
+		const endX = Math.ceil(viewport.maxX / scale) * scale
+		const endY = Math.ceil(viewport.maxY / scale) * scale
+		for (let x = startX; x <= endX; x += scale) {
+			const p1 = worldToScreen(x, startY)
+			const p2 = worldToScreen(x, endY)
+			ctx.beginPath()
+			ctx.moveTo(p1.x, p1.y)
+			ctx.lineTo(p2.x, p2.y)
+			ctx.stroke()
+		}
+		for (let y = startY; y <= endY; y += scale) {
+			const p1 = worldToScreen(startX, y)
+			const p2 = worldToScreen(endX, y)
+			ctx.beginPath()
+			ctx.moveTo(p1.x, p1.y)
+			ctx.lineTo(p2.x, p2.y)
+			ctx.stroke()
+		}
+	})
+}
 function render() {
 	if (state.lightingDirty) { lightingCache.data.clear(); state.lightingDirty = false }
 	if (state.terrainDirty) { aoCache.data.clear(); state.terrainDirty = false }
 	ctx.fillStyle = '#050505'
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	engine.viewport = getViewportBounds()
-	for (let y = 0; y < state.mapHeight; y++) {
-		for (let x = 0; x < state.mapWidth; x++) {
+	const terrainLayer = state.layers[0]
+	for (let y = state.mapBounds.minY; y <= state.mapBounds.maxY; y++) {
+		for (let x = state.mapBounds.minX; x <= state.mapBounds.maxX; x++) {
 			if (!isInViewport(x, y)) continue
-			const terrainLayer = state.layers[0]
-			if (terrainLayer.visible && terrainLayer.data[y] && terrainLayer.data[y][x]) {
-				const tileId = terrainLayer.data[y][x]
-				const res = resourceMap.get(tileId)
+			const tile = getTile(x, y)
+			if (tile && terrainLayer.visible) {
+				const res = resourceMap.get(tile.terrain)
 				if (res) {
 					let color = res.color
-					const lit = getCachedLighting(x, y, 0)
+					const lit = getCachedLighting(x, y, tile.z)
 					color = applyLighting(color, lit)
 					const ao = getCachedAO(x, y)
 					if (ao > 0) {
 						const c = color.match(/\d+/g).map(Number)
 						color = `rgb(${Math.floor(c[0] * (1 - ao))},${Math.floor(c[1] * (1 - ao))},${Math.floor(c[2] * (1 - ao))})`
 					}
-					drawIsometricTile(x, y, color)
+					if (tile.z > 0 || tile.thickness > 0) {
+						drawIsometricTileWithHeight(x, y, color, tile.z, tile.thickness)
+					} else {
+						drawIsometricTile(x, y, color)
+					}
 				}
 			}
-			if (state.showGrid) drawIsometricTile(x, y, 'rgba(255,255,255,0.1)', true)
 		}
 	}
+	if (state.showGrid) drawDynamicGrid()
 	const sortedEntities = [...state.entities].sort((a, b) => (a.x + a.y + (a.z || 0) * 0.01) - (b.x + b.y + (b.z || 0) * 0.01))
 	for (const entity of sortedEntities) {
 		if (!isInViewport(entity.x, entity.y)) continue
@@ -3245,7 +3531,8 @@ function render() {
 		drawPlayer()
 	}
 	const world = screenToWorld(state.mouseX, state.mouseY)
-	if (!state.previewMode && world.x >= 0 && world.x < state.mapWidth && world.y >= 0 && world.y < state.mapHeight) {
+	const inBounds = world.x >= state.mapBounds.minX && world.x <= state.mapBounds.maxX && world.y >= state.mapBounds.minY && world.y <= state.mapBounds.maxY
+	if (!state.previewMode && inBounds) {
 		if (state.tool === 'brush' && state.selectedResource) {
 			const res = resourceMap.get(state.selectedResource)
 			if (res) {
@@ -3270,17 +3557,40 @@ function render() {
 		ctx.globalAlpha = 0.5
 		for (let y = y1; y <= y2; y++) {
 			for (let x = x1; x <= x2; x++) {
-				if (x >= 0 && x < state.mapWidth && y >= 0 && y < state.mapHeight) {
-					if (state.tool === 'rect' && state.selectedResource) {
-						const res = resourceMap.get(state.selectedResource)
-						if (res) drawIsometricTile(x, y, res.color)
-					} else if (state.tool === 'eraser') {
-						drawIsometricTile(x, y, '#e74c3c')
-					}
+				if (state.tool === 'rect' && state.selectedResource) {
+					const res = resourceMap.get(state.selectedResource)
+					if (res) drawIsometricTile(x, y, res.color)
+				} else if (state.tool === 'eraser') {
+					drawIsometricTile(x, y, '#e74c3c')
 				}
 			}
 		}
 		ctx.globalAlpha = 1
+	}
+	if ((state.buildingCreateMode || state.portalDrawMode) && state.buildingSelectStart && state.buildingSelectEnd) {
+		const x1 = Math.min(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+		const y1 = Math.min(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+		const x2 = Math.max(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+		const y2 = Math.max(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+		ctx.globalAlpha = 0.4
+		for (let y = y1; y <= y2; y++) {
+			for (let x = x1; x <= x2; x++) {
+				drawIsometricTile(x, y, state.portalDrawMode ? '#3498db' : '#27ae60')
+			}
+		}
+		ctx.globalAlpha = 1
+	}
+	for (const b of resources.building) {
+		const isSelected = state.selectedResource === b.id
+		if (isSelected) {
+			ctx.globalAlpha = 0.3
+			for (let y = b.area.y; y < b.area.y + b.area.height; y++) {
+				for (let x = b.area.x; x < b.area.x + b.area.width; x++) {
+					drawIsometricTile(x, y, b.color)
+				}
+			}
+			ctx.globalAlpha = 1
+		}
 	}
 	applyPostProcess()
 	drawPivotIndicator()
@@ -3314,9 +3624,11 @@ function enterPreviewMode() {
 		state.playerX = spawnTrigger.x
 		state.playerY = spawnTrigger.y
 	} else {
-		state.playerX = Math.floor(state.mapWidth / 2)
-		state.playerY = Math.floor(state.mapHeight / 2)
+		state.playerX = Math.floor((state.mapBounds.minX + state.mapBounds.maxX) / 2)
+		state.playerY = Math.floor((state.mapBounds.minY + state.mapBounds.maxY) / 2)
 	}
+	const tile = getTile(Math.floor(state.playerX), Math.floor(state.playerY))
+	state.playerZ = tile ? tile.z : 0
 	state.previewMode = true
 	state.showGrid = false
 	document.body.classList.add('preview-mode')
@@ -3361,13 +3673,12 @@ function updatePlayerMovement(dt) {
 		const newY = state.playerY + dy * moveSpeed
 		const tileX = Math.floor(newX)
 		const tileY = Math.floor(newY)
-		if (tileX >= 0 && tileX < state.mapWidth && tileY >= 0 && tileY < state.mapHeight) {
-			const terrain = state.layers[0].data[tileY]?.[tileX]
-			if (terrain && terrain !== 'void' && terrain !== 'water') {
-				state.playerX = Math.max(0, Math.min(state.mapWidth - 0.5, newX))
-				state.playerY = Math.max(0, Math.min(state.mapHeight - 0.5, newY))
-				centerOnPlayer()
-			}
+		const tile = getTile(tileX, tileY)
+		if (tile && tile.terrain !== 'void' && tile.terrain !== 'water') {
+			state.playerX = newX
+			state.playerY = newY
+			state.playerZ = tile.z
+			centerOnPlayer()
 		}
 		state.needsRender = true
 	}
@@ -3490,6 +3801,29 @@ function updateToolButtons() {
 		const tool = btn.dataset.tool
 		btn.disabled = isSide && tool !== 'select'
 	})
+	const terrainTools = ['raise', 'lower', 'thicken', 'thin']
+	const showTerrainProps = terrainTools.includes(state.tool)
+	const showConnectProps = state.tool === 'connect'
+	const showBrushProps = state.tool === 'rect' || state.tool === 'eraser' || terrainTools.includes(state.tool)
+	document.getElementById('terrainToolProps').style.display = showTerrainProps ? 'block' : 'none'
+	document.getElementById('connectToolProps').style.display = showConnectProps ? 'block' : 'none'
+	document.getElementById('brushSizeProps').style.display = showBrushProps ? 'block' : 'none'
+}
+function renderItemTypes() {
+	const list = document.getElementById('itemTypesList')
+	if (!list) return
+	list.innerHTML = ''
+	state.itemTypes.forEach((item, idx) => {
+		const div = document.createElement('div')
+		div.className = 'item-type-row'
+		div.textContent = item.name || `物品${idx + 1}`
+		list.appendChild(div)
+	})
+}
+function renderItemInstances() {
+	const list = document.getElementById('itemInstancesList')
+	if (!list) return
+	list.innerHTML = ''
 }
 function saveHistory() {
 	const snapshot = {
@@ -3528,7 +3862,6 @@ function updateHistoryButtons() {
 	document.getElementById('redoBtn').disabled = state.historyIndex >= state.history.length - 1
 }
 function applyTool(wx, wy) {
-	if (wx < 0 || wx >= state.mapWidth || wy < 0 || wy >= state.mapHeight) return
 	const layer = state.layers[state.selectedLayer]
 	if (layer.locked) return
 	if (state.tool === 'brush' && state.selectedResource) {
@@ -3549,7 +3882,13 @@ function applyTool(wx, wy) {
 				state.entities.push(entity)
 				state.terrainDirty = true
 			} else if (layer.type === 'terrain') {
-				layer.data[wy][wx] = state.selectedResource
+				let tile = getTile(wx, wy)
+				if (!tile) {
+					tile = { terrain: state.selectedResource, z: 0, thickness: 0, isBridge: false, isSlope: false }
+					setTile(wx, wy, tile)
+				} else {
+					tile.terrain = state.selectedResource
+				}
 				state.terrainDirty = true
 			}
 		}
@@ -3601,10 +3940,14 @@ function exportMap() {
 			offsetY += tileSize
 		}
 	})
+	const tileData = {}
+	state.tileMap.forEach((tile, key) => { tileData[key] = tile })
 	const mapData = {
-		version: '1.0',
-		mapSize: { width: state.mapWidth, height: state.mapHeight },
+		version: '1.1',
+		mapSize: { width: getMapWidth(), height: getMapHeight() },
+		mapBounds: state.mapBounds,
 		spriteSheet: spriteMap,
+		tileData: tileData,
 		layers: state.layers.map(l => ({
 			name: l.name,
 			type: l.type,
@@ -3699,10 +4042,22 @@ function importMap() {
 			if (mapData) {
 				try {
 					const data = JSON.parse(mapData)
-					state.mapWidth = data.mapSize.width
-					state.mapHeight = data.mapSize.height
-					document.getElementById('mapWidth').value = state.mapWidth
-					document.getElementById('mapHeight').value = state.mapHeight
+					state.tileMap.clear()
+					if (data.tileData) {
+						Object.entries(data.tileData).forEach(([key, tile]) => {
+							state.tileMap.set(key, tile)
+						})
+						state.mapBounds = data.mapBounds || { minX: 0, maxX: data.mapSize.width - 1, minY: 0, maxY: data.mapSize.height - 1 }
+					} else if (data.layers && data.layers[0]) {
+						const terrainData = data.layers[0].data
+						state.mapBounds = { minX: 0, maxX: data.mapSize.width - 1, minY: 0, maxY: data.mapSize.height - 1 }
+						for (let y = 0; y < data.mapSize.height; y++) {
+							for (let x = 0; x < data.mapSize.width; x++) {
+								const terrain = terrainData[y]?.[x] || 'grass'
+								setTile(x, y, { terrain: terrain, z: 0, thickness: 0, isBridge: false, isSlope: false })
+							}
+						}
+					}
 					data.layers.forEach((l, i) => {
 						if (state.layers[i]) {
 							state.layers[i].name = l.name
@@ -3719,6 +4074,8 @@ function importMap() {
 					renderItemTypes()
 					renderItemInstances()
 					saveHistory()
+					state.lightingDirty = true
+					state.terrainDirty = true
 					render()
 				} catch (err) {
 					alert('导入失败: ' + err.message)
@@ -3751,21 +4108,23 @@ function extractTextChunk(uint8, keyword) {
 	}
 	return null
 }
-function floodFill(startX, startY, newTile) {
+function floodFill(startX, startY, newTerrain) {
 	const layer = state.layers[state.selectedLayer]
 	if (layer.type !== 'terrain' || layer.locked) return
-	const oldTile = layer.data[startY][startX]
-	if (oldTile === newTile) return
+	const startTile = getTile(startX, startY)
+	if (!startTile) return
+	const oldTerrain = startTile.terrain
+	if (oldTerrain === newTerrain) return
 	const stack = [[startX, startY]]
 	const visited = new Set()
 	while (stack.length > 0) {
 		const [x, y] = stack.pop()
 		const key = `${x},${y}`
 		if (visited.has(key)) continue
-		if (x < 0 || x >= state.mapWidth || y < 0 || y >= state.mapHeight) continue
-		if (layer.data[y][x] !== oldTile) continue
+		const tile = getTile(x, y)
+		if (!tile || tile.terrain !== oldTerrain) continue
 		visited.add(key)
-		layer.data[y][x] = newTile
+		tile.terrain = newTerrain
 		stack.push([x+1, y], [x-1, y], [x, y+1], [x, y-1])
 	}
 	state.terrainDirty = true
@@ -3858,6 +4217,21 @@ canvas.addEventListener('mousedown', (e) => {
 			state.rectSelectStart = { x: world.x, y: world.y }
 			state.rectSelectEnd = { x: world.x, y: world.y }
 			state.isDrawing = true
+		} else if (['raise', 'lower', 'thicken', 'thin'].includes(state.tool)) {
+			saveHistory()
+			const amount = state.terrainEditValue
+			const tiles = getTilesInBrush(world.x, world.y, state.brushSize)
+			tiles.forEach(({ x, y }) => {
+				const tile = getTile(x, y)
+				if (tile) {
+					if (state.tool === 'raise') raiseTerrain(x, y, amount)
+					else if (state.tool === 'lower') lowerTerrain(x, y, amount)
+					else if (state.tool === 'thicken') thickenBridge(x, y, amount)
+					else if (state.tool === 'thin') thinBridge(x, y, amount)
+				}
+			})
+			state.terrainDirty = true
+			render()
 		}
 	}
 })
@@ -3880,11 +4254,9 @@ canvas.addEventListener('mousemove', (e) => {
 		}
 	} else if (state.isDragging && state.selectedEntity) {
 		const world = screenToWorld(e.offsetX, e.offsetY)
-		if (world.x >= 0 && world.x < state.mapWidth && world.y >= 0 && world.y < state.mapHeight) {
-			state.selectedEntity.x = world.x
-			state.selectedEntity.y = world.y
-			updatePropertyPanel()
-		}
+		state.selectedEntity.x = world.x
+		state.selectedEntity.y = world.y
+		updatePropertyPanel()
 	} else if ((state.tool === 'rect' || state.tool === 'eraser') && state.isDrawing && state.rectSelectStart) {
 		const world = screenToWorld(e.offsetX, e.offsetY)
 		state.rectSelectEnd = { x: world.x, y: world.y }
@@ -3906,20 +4278,25 @@ canvas.addEventListener('mouseup', () => {
 			saveHistory()
 			for (let y = y1; y <= y2; y++) {
 				for (let x = x1; x <= x2; x++) {
-					if (x >= 0 && x < state.mapWidth && y >= 0 && y < state.mapHeight) {
-						if (state.tool === 'rect' && state.selectedResource) {
-							if (layer.type === 'terrain') {
-								layer.data[y][x] = state.selectedResource
-							}
-						} else if (state.tool === 'eraser') {
-							if (layer.type === 'terrain') {
-								layer.data[y][x] = 'ground'
+					if (state.tool === 'rect' && state.selectedResource) {
+						if (layer.type === 'terrain') {
+							let tile = getTile(x, y)
+							if (!tile) {
+								tile = { terrain: state.selectedResource, z: 0, thickness: 0, isBridge: false, isSlope: false }
+								setTile(x, y, tile)
 							} else {
-								const idx = state.entities.findIndex(e => e.x === x && e.y === y)
-								if (idx >= 0) state.entities.splice(idx, 1)
-								const tidx = state.triggers.findIndex(t => t.x === x && t.y === y)
-								if (tidx >= 0) state.triggers.splice(tidx, 1)
+								tile.terrain = state.selectedResource
 							}
+						}
+					} else if (state.tool === 'eraser') {
+						if (layer.type === 'terrain') {
+							const tile = getTile(x, y)
+							if (tile) tile.terrain = 'grass'
+						} else {
+							const idx = state.entities.findIndex(e => e.x === x && e.y === y)
+							if (idx >= 0) state.entities.splice(idx, 1)
+							const tidx = state.triggers.findIndex(t => t.x === x && t.y === y)
+							if (tidx >= 0) state.triggers.splice(tidx, 1)
 						}
 					}
 				}
@@ -4058,23 +4435,60 @@ document.getElementById('addLayerBtn').addEventListener('click', () => {
 		visible: true,
 		locked: false,
 		type: 'decor',
-		data: Array(state.mapHeight).fill(null).map(() => Array(state.mapWidth).fill(null))
+		data: []
 	})
 	renderLayerList()
 })
 document.getElementById('mapWidth').addEventListener('change', (e) => {
 	const newWidth = parseInt(e.target.value)
-	if (newWidth >= 10 && newWidth <= 100) {
-		state.mapWidth = newWidth
-		initMap()
+	if (newWidth >= 10) {
+		const oldMaxX = state.mapBounds.maxX
+		state.mapBounds.maxX = state.mapBounds.minX + newWidth - 1
+		for (let y = state.mapBounds.minY; y <= state.mapBounds.maxY; y++) {
+			for (let x = oldMaxX + 1; x <= state.mapBounds.maxX; x++) {
+				if (!getTile(x, y)) setTile(x, y, { terrain: 'grass', z: 0, thickness: 0, isBridge: false, isSlope: false })
+			}
+		}
 		render()
 	}
 })
 document.getElementById('mapHeight').addEventListener('change', (e) => {
 	const newHeight = parseInt(e.target.value)
-	if (newHeight >= 10 && newHeight <= 100) {
-		state.mapHeight = newHeight
-		initMap()
+	if (newHeight >= 10) {
+		const oldMaxY = state.mapBounds.maxY
+		state.mapBounds.maxY = state.mapBounds.minY + newHeight - 1
+		for (let y = oldMaxY + 1; y <= state.mapBounds.maxY; y++) {
+			for (let x = state.mapBounds.minX; x <= state.mapBounds.maxX; x++) {
+				if (!getTile(x, y)) setTile(x, y, { terrain: 'grass', z: 0, thickness: 0, isBridge: false, isSlope: false })
+			}
+		}
+		render()
+	}
+})
+document.getElementById('terrainEditValue').addEventListener('change', (e) => {
+	state.terrainEditValue = Math.max(0.1, parseFloat(e.target.value) || 0.5)
+	e.target.value = state.terrainEditValue
+})
+document.getElementById('brushSizeSlider').addEventListener('input', (e) => {
+	state.brushSize = Math.pow(10, parseFloat(e.target.value))
+	document.getElementById('brushSizeInput').value = state.brushSize.toFixed(2)
+})
+document.getElementById('brushSizeInput').addEventListener('change', (e) => {
+	state.brushSize = Math.max(0.01, Math.min(100, parseFloat(e.target.value) || 1))
+	e.target.value = state.brushSize
+	document.getElementById('brushSizeSlider').value = Math.log10(state.brushSize)
+})
+document.getElementById('applyConnectBtn').addEventListener('click', () => {
+	const x1 = parseInt(document.getElementById('connectStartX').value)
+	const y1 = parseInt(document.getElementById('connectStartY').value)
+	const z1 = parseFloat(document.getElementById('connectStartZ').value) || 0
+	const x2 = parseInt(document.getElementById('connectEndX').value)
+	const y2 = parseInt(document.getElementById('connectEndY').value)
+	const z2 = parseFloat(document.getElementById('connectEndZ').value) || 0
+	if (!isNaN(x1) && !isNaN(y1) && !isNaN(x2) && !isNaN(y2)) {
+		saveHistory()
+		createBridge(x1, y1, z1, x2, y2, z2)
+		state.terrainDirty = true
 		render()
 	}
 })
@@ -4124,8 +4538,8 @@ document.addEventListener('keydown', (e) => {
 		saveHistory()
 		const newEntity = JSON.parse(JSON.stringify(state.clipboard))
 		newEntity.id = Date.now()
-		newEntity.x = Math.min(state.mapWidth - 1, newEntity.x + 1)
-		newEntity.y = Math.min(state.mapHeight - 1, newEntity.y + 1)
+		newEntity.x = newEntity.x + 1
+		newEntity.y = newEntity.y + 1
 		state.entities.push(newEntity)
 		state.selectedEntity = newEntity
 		updatePropertyPanel()
@@ -4135,737 +4549,6 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
 	const key = e.key.toLowerCase()
 	state.keysPressed[key] = false
-})
-function openGallery(callback) {
-	state.gallery.callback = callback
-	state.gallery.selected = null
-	state.gallery.path = []
-	renderGallery()
-	document.getElementById('galleryModal').classList.add('open')
-}
-function closeGallery() {
-	document.getElementById('galleryModal').classList.remove('open')
-	state.gallery.callback = null
-}
-function renderGallery() {
-	const bread = document.getElementById('galleryBread')
-	const grid = document.getElementById('galleryGrid')
-	let breadHtml = '<span data-id="">根目录</span>'
-	let currentId = null
-	for (const fid of state.gallery.path) {
-		const folder = state.gallery.items.find(i => i.id === fid)
-		if (folder) {
-			breadHtml += ` / <span data-id="${fid}">${folder.name}</span>`
-			currentId = fid
-		}
-	}
-	bread.innerHTML = breadHtml
-	bread.querySelectorAll('span').forEach(span => {
-		span.addEventListener('click', () => {
-			const id = span.dataset.id
-			if (id === '') {
-				state.gallery.path = []
-			} else {
-				const idx = state.gallery.path.indexOf(id)
-				if (idx >= 0) state.gallery.path = state.gallery.path.slice(0, idx + 1)
-			}
-			state.gallery.selected = null
-			renderGallery()
-		})
-	})
-	const items = state.gallery.items.filter(i => i.parent === currentId)
-	grid.innerHTML = ''
-	for (const item of items) {
-		const div = document.createElement('div')
-		div.className = 'ed-gallery-item' + (item.type === 'folder' ? ' folder' : '') + (state.gallery.selected === item.id ? ' selected' : '')
-		if (item.type === 'folder') {
-			div.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span class="item-name">${item.name}</span>`
-			div.addEventListener('dblclick', () => {
-				state.gallery.path.push(item.id)
-				state.gallery.selected = null
-				renderGallery()
-			})
-		} else {
-			div.innerHTML = `<img src="${item.url}"><span class="item-name">${item.name}</span>`
-		}
-		div.addEventListener('click', (e) => {
-			if (e.detail === 1) {
-				state.gallery.selected = item.id
-				renderGallery()
-			}
-		})
-		grid.appendChild(div)
-	}
-}
-function uploadToGallery(files) {
-	const currentParent = state.gallery.path.length > 0 ? state.gallery.path[state.gallery.path.length - 1] : null
-	for (const file of files) {
-		if (!file.type.startsWith('image/')) continue
-		const reader = new FileReader()
-		reader.onload = (e) => {
-			state.gallery.items.push({
-				id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-				type: 'image',
-				name: file.name,
-				url: e.target.result,
-				parent: currentParent
-			})
-			renderGallery()
-		}
-		reader.readAsDataURL(file)
-	}
-}
-function createGalleryFolder(name) {
-	const currentParent = state.gallery.path.length > 0 ? state.gallery.path[state.gallery.path.length - 1] : null
-	state.gallery.items.push({
-		id: 'folder_' + Date.now(),
-		type: 'folder',
-		name: name,
-		parent: currentParent
-	})
-	renderGallery()
-}
-document.getElementById('galleryClose').addEventListener('click', closeGallery)
-document.getElementById('galleryModal').addEventListener('click', (e) => {
-	if (e.target === e.currentTarget) closeGallery()
-})
-document.getElementById('galleryUpload').addEventListener('click', () => {
-	const input = document.createElement('input')
-	input.type = 'file'
-	input.accept = 'image/*'
-	input.multiple = true
-	input.onchange = (e) => uploadToGallery(e.target.files)
-	input.click()
-})
-document.getElementById('galleryNewFolder').addEventListener('click', () => {
-	const name = prompt('文件夹名称:')
-	if (name) createGalleryFolder(name)
-})
-document.getElementById('galleryConfirm').addEventListener('click', () => {
-	if (state.gallery.selected && state.gallery.callback) {
-		const item = state.gallery.items.find(i => i.id === state.gallery.selected)
-		if (item && item.type === 'image') {
-			state.gallery.callback(item.url)
-			closeGallery()
-		}
-	}
-})
-function genId() {
-	return Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
-}
-function renderItemTypes() {
-	const list = document.getElementById('itemTypesList')
-	list.innerHTML = ''
-	for (const type of state.itemTypes) {
-		const card = document.createElement('div')
-		card.className = 'item-type-card collapse-panel'
-		card.innerHTML = `
-			<div class="collapse-header">
-				<svg class="arrow" viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-				<span style="flex:1">${type.name} (${type.id})</span>
-				<button class="remove-btn" data-id="${type.id}">
-					<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-				</button>
-			</div>
-			<div class="collapse-body">
-				<div class="prop-row">
-					<label>ID</label>
-					<input type="text" value="${type.id}" data-field="id" data-type-id="${type.id}">
-				</div>
-				<div class="prop-row">
-					<label>名称</label>
-					<input type="text" value="${type.name}" data-field="name" data-type-id="${type.id}">
-				</div>
-				<div class="prop-row">
-					<label>标签</label>
-					<div class="tags-row" data-type-id="${type.id}">
-						${type.tags.map(t => `<span class="tag">${t}<button class="tag-remove" data-tag="${t}">x</button></span>`).join('')}
-						<button class="ed-btn sm add-indicator" data-action="add-tag"></button>
-					</div>
-				</div>
-				<div class="prop-row">
-					<label>继承</label>
-					<select data-field="parent" data-type-id="${type.id}">
-						<option value="">无</option>
-						${state.itemTypes.filter(t => t.id !== type.id).map(t => `<option value="${t.id}" ${type.parent === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
-					</select>
-				</div>
-				<div class="props-section">
-					<div class="props-section-header">
-						<span>属性</span>
-						<button class="ed-btn sm add-indicator" data-action="add-prop" data-type-id="${type.id}"></button>
-					</div>
-					<div class="sortable-list" data-props-list="${type.id}">
-						${type.properties.map((p, pi) => renderPropertyItem(type.id, p, pi)).join('')}
-					</div>
-				</div>
-			</div>
-		`
-		card.querySelector('.collapse-header').addEventListener('click', (e) => {
-			if (e.target.closest('.remove-btn')) return
-			card.querySelector('.collapse-header').classList.toggle('open')
-			card.querySelector('.collapse-body').classList.toggle('open')
-		})
-		card.querySelector('.remove-btn').addEventListener('click', () => {
-			state.itemTypes = state.itemTypes.filter(t => t.id !== type.id)
-			renderItemTypes()
-			renderItemInstances()
-		})
-		list.appendChild(card)
-	}
-	bindItemTypeEvents()
-}
-function renderPropertyItem(typeId, prop, index) {
-	const isEnum = prop.type === 'enum'
-	return `
-		<div class="sortable-item" data-prop-idx="${index}" draggable="true">
-			<span class="drag-handle">≡</span>
-			<span class="item-content">${prop.name} (${prop.type}${!isEnum ? `: ${prop.min}-${prop.max}` : ''})</span>
-			<button class="ed-btn sm" data-action="edit-prop" data-type-id="${typeId}" data-prop-idx="${index}">
-				<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-			</button>
-			<button class="remove-btn" data-action="remove-prop" data-type-id="${typeId}" data-prop-idx="${index}">
-				<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-			</button>
-		</div>
-	`
-}
-function bindItemTypeEvents() {
-	document.querySelectorAll('[data-field][data-type-id]').forEach(el => {
-		el.addEventListener('change', (e) => {
-			const typeId = el.dataset.typeId
-			const field = el.dataset.field
-			const type = state.itemTypes.find(t => t.id === typeId)
-			if (type) {
-				if (field === 'id') {
-					const oldId = type.id
-					type.id = e.target.value
-					state.items.forEach(item => {
-						if (item.typeId === oldId) item.typeId = type.id
-					})
-				} else if (field === 'parent') {
-					type.parent = e.target.value || null
-				} else {
-					type[field] = e.target.value
-				}
-				renderItemTypes()
-				renderItemInstances()
-			}
-		})
-	})
-	document.querySelectorAll('.tags-row').forEach(row => {
-		const typeId = row.dataset.typeId
-		row.querySelectorAll('.tag-remove').forEach(btn => {
-			btn.addEventListener('click', () => {
-				const tag = btn.dataset.tag
-				const type = state.itemTypes.find(t => t.id === typeId)
-				if (type) {
-					type.tags = type.tags.filter(t => t !== tag)
-					renderItemTypes()
-				}
-			})
-		})
-		row.querySelector('[data-action="add-tag"]')?.addEventListener('click', () => {
-			const tag = prompt('标签名称:')
-			if (tag) {
-				const type = state.itemTypes.find(t => t.id === typeId)
-				if (type && !type.tags.includes(tag)) {
-					type.tags.push(tag)
-					renderItemTypes()
-				}
-			}
-		})
-	})
-	document.querySelectorAll('[data-action="add-prop"]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const typeId = btn.dataset.typeId
-			const type = state.itemTypes.find(t => t.id === typeId)
-			if (type) {
-				const name = prompt('属性名称:')
-				if (name) {
-					type.properties.push({
-						name: name,
-						type: 'number',
-						min: 0,
-						max: 100,
-						enumValues: []
-					})
-					renderItemTypes()
-				}
-			}
-		})
-	})
-	document.querySelectorAll('[data-action="edit-prop"]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const typeId = btn.dataset.typeId
-			const propIdx = parseInt(btn.dataset.propIdx)
-			const type = state.itemTypes.find(t => t.id === typeId)
-			if (type && type.properties[propIdx]) {
-				editProperty(type, propIdx)
-			}
-		})
-	})
-	document.querySelectorAll('[data-action="remove-prop"]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const typeId = btn.dataset.typeId
-			const propIdx = parseInt(btn.dataset.propIdx)
-			const type = state.itemTypes.find(t => t.id === typeId)
-			if (type) {
-				type.properties.splice(propIdx, 1)
-				renderItemTypes()
-			}
-		})
-	})
-	document.querySelectorAll('[data-props-list]').forEach(list => {
-		const typeId = list.dataset.propsList
-		let dragIdx = null
-		list.querySelectorAll('.sortable-item').forEach(item => {
-			item.addEventListener('dragstart', (e) => {
-				dragIdx = parseInt(item.dataset.propIdx)
-				item.style.opacity = '0.5'
-			})
-			item.addEventListener('dragend', () => {
-				item.style.opacity = '1'
-				dragIdx = null
-			})
-			item.addEventListener('dragover', (e) => {
-				e.preventDefault()
-			})
-			item.addEventListener('drop', (e) => {
-				e.preventDefault()
-				const dropIdx = parseInt(item.dataset.propIdx)
-				if (dragIdx !== null && dragIdx !== dropIdx) {
-					const type = state.itemTypes.find(t => t.id === typeId)
-					if (type) {
-						const [moved] = type.properties.splice(dragIdx, 1)
-						type.properties.splice(dropIdx, 0, moved)
-						renderItemTypes()
-					}
-				}
-			})
-		})
-	})
-}
-function editProperty(type, propIdx) {
-	const prop = type.properties[propIdx]
-	const modal = document.createElement('div')
-	modal.className = 'ed-gallery-modal open'
-	modal.innerHTML = `
-		<div class="ed-gallery-box" style="max-width:400px;height:auto">
-			<div class="ed-gallery-hd">
-				<span style="color:#fff">编辑属性</span>
-				<button class="ed-btn sm close-modal">
-					<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-				</button>
-			</div>
-			<div style="padding:16px;display:flex;flex-direction:column;gap:12px">
-				<div class="prop-row">
-					<label>属性名</label>
-					<input type="text" id="propName" value="${prop.name}">
-				</div>
-				<div class="prop-row">
-					<label>类型</label>
-					<select id="propType">
-						<option value="number" ${prop.type === 'number' ? 'selected' : ''}>数值</option>
-						<option value="enum" ${prop.type === 'enum' ? 'selected' : ''}>枚举</option>
-					</select>
-				</div>
-				<div id="numberFields" style="${prop.type === 'enum' ? 'display:none' : ''}">
-					<div class="prop-row">
-						<label>最小值</label>
-						<input type="number" id="propMin" value="${prop.min || 0}">
-					</div>
-					<div class="prop-row">
-						<label>最大值</label>
-						<input type="number" id="propMax" value="${prop.max || 100}">
-					</div>
-				</div>
-				<div id="enumFields" class="enum-editor" style="${prop.type !== 'enum' ? 'display:none' : ''}">
-					<div style="font-size:11px;color:#666;margin-bottom:8px">枚举值</div>
-					<div id="enumList">
-						${(prop.enumValues || []).map((v, i) => `<div class="enum-item"><span style="color:#555">≡</span><input type="text" value="${v}" data-enum-idx="${i}"><button class="remove-btn" data-enum-idx="${i}"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`).join('')}
-					</div>
-					<button class="ed-btn sm" id="addEnumBtn" style="margin-top:8px">+ 添加枚举值</button>
-				</div>
-			</div>
-			<div class="ed-gallery-ft">
-				<button class="gal-upload close-modal">取消</button>
-				<button class="gal-confirm" id="saveProp">保存</button>
-			</div>
-		</div>
-	`
-	document.body.appendChild(modal)
-	const propTypeSelect = modal.querySelector('#propType')
-	propTypeSelect.addEventListener('change', () => {
-		modal.querySelector('#numberFields').style.display = propTypeSelect.value === 'enum' ? 'none' : ''
-		modal.querySelector('#enumFields').style.display = propTypeSelect.value === 'enum' ? '' : 'none'
-	})
-	modal.querySelector('#addEnumBtn').addEventListener('click', () => {
-		const enumList = modal.querySelector('#enumList')
-		const idx = enumList.children.length
-		const div = document.createElement('div')
-		div.className = 'enum-item'
-		div.innerHTML = `<span style="color:#555">≡</span><input type="text" value="" data-enum-idx="${idx}"><button class="remove-btn" data-enum-idx="${idx}"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`
-		div.querySelector('.remove-btn').addEventListener('click', () => div.remove())
-		enumList.appendChild(div)
-	})
-	modal.querySelectorAll('#enumList .remove-btn').forEach(btn => {
-		btn.addEventListener('click', () => btn.closest('.enum-item').remove())
-	})
-	modal.querySelectorAll('.close-modal').forEach(btn => {
-		btn.addEventListener('click', () => modal.remove())
-	})
-	modal.addEventListener('click', (e) => {
-		if (e.target === modal) modal.remove()
-	})
-	modal.querySelector('#saveProp').addEventListener('click', () => {
-		prop.name = modal.querySelector('#propName').value
-		prop.type = propTypeSelect.value
-		if (prop.type === 'number') {
-			prop.min = parseFloat(modal.querySelector('#propMin').value) || 0
-			prop.max = parseFloat(modal.querySelector('#propMax').value) || 100
-		} else {
-			prop.enumValues = [...modal.querySelectorAll('#enumList input')].map(inp => inp.value).filter(v => v)
-		}
-		modal.remove()
-		renderItemTypes()
-		renderItemInstances()
-	})
-}
-function getInheritedProperties(typeId) {
-	const props = []
-	const visited = new Set()
-	let currentTypeId = typeId
-	while (currentTypeId && !visited.has(currentTypeId)) {
-		visited.add(currentTypeId)
-		const type = state.itemTypes.find(t => t.id === currentTypeId)
-		if (type) {
-			for (const p of type.properties) {
-				if (!props.find(ep => ep.name === p.name)) {
-					props.push({ ...p, fromType: type.id })
-				}
-			}
-			currentTypeId = type.parent
-		} else {
-			break
-		}
-	}
-	return props
-}
-function renderItemInstances() {
-	const list = document.getElementById('itemInstancesList')
-	list.innerHTML = ''
-	for (const item of state.items) {
-		const type = state.itemTypes.find(t => t.id === item.typeId)
-		const inheritedProps = type ? getInheritedProperties(type.id) : []
-		const card = document.createElement('div')
-		card.className = 'item-instance-card collapse-panel'
-		card.innerHTML = `
-			<div class="collapse-header">
-				<svg class="arrow" viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-				<span style="flex:1">${item.name} (${item.id})</span>
-				<button class="remove-btn" data-id="${item.id}">
-					<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-				</button>
-			</div>
-			<div class="collapse-body">
-				<div class="prop-row">
-					<label>ID</label>
-					<input type="text" value="${item.id}" data-field="id" data-item-id="${item.id}">
-				</div>
-				<div class="prop-row">
-					<label>名称</label>
-					<input type="text" value="${item.name}" data-field="name" data-item-id="${item.id}">
-				</div>
-				<div class="prop-row">
-					<label>种类</label>
-					<select data-field="typeId" data-item-id="${item.id}">
-						<option value="">无</option>
-						${state.itemTypes.map(t => `<option value="${t.id}" ${item.typeId === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
-					</select>
-				</div>
-				<div class="prop-row">
-					<label>贴图</label>
-					<div class="sprite-preview" data-item-id="${item.id}" data-sprite-type="base">
-						${item.sprite ? `<img src="${item.sprite}">` : ''}
-					</div>
-				</div>
-				${inheritedProps.length > 0 ? `
-				<div class="props-section">
-					<div class="props-section-header"><span>继承属性</span></div>
-					${inheritedProps.map(p => {
-						const val = item.propertyValues[p.name]
-						if (p.type === 'enum') {
-							return `<div class="prop-row"><label>${p.name}</label><select data-prop-name="${p.name}" data-item-id="${item.id}">${(p.enumValues || []).map(ev => `<option value="${ev}" ${val === ev ? 'selected' : ''}>${ev}</option>`).join('')}</select></div>`
-						}
-						return `<div class="prop-row"><label>${p.name}</label><input type="number" value="${val !== undefined ? val : p.min}" min="${p.min}" max="${p.max}" data-prop-name="${p.name}" data-item-id="${item.id}"></div>`
-					}).join('')}
-				</div>` : ''}
-				<div class="props-section">
-					<div class="props-section-header">
-						<span>额外属性</span>
-						<button class="ed-btn sm add-indicator" data-action="add-extra-prop" data-item-id="${item.id}"></button>
-					</div>
-					<div class="sortable-list">
-						${(item.extraProperties || []).map((ep, i) => `
-							<div class="sortable-item">
-								<span class="drag-handle">≡</span>
-								<span class="item-content">${ep.name}: ${ep.value}</span>
-								<button class="remove-btn" data-action="remove-extra-prop" data-item-id="${item.id}" data-prop-idx="${i}">
-									<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-								</button>
-							</div>
-						`).join('')}
-					</div>
-				</div>
-				<div class="props-section">
-					<div class="props-section-header">
-						<span>条件贴图</span>
-						<button class="ed-btn sm add-indicator" data-action="add-cond-sprite" data-item-id="${item.id}"></button>
-					</div>
-					${(item.conditionalSprites || []).map((cs, i) => renderCondSpriteItem(item, cs, i, inheritedProps)).join('')}
-				</div>
-			</div>
-		`
-		card.querySelector('.collapse-header').addEventListener('click', (e) => {
-			if (e.target.closest('.remove-btn')) return
-			card.querySelector('.collapse-header').classList.toggle('open')
-			card.querySelector('.collapse-body').classList.toggle('open')
-		})
-		card.querySelector('.collapse-header .remove-btn').addEventListener('click', () => {
-			state.items = state.items.filter(i => i.id !== item.id)
-			renderItemInstances()
-		})
-		list.appendChild(card)
-	}
-	bindItemInstanceEvents()
-}
-function renderCondSpriteItem(item, cs, idx, inheritedProps) {
-	const allProps = [...inheritedProps, ...(item.extraProperties || [])]
-	return `
-		<div class="cond-sprite-item" data-cond-idx="${idx}">
-			<div class="cond-sprite-row">
-				<label style="width:40px;font-size:11px;color:#666">优先级</label>
-				<input type="number" value="${cs.priority}" style="width:50px" data-cond-field="priority" data-item-id="${item.id}" data-cond-idx="${idx}">
-				<button class="remove-btn" data-action="remove-cond-sprite" data-item-id="${item.id}" data-cond-idx="${idx}">
-					<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-				</button>
-			</div>
-			<div class="cond-sprite-row">
-				<label style="width:40px;font-size:11px;color:#666">条件</label>
-				<select data-cond-field="property" data-item-id="${item.id}" data-cond-idx="${idx}" style="flex:1">
-					${allProps.map(p => `<option value="${p.name}" ${cs.condition.property === p.name ? 'selected' : ''}>${p.name}</option>`).join('')}
-				</select>
-				<select data-cond-field="operator" data-item-id="${item.id}" data-cond-idx="${idx}" style="width:50px">
-					<option value=">" ${cs.condition.operator === '>' ? 'selected' : ''}>></option>
-					<option value="<" ${cs.condition.operator === '<' ? 'selected' : ''}><</option>
-					<option value=">=" ${cs.condition.operator === '>=' ? 'selected' : ''}>>=</option>
-					<option value="<=" ${cs.condition.operator === '<=' ? 'selected' : ''}><=</option>
-					<option value="==" ${cs.condition.operator === '==' ? 'selected' : ''}>=</option>
-					<option value="!=" ${cs.condition.operator === '!=' ? 'selected' : ''}>!=</option>
-				</select>
-				<input type="text" value="${cs.condition.value}" style="width:60px" data-cond-field="value" data-item-id="${item.id}" data-cond-idx="${idx}">
-			</div>
-			<div class="cond-sprite-row">
-				<label style="width:40px;font-size:11px;color:#666">贴图</label>
-				<div class="sprite-preview" data-item-id="${item.id}" data-sprite-type="cond" data-cond-idx="${idx}" style="width:32px;height:32px">
-					${cs.sprite ? `<img src="${cs.sprite}">` : ''}
-				</div>
-			</div>
-		</div>
-	`
-}
-function bindItemInstanceEvents() {
-	document.querySelectorAll('[data-field][data-item-id]').forEach(el => {
-		el.addEventListener('change', (e) => {
-			const itemId = el.dataset.itemId
-			const field = el.dataset.field
-			const item = state.items.find(i => i.id === itemId)
-			if (item) {
-				if (field === 'id') {
-					item.id = e.target.value
-				} else if (field === 'typeId') {
-					item.typeId = e.target.value || null
-					item.propertyValues = {}
-				} else {
-					item[field] = e.target.value
-				}
-				renderItemInstances()
-			}
-		})
-	})
-	document.querySelectorAll('[data-prop-name][data-item-id]').forEach(el => {
-		el.addEventListener('change', (e) => {
-			const itemId = el.dataset.itemId
-			const propName = el.dataset.propName
-			const item = state.items.find(i => i.id === itemId)
-			if (item) {
-				item.propertyValues[propName] = el.tagName === 'SELECT' ? e.target.value : parseFloat(e.target.value)
-			}
-		})
-	})
-	document.querySelectorAll('.sprite-preview[data-item-id]').forEach(el => {
-		el.addEventListener('click', () => {
-			const itemId = el.dataset.itemId
-			const spriteType = el.dataset.spriteType
-			const condIdx = el.dataset.condIdx
-			const item = state.items.find(i => i.id === itemId)
-			if (item) {
-				openGallery((url) => {
-					if (spriteType === 'base') {
-						item.sprite = url
-					} else if (spriteType === 'cond' && condIdx !== undefined) {
-						item.conditionalSprites[parseInt(condIdx)].sprite = url
-					}
-					renderItemInstances()
-				})
-			}
-		})
-	})
-	document.querySelectorAll('[data-action="add-extra-prop"]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const itemId = btn.dataset.itemId
-			const item = state.items.find(i => i.id === itemId)
-			if (item) {
-				const name = prompt('属性名称:')
-				if (name) {
-					if (!item.extraProperties) item.extraProperties = []
-					item.extraProperties.push({ name, type: 'number', min: 0, max: 100, value: 0 })
-					renderItemInstances()
-				}
-			}
-		})
-	})
-	document.querySelectorAll('[data-action="remove-extra-prop"]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const itemId = btn.dataset.itemId
-			const propIdx = parseInt(btn.dataset.propIdx)
-			const item = state.items.find(i => i.id === itemId)
-			if (item && item.extraProperties) {
-				item.extraProperties.splice(propIdx, 1)
-				renderItemInstances()
-			}
-		})
-	})
-	document.querySelectorAll('[data-action="add-cond-sprite"]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const itemId = btn.dataset.itemId
-			const item = state.items.find(i => i.id === itemId)
-			if (item) {
-				if (!item.conditionalSprites) item.conditionalSprites = []
-				item.conditionalSprites.push({
-					priority: item.conditionalSprites.length + 1,
-					condition: { property: '', operator: '<', value: 0 },
-					sprite: null
-				})
-				renderItemInstances()
-			}
-		})
-	})
-	document.querySelectorAll('[data-action="remove-cond-sprite"]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const itemId = btn.dataset.itemId
-			const condIdx = parseInt(btn.dataset.condIdx)
-			const item = state.items.find(i => i.id === itemId)
-			if (item && item.conditionalSprites) {
-				item.conditionalSprites.splice(condIdx, 1)
-				renderItemInstances()
-			}
-		})
-	})
-	document.querySelectorAll('[data-cond-field][data-item-id]').forEach(el => {
-		el.addEventListener('change', (e) => {
-			const itemId = el.dataset.itemId
-			const condIdx = parseInt(el.dataset.condIdx)
-			const field = el.dataset.condField
-			const item = state.items.find(i => i.id === itemId)
-			if (item && item.conditionalSprites && item.conditionalSprites[condIdx]) {
-				const cs = item.conditionalSprites[condIdx]
-				if (field === 'priority') {
-					cs.priority = parseInt(e.target.value) || 1
-				} else if (field === 'property' || field === 'operator' || field === 'value') {
-					cs.condition[field] = field === 'value' ? (isNaN(parseFloat(e.target.value)) ? e.target.value : parseFloat(e.target.value)) : e.target.value
-				}
-			}
-		})
-	})
-}
-document.getElementById('addItemType').addEventListener('click', () => {
-	const id = 'type_' + genId()
-	state.itemTypes.push({
-		id: id,
-		name: '新种类',
-		tags: [],
-		parent: null,
-		properties: []
-	})
-	renderItemTypes()
-})
-document.getElementById('addItemInstance').addEventListener('click', () => {
-	const id = 'item_' + genId()
-	state.items.push({
-		id: id,
-		name: '新物品',
-		typeId: null,
-		sprite: null,
-		propertyValues: {},
-		extraProperties: [],
-		conditionalSprites: []
-	})
-	renderItemInstances()
-})
-let currentAddResourceTab = 'terrain'
-function openAddResourceModal(tab) {
-	currentAddResourceTab = tab
-	const modal = document.getElementById('addResourceModal')
-	const title = document.getElementById('addResourceModalTitle')
-	const heightRow = document.getElementById('heightRow')
-	const spriteRow = document.getElementById('spritePickerRow')
-	const titles = {
-		terrain: '添加地形',
-		entity: '添加实体',
-		structure: '添加结构',
-		furniture: '添加家具',
-		decor: '添加内饰'
-	}
-	title.textContent = titles[tab] || '添加资源'
-	heightRow.style.display = tab === 'entity' ? 'block' : 'none'
-	spriteRow.style.display = ['terrain', 'entity', 'furniture', 'decor'].includes(tab) ? 'block' : 'none'
-	document.getElementById('newResourceName').value = ''
-	document.getElementById('newResourceColor').value = '#166d3b'
-	document.getElementById('newResourceColorHex').value = '#166d3b'
-	document.getElementById('newResourceSprite').innerHTML = '点击选择图片'
-	document.getElementById('newResourceSprite').classList.remove('has-image')
-	document.getElementById('newResourceSprite').dataset.sprite = ''
-	if (tab === 'entity') document.getElementById('newResourceHeight').value = '32'
-	modal.classList.add('open')
-}
-function closeAddResourceModal() {
-	document.getElementById('addResourceModal').classList.remove('open')
-}
-document.getElementById('addResourceConfirm').addEventListener('click', () => {
-	const name = document.getElementById('newResourceName').value.trim()
-	if (!name) return alert('请输入名称')
-	const color = document.getElementById('newResourceColor').value
-	const sprite = document.getElementById('newResourceSprite').dataset.sprite || null
-	const id = currentAddResourceTab + '_' + Date.now()
-	const item = { id, name, color }
-	if (sprite) item.sprite = sprite
-	if (currentAddResourceTab === 'entity') {
-		item.height = parseInt(document.getElementById('newResourceHeight').value) || 32
-	}
-	resources[currentAddResourceTab].push(item)
-	closeAddResourceModal()
-	renderResourceGrid()
-})
-document.getElementById('addResourceCancel').addEventListener('click', closeAddResourceModal)
-document.getElementById('newResourceColor').addEventListener('input', (e) => {
-	document.getElementById('newResourceColorHex').value = e.target.value
-})
-document.getElementById('newResourceColorHex').addEventListener('input', (e) => {
-	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-		document.getElementById('newResourceColor').value = e.target.value
-	}
 })
 function enterBuildingCreateMode() {
 	state.buildingCreateMode = true
@@ -4910,6 +4593,7 @@ document.getElementById('buildingConfirmBtn').addEventListener('click', () => {
 	}
 	resources.building.push(building)
 	state.buildings.push(building)
+	rebuildResourceMap()
 	exitBuildingCreateMode()
 	renderResourceGrid()
 })
@@ -5197,79 +4881,6 @@ document.getElementById('addLightSource').addEventListener('click', () => {
 		renderLightSourceList()
 	}
 })
-document.getElementById('ambientIntensity').addEventListener('input', (e) => {
-	document.getElementById('ambientIntensityValue').textContent = e.target.value + '%'
-})
-document.getElementById('ambientColor').addEventListener('input', (e) => {
-	document.getElementById('ambientColorHex').value = e.target.value
-})
-document.getElementById('ambientColorHex').addEventListener('input', (e) => {
-	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-		document.getElementById('ambientColor').value = e.target.value
-	}
-})
-document.getElementById('lightingModalConfirm').addEventListener('click', () => {
-	const intensity = parseInt(document.getElementById('ambientIntensity').value) / 100
-	const color = document.getElementById('ambientColor').value
-	lighting.ambient.intensity = intensity
-	lighting.ambient.color = color
-	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
-	if (building && building.interior) {
-		building.interior.lighting.ambient.intensity = parseInt(document.getElementById('ambientIntensity').value)
-		building.interior.lighting.ambient.color = color
-	}
-	document.getElementById('lightingModal').classList.remove('open')
-	render()
-})
-document.getElementById('lightingModalCancel').addEventListener('click', () => {
-	document.getElementById('lightingModal').classList.remove('open')
-})
-document.getElementById('floorModalConfirm').addEventListener('click', () => {
-	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
-	if (building && building.interior) {
-		building.interior.floor.color = document.getElementById('floorColor').value
-	}
-	document.getElementById('floorModal').classList.remove('open')
-	render()
-})
-document.getElementById('floorModalCancel').addEventListener('click', () => {
-	document.getElementById('floorModal').classList.remove('open')
-})
-document.getElementById('wallModalConfirm').addEventListener('click', () => {
-	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
-	if (building && building.interior) {
-		building.interior.walls.color = document.getElementById('wallColor').value
-		building.interior.walls.height = parseInt(document.getElementById('wallHeight').value) || 3
-		building.interior.walls.opacity = parseInt(document.getElementById('wallOpacity').value) / 100
-	}
-	document.getElementById('wallModal').classList.remove('open')
-	render()
-})
-document.getElementById('wallModalCancel').addEventListener('click', () => {
-	document.getElementById('wallModal').classList.remove('open')
-})
-document.getElementById('floorColor').addEventListener('input', (e) => {
-	document.getElementById('floorColorHex').value = e.target.value
-})
-document.getElementById('floorColorHex').addEventListener('input', (e) => {
-	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-		document.getElementById('floorColor').value = e.target.value
-	}
-})
-document.getElementById('wallColor').addEventListener('input', (e) => {
-	document.getElementById('wallColorHex').value = e.target.value
-})
-document.getElementById('wallColorHex').addEventListener('input', (e) => {
-	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-		document.getElementById('wallColor').value = e.target.value
-	}
-})
-document.getElementById('wallHeight').addEventListener('input', (e) => {
-	document.getElementById('wallHeightValue').textContent = e.target.value
-})
-document.getElementById('wallOpacity').addEventListener('input', (e) => {
-	document.getElementById('wallOpacityValue').textContent = e.target.value + '%'
-})
 window.addEventListener('resize', resizeCanvas)
 canvas.addEventListener('touchstart', handleTouchStart, { passive: false })
 canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
@@ -5282,6 +4893,7 @@ renderLayerList()
 renderResourceGrid()
 renderItemTypes()
 renderItemInstances()
+initAllModalEvents()
 saveHistory()
 document.getElementById('gridBtn').classList.add('active')
 function gameLoop(timestamp) {
@@ -5668,5 +5280,10 @@ initResizer(rightResizer, rightPanel, 'width', 100, 500, false)
 initResizer(bottomResizer, bottomPanel, 'height', 100, 400, true)
 loadLibrary()
 </script>
+<script src="modal/gallery.js"></script>
+<script src="modal/item-editor.js"></script>
+<script src="modal/add-resource.js"></script>
+<script src="modal/settings.js"></script>
+<script src="modal/index.js"></script>
 </body>
 </html>

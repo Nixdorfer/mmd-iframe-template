@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>2.5D生存游戏</title>
+	<title>3D生存游戏</title>
 	<style>
 * {
 	margin: 0;
@@ -410,6 +410,8 @@ const game = {
 	dayLength: 60000,
 	entities: [],
 	tiles: [],
+	tileData: new Map(),
+	mapBounds: { minX: 0, maxX: 29, minY: 0, maxY: 29 },
 	keys: {},
 	showInventory: false,
 	showStorage: false
@@ -417,9 +419,19 @@ const game = {
 const player = {
 	x: WORLD_WIDTH / 2,
 	y: WORLD_HEIGHT / 2,
+	z: 0,
 	width: 32,
 	height: 48,
+	physWidth: 0.5,
+	physDepth: 0.5,
+	standingHeight: 1.75,
+	crouchHeight: 1.0,
+	currentHeight: 1.75,
 	speed: 3,
+	sprintMultiplier: 1.5,
+	crouchMultiplier: 0.5,
+	isCrouching: false,
+	isSprinting: false,
 	direction: 'down',
 	frame: 0,
 	frameTime: 0,
@@ -564,6 +576,13 @@ function loadMapPack(uint8) {
 	try {
 		const data = JSON.parse(mapData)
 		game.tiles = []
+		game.tileData.clear()
+		if (data.mapBounds) game.mapBounds = data.mapBounds
+		if (data.tileData) {
+			Object.entries(data.tileData).forEach(([key, tile]) => {
+				game.tileData.set(key, tile)
+			})
+		}
 		const terrainLayer = data.layers.find(l => l.type === 'terrain')
 		if (terrainLayer) {
 			for (let y = 0; y < data.mapSize.height; y++) {
@@ -615,7 +634,75 @@ function extractTextChunk(uint8, keyword) {
 	}
 	return null
 }
+function getTileAt(x, y) {
+	return game.tileData.get(`${Math.floor(x)},${Math.floor(y)}`) || null
+}
+function getGroundHeight(x, y, currentZ) {
+	const tile = getTileAt(x, y)
+	if (!tile) return 0
+	if (tile.isBridge) {
+		const bridgeBottom = tile.z - tile.thickness
+		const bridgeTop = tile.z
+		if (currentZ >= bridgeBottom - 0.1 && currentZ <= bridgeTop + 1) return bridgeTop
+		if (currentZ < bridgeBottom - 0.1) return 0
+	}
+	if (tile.isSlope) {
+		const tx = x - Math.floor(x)
+		const ty = y - Math.floor(y)
+		let t = 0
+		if (tile.slopeDirection === 'x') t = tx
+		else if (tile.slopeDirection === 'y') t = ty
+		else t = (tx + ty) / 2
+		return tile.slopeStart + (tile.slopeEnd - tile.slopeStart) * t
+	}
+	return tile.z || 0
+}
+function canPlayerPass(x, y, z, height) {
+	const tile = getTileAt(x, y)
+	if (!tile) return true
+	const groundZ = getGroundHeight(x, y, z)
+	if (tile.isBridge) {
+		const bridgeBottom = tile.z - tile.thickness
+		const bridgeTop = tile.z
+		const playerTop = z + height
+		if (z >= bridgeTop) return true
+		if (playerTop <= bridgeBottom) return true
+		if (z >= bridgeBottom - 0.1 && z <= bridgeTop + 0.5) return true
+		return false
+	}
+	const headroom = 999
+	return height <= headroom
+}
+function checkMovementCollision(newX, newY, newZ) {
+	const halfW = player.physWidth / 2
+	const halfD = player.physDepth / 2
+	const corners = [
+		{ x: newX - halfW, y: newY - halfD },
+		{ x: newX + halfW, y: newY - halfD },
+		{ x: newX - halfW, y: newY + halfD },
+		{ x: newX + halfW, y: newY + halfD }
+	]
+	for (const corner of corners) {
+		if (!canPlayerPass(corner.x, corner.y, newZ, player.currentHeight)) return false
+	}
+	return true
+}
 function updatePlayer(dt) {
+	const wantCrouch = game.keys['ControlLeft'] || game.keys['ControlRight']
+	const wantSprint = game.keys['ShiftLeft'] || game.keys['ShiftRight']
+	if (wantCrouch && !player.isCrouching) {
+		player.isCrouching = true
+		player.currentHeight = player.crouchHeight
+		player.isSprinting = false
+	} else if (!wantCrouch && player.isCrouching) {
+		const canStand = checkMovementCollision(player.x, player.y, player.z)
+		if (canStand) {
+			player.isCrouching = false
+			player.currentHeight = player.standingHeight
+		}
+	}
+	if (wantSprint && !player.isCrouching) player.isSprinting = true
+	else if (!wantSprint || player.isCrouching) player.isSprinting = false
 	let dx = 0, dy = 0
 	if (game.keys['KeyW'] || game.keys['ArrowUp']) { dx -= 1; dy -= 1; player.direction = 'up' }
 	if (game.keys['KeyS'] || game.keys['ArrowDown']) { dx += 1; dy += 1; player.direction = 'down' }
@@ -627,11 +714,17 @@ function updatePlayer(dt) {
 		dy /= len
 	}
 	player.isMoving = dx !== 0 || dy !== 0
-	const speedMult = game.keys['ShiftLeft'] || game.keys['ShiftRight'] ? 1.5 : 1
+	let speedMult = 1
+	if (player.isSprinting) speedMult = player.sprintMultiplier
+	else if (player.isCrouching) speedMult = player.crouchMultiplier
 	const newX = player.x + dx * player.speed * speedMult * dt / 1000
 	const newY = player.y + dy * player.speed * speedMult * dt / 1000
-	player.x = Math.max(1, Math.min(WORLD_WIDTH - 1, newX))
-	player.y = Math.max(1, Math.min(WORLD_HEIGHT - 1, newY))
+	const newZ = getGroundHeight(newX, newY, player.z)
+	if (checkMovementCollision(newX, newY, newZ)) {
+		player.x = Math.max(game.mapBounds.minX, Math.min(game.mapBounds.maxX, newX))
+		player.y = Math.max(game.mapBounds.minY, Math.min(game.mapBounds.maxY, newY))
+		player.z = newZ
+	}
 	if (player.isMoving) {
 		player.frameTime += dt
 		if (player.frameTime > 150) {

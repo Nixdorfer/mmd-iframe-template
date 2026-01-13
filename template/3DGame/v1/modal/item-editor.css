@@ -1,0 +1,87 @@
+.item-editor {
+	display: none;
+	height: 100%;
+	gap: 12px;
+	padding: 12px;
+}
+
+.item-editor.active {
+	display: flex;
+}
+
+.item-types-panel,
+.item-instances-panel {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	background: #1a1a1a;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.item-panel-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	border-bottom: 1px solid #333;
+}
+
+.item-panel-header span {
+	font-size: 12px;
+	color: #888;
+}
+
+.item-panel-body {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.item-type-card,
+.item-instance-card {
+	margin-bottom: 8px;
+}
+
+.item-type-card .collapse-body,
+.item-instance-card .collapse-body {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.cond-sprite-item {
+	background: #252525;
+	border: 1px solid #333;
+	border-radius: 4px;
+	padding: 8px;
+	margin-bottom: 8px;
+}
+
+.cond-sprite-row {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin-bottom: 6px;
+}
+
+.cond-sprite-row:last-child {
+	margin-bottom: 0;
+}
+
+.cond-sprite-row select,
+.cond-sprite-row input {
+	height: 26px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	padding: 0 6px;
+	color: #fff;
+	font-size: 11px;
+}
+
+.cond-sprite-row select:focus,
+.cond-sprite-row input:focus {
+	outline: none;
+	border-color: #166d3b;
+}
