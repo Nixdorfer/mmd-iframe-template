@@ -5,7 +5,8 @@ nul
 *.md
 README.md
 
+defender/encode.cmd
+defender/messages.json
+
 template/3DGame/node_modules/
-template/3DGame/package.json
-template/3DGame/package-lock.json
-template/3DGame/generate-textures.js
+template/3DGame/*.json

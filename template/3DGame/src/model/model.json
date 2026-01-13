@@ -1,0 +1,36 @@
+{
+	"trees": {
+		"name": "树木",
+		"items": [
+			{ "id": "pine", "name": "松树", "path": "pine", "bounds": [80, 80, 350], "passable": false, "climbable": false, "solid": true, "cover": "full", "destructible": true, "flammable": true, "harvestable": "wood" },
+			{ "id": "birch", "name": "白桦树", "path": "birch", "bounds": [90, 90, 400], "passable": false, "climbable": false, "solid": true, "cover": "full", "destructible": true, "flammable": true, "harvestable": "wood" },
+			{ "id": "willow", "name": "柳树", "path": "willow", "bounds": [120, 120, 320], "passable": false, "climbable": false, "solid": true, "cover": "full", "destructible": true, "flammable": true, "harvestable": "wood" },
+			{ "id": "cypress", "name": "柏树", "path": "cypress", "bounds": [60, 60, 450], "passable": false, "climbable": false, "solid": true, "cover": "full", "destructible": true, "flammable": true, "harvestable": "wood" },
+			{ "id": "sycamore", "name": "梧桐", "path": "sycamore", "bounds": [130, 130, 400], "passable": false, "climbable": false, "solid": true, "cover": "full", "destructible": true, "flammable": true, "harvestable": "wood" }
+		]
+	},
+	"stones": {
+		"name": "石头",
+		"items": [
+			{ "id": "stone-small", "name": "小型石头", "path": "stone-small", "bounds": [30, 30, 25], "passable": true, "passEffect": -0.2, "climbable": false, "solid": false, "cover": "none", "destructible": false, "flammable": false, "harvestable": "stone" },
+			{ "id": "stone-large", "name": "大型石头", "path": "stone-large", "bounds": [80, 80, 60], "passable": false, "climbable": true, "solid": true, "cover": "full", "destructible": false, "flammable": false, "harvestable": "stone" }
+		]
+	},
+	"fences": {
+		"name": "篱笆",
+		"items": [
+			{ "id": "fence-wood", "name": "木质篱笆", "path": "fence-wood", "bounds": [100, 10, 80], "passable": false, "climbable": true, "solid": false, "cover": "partial", "destructible": true, "flammable": true, "harvestable": "wood" },
+			{ "id": "fence-iron", "name": "铁艺篱笆", "path": "fence-iron", "bounds": [100, 10, 90], "passable": false, "climbable": true, "solid": false, "cover": "partial", "destructible": false, "flammable": false, "harvestable": null },
+			{ "id": "fence-bamboo", "name": "竹篱笆", "path": "fence-bamboo", "bounds": [100, 10, 85], "passable": false, "climbable": true, "solid": false, "cover": "partial", "destructible": true, "flammable": true, "harvestable": "wood" },
+			{ "id": "fence-stone", "name": "石篱笆", "path": "fence-stone", "bounds": [100, 15, 70], "passable": false, "climbable": true, "solid": false, "cover": "partial", "destructible": false, "flammable": false, "harvestable": null },
+			{ "id": "fence-vine", "name": "藤蔓篱笆", "path": "fence-vine", "bounds": [100, 10, 75], "passable": false, "climbable": true, "solid": false, "cover": "partial", "destructible": true, "flammable": true, "harvestable": "wood" }
+		],
+		"types": [
+			{ "id": "end", "name": "端头" },
+			{ "id": "straight", "name": "直线" },
+			{ "id": "corner", "name": "拐角" },
+			{ "id": "t", "name": "T形" },
+			{ "id": "cross", "name": "十字" }
+		]
+	}
+}

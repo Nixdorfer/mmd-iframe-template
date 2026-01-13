@@ -332,6 +332,217 @@ body {
 	color: #888;
 }
 
+.view-cube-wrapper {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	width: 100px;
+	height: 120px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.view-cube {
+	width: 80px;
+	height: 80px;
+	perspective: 200px;
+	cursor: grab;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.view-cube:active {
+	cursor: grabbing;
+}
+
+.view-cube-inner {
+	width: 50px;
+	height: 50px;
+	position: relative;
+	transform-style: preserve-3d;
+	transition: transform 0.3s ease;
+}
+
+.view-cube-face {
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	background: rgba(30, 30, 30, 0.9);
+	border: 1px solid #444;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 10px;
+	color: #888;
+	backface-visibility: visible;
+	cursor: pointer;
+	transition: background 0.15s, color 0.15s;
+}
+
+.view-cube-face:hover {
+	background: rgba(22, 109, 59, 0.9);
+	color: #fff;
+}
+
+.view-cube-face.active {
+	background: rgba(22, 109, 59, 0.9);
+	color: #fff;
+}
+
+.view-cube-front {
+	transform: translateZ(25px);
+}
+
+.view-cube-back {
+	transform: rotateY(180deg) translateZ(25px);
+}
+
+.view-cube-left {
+	transform: rotateY(-90deg) translateZ(25px);
+}
+
+.view-cube-right {
+	transform: rotateY(90deg) translateZ(25px);
+}
+
+.view-cube-top {
+	transform: rotateX(90deg) translateZ(25px);
+}
+
+.view-cube-bottom {
+	transform: rotateX(-90deg) translateZ(25px);
+}
+
+.view-cube-edge {
+	position: absolute;
+	background: rgba(60, 60, 60, 0.8);
+	cursor: pointer;
+	transition: background 0.15s;
+}
+
+.view-cube-edge:hover {
+	background: rgba(22, 109, 59, 0.9);
+}
+
+.view-cube-edge-front-top {
+	width: 36px;
+	height: 7px;
+	transform: translate3d(-18px, -28.5px, 25px);
+}
+
+.view-cube-edge-front-bottom {
+	width: 36px;
+	height: 7px;
+	transform: translate3d(-18px, 21.5px, 25px);
+}
+
+.view-cube-edge-front-left {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(-28.5px, -18px, 25px);
+}
+
+.view-cube-edge-front-right {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(21.5px, -18px, 25px);
+}
+
+.view-cube-edge-back-top {
+	width: 36px;
+	height: 7px;
+	transform: translate3d(-18px, -28.5px, -25px);
+}
+
+.view-cube-edge-back-bottom {
+	width: 36px;
+	height: 7px;
+	transform: translate3d(-18px, 21.5px, -25px);
+}
+
+.view-cube-edge-back-left {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(-28.5px, -18px, -25px);
+}
+
+.view-cube-edge-back-right {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(21.5px, -18px, -25px);
+}
+
+.view-cube-edge-top-left {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(-28.5px, -25px, -18px) rotateX(90deg);
+}
+
+.view-cube-edge-top-right {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(21.5px, -25px, -18px) rotateX(90deg);
+}
+
+.view-cube-edge-bottom-left {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(-28.5px, 25px, -18px) rotateX(90deg);
+}
+
+.view-cube-edge-bottom-right {
+	width: 7px;
+	height: 36px;
+	transform: translate3d(21.5px, 25px, -18px) rotateX(90deg);
+}
+
+.view-cube-corner {
+	position: absolute;
+	width: 7px;
+	height: 7px;
+	background: rgba(80, 80, 80, 0.9);
+	cursor: pointer;
+	transition: background 0.15s;
+}
+
+.view-cube-corner:hover {
+	background: rgba(22, 109, 59, 0.9);
+}
+
+.view-cube-corner-ftl {
+	transform: translate3d(-28.5px, -28.5px, 25px);
+}
+
+.view-cube-corner-ftr {
+	transform: translate3d(21.5px, -28.5px, 25px);
+}
+
+.view-cube-corner-fbl {
+	transform: translate3d(-28.5px, 21.5px, 25px);
+}
+
+.view-cube-corner-fbr {
+	transform: translate3d(21.5px, 21.5px, 25px);
+}
+
+.view-cube-corner-btl {
+	transform: translate3d(-28.5px, -28.5px, -25px);
+}
+
+.view-cube-corner-btr {
+	transform: translate3d(21.5px, -28.5px, -25px);
+}
+
+.view-cube-corner-bbl {
+	transform: translate3d(-28.5px, 21.5px, -25px);
+}
+
+.view-cube-corner-bbr {
+	transform: translate3d(21.5px, 21.5px, -25px);
+}
+
 .right-panel {
 	width: 240px;
 	background: #111111;
@@ -418,7 +629,9 @@ body {
 .bottom-panel.collapsed .resource-btns,
 .bottom-panel.collapsed .resource-grid,
 .bottom-panel.collapsed .library-panel,
-.bottom-panel.collapsed .item-editor {
+.bottom-panel.collapsed .item-editor,
+.bottom-panel.collapsed .terrain-edit-panel,
+.bottom-panel.collapsed .floor-panel {
 	display: none;
 }
 .bottom-panel.collapsed .panel-collapse-btn svg {
@@ -1125,6 +1338,363 @@ body {
 
 .item-editor.active {
 	display: flex;
+}
+
+.terrain-edit-panel {
+	display: none;
+	flex: 1;
+	flex-direction: column;
+	padding: 12px;
+	gap: 12px;
+}
+
+.terrain-edit-panel.active {
+	display: flex;
+}
+
+.terrain-tools {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.terrain-tool-btn {
+	width: 64px;
+	height: 64px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	transition: all 0.15s;
+}
+
+.terrain-tool-btn:hover {
+	background: #2a2a2a;
+	border-color: #444;
+}
+
+.terrain-tool-btn.active {
+	background: #166d3b;
+	border-color: #1c8548;
+}
+
+.terrain-tool-btn svg {
+	width: 24px;
+	height: 24px;
+	stroke: #aaa;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.terrain-tool-btn.active svg {
+	stroke: #fff;
+}
+
+.terrain-tool-btn span {
+	font-size: 11px;
+	color: #888;
+}
+
+.terrain-tool-btn.active span {
+	color: #fff;
+}
+
+.floor-panel {
+	display: none;
+	flex: 1;
+	gap: 12px;
+	padding: 12px;
+}
+
+.floor-panel.active {
+	display: flex;
+}
+
+.floor-sidebar {
+	width: 160px;
+	background: #1a1a1a;
+	border-radius: 6px;
+	overflow-y: auto;
+	flex-shrink: 0;
+}
+
+.floor-category {
+	padding: 8px 12px;
+	font-size: 12px;
+	color: #888;
+	cursor: pointer;
+	border-bottom: 1px solid #222;
+	transition: all 0.15s;
+}
+
+.floor-category:hover {
+	background: #222;
+	color: #aaa;
+}
+
+.floor-category.active {
+	background: #166d3b;
+	color: #fff;
+}
+
+.floor-subcategory {
+	padding: 6px 12px 6px 24px;
+	font-size: 11px;
+	color: #666;
+	cursor: pointer;
+	border-bottom: 1px solid #1a1a1a;
+	transition: all 0.15s;
+}
+
+.floor-subcategory:hover {
+	background: #222;
+	color: #aaa;
+}
+
+.floor-subcategory.active {
+	background: #0d4a2a;
+	color: #fff;
+}
+
+.floor-grid {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+	gap: 8px;
+	align-content: start;
+	overflow-y: auto;
+	background: #111;
+	border-radius: 6px;
+	padding: 12px;
+}
+
+.floor-item {
+	width: 64px;
+	height: 64px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	transition: all 0.15s;
+}
+
+.floor-item:hover {
+	border-color: #555;
+	transform: scale(1.05);
+}
+
+.floor-item.selected {
+	border-color: #1c8548;
+	box-shadow: 0 0 0 2px rgba(28, 133, 72, 0.3);
+}
+
+.floor-item img {
+	width: 48px;
+	height: 48px;
+	object-fit: contain;
+	image-rendering: pixelated;
+}
+
+.floor-item span {
+	font-size: 9px;
+	color: #888;
+	text-align: center;
+	padding: 2px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+}
+
+.assets-panel {
+	display: none;
+	flex: 1;
+	gap: 12px;
+	padding: 12px;
+}
+
+.assets-panel.active {
+	display: flex;
+}
+
+.assets-sidebar {
+	width: 160px;
+	background: #1a1a1a;
+	border-radius: 6px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.assets-folder-tree {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.assets-folder-item {
+	padding: 6px 8px;
+	cursor: pointer;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #aaa;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.assets-folder-item:hover {
+	background: #252525;
+}
+
+.assets-folder-item.active {
+	background: #166d3b;
+	color: #fff;
+}
+
+.assets-folder-item.system {
+	color: #4a9;
+}
+
+.assets-folder-item svg {
+	width: 14px;
+	height: 14px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+	flex-shrink: 0;
+}
+
+.assets-main {
+	flex: 1;
+	background: #1a1a1a;
+	border-radius: 6px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.assets-grid {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+	gap: 8px;
+	align-content: start;
+}
+
+.assets-item {
+	aspect-ratio: 1;
+	background: #252525;
+	border-radius: 6px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	border: 2px solid transparent;
+	padding: 4px;
+}
+
+.assets-item:hover {
+	border-color: #444;
+}
+
+.assets-item.selected {
+	border-color: #166d3b;
+}
+
+.assets-item img {
+	width: 48px;
+	height: 48px;
+	object-fit: contain;
+}
+
+.assets-item span {
+	font-size: 10px;
+	color: #888;
+	margin-top: 4px;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: center;
+}
+
+.assets-category {
+	grid-column: 1 / -1;
+	font-size: 11px;
+	color: #666;
+	padding: 8px 0 4px;
+	border-bottom: 1px solid #333;
+	margin-bottom: 4px;
+}
+
+.assets-item.dragging {
+	opacity: 0.5;
+}
+
+.drop-preview-overlay {
+	position: fixed;
+	pointer-events: none;
+	z-index: 1000;
+}
+
+.assets-preview {
+	width: 220px;
+	background: #1a1a1a;
+	border-radius: 6px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.assets-preview-canvas {
+	height: 200px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #0a0a0a;
+	border-bottom: 1px solid #333;
+}
+
+.assets-preview-canvas canvas {
+	background: transparent;
+}
+
+.assets-variation-list {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.assets-variation-item {
+	padding: 6px 8px;
+	cursor: pointer;
+	border-radius: 4px;
+	font-size: 11px;
+	color: #aaa;
+	margin-bottom: 2px;
+}
+
+.assets-variation-item:hover {
+	background: #252525;
+}
+
+.assets-variation-item.active {
+	background: #166d3b;
+	color: #fff;
 }
 
 .item-types-panel,
@@ -2062,6 +2632,7 @@ body.preview-mode .preview-hint {
 	display: block;
 }
 	</style>
+	<script src="library/model.js"></script>
 </head>
 <body>
 	<button class="preview-exit-btn" id="previewExitBtn">
@@ -2081,23 +2652,6 @@ body.preview-mode .preview-hint {
 				<svg viewBox="0 0 24 24"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L13.6 2.6c.8-.8 2-.8 2.8 0L21 7.2c.8.8.8 2 0 2.8L12 19"/></svg>
 			</button>
 		</div>
-		<div class="tool-group" id="terrainToolGroup">
-			<button class="tool-btn" data-tool="raise" title="升高地形">
-				<svg viewBox="0 0 24 24"><path d="M12 3L6 9h4v12h4V9h4z"/></svg>
-			</button>
-			<button class="tool-btn" data-tool="lower" title="降低地形">
-				<svg viewBox="0 0 24 24"><path d="M12 21l6-6h-4V3h-4v12H6z"/></svg>
-			</button>
-			<button class="tool-btn" data-tool="connect" title="连接 (桥/斜坡)">
-				<svg viewBox="0 0 24 24"><path d="M4 16h16M4 16l4-8M20 16l-4-8"/></svg>
-			</button>
-			<button class="tool-btn" data-tool="thicken" title="增厚桥面">
-				<svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="1"/><path d="M8 4v4M16 4v4M8 16v4M16 16v4"/></svg>
-			</button>
-			<button class="tool-btn" data-tool="thin" title="打薄桥面">
-				<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="4" rx="1"/><path d="M8 6v4M16 6v4M8 14v4M16 14v4"/></svg>
-			</button>
-		</div>
 		<div class="tool-group">
 			<button class="tool-btn" id="undoBtn" title="撤销 (Ctrl+Z)" disabled>
 				<svg viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
@@ -2107,11 +2661,8 @@ body.preview-mode .preview-hint {
 			</button>
 		</div>
 		<div class="tool-group">
-			<button class="tool-btn" id="gridBtn" title="显示网格 (Ctrl+G)">
+			<button class="tool-btn" id="gridBtn" title="显示网格">
 				<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
-			</button>
-			<button class="tool-btn" id="viewBtn" title="切换视角 (T)">
-				<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><ellipse cx="12" cy="12" rx="10" ry="4"/></svg>
 			</button>
 		</div>
 		<div class="file-buttons">
@@ -2153,6 +2704,38 @@ body.preview-mode .preview-hint {
 				<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
 				返回室外
 			</button>
+			<div class="view-cube-wrapper">
+				<div class="view-cube" id="viewCube">
+					<div class="view-cube-inner" id="viewCubeInner">
+						<div class="view-cube-face view-cube-front" data-view="front">前</div>
+						<div class="view-cube-face view-cube-back" data-view="back">后</div>
+						<div class="view-cube-face view-cube-left" data-view="left">左</div>
+						<div class="view-cube-face view-cube-right" data-view="right">右</div>
+						<div class="view-cube-face view-cube-top" data-view="top">上</div>
+						<div class="view-cube-face view-cube-bottom" data-view="bottom">下</div>
+						<div class="view-cube-edge view-cube-edge-front-top" data-edge="front-top"></div>
+						<div class="view-cube-edge view-cube-edge-front-bottom" data-edge="front-bottom"></div>
+						<div class="view-cube-edge view-cube-edge-front-left" data-edge="front-left"></div>
+						<div class="view-cube-edge view-cube-edge-front-right" data-edge="front-right"></div>
+						<div class="view-cube-edge view-cube-edge-back-top" data-edge="back-top"></div>
+						<div class="view-cube-edge view-cube-edge-back-bottom" data-edge="back-bottom"></div>
+						<div class="view-cube-edge view-cube-edge-back-left" data-edge="back-left"></div>
+						<div class="view-cube-edge view-cube-edge-back-right" data-edge="back-right"></div>
+						<div class="view-cube-edge view-cube-edge-top-left" data-edge="top-left"></div>
+						<div class="view-cube-edge view-cube-edge-top-right" data-edge="top-right"></div>
+						<div class="view-cube-edge view-cube-edge-bottom-left" data-edge="bottom-left"></div>
+						<div class="view-cube-edge view-cube-edge-bottom-right" data-edge="bottom-right"></div>
+						<div class="view-cube-corner view-cube-corner-ftl" data-corner="ftl"></div>
+						<div class="view-cube-corner view-cube-corner-ftr" data-corner="ftr"></div>
+						<div class="view-cube-corner view-cube-corner-fbl" data-corner="fbl"></div>
+						<div class="view-cube-corner view-cube-corner-fbr" data-corner="fbr"></div>
+						<div class="view-cube-corner view-cube-corner-btl" data-corner="btl"></div>
+						<div class="view-cube-corner view-cube-corner-btr" data-corner="btr"></div>
+						<div class="view-cube-corner view-cube-corner-bbl" data-corner="bbl"></div>
+						<div class="view-cube-corner view-cube-corner-bbr" data-corner="bbr"></div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="panel-resizer horizontal right-resizer" id="rightResizer"></div>
 		<div class="right-panel" id="rightPanel">
@@ -2320,11 +2903,14 @@ body.preview-mode .preview-hint {
 		<div class="resource-tabs">
 			<div class="resource-tabs-left">
 				<div class="resource-tab active" data-tab="terrain">地形</div>
+				<div class="resource-tab" data-tab="floor">地板</div>
+				<div class="resource-tab" data-tab="terrainedit">地貌</div>
 				<div class="resource-tab" data-tab="building">建筑</div>
 				<div class="resource-tab" data-tab="entity">实体</div>
 				<div class="resource-tab" data-tab="trigger">触发器</div>
 				<div class="resource-tab" data-tab="item">道具</div>
 				<div class="resource-tab" data-tab="library">图库</div>
+				<div class="resource-tab" data-tab="assets">资产</div>
 			</div>
 			<div class="resource-tabs-right">
 				<button class="panel-collapse-btn" id="bottomPanelCollapse" title="折叠">
@@ -2368,6 +2954,48 @@ body.preview-mode .preview-hint {
 					<button class="ed-btn sm add-indicator" id="addItemInstance"></button>
 				</div>
 				<div class="item-panel-body" id="itemInstancesList"></div>
+			</div>
+		</div>
+		<div class="terrain-edit-panel" id="terrainEditPanel">
+			<div class="terrain-tools">
+				<button class="terrain-tool-btn" data-tool="raise">
+					<svg viewBox="0 0 24 24"><path d="M12 3L6 9h4v12h4V9h4z"/></svg>
+					<span>升高</span>
+				</button>
+				<button class="terrain-tool-btn" data-tool="lower">
+					<svg viewBox="0 0 24 24"><path d="M12 21l6-6h-4V3h-4v12H6z"/></svg>
+					<span>降低</span>
+				</button>
+				<button class="terrain-tool-btn" data-tool="connect">
+					<svg viewBox="0 0 24 24"><path d="M4 16h16M4 16l4-8M20 16l-4-8"/></svg>
+					<span>连接</span>
+				</button>
+				<button class="terrain-tool-btn" data-tool="thicken">
+					<svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="8" rx="1"/><path d="M8 4v4M16 4v4M8 16v4M16 16v4"/></svg>
+					<span>增厚</span>
+				</button>
+				<button class="terrain-tool-btn" data-tool="thin">
+					<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="4" rx="1"/><path d="M8 6v4M16 6v4M8 14v4M16 14v4"/></svg>
+					<span>打薄</span>
+				</button>
+			</div>
+		</div>
+		<div class="floor-panel" id="floorPanel">
+			<div class="floor-sidebar" id="floorSidebar"></div>
+			<div class="floor-grid" id="floorGrid"></div>
+		</div>
+		<div class="assets-panel" id="assetsPanel">
+			<div class="assets-sidebar">
+				<div class="assets-folder-tree" id="assetsFolderTree"></div>
+			</div>
+			<div class="assets-main">
+				<div class="assets-grid" id="assetsGrid"></div>
+			</div>
+			<div class="assets-preview">
+				<div class="assets-preview-canvas">
+					<canvas id="assetsPreviewCanvas" width="200" height="200"></canvas>
+				</div>
+				<div class="assets-variation-list" id="assetsVariationList"></div>
 			</div>
 		</div>
 	</div>
@@ -2528,18 +3156,27 @@ const TILE_H = 32
 const canvas = document.getElementById('editorCanvas')
 const ctx = canvas.getContext('2d')
 const container = document.getElementById('canvasContainer')
+const camera = {
+	target: { x: 15, y: 15, z: 0 },
+	distance: 30,
+	azimuth: 45,
+	elevation: -35,
+	fov: 60,
+	near: 0.1,
+	far: 1000
+}
 const state = {
 	tool: 'select',
-	zoom: 1,
-	panX: 0,
-	panY: 0,
+	showGrid: true,
 	isPanning: false,
 	panStartX: 0,
 	panStartY: 0,
-	showGrid: true,
-	viewMode: 'top',
-	viewTransition: 1,
-	viewAnimating: false,
+	isRotating: false,
+	rotateStartX: 0,
+	rotateStartY: 0,
+	rotateStartAz: 0,
+	rotateStartEl: 0,
+	startTarget: null,
 	contextTarget: null,
 	tileMap: new Map(),
 	mapBounds: { minX: 0, maxX: 29, minY: 0, maxY: 29 },
@@ -2605,26 +3242,15 @@ const state = {
 	showDebug: false,
 	needsRender: true,
 	lightingDirty: true,
-	terrainDirty: true
+	terrainDirty: true,
+	viewMode: 'side',
+	viewTransition: 0
 }
 const resources = {
 	terrain: [
 		{ id: 'void', name: '虚空', color: '#000000', undeletable: true },
-		{ id: 'grass', name: '草地', color: '#4a7c23' },
-		{ id: 'tall-grass', name: '高草地', color: '#3d6b1a' },
-		{ id: 'dirt', name: '土地', color: '#8b7355' },
-		{ id: 'mud', name: '泥地', color: '#5c4a3a' },
-		{ id: 'swamp', name: '沼泽', color: '#4a5c3a' },
-		{ id: 'sand', name: '沙地', color: '#d4a574' },
-		{ id: 'fine-sand', name: '细沙地', color: '#e8c9a0' },
-		{ id: 'water', name: '淡水', color: '#3498db' },
-		{ id: 'swamp-water', name: '沼泽水', color: '#2d5a4a' },
-		{ id: 'sea', name: '海水', color: '#1a5276' },
-		{ id: 'clay', name: '粘土地', color: '#a0522d' },
-		{ id: 'stone-brick', name: '石砖地', color: '#808080' },
-		{ id: 'concrete', name: '混凝土地', color: '#a0a0a0' },
-		{ id: 'asphalt', name: '沥青地', color: '#333333' },
-		{ id: 'slate', name: '石板地', color: '#606060' }
+		{ id: 'walkable', name: '可行走', color: '#4a7c23', undeletable: true },
+		{ id: 'unwalkable', name: '不可行走', color: '#8b4513', undeletable: true }
 	],
 	building: [],
 	entity: [],
@@ -2648,6 +3274,80 @@ function rebuildResourceMap() {
 	for (const cat of Object.keys(resources)) for (const r of resources[cat]) resourceMap.set(r.id, r)
 }
 rebuildResourceMap()
+const textureCache = new Map()
+function loadTextures() {
+	resources.terrain.forEach(res => {
+		if (res.src) {
+			const img = new Image()
+			img.src = res.src
+			img.onload = () => { textureCache.set(res.id, img); state.needsRender = true }
+			img.onerror = () => { textureCache.set(res.id, null) }
+		}
+	})
+}
+loadTextures()
+function vec3Sub(a, b) { return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z } }
+function vec3Add(a, b) { return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z } }
+function vec3Scale(v, s) { return { x: v.x * s, y: v.y * s, z: v.z * s } }
+function vec3Len(v) { return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z) }
+function vec3Norm(v) { const len = vec3Len(v); return len > 0 ? { x: v.x / len, y: v.y / len, z: v.z / len } : { x: 0, y: 0, z: 0 } }
+function vec3Cross(a, b) { return { x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x } }
+function vec3Dot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z }
+function getCameraPosition() {
+	const azRad = camera.azimuth * Math.PI / 180
+	const elRad = camera.elevation * Math.PI / 180
+	const cosEl = Math.cos(elRad)
+	return {
+		x: camera.target.x + camera.distance * Math.sin(azRad) * cosEl,
+		y: camera.target.y - camera.distance * Math.cos(azRad) * cosEl,
+		z: camera.target.z - camera.distance * Math.sin(elRad)
+	}
+}
+function buildViewMatrix() {
+	const eye = getCameraPosition()
+	const forward = vec3Norm(vec3Sub(camera.target, eye))
+	const worldUp = { x: 0, y: 0, z: 1 }
+	let right = vec3Cross(forward, worldUp)
+	if (vec3Len(right) < 0.001) right = { x: 1, y: 0, z: 0 }
+	right = vec3Norm(right)
+	const up = vec3Norm(vec3Cross(right, forward))
+	return { right, up, forward, eye }
+}
+function worldToScreen(wx, wy, wz = 0) {
+	const view = buildViewMatrix()
+	const rel = vec3Sub({ x: wx, y: wy, z: wz }, view.eye)
+	const camSpace = {
+		x: vec3Dot(rel, view.right),
+		y: vec3Dot(rel, view.up),
+		z: vec3Dot(rel, view.forward)
+	}
+	if (camSpace.z <= camera.near) return null
+	const fovRad = camera.fov * Math.PI / 180
+	const scale = canvas.height / (2 * Math.tan(fovRad / 2))
+	return {
+		x: canvas.width / 2 + (camSpace.x / camSpace.z) * scale,
+		y: canvas.height / 2 - (camSpace.y / camSpace.z) * scale,
+		depth: camSpace.z
+	}
+}
+function screenToWorldOnPlane(sx, sy, planeZ = 0) {
+	const eye = getCameraPosition()
+	const view = buildViewMatrix()
+	const fovRad = camera.fov * Math.PI / 180
+	const scale = canvas.height / (2 * Math.tan(fovRad / 2))
+	const ndcX = (sx - canvas.width / 2) / scale
+	const ndcY = (canvas.height / 2 - sy) / scale
+	const rayDir = vec3Norm({
+		x: view.right.x * ndcX + view.up.x * ndcY + view.forward.x,
+		y: view.right.y * ndcX + view.up.y * ndcY + view.forward.y,
+		z: view.right.z * ndcX + view.up.z * ndcY + view.forward.z
+	})
+	const denom = rayDir.z
+	if (Math.abs(denom) < 0.0001) return null
+	const t = (planeZ - eye.z) / denom
+	if (t < 0) return null
+	return { x: eye.x + rayDir.x * t, y: eye.y + rayDir.y * t, z: planeZ }
+}
 const lightingCache = { data: new Map(), version: 0 }
 const aoCache = { data: new Map(), version: 0 }
 function invalidateLightingCache() { lightingCache.version++; lightingCache.data.clear(); state.needsRender = true }
@@ -2888,7 +3588,7 @@ class ParticleEmitter {
 	}
 	emit() { this.particles.push(new Particle(this.x, this.y, this.config)) }
 	draw(ctx) {
-		for (const p of this.particles) { const pos = worldToScreen(p.x, p.y); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(pos.x, pos.y - p.z * 16 * state.zoom, p.currentSize * state.zoom, 0, Math.PI * 2); ctx.fill() }
+		for (const p of this.particles) { const pos = worldToScreen(p.x, p.y, p.z); if (!pos) continue; const scale = 1000 / (pos.depth || 1000); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(pos.x, pos.y, p.currentSize * scale, 0, Math.PI * 2); ctx.fill() }
 		ctx.globalAlpha = 1
 	}
 }
@@ -2967,14 +3667,39 @@ function updateGamepad() {
 	if (gamepads[0]) { gamepadState.connected = true; gamepadState.axes = [...gamepads[0].axes]; gamepadState.buttons = gamepads[0].buttons.map(b => b.pressed); for (let i = 0; i < gamepadState.axes.length; i++) if (Math.abs(gamepadState.axes[i]) < 0.15) gamepadState.axes[i] = 0 }
 	else gamepadState.connected = false
 }
-let touchState = { touches: [], pinchDist: 0, pinchZoom: 1 }
-function handleTouchStart(e) { e.preventDefault(); touchState.touches = [...e.touches]; if (e.touches.length === 2) { const dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY; touchState.pinchDist = Math.sqrt(dx*dx + dy*dy); touchState.pinchZoom = state.zoom } }
+let touchState = { touches: [], pinchDist: 0, pinchZoom: 1, startTarget: null }
+function handleTouchStart(e) {
+	e.preventDefault()
+	touchState.touches = [...e.touches]
+	touchState.startTarget = { ...camera.target }
+	if (e.touches.length === 2) {
+		const dx = e.touches[0].clientX - e.touches[1].clientX
+		const dy = e.touches[0].clientY - e.touches[1].clientY
+		touchState.pinchDist = Math.sqrt(dx*dx + dy*dy)
+		touchState.pinchZoom = camera.distance
+	}
+}
 function handleTouchMove(e) {
 	e.preventDefault()
-	if (e.touches.length === 1) { state.panX += e.touches[0].clientX - touchState.touches[0].clientX; state.panY += e.touches[0].clientY - touchState.touches[0].clientY; touchState.touches = [...e.touches]; render() }
-	else if (e.touches.length === 2) { const dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY; state.zoom = Math.max(0.25, Math.min(4, touchState.pinchZoom * Math.sqrt(dx*dx + dy*dy) / touchState.pinchDist)); render() }
+	if (e.touches.length === 1) {
+		const dx = e.touches[0].clientX - touchState.touches[0].clientX
+		const dy = e.touches[0].clientY - touchState.touches[0].clientY
+		const view = buildViewMatrix()
+		const panSpeed = camera.distance * 0.002
+		camera.target.x = touchState.startTarget.x - view.right.x * dx * panSpeed - view.up.x * dy * panSpeed
+		camera.target.y = touchState.startTarget.y - view.right.y * dx * panSpeed - view.up.y * dy * panSpeed
+		touchState.touches = [...e.touches]
+		touchState.startTarget = { ...camera.target }
+		render()
+	} else if (e.touches.length === 2) {
+		const dx = e.touches[0].clientX - e.touches[1].clientX
+		const dy = e.touches[0].clientY - e.touches[1].clientY
+		const dist = Math.sqrt(dx*dx + dy*dy)
+		camera.distance = Math.max(5, Math.min(200, touchState.pinchZoom * touchState.pinchDist / dist))
+		render()
+	}
 }
-function handleTouchEnd(e) { touchState.touches = [...e.touches] }
+function handleTouchEnd(e) { touchState.touches = [...e.touches]; touchState.startTarget = { ...camera.target } }
 function initAudio() { if (engine.audioContext) return; engine.audioContext = new (window.AudioContext || window.webkitAudioContext)(); engine.audioGain = engine.audioContext.createGain(); engine.audioGain.connect(engine.audioContext.destination) }
 function playSound(id, x, y, volume = 1) {
 	if (!engine.audioContext || !engine.sounds[id]) return
@@ -3100,12 +3825,7 @@ function thinBridge(x, y, amount) {
 }
 function initMap() {
 	state.tileMap.clear()
-	state.mapBounds = { minX: 0, maxX: 29, minY: 0, maxY: 29 }
-	for (let y = 0; y <= 29; y++) {
-		for (let x = 0; x <= 29; x++) {
-			setTile(x, y, { terrain: 'grass', z: 0, thickness: 0, isBridge: false, isSlope: false })
-		}
-	}
+	state.mapBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 }
 	for (let i = 0; i < state.layers.length; i++) {
 		state.layers[i].data = []
 	}
@@ -3119,6 +3839,13 @@ function fitMapToView() {
 	const t = state.viewTransition
 	const mapW = getMapWidth()
 	const mapH = getMapHeight()
+	if (mapW <= 1 && mapH <= 1) {
+		state.zoom = 0.5
+		state.panX = 0
+		state.panY = 0
+		render()
+		return
+	}
 	const sideW = mapW * TILE_W
 	const sideH = mapH * TILE_H
 	const topW = mapW * TILE_W
@@ -3141,177 +3868,31 @@ function fitMapToView() {
 	state.panY = -(sideY + (topY - sideY) * t)
 	render()
 }
-function worldToScreen(wx, wy) {
-	const t = state.viewTransition
-	const cameraX = state.playerX || (state.mapBounds.minX + state.mapBounds.maxX) / 2
-	const cameraY = state.playerY || (state.mapBounds.minY + state.mapBounds.maxY) / 2
-	const perspective = 0.015 * (1 - t)
-	const scale = 1 + (wy - cameraY) * perspective
-	const sideX = (cameraX + (wx - cameraX) * scale) * TILE_W * state.zoom
-	const sideY = wy * TILE_H * state.zoom
-	const topX = wx * TILE_W * state.zoom
-	const topY = wy * TILE_W * state.zoom
-	let x = sideX + (topX - sideX) * t + state.panX + canvas.width / 2
-	let y = sideY + (topY - sideY) * t + state.panY + canvas.height / 2
-	return { x, y, scale }
-}
-const pivotState = {
-	active: false,
-	worldX: 0,
-	worldY: 0,
-	screenX: 0,
-	screenY: 0,
-	opacity: 1,
-	fadeStart: 0
-}
-function animateViewTransition(toTop) {
-	if (state.viewAnimating) return
-	state.viewAnimating = true
-	const pivotWorld = screenToWorldFloat(canvas.width / 2, canvas.height / 2)
-	pivotState.worldX = pivotWorld.x
-	pivotState.worldY = pivotWorld.y
-	pivotState.screenX = canvas.width / 2
-	pivotState.screenY = canvas.height / 2
-	pivotState.active = true
-	pivotState.opacity = 1
-	const startT = state.viewTransition
-	const endT = toTop ? 1 : 0
-	const duration = 300
-	const startTime = performance.now()
-	function animate(now) {
-		const elapsed = now - startTime
-		const progress = Math.min(elapsed / duration, 1)
-		const eased = 1 - Math.pow(1 - progress, 3)
-		state.viewTransition = startT + (endT - startT) * eased
-		const currentT = state.viewTransition
-		const sideX = pivotState.worldX * TILE_W * state.zoom
-		const sideY = pivotState.worldY * TILE_H * state.zoom
-		const topX = pivotState.worldX * TILE_W * state.zoom
-		const topY = pivotState.worldY * TILE_W * state.zoom
-		const baseX = sideX + (topX - sideX) * currentT
-		const baseY = sideY + (topY - sideY) * currentT
-		state.panX = -baseX
-		state.panY = -baseY
-		render()
-		if (progress < 1) {
-			requestAnimationFrame(animate)
-		} else {
-			state.viewAnimating = false
-			state.viewMode = toTop ? 'top' : 'side'
-			if (state.viewMode === 'side' && state.tool !== 'select') {
-				state.tool = 'select'
-			}
-			updateToolButtons()
-			pivotState.fadeStart = performance.now()
-			requestAnimationFrame(fadePivot)
-		}
-	}
-	requestAnimationFrame(animate)
-}
-function fadePivot(now) {
-	const fadeElapsed = now - pivotState.fadeStart
-	if (fadeElapsed < 200) {
-		render()
-		requestAnimationFrame(fadePivot)
-	} else {
-		const fadeProgress = Math.min((fadeElapsed - 200) / 300, 1)
-		pivotState.opacity = 1 - fadeProgress
-		render()
-		if (fadeProgress < 1) {
-			requestAnimationFrame(fadePivot)
-		} else {
-			pivotState.active = false
-			pivotState.opacity = 1
-			render()
-		}
-	}
-}
-function drawPivotIndicator() {
-	if (!pivotState.active) return
-	const pos = worldToScreen(pivotState.worldX, pivotState.worldY)
-	ctx.globalAlpha = pivotState.opacity
-	ctx.fillStyle = '#ff0000'
-	ctx.beginPath()
-	ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2)
-	ctx.fill()
-	ctx.strokeStyle = '#ffffff'
-	ctx.lineWidth = 2
-	ctx.stroke()
-	const t = state.viewTransition
-	const axisLen = 40
-	const xEnd = worldToScreen(pivotState.worldX + 1, pivotState.worldY)
-	const yEnd = worldToScreen(pivotState.worldX, pivotState.worldY + 1)
-	const xDirX = (xEnd.x - pos.x)
-	const xDirY = (xEnd.y - pos.y)
-	const xLen = Math.sqrt(xDirX * xDirX + xDirY * xDirY)
-	const yDirX = (yEnd.x - pos.x)
-	const yDirY = (yEnd.y - pos.y)
-	const yLen = Math.sqrt(yDirX * yDirX + yDirY * yDirY)
-	ctx.lineWidth = 2
-	ctx.strokeStyle = '#ff0000'
-	ctx.beginPath()
-	ctx.moveTo(pos.x, pos.y)
-	ctx.lineTo(pos.x + xDirX / xLen * axisLen, pos.y + xDirY / xLen * axisLen)
-	ctx.stroke()
-	ctx.fillStyle = '#ff0000'
-	ctx.font = '12px sans-serif'
-	ctx.fillText('X', pos.x + xDirX / xLen * (axisLen + 10), pos.y + xDirY / xLen * (axisLen + 10) + 4)
-	ctx.strokeStyle = '#00ff00'
-	ctx.beginPath()
-	ctx.moveTo(pos.x, pos.y)
-	ctx.lineTo(pos.x + yDirX / yLen * axisLen, pos.y + yDirY / yLen * axisLen)
-	ctx.stroke()
-	ctx.fillStyle = '#00ff00'
-	ctx.fillText('Y', pos.x + yDirX / yLen * (axisLen + 10), pos.y + yDirY / yLen * (axisLen + 10) + 4)
-	ctx.strokeStyle = '#0088ff'
-	ctx.beginPath()
-	ctx.moveTo(pos.x, pos.y)
-	ctx.lineTo(pos.x, pos.y - axisLen)
-	ctx.stroke()
-	ctx.fillStyle = '#0088ff'
-	ctx.fillText('Z', pos.x + 5, pos.y - axisLen - 5)
-	ctx.globalAlpha = 1
-}
 function screenToWorld(sx, sy) {
-	const result = screenToWorldFloat(sx, sy)
+	const result = screenToWorldOnPlane(sx, sy, 0)
+	if (!result) return { x: 0, y: 0 }
 	return { x: Math.floor(result.x), y: Math.floor(result.y) }
 }
 function screenToWorldFloat(sx, sy) {
-	const t = state.viewTransition
-	const cameraX = state.playerX || (state.mapBounds.minX + state.mapBounds.maxX) / 2
-	const cameraY = state.playerY || (state.mapBounds.minY + state.mapBounds.maxY) / 2
-	const perspective = 0.015 * (1 - t)
-	const cx = (sx - canvas.width / 2 - state.panX) / state.zoom
-	const cy = (sy - canvas.height / 2 - state.panY) / state.zoom
-	const topWx = cx / TILE_W
-	const topWy = cy / TILE_W
-	const sideWy = cy / TILE_H
-	let wx = topWx, wy = sideWy + (topWy - sideWy) * t
-	for (let i = 0; i < 5; i++) {
-		const scale = 1 + (wy - cameraY) * perspective
-		const sideWx = cameraX + (cx / TILE_W - cameraX) / scale
-		wx = sideWx + (topWx - sideWx) * t
-		wy = sideWy + (topWy - sideWy) * t
-	}
-	return { x: wx, y: wy }
+	const result = screenToWorldOnPlane(sx, sy, 0)
+	if (!result) return { x: 0, y: 0 }
+	return { x: result.x, y: result.y }
 }
-function getTileCorners(x, y) {
-	const t = state.viewTransition
-	const p0 = worldToScreen(x, y)
-	const p1 = worldToScreen(x + 1, y)
-	const p2 = worldToScreen(x + 1, y + 1)
-	const p3 = worldToScreen(x, y + 1)
+function getTileCorners(x, y, z = 0) {
+	const p0 = worldToScreen(x, y, z)
+	const p1 = worldToScreen(x + 1, y, z)
+	const p2 = worldToScreen(x + 1, y + 1, z)
+	const p3 = worldToScreen(x, y + 1, z)
 	return [p0, p1, p2, p3]
 }
-function getDepthFog(y) {
-	if (state.viewTransition >= 1) return 0
-	const fogStart = (state.playerY || (state.mapBounds.minY + state.mapBounds.maxY) / 2) - 3
-	const fogEnd = fogStart + 20
-	const depth = Math.max(0, Math.min(1, (y - fogStart) / (fogEnd - fogStart)))
-	return depth * 0.6 * (1 - state.viewTransition)
+function getDepthFog(depth) {
+	const fogStart = camera.distance * 0.5
+	const fogEnd = camera.distance * 2
+	const t = Math.max(0, Math.min(1, (depth - fogStart) / (fogEnd - fogStart)))
+	return t * 0.5
 }
-function applyDepthFog(color, y) {
-	const fog = getDepthFog(y)
+function applyDepthFog(color, depth) {
+	const fog = getDepthFog(depth)
 	if (fog <= 0) return color
 	const match = color.match(/\d+/g)
 	if (!match || match.length < 3) return color
@@ -3324,6 +3905,7 @@ function applyDepthFog(color, y) {
 }
 function drawIsometricTile(x, y, color, outline = false) {
 	const corners = getTileCorners(x, y)
+	if (!corners[0] || !corners[1] || !corners[2] || !corners[3]) return
 	ctx.beginPath()
 	ctx.moveTo(corners[0].x, corners[0].y)
 	ctx.lineTo(corners[1].x, corners[1].y)
@@ -3335,24 +3917,125 @@ function drawIsometricTile(x, y, color, outline = false) {
 		ctx.lineWidth = 1
 		ctx.stroke()
 	} else {
-		ctx.fillStyle = applyDepthFog(color, y)
+		ctx.fillStyle = applyDepthFog(color, corners[0].depth || 0)
+		ctx.fill()
+	}
+}
+function drawIsometricTileTextured(x, y, terrainId, z = 0) {
+	const texture = textureCache.get(terrainId)
+	const res = resourceMap.get(terrainId)
+	const corners = getTileCorners(x, y, z)
+	if (!corners[0] || !corners[1] || !corners[2] || !corners[3]) return
+	if (!texture || !res) {
+		ctx.beginPath()
+		ctx.moveTo(corners[0].x, corners[0].y)
+		ctx.lineTo(corners[1].x, corners[1].y)
+		ctx.lineTo(corners[2].x, corners[2].y)
+		ctx.lineTo(corners[3].x, corners[3].y)
+		ctx.closePath()
+		ctx.fillStyle = applyDepthFog(res ? res.color : '#808080', corners[0].depth || 0)
+		ctx.fill()
+		return
+	}
+	ctx.save()
+	ctx.beginPath()
+	ctx.moveTo(corners[0].x, corners[0].y)
+	ctx.lineTo(corners[1].x, corners[1].y)
+	ctx.lineTo(corners[2].x, corners[2].y)
+	ctx.lineTo(corners[3].x, corners[3].y)
+	ctx.closePath()
+	ctx.clip()
+	const cx = (corners[0].x + corners[2].x) / 2
+	const cy = (corners[0].y + corners[2].y) / 2
+	const dx1 = corners[1].x - corners[0].x
+	const dy1 = corners[1].y - corners[0].y
+	const dx2 = corners[3].x - corners[0].x
+	const dy2 = corners[3].y - corners[0].y
+	const texSize = texture.width
+	const scaleX = Math.sqrt(dx1 * dx1 + dy1 * dy1) / texSize
+	const scaleY = Math.sqrt(dx2 * dx2 + dy2 * dy2) / texSize
+	const angle1 = Math.atan2(dy1, dx1)
+	const cos1 = Math.cos(angle1)
+	const sin1 = Math.sin(angle1)
+	ctx.setTransform(cos1 * scaleX, sin1 * scaleX, -sin1 * scaleY, cos1 * scaleY, corners[0].x, corners[0].y)
+	ctx.drawImage(texture, 0, 0)
+	ctx.restore()
+	const fog = getDepthFog(corners[0].depth || 0)
+	if (fog > 0) {
+		ctx.beginPath()
+		ctx.moveTo(corners[0].x, corners[0].y)
+		ctx.lineTo(corners[1].x, corners[1].y)
+		ctx.lineTo(corners[2].x, corners[2].y)
+		ctx.lineTo(corners[3].x, corners[3].y)
+		ctx.closePath()
+		ctx.fillStyle = `rgba(5,5,5,${fog})`
 		ctx.fill()
 	}
 }
 function drawEntity(x, y, resource, z = 0) {
-	const corners = getTileCorners(x, y)
+	const corners = getTileCorners(x, y, z)
+	if (!corners[0] || !corners[2]) return
 	const centerX = (corners[0].x + corners[2].x) / 2
-	const bottomY = Math.max(corners[1].y, corners[3].y)
-	const w = 32 * state.zoom
-	const h = (resource.height || 32) * state.zoom
-	const zOffset = z * 16 * state.zoom
-	ctx.fillStyle = applyDepthFog(resource.color, y)
-	ctx.fillRect(centerX - w / 2, bottomY - h - zOffset, w, h)
-	const fog = getDepthFog(y)
+	const centerY = (corners[0].y + corners[2].y) / 2
+	const scale = 1000 / (corners[0].depth || 1000)
+	const w = 32 * scale
+	const h = (resource.height || 32) * scale
+	ctx.fillStyle = applyDepthFog(resource.color, corners[0].depth || 0)
+	ctx.fillRect(centerX - w / 2, centerY - h, w, h)
+	const fog = getDepthFog(corners[0].depth || 0)
 	const strokeAlpha = Math.max(0.05, 0.3 - fog * 0.4)
 	ctx.strokeStyle = `rgba(255,255,255,${strokeAlpha})`
 	ctx.lineWidth = 1
-	ctx.strokeRect(centerX - w / 2, bottomY - h - zOffset, w, h)
+	ctx.strokeRect(centerX - w / 2, centerY - h, w, h)
+}
+const modelCache = new Map()
+async function loadModelForEntity(entity) {
+	const key = `${entity.modelPath}/${entity.modelFile}`
+	if (modelCache.has(key)) return modelCache.get(key)
+	try {
+		const url = `../src/model/${entity.modelPath}/${entity.modelFile}`
+		const model = await ModelLoader.load(url)
+		modelCache.set(key, model)
+		return model
+	} catch (e) {
+		console.error('Failed to load model:', e)
+		return null
+	}
+}
+function drawModelEntity(entity) {
+	const key = `${entity.modelPath}/${entity.modelFile}`
+	let model = modelCache.get(key)
+	if (!model) {
+		loadModelForEntity(entity).then(() => { state.needsRender = true })
+		const corners = getTileCorners(entity.x, entity.y, entity.z || 0)
+		if (corners[0] && corners[2]) {
+			const centerX = (corners[0].x + corners[2].x) / 2
+			const centerY = (corners[0].y + corners[2].y) / 2
+			const scale = 1000 / (corners[0].depth || 1000)
+			ctx.fillStyle = 'rgba(100,100,100,0.5)'
+			ctx.fillRect(centerX - 16 * scale, centerY - 32 * scale, 32 * scale, 32 * scale)
+		}
+		return
+	}
+	const corners = getTileCorners(entity.x, entity.y, entity.z || 0)
+	if (!corners[0] || !corners[2]) return
+	const centerX = (corners[0].x + corners[2].x) / 2
+	const centerY = (corners[0].y + corners[2].y) / 2
+	const depthScale = 1000 / (corners[0].depth || 1000)
+	model.render(ctx, entity.x, entity.y, entity.z || 0, entity.rotation || 0, { x: centerX, y: centerY }, 64 * depthScale, 64 * depthScale)
+	if (state.selectedEntity && state.selectedEntity.id === entity.id) {
+		ctx.strokeStyle = '#f1c40f'
+		ctx.lineWidth = 2
+		ctx.setLineDash([4, 2])
+		ctx.beginPath()
+		ctx.moveTo(corners[0].x, corners[0].y)
+		ctx.lineTo(corners[1].x, corners[1].y)
+		ctx.lineTo(corners[2].x, corners[2].y)
+		ctx.lineTo(corners[3].x, corners[3].y)
+		ctx.closePath()
+		ctx.stroke()
+		ctx.setLineDash([])
+	}
 }
 function rgbToHex(rgb) {
 	const m = rgb.match(/\d+/g)
@@ -3360,36 +4043,35 @@ function rgbToHex(rgb) {
 	return '#' + m.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('')
 }
 function drawIsometricTileWithHeight(x, y, color, z, thickness) {
-	const corners = getTileCorners(x, y)
-	const zOffset = z * 16 * state.zoom
-	const thickOffset = thickness * 16 * state.zoom
-	const offsetCorners = corners.map(c => ({ x: c.x, y: c.y - zOffset }))
+	const topCorners = getTileCorners(x, y, z)
+	const bottomCorners = getTileCorners(x, y, 0)
+	if (!topCorners[0] || !topCorners[1] || !topCorners[2] || !topCorners[3]) return
+	if (!bottomCorners[0] || !bottomCorners[1] || !bottomCorners[2] || !bottomCorners[3]) return
 	ctx.beginPath()
-	ctx.moveTo(offsetCorners[0].x, offsetCorners[0].y)
-	ctx.lineTo(offsetCorners[1].x, offsetCorners[1].y)
-	ctx.lineTo(offsetCorners[2].x, offsetCorners[2].y)
-	ctx.lineTo(offsetCorners[3].x, offsetCorners[3].y)
+	ctx.moveTo(topCorners[0].x, topCorners[0].y)
+	ctx.lineTo(topCorners[1].x, topCorners[1].y)
+	ctx.lineTo(topCorners[2].x, topCorners[2].y)
+	ctx.lineTo(topCorners[3].x, topCorners[3].y)
 	ctx.closePath()
-	ctx.fillStyle = applyDepthFog(color, y)
+	ctx.fillStyle = applyDepthFog(color, topCorners[0].depth || 0)
 	ctx.fill()
 	if (z > 0 || thickness > 0) {
 		const sideColor = adjustBrightness(color, -30)
-		ctx.fillStyle = applyDepthFog(sideColor, y)
-		const h = Math.max(z, thickness) * 16 * state.zoom
+		ctx.fillStyle = applyDepthFog(sideColor, topCorners[0].depth || 0)
 		ctx.beginPath()
-		ctx.moveTo(offsetCorners[2].x, offsetCorners[2].y)
-		ctx.lineTo(offsetCorners[3].x, offsetCorners[3].y)
-		ctx.lineTo(corners[3].x, corners[3].y)
-		ctx.lineTo(corners[2].x, corners[2].y)
+		ctx.moveTo(topCorners[2].x, topCorners[2].y)
+		ctx.lineTo(topCorners[3].x, topCorners[3].y)
+		ctx.lineTo(bottomCorners[3].x, bottomCorners[3].y)
+		ctx.lineTo(bottomCorners[2].x, bottomCorners[2].y)
 		ctx.closePath()
 		ctx.fill()
 		ctx.beginPath()
-		ctx.moveTo(offsetCorners[1].x, offsetCorners[1].y)
-		ctx.lineTo(offsetCorners[2].x, offsetCorners[2].y)
-		ctx.lineTo(corners[2].x, corners[2].y)
-		ctx.lineTo(corners[1].x, corners[1].y)
+		ctx.moveTo(topCorners[1].x, topCorners[1].y)
+		ctx.lineTo(topCorners[2].x, topCorners[2].y)
+		ctx.lineTo(bottomCorners[2].x, bottomCorners[2].y)
+		ctx.lineTo(bottomCorners[1].x, bottomCorners[1].y)
 		ctx.closePath()
-		ctx.fillStyle = applyDepthFog(adjustBrightness(color, -50), y)
+		ctx.fillStyle = applyDepthFog(adjustBrightness(color, -50), topCorners[0].depth || 0)
 		ctx.fill()
 	}
 }
@@ -3402,13 +4084,14 @@ function adjustBrightness(color, amount) {
 	return `rgb(${r},${g},${b})`
 }
 function updateVisibleGridScales() {
-	const pixelsPerMeter = 32 * state.zoom
+	const fovRad = camera.fov * Math.PI / 180
+	const pixelsPerUnit = canvas.height / (2 * Math.tan(fovRad / 2) * camera.distance)
 	const targetPixelSpacing = 50
 	state.visibleGridScales = []
 	const scales = [1000, 100, 10, 1, 0.1, 0.01]
 	for (let i = 0; i < scales.length && state.visibleGridScales.length < 2; i++) {
 		const scale = scales[i]
-		const spacing = scale * pixelsPerMeter
+		const spacing = scale * pixelsPerUnit
 		if (spacing >= targetPixelSpacing) {
 			state.visibleGridScales.push(scale)
 		}
@@ -3417,35 +4100,140 @@ function updateVisibleGridScales() {
 		state.visibleGridScales.push(scales[scales.length - 1])
 	}
 }
+function clipLineToNearPlane(p1, p2) {
+	const view = buildViewMatrix()
+	const rel1 = vec3Sub(p1, view.eye)
+	const rel2 = vec3Sub(p2, view.eye)
+	const z1 = vec3Dot(rel1, view.forward)
+	const z2 = vec3Dot(rel2, view.forward)
+	const near = camera.near + 0.1
+	if (z1 < near && z2 < near) return null
+	if (z1 >= near && z2 >= near) return [p1, p2]
+	const t = (near - z1) / (z2 - z1)
+	const clipped = {
+		x: p1.x + (p2.x - p1.x) * t,
+		y: p1.y + (p2.y - p1.y) * t,
+		z: p1.z + (p2.z - p1.z) * t
+	}
+	return z1 >= near ? [p1, clipped] : [clipped, p2]
+}
+function drawAxisLines() {
+	const gridSize = 500
+	ctx.lineWidth = 2
+	const axes = [
+		{ p1: { x: -gridSize, y: 0, z: 0 }, p2: { x: gridSize, y: 0, z: 0 }, color: 'rgba(255,100,100,0.8)' },
+		{ p1: { x: 0, y: -gridSize, z: 0 }, p2: { x: 0, y: gridSize, z: 0 }, color: 'rgba(100,255,100,0.8)' },
+		{ p1: { x: 0, y: 0, z: -gridSize }, p2: { x: 0, y: 0, z: gridSize }, color: 'rgba(100,150,255,0.8)' }
+	]
+	for (const axis of axes) {
+		const clipped = clipLineToNearPlane(axis.p1, axis.p2)
+		if (!clipped) continue
+		const s1 = worldToScreen(clipped[0].x, clipped[0].y, clipped[0].z)
+		const s2 = worldToScreen(clipped[1].x, clipped[1].y, clipped[1].z)
+		if (!s1 || !s2) continue
+		ctx.strokeStyle = axis.color
+		ctx.beginPath()
+		ctx.moveTo(s1.x, s1.y)
+		ctx.lineTo(s2.x, s2.y)
+		ctx.stroke()
+	}
+}
 function drawDynamicGrid() {
 	updateVisibleGridScales()
-	const viewport = getViewportBounds()
+	const gridSize = Math.max(50, camera.distance * 2)
 	state.visibleGridScales.forEach((scale, idx) => {
-		const alpha = idx === 0 ? 0.15 : 0.08
-		const lineWidth = idx === 0 ? 1 : 0.5
+		const isMajor = idx === 0
+		const alpha = isMajor ? 0.15 : 0.08
+		const lineWidth = isMajor ? 1 : 0.5
 		ctx.strokeStyle = `rgba(255,255,255,${alpha})`
 		ctx.lineWidth = lineWidth
-		const startX = Math.floor(viewport.minX / scale) * scale
-		const startY = Math.floor(viewport.minY / scale) * scale
-		const endX = Math.ceil(viewport.maxX / scale) * scale
-		const endY = Math.ceil(viewport.maxY / scale) * scale
+		const startX = Math.floor(-gridSize / scale) * scale
+		const startY = Math.floor(-gridSize / scale) * scale
+		const endX = Math.ceil(gridSize / scale) * scale
+		const endY = Math.ceil(gridSize / scale) * scale
 		for (let x = startX; x <= endX; x += scale) {
-			const p1 = worldToScreen(x, startY)
-			const p2 = worldToScreen(x, endY)
-			ctx.beginPath()
-			ctx.moveTo(p1.x, p1.y)
-			ctx.lineTo(p2.x, p2.y)
-			ctx.stroke()
+			if (x === 0) continue
+			const clipped = clipLineToNearPlane({ x, y: startY, z: 0 }, { x, y: endY, z: 0 })
+			if (!clipped) continue
+			const p1 = worldToScreen(clipped[0].x, clipped[0].y, clipped[0].z)
+			const p2 = worldToScreen(clipped[1].x, clipped[1].y, clipped[1].z)
+			if (p1 && p2) {
+				ctx.beginPath()
+				ctx.moveTo(p1.x, p1.y)
+				ctx.lineTo(p2.x, p2.y)
+				ctx.stroke()
+			}
 		}
 		for (let y = startY; y <= endY; y += scale) {
-			const p1 = worldToScreen(startX, y)
-			const p2 = worldToScreen(endX, y)
-			ctx.beginPath()
-			ctx.moveTo(p1.x, p1.y)
-			ctx.lineTo(p2.x, p2.y)
-			ctx.stroke()
+			if (y === 0) continue
+			const clipped = clipLineToNearPlane({ x: startX, y, z: 0 }, { x: endX, y, z: 0 })
+			if (!clipped) continue
+			const p1 = worldToScreen(clipped[0].x, clipped[0].y, clipped[0].z)
+			const p2 = worldToScreen(clipped[1].x, clipped[1].y, clipped[1].z)
+			if (p1 && p2) {
+				ctx.beginPath()
+				ctx.moveTo(p1.x, p1.y)
+				ctx.lineTo(p2.x, p2.y)
+				ctx.stroke()
+			}
 		}
 	})
+}
+function drawShadow(x, y, z) {
+	const corners = getTileCorners(x, y, 0)
+	if (!corners[0] || !corners[1] || !corners[2] || !corners[3]) return
+	ctx.fillStyle = 'rgba(0,0,0,0.3)'
+	ctx.beginPath()
+	ctx.moveTo(corners[0].x, corners[0].y)
+	ctx.lineTo(corners[1].x, corners[1].y)
+	ctx.lineTo(corners[2].x, corners[2].y)
+	ctx.lineTo(corners[3].x, corners[3].y)
+	ctx.closePath()
+	ctx.fill()
+}
+function drawAxisGizmo() {
+	const size = 35
+	const margin = 10
+	const cx = margin + size
+	const cy = canvas.height - margin - size
+	const view = buildViewMatrix()
+	const axes = [
+		{ dir: { x: 1, y: 0, z: 0 }, color: '#ff4444', label: 'X' },
+		{ dir: { x: 0, y: 1, z: 0 }, color: '#44ff44', label: 'Y' },
+		{ dir: { x: 0, y: 0, z: 1 }, color: '#4488ff', label: 'Z' }
+	]
+	const projected = axes.map(a => {
+		const sx = vec3Dot(a.dir, view.right)
+		const sy = vec3Dot(a.dir, view.up)
+		const sz = vec3Dot(a.dir, view.forward)
+		return { ...a, sx, sy, sz }
+	})
+	projected.sort((a, b) => a.sz - b.sz)
+	ctx.save()
+	for (const a of projected) {
+		const endX = cx + a.sx * size
+		const endY = cy - a.sy * size
+		ctx.strokeStyle = a.color
+		ctx.lineWidth = 3
+		ctx.lineCap = 'round'
+		ctx.beginPath()
+		ctx.moveTo(cx, cy)
+		ctx.lineTo(endX, endY)
+		ctx.stroke()
+		ctx.beginPath()
+		ctx.arc(endX, endY, 4, 0, Math.PI * 2)
+		ctx.fillStyle = a.color
+		ctx.fill()
+		ctx.fillStyle = '#fff'
+		ctx.font = 'bold 11px system-ui'
+		ctx.textAlign = 'center'
+		ctx.textBaseline = 'middle'
+		const len = Math.sqrt(a.sx * a.sx + a.sy * a.sy)
+		const nx = len > 0.01 ? a.sx / len : 0
+		const ny = len > 0.01 ? a.sy / len : -1
+		ctx.fillText(a.label, endX + nx * 12, endY - ny * 12)
+	}
+	ctx.restore()
 }
 function render() {
 	if (state.lightingDirty) { lightingCache.data.clear(); state.lightingDirty = false }
@@ -3461,45 +4249,100 @@ function render() {
 			if (tile && terrainLayer.visible) {
 				const res = resourceMap.get(tile.terrain)
 				if (res) {
-					let color = res.color
-					const lit = getCachedLighting(x, y, tile.z)
-					color = applyLighting(color, lit)
-					const ao = getCachedAO(x, y)
-					if (ao > 0) {
-						const c = color.match(/\d+/g).map(Number)
-						color = `rgb(${Math.floor(c[0] * (1 - ao))},${Math.floor(c[1] * (1 - ao))},${Math.floor(c[2] * (1 - ao))})`
-					}
-					if (tile.z > 0 || tile.thickness > 0) {
-						drawIsometricTileWithHeight(x, y, color, tile.z, tile.thickness)
+					if (state.previewMode && textureCache.has(tile.terrain)) {
+						const z = tile.z || 0
+						drawIsometricTileTextured(x, y, tile.terrain, z)
+						if (z > 0 || tile.thickness > 0) {
+							const topCorners = getTileCorners(x, y, z)
+							const bottomCorners = getTileCorners(x, y, 0)
+							if (topCorners[0] && topCorners[1] && topCorners[2] && topCorners[3] && bottomCorners[0] && bottomCorners[1] && bottomCorners[2] && bottomCorners[3]) {
+								const sideColor = adjustBrightness(res.color, -30)
+								ctx.fillStyle = applyDepthFog(sideColor, topCorners[0].depth || 0)
+								ctx.beginPath()
+								ctx.moveTo(topCorners[2].x, topCorners[2].y)
+								ctx.lineTo(topCorners[3].x, topCorners[3].y)
+								ctx.lineTo(bottomCorners[3].x, bottomCorners[3].y)
+								ctx.lineTo(bottomCorners[2].x, bottomCorners[2].y)
+								ctx.closePath()
+								ctx.fill()
+								ctx.beginPath()
+								ctx.moveTo(topCorners[1].x, topCorners[1].y)
+								ctx.lineTo(topCorners[2].x, topCorners[2].y)
+								ctx.lineTo(bottomCorners[2].x, bottomCorners[2].y)
+								ctx.lineTo(bottomCorners[1].x, bottomCorners[1].y)
+								ctx.closePath()
+								ctx.fillStyle = applyDepthFog(adjustBrightness(res.color, -50), topCorners[0].depth || 0)
+								ctx.fill()
+							}
+						}
 					} else {
-						drawIsometricTile(x, y, color)
+						let color = res.color
+						const lit = getCachedLighting(x, y, tile.z)
+						color = applyLighting(color, lit)
+						const ao = getCachedAO(x, y)
+						if (ao > 0) {
+							const c = color.match(/\d+/g).map(Number)
+							color = `rgb(${Math.floor(c[0] * (1 - ao))},${Math.floor(c[1] * (1 - ao))},${Math.floor(c[2] * (1 - ao))})`
+						}
+						if (tile.z > 0 || tile.thickness > 0) {
+							drawIsometricTileWithHeight(x, y, color, tile.z, tile.thickness)
+						} else {
+							drawIsometricTile(x, y, color)
+						}
 					}
 				}
 			}
 		}
 	}
 	if (state.showGrid) drawDynamicGrid()
+	drawAxisLines()
 	const sortedEntities = [...state.entities].sort((a, b) => (a.x + a.y + (a.z || 0) * 0.01) - (b.x + b.y + (b.z || 0) * 0.01))
 	for (const entity of sortedEntities) {
 		if (!isInViewport(entity.x, entity.y)) continue
 		const layer = state.layers[2]
 		if (layer && layer.visible) {
-			const res = resourceMap.get(entity.type)
-			if (res) {
-				if ((entity.z || 0) > 0) drawShadow(entity.x, entity.y, entity.z || 0)
-				drawEntity(entity.x, entity.y, res, entity.z || 0)
-				if (state.selectedEntity && state.selectedEntity.id === entity.id) {
-					const corners = getTileCorners(entity.x, entity.y)
-					const centerX = (corners[0].x + corners[2].x) / 2
-					const bottomY = Math.max(corners[1].y, corners[3].y)
-					const w = 36 * state.zoom
-					const h = ((res.height || 32) + 4) * state.zoom
-					const zOffset = (entity.z || 0) * 16 * state.zoom
-					ctx.strokeStyle = '#f1c40f'
-					ctx.lineWidth = 2
-					ctx.strokeRect(centerX - w / 2, bottomY - h - zOffset, w, h)
+			if (entity.type === 'model' && entity.modelPath) {
+				drawModelEntity(entity)
+			} else {
+				const res = resourceMap.get(entity.type)
+				if (res) {
+					if ((entity.z || 0) > 0) drawShadow(entity.x, entity.y, entity.z || 0)
+					drawEntity(entity.x, entity.y, res, entity.z || 0)
+					if (state.selectedEntity && state.selectedEntity.id === entity.id) {
+						const corners = getTileCorners(entity.x, entity.y, entity.z || 0)
+						if (corners[0] && corners[2]) {
+							const centerX = (corners[0].x + corners[2].x) / 2
+							const centerY = (corners[0].y + corners[2].y) / 2
+							const scale = 1000 / (corners[0].depth || 1000)
+							const w = 36 * scale
+							const h = ((res.height || 32) + 4) * scale
+							ctx.strokeStyle = '#f1c40f'
+							ctx.lineWidth = 2
+							ctx.strokeRect(centerX - w / 2, centerY - h, w, h)
+						}
+					}
 				}
 			}
+		}
+	}
+	if (assetsState.dropPreview) {
+		const px = assetsState.dropPreview.x
+		const py = assetsState.dropPreview.y
+		const corners = getTileCorners(px, py, 0)
+		if (corners[0] && corners[1] && corners[2] && corners[3]) {
+			ctx.setLineDash([6, 4])
+			ctx.strokeStyle = '#ff3333'
+			ctx.lineWidth = 2
+			ctx.beginPath()
+			ctx.moveTo(corners[0].x, corners[0].y)
+			ctx.lineTo(corners[1].x, corners[1].y)
+			ctx.lineTo(corners[2].x, corners[2].y)
+			ctx.lineTo(corners[3].x, corners[3].y)
+			ctx.closePath()
+			ctx.stroke()
+			ctx.setLineDash([])
+			ctx.fillStyle = 'rgba(255, 50, 50, 0.2)'
+			ctx.fill()
 		}
 	}
 	for (const emitter of engine.particles) emitter.draw(ctx)
@@ -3509,22 +4352,24 @@ function render() {
 			const tw = trigger.width || 1
 			const th = trigger.height || 1
 			const corners = [
-				worldToScreen(trigger.x, trigger.y),
-				worldToScreen(trigger.x + tw, trigger.y),
-				worldToScreen(trigger.x + tw, trigger.y + th),
-				worldToScreen(trigger.x, trigger.y + th)
+				worldToScreen(trigger.x, trigger.y, 0),
+				worldToScreen(trigger.x + tw, trigger.y, 0),
+				worldToScreen(trigger.x + tw, trigger.y + th, 0),
+				worldToScreen(trigger.x, trigger.y + th, 0)
 			]
-			ctx.beginPath()
-			ctx.moveTo(corners[0].x, corners[0].y)
-			ctx.lineTo(corners[1].x, corners[1].y)
-			ctx.lineTo(corners[2].x, corners[2].y)
-			ctx.lineTo(corners[3].x, corners[3].y)
-			ctx.closePath()
-			ctx.fillStyle = res.color
-			ctx.fill()
-			ctx.strokeStyle = res.color.replace('0.5', '1')
-			ctx.lineWidth = 2
-			ctx.stroke()
+			if (corners[0] && corners[1] && corners[2] && corners[3]) {
+				ctx.beginPath()
+				ctx.moveTo(corners[0].x, corners[0].y)
+				ctx.lineTo(corners[1].x, corners[1].y)
+				ctx.lineTo(corners[2].x, corners[2].y)
+				ctx.lineTo(corners[3].x, corners[3].y)
+				ctx.closePath()
+				ctx.fillStyle = res.color
+				ctx.fill()
+				ctx.strokeStyle = res.color.replace('0.5', '1')
+				ctx.lineWidth = 2
+				ctx.stroke()
+			}
 		}
 	}
 	if (state.previewMode) {
@@ -3532,8 +4377,8 @@ function render() {
 	}
 	const world = screenToWorld(state.mouseX, state.mouseY)
 	const inBounds = world.x >= state.mapBounds.minX && world.x <= state.mapBounds.maxX && world.y >= state.mapBounds.minY && world.y <= state.mapBounds.maxY
-	if (!state.previewMode && inBounds) {
-		if (state.tool === 'brush' && state.selectedResource) {
+	if (!state.previewMode) {
+		if (inBounds && state.tool === 'brush' && state.selectedResource) {
 			const res = resourceMap.get(state.selectedResource)
 			if (res) {
 				if (res.height) {
@@ -3593,7 +4438,7 @@ function render() {
 		}
 	}
 	applyPostProcess()
-	drawPivotIndicator()
+	drawAxisGizmo()
 	if (state.showDebug) {
 		ctx.fillStyle = 'rgba(0,0,0,0.7)'
 		ctx.fillRect(10, 10, 150, 80)
@@ -3606,10 +4451,12 @@ function render() {
 	}
 }
 function drawPlayer() {
-	const corners = getTileCorners(state.playerX, state.playerY)
+	const corners = getTileCorners(state.playerX, state.playerY, state.playerZ || 0)
+	if (!corners[0] || !corners[2]) return
 	const centerX = (corners[0].x + corners[2].x) / 2
 	const centerY = (corners[0].y + corners[2].y) / 2
-	const radius = 8 * state.zoom
+	const scale = 1000 / (corners[0].depth || 1000)
+	const radius = 8 * scale
 	ctx.fillStyle = '#e74c3c'
 	ctx.beginPath()
 	ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
@@ -3644,6 +4491,22 @@ function exitPreviewMode() {
 	document.getElementById('gridBtn').classList.add('active')
 	document.body.classList.remove('preview-mode')
 	resizeCanvas()
+}
+function animateViewTransition(toTop) {
+	const startT = state.viewTransition
+	const endT = toTop ? 1 : 0
+	const duration = 300
+	const startTime = performance.now()
+	state.viewMode = toTop ? 'top' : 'side'
+	function animate() {
+		const elapsed = performance.now() - startTime
+		const progress = Math.min(elapsed / duration, 1)
+		const eased = 1 - Math.pow(1 - progress, 3)
+		state.viewTransition = startT + (endT - startT) * eased
+		state.needsRender = true
+		if (progress < 1) requestAnimationFrame(animate)
+	}
+	animate()
 }
 function centerOnPlayer() {
 	const t = state.viewTransition
@@ -3800,6 +4663,9 @@ function updateToolButtons() {
 		btn.classList.toggle('active', btn.dataset.tool === state.tool)
 		const tool = btn.dataset.tool
 		btn.disabled = isSide && tool !== 'select'
+	})
+	document.querySelectorAll('.terrain-tool-btn').forEach(btn => {
+		btn.classList.toggle('active', btn.dataset.tool === state.tool)
 	})
 	const terrainTools = ['raise', 'lower', 'thicken', 'thin']
 	const showTerrainProps = terrainTools.includes(state.tool)
@@ -4053,7 +4919,7 @@ function importMap() {
 						state.mapBounds = { minX: 0, maxX: data.mapSize.width - 1, minY: 0, maxY: data.mapSize.height - 1 }
 						for (let y = 0; y < data.mapSize.height; y++) {
 							for (let x = 0; x < data.mapSize.width; x++) {
-								const terrain = terrainData[y]?.[x] || 'grass'
+								const terrain = terrainData[y]?.[x] || 'walkable'
 								setTile(x, y, { terrain: terrain, z: 0, thickness: 0, isBridge: false, isSlope: false })
 							}
 						}
@@ -4184,10 +5050,19 @@ document.getElementById('selDialogue').addEventListener('change', (e) => {
 })
 canvas.addEventListener('mousedown', (e) => {
 	hideContextMenu()
-	if (e.button === 1 || (e.button === 0 && e.shiftKey) || e.button === 2) {
+	if (e.button === 1) {
+		state.isRotating = true
+		state.rotateStartX = e.clientX
+		state.rotateStartY = e.clientY
+		state.rotateStartAz = camera.azimuth
+		state.rotateStartEl = camera.elevation
+		state.rotateMoved = false
+		canvas.style.cursor = 'grabbing'
+	} else if ((e.button === 0 && e.shiftKey) || e.button === 2) {
 		state.isPanning = true
-		state.panStartX = e.clientX - state.panX
-		state.panStartY = e.clientY - state.panY
+		state.panStartX = e.clientX
+		state.panStartY = e.clientY
+		state.startTarget = { ...camera.target }
 		canvas.style.cursor = 'grabbing'
 	} else if (e.button === 0) {
 		const world = screenToWorld(e.offsetX, e.offsetY)
@@ -4238,9 +5113,20 @@ canvas.addEventListener('mousedown', (e) => {
 canvas.addEventListener('mousemove', (e) => {
 	state.mouseX = e.offsetX
 	state.mouseY = e.offsetY
-	if (state.isPanning) {
-		state.panX = e.clientX - state.panStartX
-		state.panY = e.clientY - state.panStartY
+	if (state.isRotating) {
+		const dx = e.clientX - state.rotateStartX
+		const dy = e.clientY - state.rotateStartY
+		if (Math.abs(dx) > 3 || Math.abs(dy) > 3) state.rotateMoved = true
+		camera.azimuth = state.rotateStartAz - dx * 0.5
+		camera.elevation = Math.max(-90, Math.min(0, state.rotateStartEl - dy * 0.5))
+		updateViewCube()
+	} else if (state.isPanning) {
+		const dx = e.clientX - state.panStartX
+		const dy = e.clientY - state.panStartY
+		const view = buildViewMatrix()
+		const panSpeed = camera.distance * 0.002
+		camera.target.x = state.startTarget.x - view.right.x * dx * panSpeed + view.up.x * dy * panSpeed
+		camera.target.y = state.startTarget.y - view.right.y * dx * panSpeed + view.up.y * dy * panSpeed
 	} else if ((state.buildingCreateMode || state.portalDrawMode) && state.isDrawing) {
 		const world = screenToWorld(e.offsetX, e.offsetY)
 		state.buildingSelectEnd = { x: world.x, y: world.y }
@@ -4264,7 +5150,16 @@ canvas.addEventListener('mousemove', (e) => {
 	render()
 	updateInfo()
 })
-canvas.addEventListener('mouseup', () => {
+canvas.addEventListener('mouseup', (e) => {
+	if (state.isRotating && !state.rotateMoved) {
+		const world = screenToWorldOnPlane(e.offsetX, e.offsetY, 0)
+		if (world) {
+			camera.target.x = world.x
+			camera.target.y = world.y
+		}
+		render()
+	}
+	state.isRotating = false
 	if (state.portalDrawMode && state.isDrawing) {
 		finishPortalTriggerDraw()
 	}
@@ -4291,7 +5186,7 @@ canvas.addEventListener('mouseup', () => {
 					} else if (state.tool === 'eraser') {
 						if (layer.type === 'terrain') {
 							const tile = getTile(x, y)
-							if (tile) tile.terrain = 'grass'
+							if (tile) tile.terrain = 'walkable'
 						} else {
 							const idx = state.entities.findIndex(e => e.x === x && e.y === y)
 							if (idx >= 0) state.entities.splice(idx, 1)
@@ -4318,16 +5213,12 @@ canvas.addEventListener('mouseleave', () => {
 	state.isPanning = false
 	state.isDrawing = false
 	state.isDragging = false
+	state.isRotating = false
 })
 canvas.addEventListener('wheel', (e) => {
 	e.preventDefault()
-	const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1
-	const newZoom = Math.min(3, Math.max(0.25, state.zoom * zoomFactor))
-	const mouseX = e.offsetX - canvas.width / 2
-	const mouseY = e.offsetY - canvas.height / 2
-	state.panX = mouseX - (mouseX - state.panX) * (newZoom / state.zoom)
-	state.panY = mouseY - (mouseY - state.panY) * (newZoom / state.zoom)
-	state.zoom = newZoom
+	const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9
+	camera.distance = Math.max(5, Math.min(200, camera.distance * zoomFactor))
 	render()
 	updateInfo()
 })
@@ -4339,6 +5230,44 @@ canvas.addEventListener('contextmenu', (e) => {
 		state.contextTarget = entity
 		showContextMenu(e.clientX, e.clientY)
 	}
+})
+canvas.addEventListener('dragover', (e) => {
+	if (!assetsState.dragData) return
+	e.preventDefault()
+	e.dataTransfer.dropEffect = 'copy'
+	const world = screenToWorld(e.offsetX, e.offsetY)
+	assetsState.dropPreview = { x: world.x, y: world.y }
+	render()
+})
+canvas.addEventListener('dragleave', () => {
+	assetsState.dropPreview = null
+	render()
+})
+canvas.addEventListener('drop', async (e) => {
+	e.preventDefault()
+	if (!assetsState.dragData) return
+	const world = screenToWorld(e.offsetX, e.offsetY)
+	const { category, id, path, file } = assetsState.dragData
+	saveHistory()
+	const existing = state.entities.findIndex(ent => ent.x === world.x && ent.y === world.y)
+	if (existing >= 0) state.entities.splice(existing, 1)
+	const entity = {
+		id: Date.now(),
+		type: 'model',
+		modelCategory: category,
+		modelId: id,
+		modelPath: path,
+		modelFile: file,
+		x: world.x,
+		y: world.y,
+		z: 0,
+		rotation: 0
+	}
+	state.entities.push(entity)
+	state.terrainDirty = true
+	assetsState.dragData = null
+	assetsState.dropPreview = null
+	render()
 })
 function showContextMenu(x, y) {
 	const menu = document.getElementById('contextMenu')
@@ -4389,15 +5318,33 @@ document.querySelectorAll('.resource-tab').forEach(tab => {
 		const tabName = tab.dataset.tab
 		const isItem = tabName === 'item'
 		const isLibrary = tabName === 'library'
-		document.getElementById('resourceGrid').style.display = (isItem || isLibrary) ? 'none' : 'flex'
+		const isTerrainEdit = tabName === 'terrainedit'
+		const isAssets = tabName === 'assets'
+		const isFloor = tabName === 'floor'
+		document.getElementById('resourceGrid').style.display = (isItem || isLibrary || isTerrainEdit || isAssets || isFloor) ? 'none' : 'flex'
 		document.getElementById('itemEditor').classList.toggle('active', isItem)
 		document.getElementById('libraryPanel').classList.toggle('active', isLibrary)
-		document.querySelector('.resource-btns').style.display = isLibrary ? 'none' : 'flex'
+		document.getElementById('terrainEditPanel').classList.toggle('active', isTerrainEdit)
+		document.getElementById('assetsPanel').classList.toggle('active', isAssets)
+		document.getElementById('floorPanel').classList.toggle('active', isFloor)
+		document.querySelector('.resource-btns').style.display = (isLibrary || isTerrainEdit || isAssets || isFloor) ? 'none' : 'flex'
 		if (isLibrary) {
 			renderLibrary()
-		} else if (!isItem) {
+		} else if (isAssets) {
+			renderAssetsPanel()
+		} else if (isFloor) {
+			renderFloorPanel()
+		} else if (!isItem && !isTerrainEdit) {
 			renderResourceGrid()
 		}
+	})
+})
+document.querySelectorAll('.terrain-tool-btn').forEach(btn => {
+	btn.addEventListener('click', () => {
+		state.tool = btn.dataset.tool
+		updateToolButtons()
+		document.querySelectorAll('.terrain-tool-btn').forEach(b => b.classList.remove('active'))
+		btn.classList.add('active')
 	})
 })
 document.getElementById('panelExpandBtn').addEventListener('click', () => {
@@ -4416,11 +5363,6 @@ document.getElementById('gridBtn').addEventListener('click', () => {
 	state.showGrid = !state.showGrid
 	document.getElementById('gridBtn').classList.toggle('active', state.showGrid)
 	render()
-})
-document.getElementById('viewBtn').addEventListener('click', () => {
-	const toTop = state.viewMode === 'side'
-	document.getElementById('viewBtn').classList.toggle('active', !toTop)
-	animateViewTransition(toTop)
 })
 document.getElementById('undoBtn').addEventListener('click', undo)
 document.getElementById('redoBtn').addEventListener('click', redo)
@@ -4446,7 +5388,7 @@ document.getElementById('mapWidth').addEventListener('change', (e) => {
 		state.mapBounds.maxX = state.mapBounds.minX + newWidth - 1
 		for (let y = state.mapBounds.minY; y <= state.mapBounds.maxY; y++) {
 			for (let x = oldMaxX + 1; x <= state.mapBounds.maxX; x++) {
-				if (!getTile(x, y)) setTile(x, y, { terrain: 'grass', z: 0, thickness: 0, isBridge: false, isSlope: false })
+				if (!getTile(x, y)) setTile(x, y, { terrain: 'walkable', z: 0, thickness: 0, isBridge: false, isSlope: false })
 			}
 		}
 		render()
@@ -4459,7 +5401,7 @@ document.getElementById('mapHeight').addEventListener('change', (e) => {
 		state.mapBounds.maxY = state.mapBounds.minY + newHeight - 1
 		for (let y = oldMaxY + 1; y <= state.mapBounds.maxY; y++) {
 			for (let x = state.mapBounds.minX; x <= state.mapBounds.maxX; x++) {
-				if (!getTile(x, y)) setTile(x, y, { terrain: 'grass', z: 0, thickness: 0, isBridge: false, isSlope: false })
+				if (!getTile(x, y)) setTile(x, y, { terrain: 'walkable', z: 0, thickness: 0, isBridge: false, isSlope: false })
 			}
 		}
 		render()
@@ -4491,64 +5433,6 @@ document.getElementById('applyConnectBtn').addEventListener('click', () => {
 		state.terrainDirty = true
 		render()
 	}
-})
-document.addEventListener('keydown', (e) => {
-	const key = e.key.toLowerCase()
-	state.keysPressed[key] = true
-	if (state.previewMode) {
-		if (e.key === 'Escape') exitPreviewMode()
-		return
-	}
-	if (e.ctrlKey && e.key === 'z') {
-		e.preventDefault()
-		undo()
-	} else if (e.ctrlKey && e.key === 'y') {
-		e.preventDefault()
-		redo()
-	} else if (e.ctrlKey && e.key === 'g') {
-		e.preventDefault()
-		state.showGrid = !state.showGrid
-		document.getElementById('gridBtn').classList.toggle('active', state.showGrid)
-		render()
-	} else if (e.key === 'v') {
-		state.tool = 'select'
-		updateToolButtons()
-	} else if (e.key === 'r' && state.viewMode === 'top') {
-		state.tool = 'rect'
-		updateToolButtons()
-	} else if (e.key === 'e' && state.viewMode === 'top') {
-		state.tool = 'eraser'
-		updateToolButtons()
-	} else if (e.key === 't') {
-		const toTop = state.viewMode === 'side'
-		document.getElementById('viewBtn').classList.toggle('active', !toTop)
-		animateViewTransition(toTop)
-	} else if (e.key === 'p') {
-		enterPreviewMode()
-	} else if (e.key === 'Delete' && state.selectedEntity) {
-		saveHistory()
-		const idx = state.entities.findIndex(ent => ent.id === state.selectedEntity.id)
-		if (idx >= 0) state.entities.splice(idx, 1)
-		state.selectedEntity = null
-		updatePropertyPanel()
-		render()
-	} else if (e.ctrlKey && e.key === 'c' && state.selectedEntity) {
-		state.clipboard = JSON.parse(JSON.stringify(state.selectedEntity))
-	} else if (e.ctrlKey && e.key === 'v' && state.clipboard) {
-		saveHistory()
-		const newEntity = JSON.parse(JSON.stringify(state.clipboard))
-		newEntity.id = Date.now()
-		newEntity.x = newEntity.x + 1
-		newEntity.y = newEntity.y + 1
-		state.entities.push(newEntity)
-		state.selectedEntity = newEntity
-		updatePropertyPanel()
-		render()
-	}
-})
-document.addEventListener('keyup', (e) => {
-	const key = e.key.toLowerCase()
-	state.keysPressed[key] = false
 })
 function enterBuildingCreateMode() {
 	state.buildingCreateMode = true
@@ -4893,7 +5777,6 @@ renderLayerList()
 renderResourceGrid()
 renderItemTypes()
 renderItemInstances()
-initAllModalEvents()
 saveHistory()
 document.getElementById('gridBtn').classList.add('active')
 function gameLoop(timestamp) {
@@ -4905,6 +5788,296 @@ function gameLoop(timestamp) {
 	requestAnimationFrame(gameLoop)
 }
 requestAnimationFrame(gameLoop)
+const assetsState = {
+	modelData: null,
+	selectedFolder: 'system',
+	selectedModel: null,
+	selectedVariation: 0,
+	loadedModel: null,
+	previewRotation: 0,
+	dragData: null,
+	dropPreview: null
+}
+async function loadModelData() {
+	if (assetsState.modelData) return assetsState.modelData
+	try {
+		const resp = await fetch('../src/model/model.json')
+		assetsState.modelData = await resp.json()
+		return assetsState.modelData
+	} catch (e) {
+		console.error('Failed to load model data:', e)
+		return null
+	}
+}
+let floorTextureData = null
+const floorState = {
+	selectedCategory: null,
+	selectedSubcategory: null,
+	selectedFloor: null
+}
+async function loadFloorTextureData() {
+	if (floorTextureData) return floorTextureData
+	try {
+		const response = await fetch('../src/texture/texture.json')
+		floorTextureData = await response.json()
+		return floorTextureData
+	} catch (e) {
+		console.error('Failed to load texture.json:', e)
+		return null
+	}
+}
+async function renderFloorPanel() {
+	const data = await loadFloorTextureData()
+	if (!data) return
+	const sidebar = document.getElementById('floorSidebar')
+	let html = ''
+	for (const [key, category] of Object.entries(data)) {
+		if (key === 'transitions') continue
+		const isActive = floorState.selectedCategory === key
+		html += `<div class="floor-category${isActive ? ' active' : ''}" data-category="${key}">${category.name}</div>`
+		if (isActive && category.categories) {
+			for (const [subKey, subCat] of Object.entries(category.categories)) {
+				const subActive = floorState.selectedSubcategory === subKey
+				html += `<div class="floor-subcategory${subActive ? ' active' : ''}" data-category="${key}" data-subcategory="${subKey}">${subCat.name}</div>`
+			}
+		}
+	}
+	sidebar.innerHTML = html
+	sidebar.querySelectorAll('.floor-category').forEach(el => {
+		el.addEventListener('click', () => {
+			floorState.selectedCategory = el.dataset.category
+			floorState.selectedSubcategory = null
+			renderFloorPanel()
+		})
+	})
+	sidebar.querySelectorAll('.floor-subcategory').forEach(el => {
+		el.addEventListener('click', (e) => {
+			e.stopPropagation()
+			floorState.selectedCategory = el.dataset.category
+			floorState.selectedSubcategory = el.dataset.subcategory
+			renderFloorGrid()
+			sidebar.querySelectorAll('.floor-subcategory').forEach(s => s.classList.remove('active'))
+			el.classList.add('active')
+		})
+	})
+	renderFloorGrid()
+}
+async function renderFloorGrid() {
+	const data = await loadFloorTextureData()
+	if (!data) return
+	const grid = document.getElementById('floorGrid')
+	let items = []
+	const cat = floorState.selectedCategory
+	const subCat = floorState.selectedSubcategory
+	if (cat && data[cat]) {
+		const category = data[cat]
+		if (category.categories && subCat && category.categories[subCat]) {
+			items = category.categories[subCat].items.map(item => ({
+				...item,
+				src: category.path.replace('{category}', subCat).replace('{id}', item.id)
+			}))
+		} else if (category.items) {
+			items = category.items.map(item => ({
+				...item,
+				src: category.path.replace('{id}', item.id)
+			}))
+		}
+	}
+	let html = ''
+	for (const item of items) {
+		const selected = floorState.selectedFloor === item.id ? ' selected' : ''
+		html += `
+			<div class="floor-item${selected}" data-id="${item.id}" data-src="${item.src}" title="${item.name}">
+				<img src="../src/texture/${item.src}" onerror="this.style.display='none'">
+				<span>${item.name}</span>
+			</div>
+		`
+	}
+	grid.innerHTML = html
+	grid.querySelectorAll('.floor-item').forEach(el => {
+		el.addEventListener('click', () => {
+			grid.querySelectorAll('.floor-item').forEach(i => i.classList.remove('selected'))
+			el.classList.add('selected')
+			floorState.selectedFloor = el.dataset.id
+		})
+	})
+}
+async function renderAssetsPanel() {
+	const data = await loadModelData()
+	if (!data) return
+	const folderTree = document.getElementById('assetsFolderTree')
+	folderTree.innerHTML = `
+		<div class="assets-folder-item system active" data-folder="system">
+			<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+			系统
+		</div>
+	`
+	folderTree.querySelectorAll('.assets-folder-item').forEach(item => {
+		item.addEventListener('click', () => {
+			folderTree.querySelectorAll('.assets-folder-item').forEach(i => i.classList.remove('active'))
+			item.classList.add('active')
+			assetsState.selectedFolder = item.dataset.folder
+			renderAssetsGrid()
+		})
+	})
+	renderAssetsGrid()
+}
+async function renderAssetsGrid() {
+	const data = await loadModelData()
+	if (!data) return
+	const grid = document.getElementById('assetsGrid')
+	let html = ''
+	for (const [catKey, category] of Object.entries(data)) {
+		html += `<div class="assets-category">${category.name}</div>`
+		for (const item of category.items) {
+			const firstFile = getFirstVariationFile(catKey, item, data)
+			html += `
+				<div class="assets-item" data-category="${catKey}" data-id="${item.id}" data-path="${item.path}" draggable="true">
+					<img src="../src/model/${item.path}/${firstFile}" onerror="this.style.display='none'" draggable="false">
+					<span>${item.name}</span>
+				</div>
+			`
+		}
+	}
+	grid.innerHTML = html
+	grid.querySelectorAll('.assets-item').forEach(item => {
+		item.addEventListener('click', () => {
+			grid.querySelectorAll('.assets-item').forEach(i => i.classList.remove('selected'))
+			item.classList.add('selected')
+			assetsState.selectedModel = {
+				category: item.dataset.category,
+				id: item.dataset.id,
+				path: item.dataset.path
+			}
+			assetsState.selectedVariation = 0
+			renderAssetsVariations()
+			loadAndPreviewModel()
+		})
+		item.addEventListener('dragstart', (e) => {
+			item.classList.add('dragging')
+			const file = getFirstVariationFile(item.dataset.category, { path: item.dataset.path }, data)
+			assetsState.dragData = {
+				category: item.dataset.category,
+				id: item.dataset.id,
+				path: item.dataset.path,
+				file: file
+			}
+			e.dataTransfer.setData('text/plain', JSON.stringify(assetsState.dragData))
+			e.dataTransfer.effectAllowed = 'copy'
+		})
+		item.addEventListener('dragend', () => {
+			item.classList.remove('dragging')
+			assetsState.dragData = null
+			assetsState.dropPreview = null
+			render()
+		})
+	})
+}
+function getFirstVariationFile(catKey, item, data) {
+	if (catKey === 'fences') {
+		const firstType = data.fences.types[0]
+		return `${firstType.id}-1.png`
+	}
+	return '1.png'
+}
+async function renderAssetsVariations() {
+	const data = await loadModelData()
+	if (!data || !assetsState.selectedModel) return
+	const list = document.getElementById('assetsVariationList')
+	const { category, path } = assetsState.selectedModel
+	let html = ''
+	if (category === 'fences') {
+		for (const type of data.fences.types) {
+			for (let v = 1; v <= 5; v++) {
+				const file = `${type.id}-${v}.png`
+				const isActive = assetsState.selectedVariation === `${type.id}-${v}`
+				html += `<div class="assets-variation-item${isActive ? ' active' : ''}" data-file="${file}">${type.name} ${v}</div>`
+			}
+		}
+	} else {
+		const files = await listModelFiles(path)
+		files.forEach((file, idx) => {
+			const isActive = assetsState.selectedVariation === idx
+			const num = file.replace('.png', '')
+			html += `<div class="assets-variation-item${isActive ? ' active' : ''}" data-file="${file}" data-idx="${idx}">变体 ${num}</div>`
+		})
+	}
+	list.innerHTML = html
+	list.querySelectorAll('.assets-variation-item').forEach(item => {
+		item.addEventListener('click', () => {
+			list.querySelectorAll('.assets-variation-item').forEach(i => i.classList.remove('active'))
+			item.classList.add('active')
+			assetsState.selectedVariation = item.dataset.idx !== undefined ? parseInt(item.dataset.idx) : item.dataset.file.replace('.png', '')
+			loadAndPreviewModel(item.dataset.file)
+		})
+	})
+}
+async function listModelFiles(folderPath) {
+	const data = await loadModelData()
+	if (!data) return []
+	for (const [catKey, category] of Object.entries(data)) {
+		const item = category.items?.find(i => i.path === folderPath)
+		if (item) {
+			if (catKey === 'fences') {
+				const files = []
+				for (const type of data.fences.types) {
+					for (let v = 1; v <= 5; v++) {
+						files.push(`${type.id}-${v}.png`)
+					}
+				}
+				return files
+			} else if (catKey === 'trees') {
+				return Array.from({ length: 10 }, (_, i) => `${i + 1}.png`)
+			} else if (catKey === 'stones') {
+				return Array.from({ length: 20 }, (_, i) => `${i + 1}.png`)
+			}
+		}
+	}
+	return []
+}
+async function loadAndPreviewModel(filename) {
+	if (!assetsState.selectedModel) return
+	const { path, category } = assetsState.selectedModel
+	const data = await loadModelData()
+	let file = filename
+	if (!file) {
+		file = getFirstVariationFile(category, { path }, data)
+	}
+	const url = `../src/model/${path}/${file}`
+	try {
+		const model = await ModelLoader.load(url)
+		assetsState.loadedModel = model
+		renderModelPreview()
+	} catch (e) {
+		console.error('Failed to load model:', e)
+	}
+}
+function renderModelPreview() {
+	const canvas = document.getElementById('assetsPreviewCanvas')
+	const ctx = canvas.getContext('2d')
+	ctx.clearRect(0, 0, canvas.width, canvas.height)
+	if (!assetsState.loadedModel) return
+	const model = assetsState.loadedModel
+	model.render(ctx, 0, 0, 0, assetsState.previewRotation, { x: 0, y: 0 }, canvas.width, canvas.height)
+}
+let previewAnimFrame = null
+function startPreviewAnimation() {
+	if (previewAnimFrame) return
+	function animate() {
+		assetsState.previewRotation += 0.02
+		renderModelPreview()
+		previewAnimFrame = requestAnimationFrame(animate)
+	}
+	animate()
+}
+function stopPreviewAnimation() {
+	if (previewAnimFrame) {
+		cancelAnimationFrame(previewAnimFrame)
+		previewAnimFrame = null
+	}
+}
+document.getElementById('assetsPreviewCanvas').addEventListener('mouseenter', startPreviewAnimation)
+document.getElementById('assetsPreviewCanvas').addEventListener('mouseleave', stopPreviewAnimation)
 function renderLibrary() {
 	const lib = state.library
 	const bread = document.getElementById('libraryBread')
@@ -5278,6 +6451,100 @@ function initResizer(resizer, panel, prop, min, max, isVertical) {
 initResizer(leftResizer, leftPanel, 'width', 100, 400, false)
 initResizer(rightResizer, rightPanel, 'width', 100, 500, false)
 initResizer(bottomResizer, bottomPanel, 'height', 100, 400, true)
+const viewCube = document.getElementById('viewCube')
+const viewCubeInner = document.getElementById('viewCubeInner')
+let cubeIsDragging = false
+let cubeStartX = 0
+let cubeStartY = 0
+function updateViewCube() {
+	viewCubeInner.style.transform = `rotateX(${-camera.elevation}deg) rotateZ(${-camera.azimuth}deg)`
+	state.needsRender = true
+}
+viewCube.addEventListener('mousedown', (e) => {
+	if (e.button !== 0) return
+	if (e.target.classList.contains('view-cube-face') || e.target.classList.contains('view-cube-edge') || e.target.classList.contains('view-cube-corner')) return
+	cubeIsDragging = true
+	cubeStartX = e.clientX
+	cubeStartY = e.clientY
+	state.rotateStartAz = camera.azimuth
+	state.rotateStartEl = camera.elevation
+	viewCubeInner.style.transition = 'none'
+})
+document.addEventListener('mousemove', (e) => {
+	if (!cubeIsDragging) return
+	const dx = e.clientX - cubeStartX
+	const dy = e.clientY - cubeStartY
+	camera.azimuth = state.rotateStartAz - dx * 0.5
+	camera.elevation = Math.max(-90, Math.min(0, state.rotateStartEl - dy * 0.5))
+	cubeStartX = e.clientX
+	cubeStartY = e.clientY
+	state.rotateStartAz = camera.azimuth
+	state.rotateStartEl = camera.elevation
+	updateViewCube()
+})
+document.addEventListener('mouseup', () => {
+	if (cubeIsDragging) {
+		cubeIsDragging = false
+		viewCubeInner.style.transition = 'transform 0.3s ease'
+	}
+})
+viewCube.querySelectorAll('.view-cube-face').forEach(face => {
+	face.addEventListener('click', () => {
+		const view = face.dataset.view
+		viewCubeInner.style.transition = 'transform 0.3s ease'
+		switch (view) {
+			case 'front': camera.elevation = 0; camera.azimuth = 0; break
+			case 'back': camera.elevation = 0; camera.azimuth = 180; break
+			case 'left': camera.elevation = 0; camera.azimuth = 90; break
+			case 'right': camera.elevation = 0; camera.azimuth = -90; break
+			case 'top': camera.elevation = -90; camera.azimuth = 0; break
+			case 'bottom': camera.elevation = 0; camera.azimuth = 0; break
+		}
+		updateViewCube()
+		render()
+	})
+})
+viewCube.querySelectorAll('.view-cube-edge').forEach(edge => {
+	edge.addEventListener('click', () => {
+		const edgeType = edge.dataset.edge
+		viewCubeInner.style.transition = 'transform 0.3s ease'
+		switch (edgeType) {
+			case 'front-top': camera.elevation = -45; camera.azimuth = 0; break
+			case 'front-bottom': camera.elevation = 0; camera.azimuth = 0; break
+			case 'front-left': camera.elevation = 0; camera.azimuth = 45; break
+			case 'front-right': camera.elevation = 0; camera.azimuth = -45; break
+			case 'back-top': camera.elevation = -45; camera.azimuth = 180; break
+			case 'back-bottom': camera.elevation = 0; camera.azimuth = 180; break
+			case 'back-left': camera.elevation = 0; camera.azimuth = 135; break
+			case 'back-right': camera.elevation = 0; camera.azimuth = -135; break
+			case 'top-left': camera.elevation = -45; camera.azimuth = 90; break
+			case 'top-right': camera.elevation = -45; camera.azimuth = -90; break
+			case 'bottom-left': camera.elevation = 0; camera.azimuth = 90; break
+			case 'bottom-right': camera.elevation = 0; camera.azimuth = -90; break
+		}
+		updateViewCube()
+		render()
+	})
+})
+viewCube.querySelectorAll('.view-cube-corner').forEach(corner => {
+	corner.addEventListener('click', () => {
+		const cornerType = corner.dataset.corner
+		viewCubeInner.style.transition = 'transform 0.3s ease'
+		switch (cornerType) {
+			case 'ftl': camera.elevation = -35; camera.azimuth = 45; break
+			case 'ftr': camera.elevation = -35; camera.azimuth = -45; break
+			case 'fbl': camera.elevation = 0; camera.azimuth = 45; break
+			case 'fbr': camera.elevation = 0; camera.azimuth = -45; break
+			case 'btl': camera.elevation = -35; camera.azimuth = 135; break
+			case 'btr': camera.elevation = -35; camera.azimuth = -135; break
+			case 'bbl': camera.elevation = 0; camera.azimuth = 135; break
+			case 'bbr': camera.elevation = 0; camera.azimuth = -135; break
+		}
+		updateViewCube()
+		render()
+	})
+})
+updateViewCube()
 loadLibrary()
 </script>
 <script src="modal/gallery.js"></script>

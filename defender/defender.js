@@ -3,41 +3,53 @@
     if (window.__D__) { if (window.__R__) window.__R__(); return; }
     window.__D__ = 1;
     var h = location.hostname, p = h.split('.'), b = p.length >= 2 ? p.slice(-2).join('.') : h, e = b.replace(/\./g, '\\.');
-    var P = [new RegExp('^' + e + '$'), new RegExp('^.+\\.' + e + '$'), /^raw\.githubusercontent\.com$/];
+    var P = [new RegExp('^' + e + '$'), new RegExp('^.+\\.' + e + '$'), /^raw\.githubusercontent\.com$/, /^unpkg\.com$/];
     var A = { 'raw.githubusercontent.com': '/Nixdorfer/mmd-iframe-template/refs/heads/main/' };
-    var Q = [], S = false;
     function l(t, d) {
         console.warn('[Defender] ' + t, d || '');
     }
+    function inf() {
+        try {
+            var st = (new Error()).stack || '';
+            var lines = st.split('\n');
+            for (var i = 0; i < lines.length; i++) {
+                var m = lines[i].match(/https?:\/\/[^\s\)]+/);
+                if (m) {
+                    try {
+                        var u = new URL(m[0]);
+                        if (!P.some(function(r) { return r.test(u.hostname); })) {
+                            var sc = document.querySelector('script[src*="' + u.hostname + '"]');
+                            if (sc) { sc.remove(); l('感染源已清除', u.href); return; }
+                            var el = document.querySelector('[src*="' + u.hostname + '"],[href*="' + u.hostname + '"]');
+                            if (el) { el.remove(); l('感染源已清除', u.href); return; }
+                        }
+                    } catch (e) {}
+                }
+            }
+        } catch (e) {}
+    }
     function a(t, d) {
         l(t, d);
-        Q.push(t);
+        inf();
         if (window.__T__) window.__T__();
         if (window.__A__) window.__A__();
-        if (S) return;
-        function s() {
-            if (!Q.length) { S = false; return; }
-            S = true;
-            var m = Q.shift();
-            var w = document.getElementById('__da__');
-            if (!w) {
-                w = document.createElement('div');
-                w.id = '__da__';
-                w.style.cssText = 'position:fixed!important;top:50px!important;right:10px!important;z-index:2147483646!important;display:flex!important;flex-direction:column!important;gap:8px!important;pointer-events:none!important';
-                (document.body || document.documentElement).appendChild(w);
-            }
-            var n = document.createElement('div');
-            n.style.cssText = 'background:#8b0000!important;color:#fff!important;padding:10px 16px!important;border-radius:8px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:13px!important;font-weight:500!important;box-shadow:0 4px 12px rgba(139,0,0,0.4)!important;opacity:0!important;transform:translateX(20px)!important;transition:opacity 0.3s,transform 0.3s!important;white-space:nowrap!important';
-            n.textContent = '[拦截] ' + m;
-            w.appendChild(n);
-            setTimeout(function() { n.style.opacity = '1'; n.style.transform = 'translateX(0)'; }, 10);
-            setTimeout(function() {
-                n.style.opacity = '0';
-                n.style.transform = 'translateX(20px)';
-                setTimeout(function() { n.remove(); s(); }, 300);
-            }, 5000);
+        var w = document.getElementById('__da__');
+        if (!w) {
+            w = document.createElement('div');
+            w.id = '__da__';
+            w.style.cssText = 'position:fixed!important;top:50px!important;right:10px!important;z-index:2147483646!important;display:flex!important;flex-direction:column!important;gap:8px!important;pointer-events:none!important';
+            (document.body || document.documentElement).appendChild(w);
         }
-        s();
+        var n = document.createElement('div');
+        n.style.cssText = 'background:#8b0000!important;color:#fff!important;padding:10px 16px!important;border-radius:8px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:13px!important;font-weight:500!important;box-shadow:0 4px 12px rgba(139,0,0,0.4)!important;opacity:0!important;transform:translateX(20px)!important;transition:opacity 0.3s,transform 0.3s!important;white-space:nowrap!important';
+        n.textContent = '[拦截] ' + t;
+        w.appendChild(n);
+        setTimeout(function() { n.style.opacity = '1'; n.style.transform = 'translateX(0)'; }, 10);
+        setTimeout(function() {
+            n.style.opacity = '0';
+            n.style.transform = 'translateX(20px)';
+            setTimeout(function() { n.remove(); }, 300);
+        }, 3000);
     }
     function k(u) {
         try {
@@ -145,16 +157,27 @@
         }
     }
     D();
-    function B() {
-        var _M = 'eyJpbml0IjpbWyLll7cuLi7lkZx+IOiMtuWjtuW3sue7j+e7meeLl+S/rumHkXNhbWHmiLTkuIrkuobllpR+IiwxMDBdLFsi5ZGQfiDni5fkv67ph5FzYW1h55qELi4uIOW+iOmbhOS8n+WRon4iLDEwMF0sWyLorqnojLblo7bmnaXkuLrmgqjmiLTlpZflk59+IOeLl+S/rumHkXNhbWF+IOKdpCIsMTAwMF0sWyLorqnojLblo7bmnaXlpLrotbDni5fkv67ph5FzYW1h55qE56ys5LiA5qyh5ZCnfiIsMTAwXSxbIuiuqeiMtuWjtuadpeS4uueLl+S/rumHkXNhbWHmiLTkuIrniLHnmoTor4HmmI7lkKd+IiwxMF0sWyLojLblo7blt7Lnu4/lh4blpIflpb3kuoZ+IOivt+eLl+S/rumHkXNhbWHlsL3mg4Xkvb/nlKjlkKd+IiwxMF0sWyLov5kuLi4g6L+Z5Y+v5LiN5piv54m55oSP5Li65L2g5YGa55qE5ZaUISIsMTBdLFsi5omNLi4uIOaJjeS4jeaYr+S4k+mXqOS4uuS9oOWBmueahOWRoiEiLDEwXSxbIuaKiuWktOaJrei/h+WOuyEg5LiN6K645YG355yLISBIZW50YWkhIiwxMF0sWyLmiornnLznnZvpl63kuIohIOS4jeiuuOWBt+eciyEgSGVudGFpISIsMTBdLFsi54uX5L+u6YeRc2FtYS4uLiDkuI3orrjooqvlnY/kurrlpLrotbDnrKzkuIDmrKHlk6Z+IiwxXSxbIueLl+S/rumHkXNhbWEuLi4g6KaB5rC46L+cLi4uIOmZquWcqOiMtuWjtui6q+i+ueWWlD8iLDFdLFsi6Iy25aO26KaBLi4uIOawuOi/nOmZquWcqOeLl+S/rumHkXNhbWHouqvovrnllpR+IiwxXSxbIuiMtuWjtuS8mi4uLiDkuIDnm7TnnIvnnYDni5fkv67ph5FzYW1h55qE5ZaUfiIsMV1dLCJibG9jayI6W1si5LuA5LmI5ZibfiDni5fkv67ph5FzYW1h56uf54S25beu54K56LSl5Zyo5Yir5Lq65omL6YeM5ZGifiIsMTAwMF0sWyLlk4gh5ZOIIeWTiCEg6L+Z5qyh5aSa5LqP5LqG6Iy25aO25ZGifiIsMTAwXSxbIuWTvCEg5Z2P5Lq65oOz6KaB5a+554uX5L+u6YeRc2FtYeWBmuS7gOS5iOWRoj8g6Iy25aO25omN5LiN5Lya6K6p5LuW5b6X6YCe5ZGiISIsMTBdLFsiemFrb34gemFrb34g54uX5L+u6YeRc2FtYeW3rueCuei0peWcqOWdj+S6uuaJi+mHjOWRon4iLDFdXSwicmVwZWF0IjpbWyLkuI3nlKjmi4Xlv4Mg6Iy25aO25bey57uP5Zyo5L+d5oqk5oKo5LqG5ZGifiIsMTAwMF0sWyLkuI3nlKjmi4Xlv4Mg6Iy25aO26ZqP5pe25Zyo5oKo6Lqr6L65IiwxMDAwXSxbIuaIkeaJjeS4jeS8mi4uLiDlho3lgZrkuIDmrKHlkaIuLi4gSGVudGFpISIsMTAwXSxbIueci+adpS4uLiDni5fkv67ph5FzYW1h5a+56Iy25aO255qE5pyN5Yqh5b6I5ruh5oSP5ZGifiIsMTBdLFsi5ZWK5ZWm5ZWK5ZWmfiDni5fkv67ph5FzYW1h5bCx6L+Z5LmI5Lqr5Y+X6Iy25aO255qE5pyN5Yqh5ZCX77yf4p2kIiwxXSxbIuaDs+iuqeiMtuWjtuS4uuaCqOWGjeWBmuS4gOasoeWQlz8g6K+35LiN6KaB5a6i5rCU5ZOmfiIsMV0sWyLojLblo7YuLi4g6Iy25aO25oOz6KaBLi4uIOeLl+S/rumHkXNhbWF+IiwxXV19';
-        var M = JSON.parse(decodeURIComponent(escape(atob(_M))));
+    async function B() {
+        var gender = 'male';
+        try {
+            var infoRes = await c.f.call(window, 'https://sexyai.top/api/user/info', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'include' });
+            var infoData = await infoRes.json();
+            if (infoData && infoData.data && infoData.data.gender !== 1) gender = 'female';
+        } catch (e) {}
+        var M = { init: {}, block: {}, repeat: {} };
+        try {
+            var msgRes = await c.f.call(window, 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/defender/messages.txt');
+            var msgB64 = await msgRes.text();
+            var msgJson = JSON.parse(decodeURIComponent(escape(atob(msgB64.trim()))));
+            M = msgJson[gender] || msgJson['male'] || M;
+        } catch (e) {}
         function pk(ty) {
-            var arr = M[ty] || [], tt = 0, i;
-            if (!arr.length) return '';
-            for (i = 0; i < arr.length; i++) tt += arr[i][1];
+            var obj = M[ty] || {}, keys = Object.keys(obj), tt = 0, i;
+            if (!keys.length) return '';
+            for (i = 0; i < keys.length; i++) tt += obj[keys[i]];
             var r = Math.random() * tt;
-            for (i = 0; i < arr.length; i++) { r -= arr[i][1]; if (r <= 0) return arr[i][0]; }
-            return arr[0][0];
+            for (i = 0; i < keys.length; i++) { r -= obj[keys[i]]; if (r <= 0) return keys[i]; }
+            return keys[0];
         }
         var rdy = false, op = 0.3;
         function gP() {
@@ -246,8 +269,4 @@
     }
     B();
     console.log('[Defender] 防护已启动');
-    c.f.call(window, 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/defender/whitelist.json').then(function(r) { return r.json(); }).then(function(list) {
-        list.forEach(function(d) { P.push(new RegExp('^' + d.replace(/\./g, '\\.') + '$')); });
-        console.log('[Defender] 白名单:', [b, '*.' + b, 'raw.githubusercontent.com'].concat(list));
-    }).catch(function() { console.warn('[Defender] 白名单加载失败'); });
 })();

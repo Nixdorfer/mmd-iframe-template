@@ -4,3 +4,4 @@ function initAllModalEvents() {
 	initAddResourceModalEvents()
 	initSettingsModalEvents()
 }
+initAllModalEvents()
