@@ -2933,12 +2933,12 @@ function resizeCanvas() {
 }
 function fitMapToView() {
 	const t = state.viewTransition
-	const isoW = (state.mapWidth + state.mapHeight) * (TILE_W / 2)
-	const isoH = (state.mapWidth + state.mapHeight) * (TILE_H / 2)
+	const sideW = state.mapWidth * TILE_W
+	const sideH = state.mapHeight * TILE_H
 	const topW = state.mapWidth * TILE_W
 	const topH = state.mapHeight * TILE_W
-	const mapPixelW = isoW + (topW - isoW) * t
-	const mapPixelH = isoH + (topH - isoH) * t
+	const mapPixelW = sideW + (topW - sideW) * t
+	const mapPixelH = sideH + (topH - sideH) * t
 	const padding = 40
 	const availW = container.clientWidth - padding * 2
 	const availH = container.clientHeight - padding * 2
@@ -2947,29 +2947,47 @@ function fitMapToView() {
 	state.zoom = Math.min(scaleX, scaleY, 1)
 	const centerX = state.mapWidth / 2
 	const centerY = state.mapHeight / 2
-	const isoX = (centerX - centerY) * (TILE_W / 2) * state.zoom
-	const isoY = (centerX + centerY) * (TILE_H / 2) * state.zoom
+	const sideX = centerX * TILE_W * state.zoom
+	const sideY = centerY * TILE_H * state.zoom
 	const topX = centerX * TILE_W * state.zoom
 	const topY = centerY * TILE_W * state.zoom
-	state.panX = -(isoX + (topX - isoX) * t)
-	state.panY = -(isoY + (topY - isoY) * t)
+	state.panX = -(sideX + (topX - sideX) * t)
+	state.panY = -(sideY + (topY - sideY) * t)
 	render()
 }
 function worldToScreen(wx, wy) {
 	const t = state.viewTransition
-	const isoX = (wx - wy) * (TILE_W / 2) * state.zoom
-	const isoY = (wx + wy) * (TILE_H / 2) * state.zoom
+	const sideX = wx * TILE_W * state.zoom
+	const sideY = wy * TILE_H * state.zoom
 	const topX = wx * TILE_W * state.zoom
 	const topY = wy * TILE_W * state.zoom
-	const x = isoX + (topX - isoX) * t + state.panX + canvas.width / 2
-	const y = isoY + (topY - isoY) * t + state.panY + canvas.height / 2
+	const x = sideX + (topX - sideX) * t + state.panX + canvas.width / 2
+	const y = sideY + (topY - sideY) * t + state.panY + canvas.height / 2
 	return { x, y }
+}
+const pivotState = {
+	active: false,
+	worldX: 0,
+	worldY: 0,
+	screenX: 0,
+	screenY: 0,
+	opacity: 1,
+	fadeStart: 0
 }
 function animateViewTransition(toTop) {
 	if (state.viewAnimating) return
 	state.viewAnimating = true
+	const pivotWorld = screenToWorldFloat(canvas.width / 2, canvas.height / 2)
+	pivotState.worldX = pivotWorld.x
+	pivotState.worldY = pivotWorld.y
+	pivotState.screenX = canvas.width / 2
+	pivotState.screenY = canvas.height / 2
+	pivotState.active = true
+	pivotState.opacity = 1
 	const startT = state.viewTransition
 	const endT = toTop ? 1 : 0
+	const startPanX = state.panX
+	const startPanY = state.panY
 	const duration = 300
 	const startTime = performance.now()
 	function animate(now) {
@@ -2977,31 +2995,110 @@ function animateViewTransition(toTop) {
 		const progress = Math.min(elapsed / duration, 1)
 		const eased = 1 - Math.pow(1 - progress, 3)
 		state.viewTransition = startT + (endT - startT) * eased
+		const currentT = state.viewTransition
+		const sideX = pivotState.worldX * TILE_W * state.zoom
+		const sideY = pivotState.worldY * TILE_H * state.zoom
+		const topX = pivotState.worldX * TILE_W * state.zoom
+		const topY = pivotState.worldY * TILE_W * state.zoom
+		const worldScreenX = sideX + (topX - sideX) * currentT
+		const worldScreenY = sideY + (topY - sideY) * currentT
+		state.panX = pivotState.screenX - canvas.width / 2 - worldScreenX
+		state.panY = pivotState.screenY - canvas.height / 2 - worldScreenY
 		render()
 		if (progress < 1) {
 			requestAnimationFrame(animate)
 		} else {
 			state.viewAnimating = false
-			state.viewMode = toTop ? 'top' : 'iso'
-			if (state.viewMode === 'iso' && state.tool !== 'select') {
+			state.viewMode = toTop ? 'top' : 'side'
+			if (state.viewMode === 'side' && state.tool !== 'select') {
 				state.tool = 'select'
 			}
 			updateToolButtons()
+			pivotState.fadeStart = performance.now()
+			requestAnimationFrame(fadePivot)
 		}
 	}
 	requestAnimationFrame(animate)
+}
+function fadePivot(now) {
+	const fadeElapsed = now - pivotState.fadeStart
+	if (fadeElapsed < 200) {
+		render()
+		requestAnimationFrame(fadePivot)
+	} else {
+		const fadeProgress = Math.min((fadeElapsed - 200) / 300, 1)
+		pivotState.opacity = 1 - fadeProgress
+		render()
+		if (fadeProgress < 1) {
+			requestAnimationFrame(fadePivot)
+		} else {
+			pivotState.active = false
+			pivotState.opacity = 1
+			render()
+		}
+	}
+}
+function drawPivotIndicator() {
+	if (!pivotState.active) return
+	const pos = worldToScreen(pivotState.worldX, pivotState.worldY)
+	ctx.globalAlpha = pivotState.opacity
+	ctx.fillStyle = '#ff0000'
+	ctx.beginPath()
+	ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2)
+	ctx.fill()
+	ctx.strokeStyle = '#ffffff'
+	ctx.lineWidth = 2
+	ctx.stroke()
+	const axisLen = 40
+	ctx.lineWidth = 2
+	ctx.strokeStyle = '#ff0000'
+	ctx.beginPath()
+	ctx.moveTo(pos.x, pos.y)
+	ctx.lineTo(pos.x + axisLen, pos.y)
+	ctx.stroke()
+	ctx.fillStyle = '#ff0000'
+	ctx.font = '12px sans-serif'
+	ctx.fillText('X', pos.x + axisLen + 5, pos.y + 4)
+	ctx.strokeStyle = '#00ff00'
+	ctx.beginPath()
+	ctx.moveTo(pos.x, pos.y)
+	ctx.lineTo(pos.x, pos.y - axisLen)
+	ctx.stroke()
+	ctx.fillStyle = '#00ff00'
+	ctx.fillText('Y', pos.x - 4, pos.y - axisLen - 5)
+	ctx.strokeStyle = '#0088ff'
+	ctx.beginPath()
+	ctx.moveTo(pos.x, pos.y)
+	ctx.lineTo(pos.x - axisLen * 0.7, pos.y + axisLen * 0.7)
+	ctx.stroke()
+	ctx.fillStyle = '#0088ff'
+	ctx.fillText('Z', pos.x - axisLen * 0.7 - 15, pos.y + axisLen * 0.7 + 4)
+	ctx.globalAlpha = 1
 }
 function screenToWorld(sx, sy) {
 	const t = state.viewTransition
 	const cx = (sx - canvas.width / 2 - state.panX) / state.zoom
 	const cy = (sy - canvas.height / 2 - state.panY) / state.zoom
-	const isoWx = cx / (TILE_W / 2) + cy / (TILE_H / 2)
-	const isoWy = cy / (TILE_H / 2) - cx / (TILE_W / 2)
+	const sideWx = cx / TILE_W
+	const sideWy = cy / TILE_H
 	const topWx = cx / TILE_W
 	const topWy = cy / TILE_W
 	return {
-		x: Math.floor((isoWx + (topWx * 2 - isoWx) * t) / 2),
-		y: Math.floor((isoWy + (topWy * 2 - isoWy) * t) / 2)
+		x: Math.floor(sideWx + (topWx - sideWx) * t),
+		y: Math.floor(sideWy + (topWy - sideWy) * t)
+	}
+}
+function screenToWorldFloat(sx, sy) {
+	const t = state.viewTransition
+	const cx = (sx - canvas.width / 2 - state.panX) / state.zoom
+	const cy = (sy - canvas.height / 2 - state.panY) / state.zoom
+	const sideWx = cx / TILE_W
+	const sideWy = cy / TILE_H
+	const topWx = cx / TILE_W
+	const topWy = cy / TILE_W
+	return {
+		x: sideWx + (topWx - sideWx) * t,
+		y: sideWy + (topWy - sideWy) * t
 	}
 }
 function getTileCorners(x, y) {
@@ -3027,9 +3124,6 @@ function drawIsometricTile(x, y, color, outline = false) {
 	} else {
 		ctx.fillStyle = color
 		ctx.fill()
-		ctx.strokeStyle = 'rgba(0,0,0,0.2)'
-		ctx.lineWidth = 1
-		ctx.stroke()
 	}
 }
 function drawEntity(x, y, resource, z = 0) {
@@ -3065,14 +3159,8 @@ function render() {
 				const res = resourceMap.get(tileId)
 				if (res) {
 					let color = res.color
-					if ((x + y) % 2 === 0) {
-						const r = parseInt(color.slice(1,3), 16)
-						const g = parseInt(color.slice(3,5), 16)
-						const b = parseInt(color.slice(5,7), 16)
-						color = `rgb(${Math.min(255,r+10)},${Math.min(255,g+10)},${Math.min(255,b+10)})`
-					}
 					const lit = getCachedLighting(x, y, 0)
-					color = applyLighting(color.startsWith('rgb') ? rgbToHex(color) : color, lit)
+					color = applyLighting(color, lit)
 					const ao = getCachedAO(x, y)
 					if (ao > 0) {
 						const c = color.match(/\d+/g).map(Number)
@@ -3174,6 +3262,7 @@ function render() {
 		ctx.globalAlpha = 1
 	}
 	applyPostProcess()
+	drawPivotIndicator()
 	if (state.showDebug) {
 		ctx.fillStyle = 'rgba(0,0,0,0.7)'
 		ctx.fillRect(10, 10, 150, 80)
@@ -3210,6 +3299,9 @@ function enterPreviewMode() {
 	state.previewMode = true
 	state.showGrid = false
 	document.body.classList.add('preview-mode')
+	if (state.viewMode === 'top') {
+		animateViewTransition(false)
+	}
 	centerOnPlayer()
 	resizeCanvas()
 }
@@ -3222,14 +3314,20 @@ function exitPreviewMode() {
 }
 function centerOnPlayer() {
 	const t = state.viewTransition
-	const isoX = (state.playerX - state.playerY) * (TILE_W / 2) * state.zoom
-	const isoY = (state.playerX + state.playerY) * (TILE_H / 2) * state.zoom
+	const sideX = state.playerX * TILE_W * state.zoom
+	const sideY = state.playerY * TILE_H * state.zoom
 	const topX = state.playerX * TILE_W * state.zoom
 	const topY = state.playerY * TILE_W * state.zoom
-	state.panX = -(isoX + (topX - isoX) * t)
-	state.panY = -(isoY + (topY - isoY) * t)
+	state.panX = -(sideX + (topX - sideX) * t)
+	state.panY = -(sideY + (topY - sideY) * t)
 }
-function updatePlayerMovement() {
+const playerMovement = {
+	targetX: 0,
+	targetY: 0,
+	moving: false,
+	speed: 5
+}
+function updatePlayerMovement(dt) {
 	if (!state.previewMode) return
 	let dx = 0, dy = 0
 	if (state.keysPressed['w'] || state.keysPressed['arrowup']) dy = -1
@@ -3237,20 +3335,34 @@ function updatePlayerMovement() {
 	if (state.keysPressed['a'] || state.keysPressed['arrowleft']) dx = -1
 	if (state.keysPressed['d'] || state.keysPressed['arrowright']) dx = 1
 	if (dx !== 0 || dy !== 0) {
-		const newX = state.playerX + dx
-		const newY = state.playerY + dy
-		if (newX >= 0 && newX < state.mapWidth && newY >= 0 && newY < state.mapHeight) {
-			const terrain = state.layers[0].data[newY]?.[newX]
+		const moveSpeed = playerMovement.speed * dt / 1000
+		const newX = state.playerX + dx * moveSpeed
+		const newY = state.playerY + dy * moveSpeed
+		const tileX = Math.floor(newX)
+		const tileY = Math.floor(newY)
+		if (tileX >= 0 && tileX < state.mapWidth && tileY >= 0 && tileY < state.mapHeight) {
+			const terrain = state.layers[0].data[tileY]?.[tileX]
 			if (terrain && terrain !== 'void' && terrain !== 'water') {
-				state.playerX = newX
-				state.playerY = newY
+				state.playerX = Math.max(0, Math.min(state.mapWidth - 0.5, newX))
+				state.playerY = Math.max(0, Math.min(state.mapHeight - 0.5, newY))
 				centerOnPlayer()
 			}
 		}
-		render()
+		state.needsRender = true
 	}
 }
-setInterval(updatePlayerMovement, 100)
+let lastPlayerUpdateTime = 0
+function playerUpdateLoop(timestamp) {
+	const dt = Math.min(timestamp - lastPlayerUpdateTime, 100)
+	lastPlayerUpdateTime = timestamp
+	updatePlayerMovement(dt)
+	if (state.needsRender) {
+		render()
+		state.needsRender = false
+	}
+	requestAnimationFrame(playerUpdateLoop)
+}
+requestAnimationFrame(playerUpdateLoop)
 function updateInfo() {
 	const world = screenToWorld(state.mouseX, state.mouseY)
 	const zoomPercent = Math.round(state.zoom * 100)
@@ -3317,7 +3429,7 @@ function renderResourceGrid() {
 				selectBuilding(res)
 			} else {
 				state.selectedResource = res.id
-				state.tool = 'brush'
+				state.tool = activeTab === 'terrain' ? 'rect' : 'brush'
 				updateToolButtons()
 				renderResourceGrid()
 			}
@@ -3351,11 +3463,11 @@ function renderResourceGrid() {
 	}
 }
 function updateToolButtons() {
-	const isIso = state.viewMode === 'iso'
+	const isSide = state.viewMode === 'side'
 	document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
 		btn.classList.toggle('active', btn.dataset.tool === state.tool)
 		const tool = btn.dataset.tool
-		btn.disabled = isIso && tool !== 'select'
+		btn.disabled = isSide && tool !== 'select'
 	})
 }
 function saveHistory() {
@@ -3867,7 +3979,7 @@ document.addEventListener('click', (e) => {
 })
 document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
 	btn.addEventListener('click', () => {
-		if (state.viewMode === 'iso' && btn.dataset.tool !== 'select') return
+		if (state.viewMode === 'side' && btn.dataset.tool !== 'select') return
 		state.tool = btn.dataset.tool
 		updateToolButtons()
 	})
@@ -3908,7 +4020,7 @@ document.getElementById('gridBtn').addEventListener('click', () => {
 	render()
 })
 document.getElementById('viewBtn').addEventListener('click', () => {
-	const toTop = state.viewMode === 'iso'
+	const toTop = state.viewMode === 'side'
 	document.getElementById('viewBtn').classList.toggle('active', !toTop)
 	animateViewTransition(toTop)
 })
@@ -3973,7 +4085,7 @@ document.addEventListener('keydown', (e) => {
 		state.tool = 'eraser'
 		updateToolButtons()
 	} else if (e.key === 't') {
-		const toTop = state.viewMode === 'iso'
+		const toTop = state.viewMode === 'side'
 		document.getElementById('viewBtn').classList.toggle('active', !toTop)
 		animateViewTransition(toTop)
 	} else if (e.key === 'p') {

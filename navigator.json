@@ -5,14 +5,16 @@
       "versionDesc": "alpha",
       "name": "通用GalGame模板",
       "desc": "剧情向通用模板 拥有高可自定义的对话框和状态栏",
-      "index": "template/modal"
+      "index": "template/modal",
+      "editor": "template/modal/v2/library/editor.html"
     },
     "3DGame": {
-      "version": "0.3.0",
+      "version": "0.4.1",
       "versionDesc": "nightly",
       "name": "3D游戏模板",
       "desc": "3D游戏模板 具有3D游戏引擎功能",
-      "index": "template/3DGame"
+      "index": "template/3DGame",
+      "editor": "template/3DGame/v1/editor.html"
     }
   }
 }

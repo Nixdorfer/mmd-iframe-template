@@ -126,9 +126,9 @@ window.L = {
 				document.close();
 				console.log("[Loader] 文档写入完成");
 			};
-			if (L.edit) {
+			if (L.edit && proj.editor) {
 				console.log("[Loader] 编辑模式, 正在加载编辑器");
-				fetch(L.base + "template/modal/v2/library/editor.html").then(function(r) {
+				fetch(L.base + proj.editor).then(function(r) {
 					console.log("[Loader] 编辑器响应状态:", r.status);
 					return r.text();
 				}).then(function(e) {
