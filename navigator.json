@@ -9,7 +9,7 @@
       "editor": "template/modal/v2/library/editor.html"
     },
     "3DGame": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "versionDesc": "stable",
       "name": "3D游戏模板",
       "desc": "3D游戏模板 具有3D游戏引擎功能",
@@ -17,7 +17,7 @@
       "editor": "template/3DGame/v1/editor.html"
     },
     "3DGame-WebGL": {
-      "version": "2.0.2",
+      "version": "2.0.4",
       "versionDesc": "alpha",
       "name": "3D游戏模板 (WebGL)",
       "desc": "WebGL 2.0 3D游戏引擎 真3D渲染",
