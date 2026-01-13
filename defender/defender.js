@@ -158,26 +158,38 @@
     }
     D();
     async function B() {
+        var _f = window.__OF__ || c.f;
         var gender = 'male';
         try {
-            var infoRes = await c.f.call(window, 'https://sexyai.top/api/user/info', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'include' });
+            var infoRes = await _f.call(window, 'https://sexyai.top/api/user/info', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'include' });
             var infoData = await infoRes.json();
             if (infoData && infoData.data && infoData.data.gender !== 1) gender = 'female';
         } catch (e) {}
-        var M = { init: {}, block: {}, repeat: {} };
+        var M = { init: {}, block: {}, repeat: {} }, roleMap = {}, titles = [];
         try {
-            var msgRes = await c.f.call(window, 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/defender/messages.txt');
+            var msgRes = await _f.call(window, 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/defender/messages.txt');
             var msgB64 = await msgRes.text();
             var msgJson = JSON.parse(decodeURIComponent(escape(atob(msgB64.trim()))));
             M = msgJson[gender] || msgJson['male'] || M;
+            roleMap = msgJson['role'] || {};
+            titles = msgJson['title'] || [];
+        } catch (e) {}
+        var roleId = '', roleName = '';
+        try {
+            var m = location.href.match(/roleId=(\d+)/);
+            if (m) roleId = m[1];
+            roleName = roleMap[roleId] || '';
         } catch (e) {}
         function pk(ty) {
             var obj = M[ty] || {}, keys = Object.keys(obj), tt = 0, i;
             if (!keys.length) return '';
             for (i = 0; i < keys.length; i++) tt += obj[keys[i]];
             var r = Math.random() * tt;
-            for (i = 0; i < keys.length; i++) { r -= obj[keys[i]]; if (r <= 0) return keys[i]; }
-            return keys[0];
+            for (i = 0; i < keys.length; i++) { r -= obj[keys[i]]; if (r <= 0) break; }
+            var txt = keys[i] || keys[0];
+            if (roleName) txt = txt.replace(/\{\{role\}\}/g, roleName);
+            if (titles.length) txt = txt.replace(/\{\{title\}\}/g, titles[Math.floor(Math.random() * titles.length)]);
+            return txt;
         }
         var rdy = false, op = 0.3;
         function gP() {
