@@ -1,0 +1,5539 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>2.5D地图编辑器</title>
+	<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	user-select: none;
+}
+
+body {
+	background: #050505;
+	font-family: system-ui, sans-serif;
+	color: #fff;
+	height: 100vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.toolbar {
+	height: 48px;
+	background: #1a1a1a;
+	border-bottom: 1px solid #333;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.tool-group {
+	display: flex;
+	gap: 4px;
+	padding: 0 8px;
+	border-right: 1px solid #333;
+}
+
+.tool-group:last-child {
+	border-right: none;
+}
+
+.tool-btn {
+	width: 36px;
+	height: 36px;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s;
+}
+
+.tool-btn:hover {
+	background: #333;
+}
+
+.tool-btn.active {
+	background: #166d3b;
+	border-color: #1c8548;
+}
+
+.tool-btn svg {
+	width: 20px;
+	height: 20px;
+	stroke: #aaa;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.tool-btn.active svg {
+	stroke: #fff;
+}
+
+.tool-btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.main-container {
+	flex: 1;
+	display: flex;
+	min-height: 0;
+	position: relative;
+}
+.panel-wrapper {
+	display: flex;
+	flex-direction: column;
+}
+.panel-resizer {
+	position: absolute;
+	z-index: 10;
+}
+.panel-resizer.horizontal {
+	width: 4px;
+	cursor: ew-resize;
+	top: 0;
+	bottom: 0;
+}
+.panel-resizer.vertical {
+	height: 4px;
+	cursor: ns-resize;
+	left: 0;
+	right: 0;
+}
+.panel-resizer:hover,
+.panel-resizer.active {
+	background: #166d3b;
+}
+.left-resizer {
+	left: 200px;
+}
+.right-resizer {
+	right: 240px;
+}
+.bottom-resizer {
+	bottom: 160px;
+}
+.panel-toggle {
+	width: 24px;
+	height: 24px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: auto;
+}
+.panel-toggle svg {
+	width: 14px;
+	height: 14px;
+	stroke: #888;
+	fill: none;
+	stroke-width: 2;
+	transition: transform 0.2s;
+}
+.panel-toggle:hover svg {
+	stroke: #fff;
+}
+.panel-title {
+	display: flex;
+	align-items: center;
+}
+.panel-title-text {
+	flex: 1;
+}
+
+.left-panel {
+	width: 200px;
+	background: #111111;
+	border-right: 1px solid #333;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	transition: width 0.2s;
+	overflow: hidden;
+}
+.left-panel.collapsed {
+	width: 32px;
+}
+.left-panel.collapsed .layer-list,
+.left-panel.collapsed .layer-buttons,
+.left-panel.collapsed .panel-title-text {
+	display: none;
+}
+.left-panel.collapsed .panel-title {
+	writing-mode: vertical-rl;
+	text-orientation: mixed;
+	padding: 12px 8px;
+	justify-content: flex-start;
+}
+.left-panel.collapsed .panel-toggle svg {
+	transform: rotate(180deg);
+}
+
+.panel-title {
+	padding: 12px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #888;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid #333;
+}
+
+.layer-list {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.layer-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px;
+	border-radius: 6px;
+	cursor: pointer;
+	margin-bottom: 4px;
+}
+
+.layer-item:hover {
+	background: #1a1a1a;
+}
+
+.layer-item.selected {
+	background: #252525;
+}
+
+.layer-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.layer-icon svg {
+	width: 100%;
+	height: 100%;
+	stroke: #888;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.layer-name {
+	flex: 1;
+	font-size: 13px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.layer-actions {
+	display: flex;
+	gap: 4px;
+}
+
+.layer-action-btn {
+	width: 24px;
+	height: 24px;
+	background: transparent;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.layer-action-btn:hover {
+	background: #444;
+}
+
+.layer-action-btn svg {
+	width: 14px;
+	height: 14px;
+	stroke: #888;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.layer-action-btn.active svg {
+	stroke: #166d3b;
+}
+
+.layer-buttons {
+	padding: 8px;
+	border-top: 1px solid #333;
+	display: flex;
+	gap: 4px;
+}
+
+.layer-add-btn {
+	flex: 1;
+	height: 32px;
+	background: #333;
+	border: none;
+	border-radius: 6px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+.layer-add-btn:hover {
+	background: #444;
+}
+
+.layer-add-btn svg {
+	width: 14px;
+	height: 14px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+.canvas-container {
+	flex: 1;
+	position: relative;
+	overflow: hidden;
+	background: #050505;
+}
+
+#editorCanvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.canvas-info {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	background: rgba(0,0,0,0.7);
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #888;
+}
+
+.right-panel {
+	width: 240px;
+	background: #111111;
+	border-left: 1px solid #333;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	transition: width 0.2s;
+	overflow: hidden;
+}
+.right-panel.collapsed {
+	width: 32px;
+}
+.right-panel.collapsed .property-section,
+.right-panel.collapsed .building-create-panel,
+.right-panel.collapsed .building-props,
+.right-panel.collapsed .panel-title-text {
+	display: none;
+}
+.right-panel.collapsed .panel-title {
+	writing-mode: vertical-rl;
+	text-orientation: mixed;
+	padding: 12px 8px;
+	justify-content: flex-start;
+}
+.right-panel.collapsed .panel-toggle svg {
+	transform: rotate(180deg);
+}
+
+.property-section {
+	padding: 12px;
+	border-bottom: 1px solid #333;
+}
+
+.property-label {
+	font-size: 11px;
+	color: #666;
+	margin-bottom: 6px;
+}
+
+.property-input {
+	width: 100%;
+	height: 32px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	padding: 0 10px;
+	color: #fff;
+	font-size: 13px;
+}
+
+.property-input:focus {
+	outline: none;
+	border-color: #166d3b;
+}
+
+.property-row {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.property-row:last-child {
+	margin-bottom: 0;
+}
+
+.property-col {
+	flex: 1;
+}
+
+.bottom-panel {
+	height: 160px;
+	background: #111111;
+	border-top: 1px solid #333;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	transition: height 0.2s;
+	overflow: hidden;
+}
+.bottom-panel.collapsed {
+	height: 36px;
+}
+.bottom-panel.collapsed .resource-btns,
+.bottom-panel.collapsed .resource-grid,
+.bottom-panel.collapsed .library-panel,
+.bottom-panel.collapsed .item-editor {
+	display: none;
+}
+.bottom-panel.collapsed .panel-collapse-btn svg {
+	transform: rotate(180deg);
+}
+
+.resource-tabs {
+	display: flex;
+	padding: 0 12px;
+	border-bottom: 1px solid #333;
+	align-items: center;
+}
+
+.resource-tabs-left {
+	display: flex;
+	flex: 1;
+}
+
+.resource-tabs-right {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.panel-expand-btn {
+	width: 28px;
+	height: 28px;
+	background: transparent;
+	border: none;
+	border-radius: 4px;
+	color: #888;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.panel-expand-btn:hover {
+	background: #333;
+	color: #fff;
+}
+
+.panel-expand-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+.panel-collapse-btn {
+	width: 28px;
+	height: 28px;
+	background: transparent;
+	border: none;
+	border-radius: 4px;
+	color: #888;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.panel-collapse-btn:hover {
+	background: #333;
+	color: #fff;
+}
+.panel-collapse-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+	transition: transform 0.2s;
+}
+
+.bottom-panel.fullscreen {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	height: 100vh;
+	z-index: 100;
+}
+
+.resource-tab {
+	padding: 10px 16px;
+	font-size: 13px;
+	color: #888;
+	cursor: pointer;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+}
+
+.resource-tab:hover {
+	color: #aaa;
+}
+
+.resource-tab.active {
+	color: #fff;
+	border-bottom-color: #166d3b;
+}
+
+.resource-btns {
+	display: flex;
+	gap: 8px;
+	padding: 8px 12px 0;
+}
+
+.resource-btn {
+	height: 28px;
+	padding: 0 12px;
+	background: #333;
+	border: none;
+	border-radius: 4px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.resource-btn:hover {
+	background: #444;
+	color: #fff;
+}
+
+.resource-grid {
+	flex: 1;
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 12px;
+	display: flex;
+	gap: 8px;
+}
+
+.resource-item {
+	width: 64px;
+	height: 80px;
+	background: #1a1a1a;
+	border: 2px solid transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.resource-item:hover {
+	background: #333;
+}
+
+.resource-item.selected {
+	border-color: #166d3b;
+}
+
+.resource-preview {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 4px;
+}
+
+.resource-name {
+	font-size: 10px;
+	color: #888;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+	padding: 0 4px;
+}
+
+.file-buttons {
+	margin-left: auto;
+	display: flex;
+	gap: 8px;
+}
+
+.file-btn {
+	height: 32px;
+	padding: 0 12px;
+	background: #333;
+	border: none;
+	border-radius: 6px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.file-btn:hover {
+	background: #444;
+}
+
+.file-btn.primary {
+	background: #166d3b;
+	color: #fff;
+}
+
+.file-btn.primary:hover {
+	background: #1c8548;
+}
+
+.file-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.ed-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	background: #333;
+	border: 1px solid #444;
+	border-radius: 4px;
+	color: #aaa;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.ed-btn:hover {
+	background: #444;
+}
+
+.ed-btn.sm {
+	height: 24px;
+	padding: 0 8px;
+	font-size: 11px;
+}
+
+.ed-btn.md {
+	height: 32px;
+	padding: 0 12px;
+	font-size: 12px;
+}
+
+.ed-btn.add-indicator::before {
+	content: '+';
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.sortable-list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.sortable-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 8px;
+	background: #2a2a2a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	cursor: grab;
+}
+
+.sortable-item:active {
+	cursor: grabbing;
+}
+
+.sortable-item .drag-handle {
+	color: #555;
+	cursor: grab;
+}
+
+.sortable-item .item-content {
+	flex: 1;
+}
+
+.sortable-item .remove-btn {
+	width: 20px;
+	height: 20px;
+	background: transparent;
+	border: none;
+	color: #666;
+	cursor: pointer;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sortable-item .remove-btn:hover {
+	color: #e74c3c;
+}
+
+.tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 8px;
+	background: #3a3a3a;
+	border-radius: 12px;
+	font-size: 11px;
+	color: #aaa;
+}
+
+.tag .tag-remove {
+	width: 14px;
+	height: 14px;
+	background: transparent;
+	border: none;
+	color: #666;
+	cursor: pointer;
+	font-size: 10px;
+	padding: 0;
+}
+
+.tag .tag-remove:hover {
+	color: #e74c3c;
+}
+
+.collapse-panel {
+	border: 1px solid #333;
+	border-radius: 6px;
+	margin-bottom: 8px;
+}
+
+.collapse-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #2a2a2a;
+	cursor: pointer;
+	border-radius: 6px;
+}
+
+.collapse-header .arrow {
+	transition: transform 0.2s;
+}
+
+.collapse-header.open .arrow {
+	transform: rotate(90deg);
+}
+
+.collapse-header.open {
+	border-radius: 6px 6px 0 0;
+}
+
+.collapse-body {
+	padding: 12px;
+	display: none;
+}
+
+.collapse-body.open {
+	display: block;
+}
+
+.ed-gallery-modal {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.ed-gallery-modal.open {
+	display: flex;
+}
+
+.ed-gallery-box {
+	width: 80%;
+	max-width: 800px;
+	height: 80%;
+	background: #1a1a1a;
+	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+}
+
+.ed-gallery-hd {
+	padding: 12px 16px;
+	border-bottom: 1px solid #333;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.ed-gallery-bread {
+	display: flex;
+	gap: 4px;
+	color: #888;
+}
+
+.ed-gallery-bread span {
+	padding: 4px 8px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.ed-gallery-bread span:hover {
+	background: #333;
+}
+
+.ed-gallery-bd {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+	align-content: start;
+}
+
+.ed-gallery-item {
+	aspect-ratio: 1;
+	background: #252525;
+	border-radius: 6px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+}
+
+.ed-gallery-item:hover {
+	outline: 2px solid #4a7c23;
+}
+
+.ed-gallery-item.selected {
+	outline: 2px solid #4a7c23;
+}
+
+.ed-gallery-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.ed-gallery-item.folder {
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ed-gallery-item.folder svg {
+	width: 40%;
+	height: 40%;
+	stroke: #888;
+	fill: none;
+}
+
+.ed-gallery-item .item-name {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 4px;
+	background: rgba(0,0,0,0.7);
+	font-size: 10px;
+	text-align: center;
+	color: #aaa;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ed-gallery-ft {
+	padding: 12px 16px;
+	border-top: 1px solid #333;
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.ed-gallery-ft button {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.ed-gallery-ft .gal-upload,
+.ed-gallery-ft .gal-folder {
+	background: #333;
+	color: #fff;
+}
+
+.ed-gallery-ft .gal-confirm {
+	background: #4a7c23;
+	color: #fff;
+}
+
+.ed-gallery-ft button:hover {
+	filter: brightness(1.2);
+}
+
+.library-panel {
+	display: none;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.library-panel.active {
+	display: flex;
+}
+
+.library-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-bottom: 1px solid #333;
+}
+
+.library-bread {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	flex: 1;
+	overflow-x: auto;
+}
+
+.library-bread span {
+	padding: 4px 8px;
+	border-radius: 4px;
+	cursor: pointer;
+	color: #888;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.library-bread span:hover {
+	background: #333;
+	color: #fff;
+}
+
+.library-bread span.drop-target {
+	background: #166d3b;
+	color: #fff;
+}
+
+.library-bread-sep {
+	color: #555;
+	font-size: 12px;
+}
+
+.library-btns {
+	display: flex;
+	gap: 4px;
+}
+
+.library-btn {
+	height: 28px;
+	padding: 0 10px;
+	background: #333;
+	border: none;
+	border-radius: 4px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.library-btn:hover {
+	background: #444;
+	color: #fff;
+}
+
+.library-btn svg {
+	width: 14px;
+	height: 14px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+.library-grid {
+	flex: 1;
+	overflow: auto;
+	padding: 12px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+	gap: 8px;
+	align-content: start;
+	position: relative;
+}
+
+.library-item {
+	aspect-ratio: 1;
+	background: #1a1a1a;
+	border-radius: 6px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+	border: 2px solid transparent;
+}
+
+.library-item:hover {
+	border-color: #444;
+}
+
+.library-item.selected {
+	border-color: #166d3b;
+}
+
+.library-item.drag-over {
+	border-color: #166d3b;
+	background: rgba(22, 109, 59, 0.2);
+}
+
+.library-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.library-item.folder svg {
+	width: 36px;
+	height: 36px;
+	stroke: #666;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.library-item.folder span {
+	font-size: 10px;
+	color: #888;
+	margin-top: 4px;
+	max-width: 90%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.library-item.uploading::after {
+	content: '';
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	border: 2px solid #333;
+	border-top-color: #166d3b;
+	border-radius: 50%;
+	animation: libSpin 0.8s linear infinite;
+}
+
+@keyframes libSpin {
+	to { transform: rotate(360deg); }
+}
+
+.library-ctx {
+	position: fixed;
+	background: #252525;
+	border-radius: 6px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	z-index: 1001;
+	min-width: 100px;
+	overflow: hidden;
+}
+
+.library-ctx div {
+	padding: 8px 12px;
+	cursor: pointer;
+	color: #fff;
+	font-size: 12px;
+}
+
+.library-ctx div:hover {
+	background: #333;
+}
+
+.library-ctx div.del {
+	color: #ff6b6b;
+}
+
+.library-select-box {
+	position: absolute;
+	border: 1px dashed #166d3b;
+	background: rgba(22, 109, 59, 0.1);
+	pointer-events: none;
+	z-index: 10;
+}
+
+.item-editor {
+	display: none;
+	height: 100%;
+	gap: 12px;
+	padding: 12px;
+}
+
+.item-editor.active {
+	display: flex;
+}
+
+.item-types-panel,
+.item-instances-panel {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	background: #1a1a1a;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.item-panel-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	border-bottom: 1px solid #333;
+}
+
+.item-panel-header span {
+	font-size: 12px;
+	color: #888;
+}
+
+.item-panel-body {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.item-type-card,
+.item-instance-card {
+	margin-bottom: 8px;
+}
+
+.item-type-card .collapse-body,
+.item-instance-card .collapse-body {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.prop-row {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.prop-row label {
+	width: 60px;
+	font-size: 11px;
+	color: #666;
+}
+
+.prop-row input,
+.prop-row select {
+	flex: 1;
+	height: 28px;
+	background: #252525;
+	border: 1px solid #333;
+	border-radius: 4px;
+	padding: 0 8px;
+	color: #fff;
+	font-size: 12px;
+}
+
+.prop-row input:focus,
+.prop-row select:focus {
+	outline: none;
+	border-color: #166d3b;
+}
+
+.tags-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	align-items: center;
+}
+
+.props-section {
+	border-top: 1px solid #333;
+	padding-top: 8px;
+}
+
+.props-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.props-section-header span {
+	font-size: 11px;
+	color: #666;
+}
+
+.sprite-preview {
+	width: 48px;
+	height: 48px;
+	background: #252525;
+	border: 1px solid #333;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.sprite-preview:hover {
+	border-color: #166d3b;
+}
+
+.sprite-preview img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.cond-sprite-item {
+	background: #252525;
+	border: 1px solid #333;
+	border-radius: 4px;
+	padding: 8px;
+	margin-bottom: 8px;
+}
+
+.cond-sprite-row {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin-bottom: 6px;
+}
+
+.cond-sprite-row:last-child {
+	margin-bottom: 0;
+}
+
+.cond-sprite-row select,
+.cond-sprite-row input {
+	height: 26px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	padding: 0 6px;
+	color: #fff;
+	font-size: 11px;
+}
+
+.cond-sprite-row select:focus,
+.cond-sprite-row input:focus {
+	outline: none;
+	border-color: #166d3b;
+}
+
+.enum-editor {
+	margin-top: 8px;
+}
+
+.enum-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 8px;
+	background: #252525;
+	border-radius: 4px;
+	margin-bottom: 4px;
+}
+
+.enum-item input {
+	flex: 1;
+	height: 24px;
+	background: transparent;
+	border: none;
+	color: #fff;
+	font-size: 11px;
+}
+
+.enum-item input:focus {
+	outline: none;
+}
+
+.context-menu {
+	position: fixed;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	padding: 4px 0;
+	min-width: 120px;
+	z-index: 1000;
+	display: none;
+}
+
+.context-menu.open {
+	display: block;
+}
+
+.context-menu-item {
+	padding: 8px 16px;
+	font-size: 13px;
+	color: #ccc;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.context-menu-item:hover {
+	background: #333;
+}
+
+.context-menu-item svg {
+	width: 14px;
+	height: 14px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.resource-add-btn {
+	width: 60px;
+	height: 60px;
+	background: #1a1a1a;
+	border: 2px dashed #444;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s;
+}
+
+.resource-add-btn:hover {
+	border-color: #166d3b;
+	background: #252525;
+}
+
+.resource-add-btn svg {
+	width: 24px;
+	height: 24px;
+	stroke: #666;
+	fill: none;
+	stroke-width: 2;
+}
+
+.resource-add-btn:hover svg {
+	stroke: #166d3b;
+}
+
+.building-create-panel {
+	padding: 12px;
+	background: #1a1a1a;
+	border-radius: 6px;
+	margin-bottom: 12px;
+	display: none;
+}
+
+.building-create-panel.active {
+	display: block;
+}
+
+.building-create-panel .panel-label {
+	font-size: 12px;
+	color: #888;
+	margin-bottom: 6px;
+}
+
+.building-create-panel .area-display {
+	font-size: 14px;
+	color: #fff;
+	padding: 8px;
+	background: #252525;
+	border-radius: 4px;
+	margin-bottom: 12px;
+	text-align: center;
+}
+
+.building-create-panel .btn-row {
+	display: flex;
+	gap: 8px;
+}
+
+.btn-confirm {
+	flex: 1;
+	height: 32px;
+	background: #166d3b;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.btn-confirm:hover {
+	background: #1c8548;
+}
+
+.btn-confirm:disabled {
+	background: #333;
+	color: #666;
+	cursor: not-allowed;
+}
+
+.btn-cancel {
+	flex: 1;
+	height: 32px;
+	background: #444;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.btn-cancel:hover {
+	background: #555;
+}
+
+.building-props {
+	display: none;
+}
+
+.building-props.active {
+	display: block;
+}
+
+.portal-list {
+	margin-top: 12px;
+}
+
+.portal-list-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.portal-list-header span {
+	font-size: 12px;
+	color: #888;
+}
+
+.portal-add-btn {
+	width: 24px;
+	height: 24px;
+	background: #333;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.portal-add-btn:hover {
+	background: #444;
+}
+
+.portal-add-btn svg {
+	width: 14px;
+	height: 14px;
+	stroke: #aaa;
+	fill: none;
+	stroke-width: 2;
+}
+
+.portal-item {
+	background: #252525;
+	border-radius: 6px;
+	padding: 8px;
+	margin-bottom: 6px;
+}
+
+.portal-item-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+.portal-item select {
+	flex: 1;
+	height: 26px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 12px;
+	padding: 0 6px;
+}
+
+.portal-item-delete {
+	width: 24px;
+	height: 24px;
+	background: transparent;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.portal-item-delete:hover {
+	background: #3a2020;
+}
+
+.portal-item-delete svg {
+	width: 14px;
+	height: 14px;
+	stroke: #e74c3c;
+	fill: none;
+	stroke-width: 2;
+}
+
+.portal-trigger-btn {
+	width: 100%;
+	height: 28px;
+	background: #333;
+	border: none;
+	border-radius: 4px;
+	color: #aaa;
+	font-size: 11px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+.portal-trigger-btn:hover {
+	background: #444;
+}
+
+.portal-trigger-btn.has-trigger {
+	background: #1a3d2a;
+	color: #4ade80;
+}
+
+.portal-trigger-btn svg {
+	width: 12px;
+	height: 12px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+.btn-edit-interior {
+	width: 100%;
+	height: 36px;
+	background: #2d4a3e;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 13px;
+	cursor: pointer;
+	margin-top: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+}
+
+.btn-edit-interior:hover {
+	background: #3d5f50;
+}
+
+.btn-edit-interior svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+.interior-return-btn {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	height: 32px;
+	padding: 0 12px;
+	background: #333;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	display: none;
+	align-items: center;
+	gap: 6px;
+	z-index: 100;
+}
+
+.interior-return-btn.active {
+	display: flex;
+}
+
+.interior-return-btn:hover {
+	background: #444;
+}
+
+.interior-return-btn svg {
+	width: 14px;
+	height: 14px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+.interior-tools {
+	display: none;
+	gap: 8px;
+	padding: 8px;
+	background: #1a1a1a;
+	border-radius: 6px;
+	margin-bottom: 8px;
+}
+
+.interior-tools.active {
+	display: flex;
+}
+
+.interior-tool-btn {
+	flex: 1;
+	height: 32px;
+	background: #333;
+	border: none;
+	border-radius: 6px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.interior-tool-btn:hover {
+	background: #444;
+	color: #fff;
+}
+
+.add-resource-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0,0,0,0.7);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 2000;
+}
+
+.add-resource-modal.open {
+	display: flex;
+}
+
+.add-resource-modal-box {
+	width: 320px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 12px;
+	padding: 20px;
+}
+
+.add-resource-modal-title {
+	font-size: 16px;
+	font-weight: 600;
+	margin-bottom: 16px;
+	color: #fff;
+}
+
+.add-resource-modal-row {
+	margin-bottom: 12px;
+}
+
+.add-resource-modal-row label {
+	display: block;
+	font-size: 12px;
+	color: #888;
+	margin-bottom: 6px;
+}
+
+.add-resource-modal-row input[type="text"],
+.add-resource-modal-row input[type="number"] {
+	width: 100%;
+	height: 36px;
+	background: #252525;
+	border: 1px solid #333;
+	border-radius: 6px;
+	padding: 0 12px;
+	color: #fff;
+	font-size: 13px;
+}
+
+.add-resource-modal-row input:focus {
+	outline: none;
+	border-color: #166d3b;
+}
+
+.color-picker-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.color-picker-row input[type="color"] {
+	width: 48px;
+	height: 36px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	background: transparent;
+}
+
+.color-picker-row .color-hex {
+	flex: 1;
+	height: 36px;
+	background: #252525;
+	border: 1px solid #333;
+	border-radius: 6px;
+	padding: 0 12px;
+	color: #fff;
+	font-size: 13px;
+}
+
+.add-resource-modal-row .sprite-picker {
+	width: 100%;
+	height: 80px;
+	background: #252525;
+	border: 2px dashed #444;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: #666;
+	font-size: 12px;
+}
+
+.add-resource-modal-row .sprite-picker:hover {
+	border-color: #166d3b;
+	color: #888;
+}
+
+.add-resource-modal-row .sprite-picker.has-image {
+	border-style: solid;
+	border-color: #333;
+}
+
+.add-resource-modal-row .sprite-picker img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.add-resource-modal-btns {
+	display: flex;
+	gap: 8px;
+	margin-top: 20px;
+}
+
+.interior-settings-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0,0,0,0.7);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 2000;
+}
+
+.interior-settings-modal.open {
+	display: flex;
+}
+
+.interior-settings-box {
+	width: 400px;
+	max-height: 80vh;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 12px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.interior-settings-header {
+	padding: 16px 20px;
+	border-bottom: 1px solid #333;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.interior-settings-content {
+	flex: 1;
+	overflow-y: auto;
+	padding: 20px;
+}
+
+.interior-settings-footer {
+	padding: 16px 20px;
+	border-top: 1px solid #333;
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.settings-section {
+	margin-bottom: 20px;
+}
+
+.settings-section:last-child {
+	margin-bottom: 0;
+}
+
+.settings-section-title {
+	font-size: 13px;
+	color: #888;
+	margin-bottom: 12px;
+}
+
+.material-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+}
+
+.material-item {
+	aspect-ratio: 1;
+	background: #252525;
+	border: 2px solid transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.material-item:hover {
+	border-color: #444;
+}
+
+.material-item.selected {
+	border-color: #166d3b;
+}
+
+.material-item-color {
+	width: 100%;
+	height: 100%;
+}
+
+.slider-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.slider-row label {
+	width: 60px;
+	font-size: 12px;
+	color: #888;
+}
+
+.slider-row input[type="range"] {
+	flex: 1;
+	height: 4px;
+	-webkit-appearance: none;
+	appearance: none;
+	background: #333;
+	border-radius: 2px;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 14px;
+	height: 14px;
+	background: #166d3b;
+	border-radius: 50%;
+	cursor: pointer;
+}
+
+.slider-row .slider-value {
+	width: 40px;
+	font-size: 12px;
+	color: #fff;
+	text-align: right;
+}
+
+.light-source-list {
+	margin-top: 12px;
+}
+
+.light-source-item {
+	background: #252525;
+	border-radius: 6px;
+	padding: 12px;
+	margin-bottom: 8px;
+}
+
+.light-source-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.light-source-header select {
+	height: 26px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 12px;
+	padding: 0 8px;
+}
+
+.light-source-delete {
+	width: 24px;
+	height: 24px;
+	background: transparent;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.light-source-delete:hover {
+	background: #3a2020;
+}
+
+.light-source-delete svg {
+	width: 14px;
+	height: 14px;
+	stroke: #e74c3c;
+	fill: none;
+	stroke-width: 2;
+}
+
+.light-add-btn {
+	width: 100%;
+	height: 32px;
+	background: #333;
+	border: none;
+	border-radius: 6px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+.light-add-btn:hover {
+	background: #444;
+}
+
+.light-add-btn svg {
+	width: 14px;
+	height: 14px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+body.preview-mode .toolbar,
+body.preview-mode .left-panel,
+body.preview-mode .right-panel,
+body.preview-mode .bottom-panel,
+body.preview-mode .canvas-info {
+	display: none !important;
+}
+
+body.preview-mode .main-container {
+	height: 100vh;
+}
+
+body.preview-mode .canvas-container {
+	width: 100%;
+}
+
+.preview-exit-btn {
+	position: fixed;
+	top: 12px;
+	right: 12px;
+	height: 36px;
+	padding: 0 16px;
+	background: rgba(0, 0, 0, 0.7);
+	border: 1px solid #444;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 13px;
+	cursor: pointer;
+	display: none;
+	align-items: center;
+	gap: 8px;
+	z-index: 1000;
+}
+
+body.preview-mode .preview-exit-btn {
+	display: flex;
+}
+
+.preview-exit-btn:hover {
+	background: rgba(0, 0, 0, 0.9);
+}
+
+.preview-exit-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+.preview-hint {
+	position: fixed;
+	bottom: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 8px 16px;
+	background: rgba(0, 0, 0, 0.7);
+	border-radius: 6px;
+	color: #888;
+	font-size: 12px;
+	display: none;
+	z-index: 1000;
+}
+
+body.preview-mode .preview-hint {
+	display: block;
+}
+	</style>
+</head>
+<body>
+	<button class="preview-exit-btn" id="previewExitBtn">
+		<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+		退出预览 (Esc)
+	</button>
+	<div class="preview-hint">WASD 或方向键移动</div>
+	<div class="toolbar">
+		<div class="tool-group" id="drawToolGroup">
+			<button class="tool-btn active" data-tool="select" title="选择 (V)">
+				<svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+			</button>
+			<button class="tool-btn" data-tool="rect" title="矩形 (R)">
+				<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+			</button>
+			<button class="tool-btn" data-tool="eraser" title="橡皮 (E)">
+				<svg viewBox="0 0 24 24"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L13.6 2.6c.8-.8 2-.8 2.8 0L21 7.2c.8.8.8 2 0 2.8L12 19"/></svg>
+			</button>
+		</div>
+		<div class="tool-group">
+			<button class="tool-btn" id="undoBtn" title="撤销 (Ctrl+Z)" disabled>
+				<svg viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+			</button>
+			<button class="tool-btn" id="redoBtn" title="重做 (Ctrl+Y)" disabled>
+				<svg viewBox="0 0 24 24"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+			</button>
+		</div>
+		<div class="tool-group">
+			<button class="tool-btn" id="gridBtn" title="显示网格 (Ctrl+G)">
+				<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+			</button>
+			<button class="tool-btn" id="viewBtn" title="切换视角 (T)">
+				<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><ellipse cx="12" cy="12" rx="10" ry="4"/></svg>
+			</button>
+		</div>
+		<div class="file-buttons">
+			<button class="file-btn" id="previewBtn" title="预览模式 (P)">
+				<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+				预览
+			</button>
+			<button class="file-btn" id="importBtn">
+				<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+				导入
+			</button>
+			<button class="file-btn primary" id="exportBtn">
+				<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+				导出
+			</button>
+		</div>
+	</div>
+	<div class="main-container">
+		<div class="left-panel" id="leftPanel">
+			<div class="panel-title">
+				<span class="panel-title-text">图层</span>
+				<button class="panel-toggle" id="leftPanelToggle">
+					<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+				</button>
+			</div>
+			<div class="layer-list" id="layerList"></div>
+			<div class="layer-buttons">
+				<button class="layer-add-btn" id="addLayerBtn">
+					<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+					添加图层
+				</button>
+			</div>
+		</div>
+		<div class="panel-resizer horizontal left-resizer" id="leftResizer"></div>
+		<div class="canvas-container" id="canvasContainer">
+			<canvas id="editorCanvas"></canvas>
+			<div class="canvas-info" id="canvasInfo">坐标: 0, 0 | 缩放: 100%</div>
+			<button class="interior-return-btn" id="interiorReturnBtn">
+				<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+				返回室外
+			</button>
+		</div>
+		<div class="panel-resizer horizontal right-resizer" id="rightResizer"></div>
+		<div class="right-panel" id="rightPanel">
+			<div class="panel-title">
+				<span class="panel-title-text">属性</span>
+				<button class="panel-toggle" id="rightPanelToggle">
+					<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+				</button>
+			</div>
+			<div class="property-section">
+				<div class="property-label">地图尺寸</div>
+				<div class="property-row">
+					<div class="property-col">
+						<input type="number" class="property-input" id="mapWidth" value="30" min="10" max="100">
+					</div>
+					<div class="property-col">
+						<input type="number" class="property-input" id="mapHeight" value="30" min="10" max="100">
+					</div>
+				</div>
+			</div>
+			<div class="property-section" id="selectionProps" style="display:none">
+				<div class="property-label">选中对象</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">X</div>
+						<input type="number" class="property-input" id="selX">
+					</div>
+					<div class="property-col">
+						<div class="property-label">Y</div>
+						<input type="number" class="property-input" id="selY">
+					</div>
+					<div class="property-col">
+						<div class="property-label">Z</div>
+						<input type="number" class="property-input" id="selZ" min="0" step="0.5">
+					</div>
+				</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">生命值</div>
+						<input type="number" class="property-input" id="selHealth" value="10" min="1">
+					</div>
+				</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">行为模式</div>
+						<select class="property-input" id="selBehavior">
+							<option value="idle">静止</option>
+							<option value="patrol">巡逻</option>
+							<option value="chase">追击</option>
+							<option value="flee">逃跑</option>
+						</select>
+					</div>
+				</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">对话内容</div>
+						<input type="text" class="property-input" id="selDialogue" placeholder="NPC对话...">
+					</div>
+				</div>
+			</div>
+			<div class="building-create-panel" id="buildingCreatePanel">
+				<div class="panel-label">建筑名称</div>
+				<input type="text" class="property-input" id="buildingNameInput" placeholder="输入建筑名称...">
+				<div class="panel-label" style="margin-top:12px">选择区域</div>
+				<div class="area-display" id="buildingAreaDisplay">请在地图上框选区域</div>
+				<div class="btn-row">
+					<button class="btn-confirm" id="buildingConfirmBtn" disabled>确定</button>
+					<button class="btn-cancel" id="buildingCancelBtn">取消</button>
+				</div>
+			</div>
+			<div class="building-props" id="buildingProps">
+				<div class="property-label">建筑属性</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">名称</div>
+						<input type="text" class="property-input" id="buildingName" readonly>
+					</div>
+				</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">X</div>
+						<input type="number" class="property-input" id="buildingX">
+					</div>
+					<div class="property-col">
+						<div class="property-label">Y</div>
+						<input type="number" class="property-input" id="buildingY">
+					</div>
+				</div>
+				<div class="property-row">
+					<div class="property-col">
+						<div class="property-label">宽</div>
+						<input type="number" class="property-input" id="buildingW" readonly>
+					</div>
+					<div class="property-col">
+						<div class="property-label">高</div>
+						<input type="number" class="property-input" id="buildingH" readonly>
+					</div>
+				</div>
+				<div class="portal-list">
+					<div class="portal-list-header">
+						<span>出入口</span>
+						<button class="portal-add-btn" id="portalAddBtn">
+							<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+						</button>
+					</div>
+					<div id="portalListContent"></div>
+				</div>
+				<button class="btn-edit-interior" id="editInteriorBtn">
+					<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+					编辑室内
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="panel-resizer vertical bottom-resizer" id="bottomResizer"></div>
+	<div class="bottom-panel" id="bottomPanel">
+		<div class="resource-tabs">
+			<div class="resource-tabs-left">
+				<div class="resource-tab active" data-tab="terrain">地形</div>
+				<div class="resource-tab" data-tab="building">建筑</div>
+				<div class="resource-tab" data-tab="entity">实体</div>
+				<div class="resource-tab" data-tab="trigger">触发器</div>
+				<div class="resource-tab" data-tab="item">道具</div>
+				<div class="resource-tab" data-tab="library">图库</div>
+			</div>
+			<div class="resource-tabs-right">
+				<button class="panel-collapse-btn" id="bottomPanelCollapse" title="折叠">
+					<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+				</button>
+				<button class="panel-expand-btn" id="panelExpandBtn" title="全屏">
+					<svg viewBox="0 0 24 24"><polyline points="17 8 17 3 22 3"/><polyline points="7 16 7 21 2 21"/><line x1="22" y1="3" x2="12" y2="13"/><line x1="2" y1="21" x2="12" y2="11"/></svg>
+				</button>
+			</div>
+		</div>
+		<div class="resource-btns"></div>
+		<div class="resource-grid" id="resourceGrid"></div>
+		<div class="library-panel" id="libraryPanel">
+			<div class="library-toolbar">
+				<div class="library-bread" id="libraryBread"></div>
+				<div class="library-btns">
+					<button class="library-btn" id="libraryNewFolder">
+						<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+						新建
+					</button>
+					<button class="library-btn" id="libraryUpload">
+						<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+						上传
+					</button>
+				</div>
+			</div>
+			<div class="library-grid" id="libraryGrid"></div>
+		</div>
+		<input type="file" id="libraryFileInput" multiple accept="image/*" style="display:none">
+		<div class="item-editor" id="itemEditor">
+			<div class="item-types-panel">
+				<div class="item-panel-header">
+					<span>物品种类</span>
+					<button class="ed-btn sm add-indicator" id="addItemType"></button>
+				</div>
+				<div class="item-panel-body" id="itemTypesList"></div>
+			</div>
+			<div class="item-instances-panel">
+				<div class="item-panel-header">
+					<span>物品实例</span>
+					<button class="ed-btn sm add-indicator" id="addItemInstance"></button>
+				</div>
+				<div class="item-panel-body" id="itemInstancesList"></div>
+			</div>
+		</div>
+	</div>
+	<div class="ed-gallery-modal" id="galleryModal">
+		<div class="ed-gallery-box">
+			<div class="ed-gallery-hd">
+				<div class="ed-gallery-bread" id="galleryBread"></div>
+				<button class="ed-btn sm" id="galleryClose">
+					<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+				</button>
+			</div>
+			<div class="ed-gallery-bd" id="galleryGrid"></div>
+			<div class="ed-gallery-ft">
+				<button class="gal-folder" id="galleryNewFolder">
+					<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+					新建文件夹
+				</button>
+				<button class="gal-upload" id="galleryUpload">
+					<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+					上传图片
+				</button>
+				<button class="gal-confirm" id="galleryConfirm">确定</button>
+			</div>
+		</div>
+	</div>
+	<div class="context-menu" id="contextMenu">
+		<div class="context-menu-item" data-action="edit">
+			<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+			编辑
+		</div>
+		<div class="context-menu-item" data-action="delete">
+			<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+			删除
+		</div>
+	</div>
+	<div class="add-resource-modal" id="addResourceModal">
+		<div class="add-resource-modal-box">
+			<div class="add-resource-modal-title" id="addResourceModalTitle">添加地形</div>
+			<div class="add-resource-modal-row">
+				<label>名称</label>
+				<input type="text" id="newResourceName" placeholder="输入名称...">
+			</div>
+			<div class="add-resource-modal-row">
+				<label>颜色</label>
+				<div class="color-picker-row">
+					<input type="color" id="newResourceColor" value="#166d3b">
+					<input type="text" class="color-hex" id="newResourceColorHex" value="#166d3b">
+				</div>
+			</div>
+			<div class="add-resource-modal-row" id="spritePickerRow">
+				<label>图片 (可选)</label>
+				<div class="sprite-picker" id="newResourceSprite">点击选择图片</div>
+			</div>
+			<div class="add-resource-modal-row" id="heightRow" style="display:none">
+				<label>高度</label>
+				<input type="number" id="newResourceHeight" value="32" min="1">
+			</div>
+			<div class="add-resource-modal-btns">
+				<button class="btn-confirm" id="addResourceConfirm">确定</button>
+				<button class="btn-cancel" id="addResourceCancel">取消</button>
+			</div>
+		</div>
+	</div>
+	<div class="interior-settings-modal" id="floorModal">
+		<div class="interior-settings-box">
+			<div class="interior-settings-header">地板设置</div>
+			<div class="interior-settings-content">
+				<div class="settings-section">
+					<div class="settings-section-title">材质</div>
+					<div class="material-grid" id="floorMaterialGrid"></div>
+				</div>
+				<div class="settings-section">
+					<div class="settings-section-title">自定义颜色</div>
+					<div class="color-picker-row">
+						<input type="color" id="floorColor" value="#8b4513">
+						<input type="text" class="color-hex" id="floorColorHex" value="#8b4513">
+					</div>
+				</div>
+			</div>
+			<div class="interior-settings-footer">
+				<button class="btn-cancel" id="floorModalCancel">取消</button>
+				<button class="btn-confirm" id="floorModalConfirm">确定</button>
+			</div>
+		</div>
+	</div>
+	<div class="interior-settings-modal" id="wallModal">
+		<div class="interior-settings-box">
+			<div class="interior-settings-header">墙面设置</div>
+			<div class="interior-settings-content">
+				<div class="settings-section">
+					<div class="settings-section-title">材质</div>
+					<div class="material-grid" id="wallMaterialGrid"></div>
+				</div>
+				<div class="settings-section">
+					<div class="settings-section-title">自定义颜色</div>
+					<div class="color-picker-row">
+						<input type="color" id="wallColor" value="#f5f5dc">
+						<input type="text" class="color-hex" id="wallColorHex" value="#f5f5dc">
+					</div>
+				</div>
+				<div class="settings-section">
+					<div class="settings-section-title">墙面高度</div>
+					<div class="slider-row">
+						<label>高度</label>
+						<input type="range" id="wallHeight" min="1" max="10" value="3">
+						<span class="slider-value" id="wallHeightValue">3</span>
+					</div>
+				</div>
+				<div class="settings-section">
+					<div class="settings-section-title">透明度</div>
+					<div class="slider-row">
+						<label>透明度</label>
+						<input type="range" id="wallOpacity" min="0" max="100" value="100">
+						<span class="slider-value" id="wallOpacityValue">100%</span>
+					</div>
+				</div>
+			</div>
+			<div class="interior-settings-footer">
+				<button class="btn-cancel" id="wallModalCancel">取消</button>
+				<button class="btn-confirm" id="wallModalConfirm">确定</button>
+			</div>
+		</div>
+	</div>
+	<div class="interior-settings-modal" id="lightingModal">
+		<div class="interior-settings-box">
+			<div class="interior-settings-header">光照设置</div>
+			<div class="interior-settings-content">
+				<div class="settings-section">
+					<div class="settings-section-title">环境光</div>
+					<div class="slider-row">
+						<label>强度</label>
+						<input type="range" id="ambientIntensity" min="0" max="100" value="50">
+						<span class="slider-value" id="ambientIntensityValue">50%</span>
+					</div>
+					<div class="color-picker-row" style="margin-top:8px">
+						<input type="color" id="ambientColor" value="#ffffff">
+						<input type="text" class="color-hex" id="ambientColorHex" value="#ffffff">
+					</div>
+				</div>
+				<div class="settings-section">
+					<div class="settings-section-title">光源</div>
+					<div class="light-source-list" id="lightSourceList"></div>
+					<button class="light-add-btn" id="addLightSource">
+						<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+						添加光源
+					</button>
+				</div>
+			</div>
+			<div class="interior-settings-footer">
+				<button class="btn-cancel" id="lightingModalCancel">取消</button>
+				<button class="btn-confirm" id="lightingModalConfirm">确定</button>
+			</div>
+		</div>
+	</div>
+<script>
+const TILE_W = 64
+const TILE_H = 32
+const canvas = document.getElementById('editorCanvas')
+const ctx = canvas.getContext('2d')
+const container = document.getElementById('canvasContainer')
+const state = {
+	tool: 'select',
+	zoom: 1,
+	panX: 0,
+	panY: 0,
+	isPanning: false,
+	panStartX: 0,
+	panStartY: 0,
+	showGrid: true,
+	viewMode: 'top',
+	viewTransition: 1,
+	viewAnimating: false,
+	contextTarget: null,
+	mapWidth: 30,
+	mapHeight: 30,
+	selectedLayer: 0,
+	selectedResource: null,
+	selectedEntity: null,
+	isDragging: false,
+	dragStartX: 0,
+	dragStartY: 0,
+	mouseX: 0,
+	mouseY: 0,
+	isDrawing: false,
+	history: [],
+	historyIndex: -1,
+	layers: [
+		{ name: '地形层', visible: true, locked: false, type: 'terrain', data: [] },
+		{ name: '装饰层', visible: true, locked: false, type: 'decor', data: [] },
+		{ name: '实体层', visible: true, locked: false, type: 'entity', data: [] }
+	],
+	entities: [],
+	triggers: [],
+	clipboard: null,
+	itemTypes: [],
+	items: [],
+	gallery: {
+		items: [],
+		path: [],
+		selected: null,
+		callback: null
+	},
+	library: {
+		items: [],
+		path: [],
+		selected: [],
+		uploading: [],
+		dragItem: null,
+		selectBox: null,
+		lastClickedId: null
+	},
+	buildingCreateMode: false,
+	buildingSelectStart: null,
+	buildingSelectEnd: null,
+	rectSelectStart: null,
+	rectSelectEnd: null,
+	buildingCreateName: '',
+	portalDrawMode: false,
+	portalDrawTarget: null,
+	interiorMode: false,
+	currentBuildingInterior: null,
+	buildings: [],
+	previewMode: false,
+	playerX: 0,
+	playerY: 0,
+	keysPressed: {},
+	showDebug: false,
+	needsRender: true,
+	lightingDirty: true,
+	terrainDirty: true
+}
+const resources = {
+	terrain: [
+		{ id: 'void', name: '虚空', color: '#000000', undeletable: true },
+		{ id: 'grass', name: '草地', color: '#4a7c23' },
+		{ id: 'tall-grass', name: '高草地', color: '#3d6b1a' },
+		{ id: 'dirt', name: '土地', color: '#8b7355' },
+		{ id: 'mud', name: '泥地', color: '#5c4a3a' },
+		{ id: 'swamp', name: '沼泽', color: '#4a5c3a' },
+		{ id: 'sand', name: '沙地', color: '#d4a574' },
+		{ id: 'fine-sand', name: '细沙地', color: '#e8c9a0' },
+		{ id: 'water', name: '淡水', color: '#3498db' },
+		{ id: 'swamp-water', name: '沼泽水', color: '#2d5a4a' },
+		{ id: 'sea', name: '海水', color: '#1a5276' },
+		{ id: 'clay', name: '粘土地', color: '#a0522d' },
+		{ id: 'stone-brick', name: '石砖地', color: '#808080' },
+		{ id: 'concrete', name: '混凝土地', color: '#a0a0a0' },
+		{ id: 'asphalt', name: '沥青地', color: '#333333' },
+		{ id: 'slate', name: '石板地', color: '#606060' }
+	],
+	building: [],
+	entity: [],
+	trigger: [
+		{ id: 'trigger_zone', name: '触发区域', color: 'rgba(155,89,182,0.5)' },
+		{ id: 'teleport', name: '传送点', color: 'rgba(52,152,219,0.5)' },
+		{ id: 'dialogue', name: '对话触发', color: 'rgba(46,204,113,0.5)' }
+	],
+	structure: [
+		{ id: 'stairs', name: '楼梯', color: '#8b4513', undeletable: true },
+		{ id: 'window', name: '窗户', color: '#87ceeb', undeletable: true },
+		{ id: 'door', name: '门', color: '#a0522d', undeletable: true },
+		{ id: 'wall', name: '内墙', color: '#696969', undeletable: true }
+	],
+	furniture: [],
+	decor: []
+}
+const resourceMap = new Map()
+function rebuildResourceMap() {
+	resourceMap.clear()
+	for (const cat of Object.keys(resources)) for (const r of resources[cat]) resourceMap.set(r.id, r)
+}
+rebuildResourceMap()
+const lightingCache = { data: new Map(), version: 0 }
+const aoCache = { data: new Map(), version: 0 }
+function invalidateLightingCache() { lightingCache.version++; lightingCache.data.clear(); state.needsRender = true }
+function invalidateAOCache() { aoCache.version++; aoCache.data.clear(); state.needsRender = true }
+function getCachedLighting(x, y, z = 0) {
+	const key = `${x},${y},${z}`
+	if (lightingCache.data.has(key)) return lightingCache.data.get(key)
+	const lit = calculateLighting(x, y, z)
+	lightingCache.data.set(key, lit)
+	return lit
+}
+function getCachedAO(x, y) {
+	const key = `${x},${y}`
+	if (aoCache.data.has(key)) return aoCache.data.get(key)
+	const ao = calculateAO(x, y)
+	aoCache.data.set(key, ao)
+	return ao
+}
+class SceneNode {
+	constructor(id = null) {
+		this.id = id || Math.random().toString(36).substr(2, 9)
+		this.parent = null
+		this.children = []
+		this.x = 0
+		this.y = 0
+		this.z = 0
+		this.rotation = 0
+		this.scaleX = 1
+		this.scaleY = 1
+		this.visible = true
+		this.worldX = 0
+		this.worldY = 0
+		this.worldZ = 0
+	}
+	addChild(node) {
+		if (node.parent) node.parent.removeChild(node)
+		node.parent = this
+		this.children.push(node)
+		return node
+	}
+	removeChild(node) {
+		const idx = this.children.indexOf(node)
+		if (idx !== -1) { this.children.splice(idx, 1); node.parent = null }
+		return node
+	}
+	updateWorldTransform() {
+		if (this.parent) {
+			this.worldX = this.parent.worldX + this.x
+			this.worldY = this.parent.worldY + this.y
+			this.worldZ = this.parent.worldZ + this.z
+		} else { this.worldX = this.x; this.worldY = this.y; this.worldZ = this.z }
+		for (const child of this.children) child.updateWorldTransform()
+	}
+	traverse(callback) {
+		callback(this)
+		for (const child of this.children) child.traverse(callback)
+	}
+}
+class QuadTree {
+	constructor(bounds, maxObjects = 10, maxLevels = 5, level = 0) {
+		this.bounds = bounds
+		this.maxObjects = maxObjects
+		this.maxLevels = maxLevels
+		this.level = level
+		this.objects = []
+		this.nodes = []
+	}
+	clear() {
+		this.objects = []
+		for (const node of this.nodes) node.clear()
+		this.nodes = []
+	}
+	split() {
+		const x = this.bounds.x, y = this.bounds.y, w = this.bounds.width / 2, h = this.bounds.height / 2
+		this.nodes[0] = new QuadTree({ x: x + w, y, width: w, height: h }, this.maxObjects, this.maxLevels, this.level + 1)
+		this.nodes[1] = new QuadTree({ x, y, width: w, height: h }, this.maxObjects, this.maxLevels, this.level + 1)
+		this.nodes[2] = new QuadTree({ x, y: y + h, width: w, height: h }, this.maxObjects, this.maxLevels, this.level + 1)
+		this.nodes[3] = new QuadTree({ x: x + w, y: y + h, width: w, height: h }, this.maxObjects, this.maxLevels, this.level + 1)
+	}
+	getIndex(rect) {
+		const midX = this.bounds.x + this.bounds.width / 2, midY = this.bounds.y + this.bounds.height / 2
+		const top = rect.y + rect.height < midY, bottom = rect.y > midY
+		const left = rect.x + rect.width < midX, right = rect.x > midX
+		if (top && right) return 0
+		if (top && left) return 1
+		if (bottom && left) return 2
+		if (bottom && right) return 3
+		return -1
+	}
+	insert(obj) {
+		if (this.nodes.length > 0) { const idx = this.getIndex(obj); if (idx !== -1) { this.nodes[idx].insert(obj); return } }
+		this.objects.push(obj)
+		if (this.objects.length > this.maxObjects && this.level < this.maxLevels) {
+			if (this.nodes.length === 0) this.split()
+			let i = 0
+			while (i < this.objects.length) {
+				const idx = this.getIndex(this.objects[i])
+				if (idx !== -1) this.nodes[idx].insert(this.objects.splice(i, 1)[0])
+				else i++
+			}
+		}
+	}
+	query(range, found = []) {
+		if (!this.intersects(this.bounds, range)) return found
+		for (const obj of this.objects) if (this.intersects(obj, range)) found.push(obj)
+		for (const node of this.nodes) node.query(range, found)
+		return found
+	}
+	intersects(a, b) { return !(a.x > b.x + b.width || a.x + a.width < b.x || a.y > b.y + b.height || a.y + a.height < b.y) }
+}
+const engine = {
+	sceneRoot: new SceneNode('root'),
+	quadTree: null,
+	viewport: { minX: 0, maxX: 0, minY: 0, maxY: 0 },
+	particles: [],
+	tweens: [],
+	rigidBodies: [],
+	audioContext: null,
+	audioGain: null,
+	sounds: {},
+	debug: { fps: 0, entities: 0, particles: 0, lights: 0 },
+	lastTime: 0,
+	deltaTime: 0
+}
+function initQuadTree() { engine.quadTree = new QuadTree({ x: 0, y: 0, width: state.mapWidth * TILE_W, height: state.mapHeight * TILE_W }) }
+function updateQuadTree() {
+	if (!engine.quadTree) initQuadTree()
+	engine.quadTree.clear()
+	for (const entity of state.entities) engine.quadTree.insert({ x: entity.x * TILE_W, y: entity.y * TILE_W, width: TILE_W, height: TILE_W, entity })
+}
+function getViewportBounds() {
+	const corners = [screenToWorld(0, 0), screenToWorld(canvas.width, 0), screenToWorld(canvas.width, canvas.height), screenToWorld(0, canvas.height)]
+	return { minX: Math.min(...corners.map(c => c.x)) - 2, maxX: Math.max(...corners.map(c => c.x)) + 2, minY: Math.min(...corners.map(c => c.y)) - 2, maxY: Math.max(...corners.map(c => c.y)) + 2 }
+}
+function isInViewport(x, y) { return x >= engine.viewport.minX && x <= engine.viewport.maxX && y >= engine.viewport.minY && y <= engine.viewport.maxY }
+class Collider {
+	constructor(type, x, y, width, height, radius = 0) {
+		this.type = type; this.x = x; this.y = y; this.width = width; this.height = height; this.radius = radius
+		this.layer = 1; this.mask = 0xFFFFFFFF
+	}
+}
+function checkAABB(a, b) { return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y }
+function checkCircle(a, b) { const dx = (a.x + a.radius) - (b.x + b.radius), dy = (a.y + a.radius) - (b.y + b.radius); return Math.sqrt(dx * dx + dy * dy) < a.radius + b.radius }
+function checkCircleAABB(circle, rect) {
+	const cx = circle.x + circle.radius, cy = circle.y + circle.radius
+	const nearX = Math.max(rect.x, Math.min(cx, rect.x + rect.width)), nearY = Math.max(rect.y, Math.min(cy, rect.y + rect.height))
+	const dx = cx - nearX, dy = cy - nearY
+	return dx * dx + dy * dy < circle.radius * circle.radius
+}
+function checkCollision(a, b) {
+	if ((a.layer & b.mask) === 0 || (b.layer & a.mask) === 0) return false
+	if (a.type === 'aabb' && b.type === 'aabb') return checkAABB(a, b)
+	if (a.type === 'circle' && b.type === 'circle') return checkCircle(a, b)
+	if (a.type === 'circle' && b.type === 'aabb') return checkCircleAABB(a, b)
+	if (a.type === 'aabb' && b.type === 'circle') return checkCircleAABB(b, a)
+	return false
+}
+function raycast(ox, oy, dx, dy, maxDist, layerMask = 0xFFFFFFFF) {
+	const len = Math.sqrt(dx * dx + dy * dy); dx /= len; dy /= len
+	let dist = 0
+	while (dist < maxDist) {
+		const x = ox + dx * dist, y = oy + dy * dist, tx = Math.floor(x), ty = Math.floor(y)
+		if (tx >= 0 && tx < state.mapWidth && ty >= 0 && ty < state.mapHeight) {
+			if (state.layers[0].data[ty]?.[tx] === 'void') return { hit: true, x, y, distance: dist, type: 'terrain' }
+		}
+		for (const entity of state.entities) if (Math.abs(entity.x - x) < 0.5 && Math.abs(entity.y - y) < 0.5) return { hit: true, x, y, distance: dist, type: 'entity', entity }
+		dist += 0.5
+	}
+	return { hit: false, x: ox + dx * maxDist, y: oy + dy * maxDist, distance: maxDist }
+}
+class RigidBody {
+	constructor(entity) {
+		this.entity = entity; this.vx = 0; this.vy = 0; this.vz = 0; this.ax = 0; this.ay = 0; this.az = 0
+		this.mass = 1; this.friction = 0.1; this.restitution = 0.5; this.useGravity = false; this.isStatic = false
+	}
+	update(dt) {
+		if (this.isStatic) return
+		if (this.useGravity) this.az -= 9.8 * dt
+		this.vx += this.ax * dt; this.vy += this.ay * dt; this.vz += this.az * dt
+		this.vx *= (1 - this.friction); this.vy *= (1 - this.friction)
+		this.entity.x += this.vx * dt; this.entity.y += this.vy * dt
+		if (this.entity.z !== undefined) { this.entity.z += this.vz * dt; if (this.entity.z < 0) { this.entity.z = 0; this.vz = -this.vz * this.restitution } }
+		this.ax = 0; this.ay = 0; this.az = 0
+	}
+	applyForce(fx, fy, fz = 0) { this.ax += fx / this.mass; this.ay += fy / this.mass; this.az += fz / this.mass }
+}
+function updatePhysics(dt) { for (const rb of engine.rigidBodies) rb.update(dt) }
+const Easing = {
+	linear: t => t,
+	easeInQuad: t => t * t,
+	easeOutQuad: t => t * (2 - t),
+	easeInOutQuad: t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
+	easeInCubic: t => t * t * t,
+	easeOutCubic: t => (--t) * t * t + 1,
+	easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+	easeInElastic: t => t === 0 ? 0 : t === 1 ? 1 : -Math.pow(2, 10 * t - 10) * Math.sin((t * 10 - 10.75) * (2 * Math.PI) / 3),
+	easeOutElastic: t => t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * (2 * Math.PI) / 3) + 1,
+	easeOutBounce: t => { if (t < 1/2.75) return 7.5625*t*t; if (t < 2/2.75) return 7.5625*(t-=1.5/2.75)*t+0.75; if (t < 2.5/2.75) return 7.5625*(t-=2.25/2.75)*t+0.9375; return 7.5625*(t-=2.625/2.75)*t+0.984375 }
+}
+class Tween {
+	constructor(target) { this.target = target; this.startValues = {}; this.endValues = {}; this.duration = 1000; this.elapsed = 0; this.easing = Easing.linear; this.isPlaying = false; this.onUpdateCallback = null; this.onCompleteCallback = null; this.chain = null }
+	to(props, duration) { this.endValues = props; this.duration = duration; for (const key in props) this.startValues[key] = this.target[key]; return this }
+	ease(fn) { this.easing = fn; return this }
+	onUpdate(fn) { this.onUpdateCallback = fn; return this }
+	onComplete(fn) { this.onCompleteCallback = fn; return this }
+	then(tween) { this.chain = tween; return this }
+	start() { this.isPlaying = true; this.elapsed = 0; for (const key in this.endValues) this.startValues[key] = this.target[key]; engine.tweens.push(this); return this }
+	stop() { this.isPlaying = false; const idx = engine.tweens.indexOf(this); if (idx !== -1) engine.tweens.splice(idx, 1); return this }
+	update(dt) {
+		if (!this.isPlaying) return
+		this.elapsed += dt
+		const progress = Math.min(this.elapsed / this.duration, 1), eased = this.easing(progress)
+		for (const key in this.endValues) this.target[key] = this.startValues[key] + (this.endValues[key] - this.startValues[key]) * eased
+		if (this.onUpdateCallback) this.onUpdateCallback(this.target, progress)
+		if (progress >= 1) { this.isPlaying = false; const idx = engine.tweens.indexOf(this); if (idx !== -1) engine.tweens.splice(idx, 1); if (this.onCompleteCallback) this.onCompleteCallback(this.target); if (this.chain) this.chain.start() }
+	}
+}
+function updateTweens(dt) { for (let i = engine.tweens.length - 1; i >= 0; i--) engine.tweens[i].update(dt) }
+class Particle {
+	constructor(x, y, config = {}) {
+		this.x = x; this.y = y; this.z = config.z || 0
+		this.vx = config.vx !== undefined ? config.vx + (Math.random() - 0.5) : (Math.random() - 0.5) * 2
+		this.vy = config.vy !== undefined ? config.vy + (Math.random() - 0.5) : (Math.random() - 0.5) * 2
+		this.vz = config.vz !== undefined ? config.vz + Math.random() : Math.random() * 2
+		this.life = config.life || 1; this.maxLife = this.life; this.size = config.size || 4; this.endSize = config.endSize || 0
+		this.color = config.color || '#ff6600'; this.gravity = config.gravity || 0; this.alpha = 1; this.currentSize = this.size
+	}
+	update(dt) {
+		this.vz -= this.gravity * dt; this.x += this.vx * dt; this.y += this.vy * dt; this.z += this.vz * dt
+		if (this.z < 0) this.z = 0
+		this.life -= dt; const t = 1 - this.life / this.maxLife; this.alpha = 1 - t; this.currentSize = this.size + (this.endSize - this.size) * t
+	}
+}
+class ParticleEmitter {
+	constructor(x, y, config = {}) { this.x = x; this.y = y; this.rate = config.rate || 10; this.particles = []; this.config = config; this.accumulator = 0; this.active = true }
+	update(dt) {
+		if (this.active) { this.accumulator += dt * this.rate; while (this.accumulator >= 1) { this.emit(); this.accumulator-- } }
+		for (let i = this.particles.length - 1; i >= 0; i--) { this.particles[i].update(dt); if (this.particles[i].life <= 0) this.particles.splice(i, 1) }
+	}
+	emit() { this.particles.push(new Particle(this.x, this.y, this.config)) }
+	draw(ctx) {
+		for (const p of this.particles) { const pos = worldToScreen(p.x, p.y); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(pos.x, pos.y - p.z * 16 * state.zoom, p.currentSize * state.zoom, 0, Math.PI * 2); ctx.fill() }
+		ctx.globalAlpha = 1
+	}
+}
+const ParticlePresets = {
+	fire: { rate: 30, life: 0.8, size: 6, endSize: 2, color: '#ff4400', vx: 0, vy: 0, vz: 3, gravity: -1 },
+	smoke: { rate: 10, life: 2, size: 8, endSize: 20, color: '#444444', vx: 0, vy: 0, vz: 1, gravity: -0.5 },
+	explosion: { rate: 100, life: 0.5, size: 8, endSize: 1, color: '#ff8800', gravity: 2 },
+	sparkle: { rate: 20, life: 0.6, size: 3, endSize: 0, color: '#ffffff', vz: 2, gravity: 3 },
+	rain: { rate: 50, life: 1, size: 2, endSize: 2, color: '#6688aa', vx: 0.5, vy: 0.5, vz: -5, gravity: 0 }
+}
+class Light {
+	constructor(type, config = {}) {
+		this.type = type; this.x = config.x || 0; this.y = config.y || 0; this.z = config.z || 2
+		this.color = config.color || '#ffffff'; this.intensity = config.intensity || 1; this.range = config.range || 10
+		this.angle = config.angle || Math.PI / 4; this.direction = config.direction || 0; this.attenuation = config.attenuation || 1
+	}
+	getColorRGB() { const hex = this.color.replace('#', ''); return { r: parseInt(hex.substr(0, 2), 16), g: parseInt(hex.substr(2, 2), 16), b: parseInt(hex.substr(4, 2), 16) } }
+}
+const lighting = { ambient: { color: '#404040', intensity: 0.5 }, directional: { direction: Math.PI / 4, color: '#ffffcc', intensity: 0.3 }, points: [], spots: [] }
+function calculateLighting(wx, wy, wz = 0) {
+	let r = parseInt(lighting.ambient.color.substr(1, 2), 16) * lighting.ambient.intensity
+	let g = parseInt(lighting.ambient.color.substr(3, 2), 16) * lighting.ambient.intensity
+	let b = parseInt(lighting.ambient.color.substr(5, 2), 16) * lighting.ambient.intensity
+	r += parseInt(lighting.directional.color.substr(1, 2), 16) * lighting.directional.intensity * 0.5
+	g += parseInt(lighting.directional.color.substr(3, 2), 16) * lighting.directional.intensity * 0.5
+	b += parseInt(lighting.directional.color.substr(5, 2), 16) * lighting.directional.intensity * 0.5
+	for (const light of lighting.points) {
+		const dx = wx - light.x, dy = wy - light.y, dz = wz - light.z, dist = Math.sqrt(dx*dx + dy*dy + dz*dz)
+		if (dist < light.range) { const att = 1 - Math.pow(dist / light.range, light.attenuation), f = light.intensity * att, lc = light.getColorRGB(); r += lc.r * f; g += lc.g * f; b += lc.b * f }
+	}
+	for (const light of lighting.spots) {
+		const dx = wx - light.x, dy = wy - light.y, dz = wz - light.z, dist = Math.sqrt(dx*dx + dy*dy + dz*dz)
+		if (dist < light.range) {
+			const angleToPoint = Math.atan2(dy, dx), angleDiff = Math.abs(angleToPoint - light.direction)
+			if (angleDiff < light.angle) { const sf = 1 - angleDiff / light.angle, att = 1 - Math.pow(dist / light.range, light.attenuation), f = light.intensity * att * sf, lc = light.getColorRGB(); r += lc.r * f; g += lc.g * f; b += lc.b * f }
+		}
+	}
+	return { r: Math.min(255, r), g: Math.min(255, g), b: Math.min(255, b) }
+}
+function applyLighting(baseColor, lit) {
+	const hex = baseColor.replace('#', ''), br = parseInt(hex.substr(0, 2), 16), bg = parseInt(hex.substr(2, 2), 16), bb = parseInt(hex.substr(4, 2), 16)
+	return `rgb(${Math.min(255, Math.floor(br * lit.r / 255))},${Math.min(255, Math.floor(bg * lit.g / 255))},${Math.min(255, Math.floor(bb * lit.b / 255))})`
+}
+function drawShadow(x, y, z, width = 1, height = 1) {
+	const corners = getTileCorners(x, y), centerX = (corners[0].x + corners[2].x) / 2, centerY = (corners[0].y + corners[2].y) / 2
+	const offX = z * 8 * state.zoom * Math.cos(lighting.directional.direction), offY = z * 4 * state.zoom * Math.sin(lighting.directional.direction)
+	const scale = 1 / (1 + z * 0.1)
+	ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(centerX + offX, centerY + offY, width * TILE_W * 0.4 * state.zoom * scale, height * TILE_H * 0.3 * state.zoom * scale, 0, 0, Math.PI * 2); ctx.fill()
+}
+function calculateAO(x, y) {
+	let ao = 0; const neighbors = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]]
+	for (const [dx, dy] of neighbors) {
+		const nx = x + dx, ny = y + dy
+		if (nx >= 0 && nx < state.mapWidth && ny >= 0 && ny < state.mapHeight) {
+			if (state.layers[0].data[ny]?.[nx] === 'void') ao += 0.05
+			for (const entity of state.entities) if (entity.x === nx && entity.y === ny) ao += 0.03
+		}
+	}
+	return Math.min(ao, 0.4)
+}
+let postProcessCanvas = null, postProcessCtx = null
+const postProcess = { enabled: false, bloom: { enabled: false, intensity: 0.3 }, vignette: { enabled: false, intensity: 0.3 }, colorGrading: { enabled: false, brightness: 1, contrast: 1 } }
+function initPostProcess() { postProcessCanvas = document.createElement('canvas'); postProcessCtx = postProcessCanvas.getContext('2d') }
+function applyPostProcess() {
+	if (!postProcess.enabled) return
+	postProcessCanvas.width = canvas.width; postProcessCanvas.height = canvas.height; postProcessCtx.drawImage(canvas, 0, 0)
+	if (postProcess.vignette.enabled) {
+		const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, Math.max(canvas.width, canvas.height)/2)
+		gradient.addColorStop(0, 'rgba(0,0,0,0)'); gradient.addColorStop(1, `rgba(0,0,0,${postProcess.vignette.intensity})`)
+		ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height)
+	}
+}
+let gamepadState = { connected: false, axes: [0, 0, 0, 0], buttons: [] }
+function updateGamepad() {
+	const gamepads = navigator.getGamepads()
+	if (gamepads[0]) { gamepadState.connected = true; gamepadState.axes = [...gamepads[0].axes]; gamepadState.buttons = gamepads[0].buttons.map(b => b.pressed); for (let i = 0; i < gamepadState.axes.length; i++) if (Math.abs(gamepadState.axes[i]) < 0.15) gamepadState.axes[i] = 0 }
+	else gamepadState.connected = false
+}
+let touchState = { touches: [], pinchDist: 0, pinchZoom: 1 }
+function handleTouchStart(e) { e.preventDefault(); touchState.touches = [...e.touches]; if (e.touches.length === 2) { const dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY; touchState.pinchDist = Math.sqrt(dx*dx + dy*dy); touchState.pinchZoom = state.zoom } }
+function handleTouchMove(e) {
+	e.preventDefault()
+	if (e.touches.length === 1) { state.panX += e.touches[0].clientX - touchState.touches[0].clientX; state.panY += e.touches[0].clientY - touchState.touches[0].clientY; touchState.touches = [...e.touches]; render() }
+	else if (e.touches.length === 2) { const dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY; state.zoom = Math.max(0.25, Math.min(4, touchState.pinchZoom * Math.sqrt(dx*dx + dy*dy) / touchState.pinchDist)); render() }
+}
+function handleTouchEnd(e) { touchState.touches = [...e.touches] }
+function initAudio() { if (engine.audioContext) return; engine.audioContext = new (window.AudioContext || window.webkitAudioContext)(); engine.audioGain = engine.audioContext.createGain(); engine.audioGain.connect(engine.audioContext.destination) }
+function playSound(id, x, y, volume = 1) {
+	if (!engine.audioContext || !engine.sounds[id]) return
+	const source = engine.audioContext.createBufferSource(); source.buffer = engine.sounds[id]
+	const panner = engine.audioContext.createPanner(); panner.panningModel = 'HRTF'; panner.distanceModel = 'inverse'; panner.refDistance = 1; panner.maxDistance = 50; panner.rolloffFactor = 1
+	panner.setPosition(x - (state.playerX || state.mapWidth/2), 0, y - (state.playerY || state.mapHeight/2))
+	const gain = engine.audioContext.createGain(); gain.gain.value = volume
+	source.connect(panner); panner.connect(gain); gain.connect(engine.audioGain); source.start()
+}
+async function loadSound(id, url) { if (!engine.audioContext) initAudio(); const response = await fetch(url); const arrayBuffer = await response.arrayBuffer(); engine.sounds[id] = await engine.audioContext.decodeAudioData(arrayBuffer) }
+function engineUpdate(timestamp) {
+	engine.deltaTime = (timestamp - engine.lastTime) / 1000; engine.lastTime = timestamp; if (engine.deltaTime > 0.1) engine.deltaTime = 0.1
+	updatePhysics(engine.deltaTime); updateTweens(engine.deltaTime * 1000)
+	for (const emitter of engine.particles) emitter.update(engine.deltaTime)
+	updateGamepad()
+	engine.debug.fps = Math.round(1 / engine.deltaTime); engine.debug.entities = state.entities.length
+	engine.debug.particles = engine.particles.reduce((sum, e) => sum + e.particles.length, 0); engine.debug.lights = lighting.points.length + lighting.spots.length
+}
+function initMap() {
+	for (let i = 0; i < state.layers.length; i++) {
+		state.layers[i].data = []
+		for (let y = 0; y < state.mapHeight; y++) {
+			state.layers[i].data[y] = []
+			for (let x = 0; x < state.mapWidth; x++) {
+				state.layers[i].data[y][x] = (i === 0) ? 'ground' : null
+			}
+		}
+	}
+}
+function resizeCanvas() {
+	canvas.width = container.clientWidth
+	canvas.height = container.clientHeight
+	render()
+}
+function fitMapToView() {
+	const t = state.viewTransition
+	const isoW = (state.mapWidth + state.mapHeight) * (TILE_W / 2)
+	const isoH = (state.mapWidth + state.mapHeight) * (TILE_H / 2)
+	const topW = state.mapWidth * TILE_W
+	const topH = state.mapHeight * TILE_W
+	const mapPixelW = isoW + (topW - isoW) * t
+	const mapPixelH = isoH + (topH - isoH) * t
+	const padding = 40
+	const availW = container.clientWidth - padding * 2
+	const availH = container.clientHeight - padding * 2
+	const scaleX = availW / mapPixelW
+	const scaleY = availH / mapPixelH
+	state.zoom = Math.min(scaleX, scaleY, 1)
+	const centerX = state.mapWidth / 2
+	const centerY = state.mapHeight / 2
+	const isoX = (centerX - centerY) * (TILE_W / 2) * state.zoom
+	const isoY = (centerX + centerY) * (TILE_H / 2) * state.zoom
+	const topX = centerX * TILE_W * state.zoom
+	const topY = centerY * TILE_W * state.zoom
+	state.panX = -(isoX + (topX - isoX) * t)
+	state.panY = -(isoY + (topY - isoY) * t)
+	render()
+}
+function worldToScreen(wx, wy) {
+	const t = state.viewTransition
+	const isoX = (wx - wy) * (TILE_W / 2) * state.zoom
+	const isoY = (wx + wy) * (TILE_H / 2) * state.zoom
+	const topX = wx * TILE_W * state.zoom
+	const topY = wy * TILE_W * state.zoom
+	const x = isoX + (topX - isoX) * t + state.panX + canvas.width / 2
+	const y = isoY + (topY - isoY) * t + state.panY + canvas.height / 2
+	return { x, y }
+}
+function animateViewTransition(toTop) {
+	if (state.viewAnimating) return
+	state.viewAnimating = true
+	const startT = state.viewTransition
+	const endT = toTop ? 1 : 0
+	const duration = 300
+	const startTime = performance.now()
+	function animate(now) {
+		const elapsed = now - startTime
+		const progress = Math.min(elapsed / duration, 1)
+		const eased = 1 - Math.pow(1 - progress, 3)
+		state.viewTransition = startT + (endT - startT) * eased
+		render()
+		if (progress < 1) {
+			requestAnimationFrame(animate)
+		} else {
+			state.viewAnimating = false
+			state.viewMode = toTop ? 'top' : 'iso'
+			if (state.viewMode === 'iso' && state.tool !== 'select') {
+				state.tool = 'select'
+			}
+			updateToolButtons()
+		}
+	}
+	requestAnimationFrame(animate)
+}
+function screenToWorld(sx, sy) {
+	const t = state.viewTransition
+	const cx = (sx - canvas.width / 2 - state.panX) / state.zoom
+	const cy = (sy - canvas.height / 2 - state.panY) / state.zoom
+	const isoWx = cx / (TILE_W / 2) + cy / (TILE_H / 2)
+	const isoWy = cy / (TILE_H / 2) - cx / (TILE_W / 2)
+	const topWx = cx / TILE_W
+	const topWy = cy / TILE_W
+	return {
+		x: Math.floor((isoWx + (topWx * 2 - isoWx) * t) / 2),
+		y: Math.floor((isoWy + (topWy * 2 - isoWy) * t) / 2)
+	}
+}
+function getTileCorners(x, y) {
+	const t = state.viewTransition
+	const p0 = worldToScreen(x, y)
+	const p1 = worldToScreen(x + 1, y)
+	const p2 = worldToScreen(x + 1, y + 1)
+	const p3 = worldToScreen(x, y + 1)
+	return [p0, p1, p2, p3]
+}
+function drawIsometricTile(x, y, color, outline = false) {
+	const corners = getTileCorners(x, y)
+	ctx.beginPath()
+	ctx.moveTo(corners[0].x, corners[0].y)
+	ctx.lineTo(corners[1].x, corners[1].y)
+	ctx.lineTo(corners[2].x, corners[2].y)
+	ctx.lineTo(corners[3].x, corners[3].y)
+	ctx.closePath()
+	if (outline) {
+		ctx.strokeStyle = color
+		ctx.lineWidth = 1
+		ctx.stroke()
+	} else {
+		ctx.fillStyle = color
+		ctx.fill()
+		ctx.strokeStyle = 'rgba(0,0,0,0.2)'
+		ctx.lineWidth = 1
+		ctx.stroke()
+	}
+}
+function drawEntity(x, y, resource, z = 0) {
+	const corners = getTileCorners(x, y)
+	const centerX = (corners[0].x + corners[2].x) / 2
+	const bottomY = Math.max(corners[1].y, corners[3].y)
+	const w = 32 * state.zoom
+	const h = (resource.height || 32) * state.zoom
+	const zOffset = z * 16 * state.zoom
+	ctx.fillStyle = resource.color
+	ctx.fillRect(centerX - w / 2, bottomY - h - zOffset, w, h)
+	ctx.strokeStyle = 'rgba(255,255,255,0.3)'
+	ctx.lineWidth = 1
+	ctx.strokeRect(centerX - w / 2, bottomY - h - zOffset, w, h)
+}
+function rgbToHex(rgb) {
+	const m = rgb.match(/\d+/g)
+	if (!m) return '#808080'
+	return '#' + m.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('')
+}
+function render() {
+	if (state.lightingDirty) { lightingCache.data.clear(); state.lightingDirty = false }
+	if (state.terrainDirty) { aoCache.data.clear(); state.terrainDirty = false }
+	ctx.fillStyle = '#050505'
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
+	engine.viewport = getViewportBounds()
+	for (let y = 0; y < state.mapHeight; y++) {
+		for (let x = 0; x < state.mapWidth; x++) {
+			if (!isInViewport(x, y)) continue
+			const terrainLayer = state.layers[0]
+			if (terrainLayer.visible && terrainLayer.data[y] && terrainLayer.data[y][x]) {
+				const tileId = terrainLayer.data[y][x]
+				const res = resourceMap.get(tileId)
+				if (res) {
+					let color = res.color
+					if ((x + y) % 2 === 0) {
+						const r = parseInt(color.slice(1,3), 16)
+						const g = parseInt(color.slice(3,5), 16)
+						const b = parseInt(color.slice(5,7), 16)
+						color = `rgb(${Math.min(255,r+10)},${Math.min(255,g+10)},${Math.min(255,b+10)})`
+					}
+					const lit = getCachedLighting(x, y, 0)
+					color = applyLighting(color.startsWith('rgb') ? rgbToHex(color) : color, lit)
+					const ao = getCachedAO(x, y)
+					if (ao > 0) {
+						const c = color.match(/\d+/g).map(Number)
+						color = `rgb(${Math.floor(c[0] * (1 - ao))},${Math.floor(c[1] * (1 - ao))},${Math.floor(c[2] * (1 - ao))})`
+					}
+					drawIsometricTile(x, y, color)
+				}
+			}
+			if (state.showGrid) drawIsometricTile(x, y, 'rgba(255,255,255,0.1)', true)
+		}
+	}
+	const sortedEntities = [...state.entities].sort((a, b) => (a.x + a.y + (a.z || 0) * 0.01) - (b.x + b.y + (b.z || 0) * 0.01))
+	for (const entity of sortedEntities) {
+		if (!isInViewport(entity.x, entity.y)) continue
+		const layer = state.layers[2]
+		if (layer && layer.visible) {
+			const res = resourceMap.get(entity.type)
+			if (res) {
+				if ((entity.z || 0) > 0) drawShadow(entity.x, entity.y, entity.z || 0)
+				drawEntity(entity.x, entity.y, res, entity.z || 0)
+				if (state.selectedEntity && state.selectedEntity.id === entity.id) {
+					const corners = getTileCorners(entity.x, entity.y)
+					const centerX = (corners[0].x + corners[2].x) / 2
+					const bottomY = Math.max(corners[1].y, corners[3].y)
+					const w = 36 * state.zoom
+					const h = ((res.height || 32) + 4) * state.zoom
+					const zOffset = (entity.z || 0) * 16 * state.zoom
+					ctx.strokeStyle = '#f1c40f'
+					ctx.lineWidth = 2
+					ctx.strokeRect(centerX - w / 2, bottomY - h - zOffset, w, h)
+				}
+			}
+		}
+	}
+	for (const emitter of engine.particles) emitter.draw(ctx)
+	for (const trigger of state.triggers) {
+		const res = resourceMap.get(trigger.type)
+		if (res) {
+			const tw = trigger.width || 1
+			const th = trigger.height || 1
+			const corners = [
+				worldToScreen(trigger.x, trigger.y),
+				worldToScreen(trigger.x + tw, trigger.y),
+				worldToScreen(trigger.x + tw, trigger.y + th),
+				worldToScreen(trigger.x, trigger.y + th)
+			]
+			ctx.beginPath()
+			ctx.moveTo(corners[0].x, corners[0].y)
+			ctx.lineTo(corners[1].x, corners[1].y)
+			ctx.lineTo(corners[2].x, corners[2].y)
+			ctx.lineTo(corners[3].x, corners[3].y)
+			ctx.closePath()
+			ctx.fillStyle = res.color
+			ctx.fill()
+			ctx.strokeStyle = res.color.replace('0.5', '1')
+			ctx.lineWidth = 2
+			ctx.stroke()
+		}
+	}
+	if (state.previewMode) {
+		drawPlayer()
+	}
+	const world = screenToWorld(state.mouseX, state.mouseY)
+	if (!state.previewMode && world.x >= 0 && world.x < state.mapWidth && world.y >= 0 && world.y < state.mapHeight) {
+		if (state.tool === 'brush' && state.selectedResource) {
+			const res = resourceMap.get(state.selectedResource)
+			if (res) {
+				if (res.height) {
+					ctx.globalAlpha = 0.6
+					drawEntity(world.x, world.y, res)
+					ctx.globalAlpha = 1
+				} else {
+					ctx.globalAlpha = 0.6
+					drawIsometricTile(world.x, world.y, res.color)
+					ctx.globalAlpha = 1
+				}
+			}
+		}
+		drawIsometricTile(world.x, world.y, 'rgba(255,255,0,0.3)', true)
+	}
+	if ((state.tool === 'rect' || state.tool === 'eraser') && state.rectSelectStart && state.rectSelectEnd) {
+		const x1 = Math.min(state.rectSelectStart.x, state.rectSelectEnd.x)
+		const y1 = Math.min(state.rectSelectStart.y, state.rectSelectEnd.y)
+		const x2 = Math.max(state.rectSelectStart.x, state.rectSelectEnd.x)
+		const y2 = Math.max(state.rectSelectStart.y, state.rectSelectEnd.y)
+		ctx.globalAlpha = 0.5
+		for (let y = y1; y <= y2; y++) {
+			for (let x = x1; x <= x2; x++) {
+				if (x >= 0 && x < state.mapWidth && y >= 0 && y < state.mapHeight) {
+					if (state.tool === 'rect' && state.selectedResource) {
+						const res = resourceMap.get(state.selectedResource)
+						if (res) drawIsometricTile(x, y, res.color)
+					} else if (state.tool === 'eraser') {
+						drawIsometricTile(x, y, '#e74c3c')
+					}
+				}
+			}
+		}
+		ctx.globalAlpha = 1
+	}
+	applyPostProcess()
+	if (state.showDebug) {
+		ctx.fillStyle = 'rgba(0,0,0,0.7)'
+		ctx.fillRect(10, 10, 150, 80)
+		ctx.fillStyle = '#fff'
+		ctx.font = '12px monospace'
+		ctx.fillText(`FPS: ${engine.debug.fps}`, 20, 30)
+		ctx.fillText(`Entities: ${engine.debug.entities}`, 20, 45)
+		ctx.fillText(`Particles: ${engine.debug.particles}`, 20, 60)
+		ctx.fillText(`Lights: ${engine.debug.lights}`, 20, 75)
+	}
+}
+function drawPlayer() {
+	const corners = getTileCorners(state.playerX, state.playerY)
+	const centerX = (corners[0].x + corners[2].x) / 2
+	const centerY = (corners[0].y + corners[2].y) / 2
+	const radius = 8 * state.zoom
+	ctx.fillStyle = '#e74c3c'
+	ctx.beginPath()
+	ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
+	ctx.fill()
+	ctx.strokeStyle = '#c0392b'
+	ctx.lineWidth = 2
+	ctx.stroke()
+}
+function enterPreviewMode() {
+	const spawnTrigger = state.triggers.find(t => t.type === 'teleport')
+	if (spawnTrigger) {
+		state.playerX = spawnTrigger.x
+		state.playerY = spawnTrigger.y
+	} else {
+		state.playerX = Math.floor(state.mapWidth / 2)
+		state.playerY = Math.floor(state.mapHeight / 2)
+	}
+	state.previewMode = true
+	state.showGrid = false
+	document.body.classList.add('preview-mode')
+	centerOnPlayer()
+	resizeCanvas()
+}
+function exitPreviewMode() {
+	state.previewMode = false
+	state.showGrid = true
+	document.getElementById('gridBtn').classList.add('active')
+	document.body.classList.remove('preview-mode')
+	resizeCanvas()
+}
+function centerOnPlayer() {
+	const t = state.viewTransition
+	const isoX = (state.playerX - state.playerY) * (TILE_W / 2) * state.zoom
+	const isoY = (state.playerX + state.playerY) * (TILE_H / 2) * state.zoom
+	const topX = state.playerX * TILE_W * state.zoom
+	const topY = state.playerY * TILE_W * state.zoom
+	state.panX = -(isoX + (topX - isoX) * t)
+	state.panY = -(isoY + (topY - isoY) * t)
+}
+function updatePlayerMovement() {
+	if (!state.previewMode) return
+	let dx = 0, dy = 0
+	if (state.keysPressed['w'] || state.keysPressed['arrowup']) dy = -1
+	if (state.keysPressed['s'] || state.keysPressed['arrowdown']) dy = 1
+	if (state.keysPressed['a'] || state.keysPressed['arrowleft']) dx = -1
+	if (state.keysPressed['d'] || state.keysPressed['arrowright']) dx = 1
+	if (dx !== 0 || dy !== 0) {
+		const newX = state.playerX + dx
+		const newY = state.playerY + dy
+		if (newX >= 0 && newX < state.mapWidth && newY >= 0 && newY < state.mapHeight) {
+			const terrain = state.layers[0].data[newY]?.[newX]
+			if (terrain && terrain !== 'void' && terrain !== 'water') {
+				state.playerX = newX
+				state.playerY = newY
+				centerOnPlayer()
+			}
+		}
+		render()
+	}
+}
+setInterval(updatePlayerMovement, 100)
+function updateInfo() {
+	const world = screenToWorld(state.mouseX, state.mouseY)
+	const zoomPercent = Math.round(state.zoom * 100)
+	document.getElementById('canvasInfo').textContent =
+		`坐标: ${world.x}, ${world.y} | 缩放: ${zoomPercent}%`
+}
+function renderLayerList() {
+	const list = document.getElementById('layerList')
+	list.innerHTML = ''
+	state.layers.forEach((layer, i) => {
+		const item = document.createElement('div')
+		item.className = 'layer-item' + (i === state.selectedLayer ? ' selected' : '')
+		item.innerHTML = `
+			<div class="layer-icon">
+				<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+			</div>
+			<span class="layer-name">${layer.name}</span>
+			<div class="layer-actions">
+				<button class="layer-action-btn ${layer.visible ? 'active' : ''}" data-action="visibility" data-index="${i}">
+					<svg viewBox="0 0 24 24">${layer.visible ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'}</svg>
+				</button>
+				<button class="layer-action-btn ${layer.locked ? 'active' : ''}" data-action="lock" data-index="${i}">
+					<svg viewBox="0 0 24 24">${layer.locked ? '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>' : '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>'}</svg>
+				</button>
+			</div>
+		`
+		item.addEventListener('click', (e) => {
+			if (!e.target.closest('.layer-action-btn')) {
+				state.selectedLayer = i
+				renderLayerList()
+			}
+		})
+		list.appendChild(item)
+	})
+	list.querySelectorAll('.layer-action-btn').forEach(btn => {
+		btn.addEventListener('click', (e) => {
+			e.stopPropagation()
+			const action = btn.dataset.action
+			const index = parseInt(btn.dataset.index)
+			if (action === 'visibility') {
+				state.layers[index].visible = !state.layers[index].visible
+			} else if (action === 'lock') {
+				state.layers[index].locked = !state.layers[index].locked
+			}
+			renderLayerList()
+			render()
+		})
+	})
+}
+function renderResourceGrid() {
+	const grid = document.getElementById('resourceGrid')
+	const activeTab = document.querySelector('.resource-tab.active').dataset.tab
+	const items = resources[activeTab] || []
+	grid.innerHTML = ''
+	items.forEach(res => {
+		const item = document.createElement('div')
+		item.className = 'resource-item' + (state.selectedResource === res.id ? ' selected' : '')
+		item.innerHTML = `
+			<div class="resource-preview" style="background:${res.color};width:40px;height:40px;border-radius:4px;"></div>
+			<div class="resource-name">${res.name}</div>
+		`
+		item.addEventListener('click', () => {
+			if (activeTab === 'building' && res.area) {
+				selectBuilding(res)
+			} else {
+				state.selectedResource = res.id
+				state.tool = 'brush'
+				updateToolButtons()
+				renderResourceGrid()
+			}
+		})
+		if (!res.undeletable) {
+			item.addEventListener('contextmenu', (e) => {
+				e.preventDefault()
+				if (confirm(`确定删除 "${res.name}" 吗？`)) {
+					const idx = resources[activeTab].findIndex(r => r.id === res.id)
+					if (idx !== -1) {
+						resources[activeTab].splice(idx, 1)
+						renderResourceGrid()
+					}
+				}
+			})
+		}
+		grid.appendChild(item)
+	})
+	if (['terrain', 'building', 'entity', 'structure', 'furniture', 'decor'].includes(activeTab)) {
+		const addBtn = document.createElement('div')
+		addBtn.className = 'resource-add-btn'
+		addBtn.innerHTML = '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+		addBtn.addEventListener('click', () => {
+			if (activeTab === 'building') {
+				enterBuildingCreateMode()
+			} else {
+				openAddResourceModal(activeTab)
+			}
+		})
+		grid.appendChild(addBtn)
+	}
+}
+function updateToolButtons() {
+	const isIso = state.viewMode === 'iso'
+	document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+		btn.classList.toggle('active', btn.dataset.tool === state.tool)
+		const tool = btn.dataset.tool
+		btn.disabled = isIso && tool !== 'select'
+	})
+}
+function saveHistory() {
+	const snapshot = {
+		layers: JSON.parse(JSON.stringify(state.layers)),
+		entities: JSON.parse(JSON.stringify(state.entities))
+	}
+	state.history = state.history.slice(0, state.historyIndex + 1)
+	state.history.push(snapshot)
+	state.historyIndex++
+	updateHistoryButtons()
+}
+function undo() {
+	if (state.historyIndex > 0) {
+		state.historyIndex--
+		const snapshot = state.history[state.historyIndex]
+		state.layers = JSON.parse(JSON.stringify(snapshot.layers))
+		state.entities = JSON.parse(JSON.stringify(snapshot.entities))
+		renderLayerList()
+		render()
+		updateHistoryButtons()
+	}
+}
+function redo() {
+	if (state.historyIndex < state.history.length - 1) {
+		state.historyIndex++
+		const snapshot = state.history[state.historyIndex]
+		state.layers = JSON.parse(JSON.stringify(snapshot.layers))
+		state.entities = JSON.parse(JSON.stringify(snapshot.entities))
+		renderLayerList()
+		render()
+		updateHistoryButtons()
+	}
+}
+function updateHistoryButtons() {
+	document.getElementById('undoBtn').disabled = state.historyIndex <= 0
+	document.getElementById('redoBtn').disabled = state.historyIndex >= state.history.length - 1
+}
+function applyTool(wx, wy) {
+	if (wx < 0 || wx >= state.mapWidth || wy < 0 || wy >= state.mapHeight) return
+	const layer = state.layers[state.selectedLayer]
+	if (layer.locked) return
+	if (state.tool === 'brush' && state.selectedResource) {
+		const res = resourceMap.get(state.selectedResource)
+		if (res) {
+			if (res.height) {
+				const existing = state.entities.findIndex(e => e.x === wx && e.y === wy)
+				if (existing >= 0) state.entities.splice(existing, 1)
+				const entity = {
+					id: Date.now(),
+					type: state.selectedResource,
+					x: wx,
+					y: wy,
+					health: 10,
+					behavior: 'idle',
+					dialogue: ''
+				}
+				state.entities.push(entity)
+				state.terrainDirty = true
+			} else if (layer.type === 'terrain') {
+				layer.data[wy][wx] = state.selectedResource
+				state.terrainDirty = true
+			}
+		}
+		const triggerRes = resourceMap.get(state.selectedResource)
+		if (triggerRes) {
+			const existing = state.triggers.findIndex(t => t.x === wx && t.y === wy)
+			if (existing >= 0) state.triggers.splice(existing, 1)
+			state.triggers.push({
+				id: Date.now(),
+				type: state.selectedResource,
+				x: wx,
+				y: wy,
+				width: 1,
+				height: 1,
+				action: '',
+				target: ''
+			})
+		}
+	} else if (state.tool === 'eraser') {
+		if (layer.type === 'terrain') {
+			layer.data[wy][wx] = 'ground'
+			state.terrainDirty = true
+		} else {
+			const idx = state.entities.findIndex(e => e.x === wx && e.y === wy)
+			if (idx >= 0) { state.entities.splice(idx, 1); state.terrainDirty = true }
+			const tidx = state.triggers.findIndex(t => t.x === wx && t.y === wy)
+			if (tidx >= 0) state.triggers.splice(tidx, 1)
+		}
+	}
+}
+function exportMap() {
+	const exportCanvas = document.createElement('canvas')
+	const atlasSize = 512
+	exportCanvas.width = atlasSize
+	exportCanvas.height = atlasSize
+	const ectx = exportCanvas.getContext('2d')
+	const spriteMap = {}
+	let offsetX = 0
+	let offsetY = 0
+	const tileSize = 32
+	const allResources = [...resources.terrain, ...resources.building, ...resources.entity]
+	allResources.forEach(res => {
+		ectx.fillStyle = res.color
+		ectx.fillRect(offsetX, offsetY, tileSize, tileSize)
+		spriteMap[res.id] = { x: offsetX, y: offsetY, w: tileSize, h: tileSize }
+		offsetX += tileSize
+		if (offsetX >= atlasSize) {
+			offsetX = 0
+			offsetY += tileSize
+		}
+	})
+	const mapData = {
+		version: '1.0',
+		mapSize: { width: state.mapWidth, height: state.mapHeight },
+		spriteSheet: spriteMap,
+		layers: state.layers.map(l => ({
+			name: l.name,
+			type: l.type,
+			data: l.data
+		})),
+		entities: state.entities,
+		triggers: state.triggers,
+		itemTypes: state.itemTypes,
+		items: state.items,
+		gallery: state.gallery.items
+	}
+	const jsonStr = JSON.stringify(mapData)
+	exportCanvas.toBlob(blob => {
+		const reader = new FileReader()
+		reader.onload = () => {
+			const arrayBuffer = reader.result
+			const uint8 = new Uint8Array(arrayBuffer)
+			const pngEnd = findPngEnd(uint8)
+			const textChunk = createTextChunk('mapData', jsonStr)
+			const newPng = new Uint8Array(pngEnd + textChunk.length + (uint8.length - pngEnd))
+			newPng.set(uint8.slice(0, pngEnd))
+			newPng.set(textChunk, pngEnd)
+			newPng.set(uint8.slice(pngEnd), pngEnd + textChunk.length)
+			const newBlob = new Blob([newPng], { type: 'image/png' })
+			const url = URL.createObjectURL(newBlob)
+			const a = document.createElement('a')
+			a.href = url
+			a.download = 'map.png'
+			a.click()
+			URL.revokeObjectURL(url)
+		}
+		reader.readAsArrayBuffer(blob)
+	})
+}
+function findPngEnd(uint8) {
+	for (let i = uint8.length - 12; i >= 0; i--) {
+		if (uint8[i] === 0x49 && uint8[i+1] === 0x45 && uint8[i+2] === 0x4E && uint8[i+3] === 0x44) {
+			return i - 4
+		}
+	}
+	return uint8.length
+}
+function createTextChunk(keyword, text) {
+	const keyBytes = new TextEncoder().encode(keyword)
+	const textBytes = new TextEncoder().encode(text)
+	const data = new Uint8Array(keyBytes.length + 1 + textBytes.length)
+	data.set(keyBytes)
+	data[keyBytes.length] = 0
+	data.set(textBytes, keyBytes.length + 1)
+	const type = new Uint8Array([0x74, 0x45, 0x58, 0x74])
+	const length = data.length
+	const chunk = new Uint8Array(12 + data.length)
+	chunk[0] = (length >> 24) & 0xFF
+	chunk[1] = (length >> 16) & 0xFF
+	chunk[2] = (length >> 8) & 0xFF
+	chunk[3] = length & 0xFF
+	chunk.set(type, 4)
+	chunk.set(data, 8)
+	const crc = crc32(chunk.slice(4, 8 + data.length))
+	chunk[8 + data.length] = (crc >> 24) & 0xFF
+	chunk[9 + data.length] = (crc >> 16) & 0xFF
+	chunk[10 + data.length] = (crc >> 8) & 0xFF
+	chunk[11 + data.length] = crc & 0xFF
+	return chunk
+}
+function crc32(data) {
+	let crc = 0xFFFFFFFF
+	const table = []
+	for (let i = 0; i < 256; i++) {
+		let c = i
+		for (let j = 0; j < 8; j++) {
+			c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1)
+		}
+		table[i] = c
+	}
+	for (let i = 0; i < data.length; i++) {
+		crc = table[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8)
+	}
+	return (crc ^ 0xFFFFFFFF) >>> 0
+}
+function importMap() {
+	const input = document.createElement('input')
+	input.type = 'file'
+	input.accept = 'image/png'
+	input.onchange = (e) => {
+		const file = e.target.files[0]
+		if (!file) return
+		const reader = new FileReader()
+		reader.onload = () => {
+			const uint8 = new Uint8Array(reader.result)
+			const mapData = extractTextChunk(uint8, 'mapData')
+			if (mapData) {
+				try {
+					const data = JSON.parse(mapData)
+					state.mapWidth = data.mapSize.width
+					state.mapHeight = data.mapSize.height
+					document.getElementById('mapWidth').value = state.mapWidth
+					document.getElementById('mapHeight').value = state.mapHeight
+					data.layers.forEach((l, i) => {
+						if (state.layers[i]) {
+							state.layers[i].name = l.name
+							state.layers[i].type = l.type
+							state.layers[i].data = l.data
+						}
+					})
+					state.entities = data.entities || []
+					state.triggers = data.triggers || []
+					state.itemTypes = data.itemTypes || []
+					state.items = data.items || []
+					state.gallery.items = data.gallery || []
+					renderLayerList()
+					renderItemTypes()
+					renderItemInstances()
+					saveHistory()
+					render()
+				} catch (err) {
+					alert('导入失败: ' + err.message)
+				}
+			} else {
+				alert('无效的地图文件')
+			}
+		}
+		reader.readAsArrayBuffer(file)
+	}
+	input.click()
+}
+function extractTextChunk(uint8, keyword) {
+	let i = 8
+	while (i < uint8.length) {
+		const length = (uint8[i] << 24) | (uint8[i+1] << 16) | (uint8[i+2] << 8) | uint8[i+3]
+		const type = String.fromCharCode(uint8[i+4], uint8[i+5], uint8[i+6], uint8[i+7])
+		if (type === 'tEXt') {
+			const data = uint8.slice(i + 8, i + 8 + length)
+			let nullIndex = 0
+			for (let j = 0; j < data.length; j++) {
+				if (data[j] === 0) { nullIndex = j; break }
+			}
+			const key = new TextDecoder().decode(data.slice(0, nullIndex))
+			if (key === keyword) {
+				return new TextDecoder().decode(data.slice(nullIndex + 1))
+			}
+		}
+		i += 12 + length
+	}
+	return null
+}
+function floodFill(startX, startY, newTile) {
+	const layer = state.layers[state.selectedLayer]
+	if (layer.type !== 'terrain' || layer.locked) return
+	const oldTile = layer.data[startY][startX]
+	if (oldTile === newTile) return
+	const stack = [[startX, startY]]
+	const visited = new Set()
+	while (stack.length > 0) {
+		const [x, y] = stack.pop()
+		const key = `${x},${y}`
+		if (visited.has(key)) continue
+		if (x < 0 || x >= state.mapWidth || y < 0 || y >= state.mapHeight) continue
+		if (layer.data[y][x] !== oldTile) continue
+		visited.add(key)
+		layer.data[y][x] = newTile
+		stack.push([x+1, y], [x-1, y], [x, y+1], [x, y-1])
+	}
+	state.terrainDirty = true
+}
+function findEntityAt(wx, wy) {
+	return state.entities.find(e => e.x === wx && e.y === wy)
+}
+function updatePropertyPanel() {
+	const propsSection = document.getElementById('selectionProps')
+	if (state.selectedEntity) {
+		propsSection.style.display = 'block'
+		document.getElementById('selX').value = state.selectedEntity.x
+		document.getElementById('selY').value = state.selectedEntity.y
+		document.getElementById('selZ').value = state.selectedEntity.z || 0
+		document.getElementById('selHealth').value = state.selectedEntity.health || 10
+		document.getElementById('selBehavior').value = state.selectedEntity.behavior || 'idle'
+		document.getElementById('selDialogue').value = state.selectedEntity.dialogue || ''
+	} else {
+		propsSection.style.display = 'none'
+	}
+}
+document.getElementById('selX').addEventListener('change', (e) => {
+	if (state.selectedEntity) {
+		saveHistory()
+		state.selectedEntity.x = parseInt(e.target.value)
+		render()
+	}
+})
+document.getElementById('selY').addEventListener('change', (e) => {
+	if (state.selectedEntity) {
+		saveHistory()
+		state.selectedEntity.y = parseInt(e.target.value)
+		render()
+	}
+})
+document.getElementById('selZ').addEventListener('change', (e) => {
+	if (state.selectedEntity) {
+		saveHistory()
+		state.selectedEntity.z = parseFloat(e.target.value) || 0
+		render()
+	}
+})
+document.getElementById('selHealth').addEventListener('change', (e) => {
+	if (state.selectedEntity) {
+		state.selectedEntity.health = parseInt(e.target.value)
+	}
+})
+document.getElementById('selBehavior').addEventListener('change', (e) => {
+	if (state.selectedEntity) {
+		state.selectedEntity.behavior = e.target.value
+	}
+})
+document.getElementById('selDialogue').addEventListener('change', (e) => {
+	if (state.selectedEntity) {
+		state.selectedEntity.dialogue = e.target.value
+	}
+})
+canvas.addEventListener('mousedown', (e) => {
+	hideContextMenu()
+	if (e.button === 1 || (e.button === 0 && e.shiftKey) || e.button === 2) {
+		state.isPanning = true
+		state.panStartX = e.clientX - state.panX
+		state.panStartY = e.clientY - state.panY
+		canvas.style.cursor = 'grabbing'
+	} else if (e.button === 0) {
+		const world = screenToWorld(e.offsetX, e.offsetY)
+		if (state.buildingCreateMode || state.portalDrawMode) {
+			state.buildingSelectStart = { x: world.x, y: world.y }
+			state.buildingSelectEnd = { x: world.x, y: world.y }
+			state.isDrawing = true
+		} else if (state.tool === 'select') {
+			const entity = findEntityAt(world.x, world.y)
+			if (entity) {
+				state.selectedEntity = entity
+				state.isDragging = true
+				state.dragStartX = world.x
+				state.dragStartY = world.y
+				saveHistory()
+			} else {
+				state.selectedEntity = null
+				document.getElementById('buildingProps').classList.remove('active')
+			}
+			updatePropertyPanel()
+			render()
+		} else if (state.tool === 'rect' && state.selectedResource) {
+			state.rectSelectStart = { x: world.x, y: world.y }
+			state.rectSelectEnd = { x: world.x, y: world.y }
+			state.isDrawing = true
+		} else if (state.tool === 'eraser') {
+			state.rectSelectStart = { x: world.x, y: world.y }
+			state.rectSelectEnd = { x: world.x, y: world.y }
+			state.isDrawing = true
+		}
+	}
+})
+canvas.addEventListener('mousemove', (e) => {
+	state.mouseX = e.offsetX
+	state.mouseY = e.offsetY
+	if (state.isPanning) {
+		state.panX = e.clientX - state.panStartX
+		state.panY = e.clientY - state.panStartY
+	} else if ((state.buildingCreateMode || state.portalDrawMode) && state.isDrawing) {
+		const world = screenToWorld(e.offsetX, e.offsetY)
+		state.buildingSelectEnd = { x: world.x, y: world.y }
+		if (state.buildingCreateMode) {
+			const x1 = Math.min(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+			const y1 = Math.min(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+			const x2 = Math.max(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+			const y2 = Math.max(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+			document.getElementById('buildingAreaDisplay').textContent = `${x2-x1+1} x ${y2-y1+1} 格`
+			updateBuildingConfirmBtn()
+		}
+	} else if (state.isDragging && state.selectedEntity) {
+		const world = screenToWorld(e.offsetX, e.offsetY)
+		if (world.x >= 0 && world.x < state.mapWidth && world.y >= 0 && world.y < state.mapHeight) {
+			state.selectedEntity.x = world.x
+			state.selectedEntity.y = world.y
+			updatePropertyPanel()
+		}
+	} else if ((state.tool === 'rect' || state.tool === 'eraser') && state.isDrawing && state.rectSelectStart) {
+		const world = screenToWorld(e.offsetX, e.offsetY)
+		state.rectSelectEnd = { x: world.x, y: world.y }
+	}
+	render()
+	updateInfo()
+})
+canvas.addEventListener('mouseup', () => {
+	if (state.portalDrawMode && state.isDrawing) {
+		finishPortalTriggerDraw()
+	}
+	if ((state.tool === 'rect' || state.tool === 'eraser') && state.isDrawing && state.rectSelectStart && state.rectSelectEnd) {
+		const x1 = Math.min(state.rectSelectStart.x, state.rectSelectEnd.x)
+		const y1 = Math.min(state.rectSelectStart.y, state.rectSelectEnd.y)
+		const x2 = Math.max(state.rectSelectStart.x, state.rectSelectEnd.x)
+		const y2 = Math.max(state.rectSelectStart.y, state.rectSelectEnd.y)
+		const layer = state.layers[state.selectedLayer]
+		if (!layer.locked) {
+			saveHistory()
+			for (let y = y1; y <= y2; y++) {
+				for (let x = x1; x <= x2; x++) {
+					if (x >= 0 && x < state.mapWidth && y >= 0 && y < state.mapHeight) {
+						if (state.tool === 'rect' && state.selectedResource) {
+							if (layer.type === 'terrain') {
+								layer.data[y][x] = state.selectedResource
+							}
+						} else if (state.tool === 'eraser') {
+							if (layer.type === 'terrain') {
+								layer.data[y][x] = 'ground'
+							} else {
+								const idx = state.entities.findIndex(e => e.x === x && e.y === y)
+								if (idx >= 0) state.entities.splice(idx, 1)
+								const tidx = state.triggers.findIndex(t => t.x === x && t.y === y)
+								if (tidx >= 0) state.triggers.splice(tidx, 1)
+							}
+						}
+					}
+				}
+			}
+			state.terrainDirty = true
+		}
+		state.rectSelectStart = null
+		state.rectSelectEnd = null
+		render()
+	}
+	state.isPanning = false
+	state.isDrawing = false
+	state.isDragging = false
+	if (!state.buildingCreateMode && !state.portalDrawMode) {
+		canvas.style.cursor = 'default'
+	}
+})
+canvas.addEventListener('mouseleave', () => {
+	state.isPanning = false
+	state.isDrawing = false
+	state.isDragging = false
+})
+canvas.addEventListener('wheel', (e) => {
+	e.preventDefault()
+	const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1
+	const newZoom = Math.min(3, Math.max(0.25, state.zoom * zoomFactor))
+	const mouseX = e.offsetX - canvas.width / 2
+	const mouseY = e.offsetY - canvas.height / 2
+	state.panX = mouseX - (mouseX - state.panX) * (newZoom / state.zoom)
+	state.panY = mouseY - (mouseY - state.panY) * (newZoom / state.zoom)
+	state.zoom = newZoom
+	render()
+	updateInfo()
+})
+canvas.addEventListener('contextmenu', (e) => {
+	e.preventDefault()
+	const world = screenToWorld(e.offsetX, e.offsetY)
+	const entity = findEntityAt(world.x, world.y)
+	if (entity && !state.isPanning) {
+		state.contextTarget = entity
+		showContextMenu(e.clientX, e.clientY)
+	}
+})
+function showContextMenu(x, y) {
+	const menu = document.getElementById('contextMenu')
+	menu.style.left = x + 'px'
+	menu.style.top = y + 'px'
+	menu.classList.add('open')
+}
+function hideContextMenu() {
+	const menu = document.getElementById('contextMenu')
+	menu.classList.remove('open')
+	state.contextTarget = null
+}
+document.getElementById('contextMenu').addEventListener('click', (e) => {
+	const action = e.target.closest('.context-menu-item')?.dataset.action
+	if (!action || !state.contextTarget) return
+	if (action === 'edit') {
+		state.selectedEntity = state.contextTarget
+		updatePropertyPanel()
+		render()
+	} else if (action === 'delete') {
+		saveHistory()
+		const idx = state.entities.findIndex(ent => ent.id === state.contextTarget.id)
+		if (idx >= 0) state.entities.splice(idx, 1)
+		if (state.selectedEntity?.id === state.contextTarget.id) {
+			state.selectedEntity = null
+			updatePropertyPanel()
+		}
+		render()
+	}
+	hideContextMenu()
+})
+document.addEventListener('click', (e) => {
+	if (!e.target.closest('#contextMenu')) {
+		hideContextMenu()
+	}
+})
+document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+	btn.addEventListener('click', () => {
+		if (state.viewMode === 'iso' && btn.dataset.tool !== 'select') return
+		state.tool = btn.dataset.tool
+		updateToolButtons()
+	})
+})
+document.querySelectorAll('.resource-tab').forEach(tab => {
+	tab.addEventListener('click', () => {
+		document.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'))
+		tab.classList.add('active')
+		const tabName = tab.dataset.tab
+		const isItem = tabName === 'item'
+		const isLibrary = tabName === 'library'
+		document.getElementById('resourceGrid').style.display = (isItem || isLibrary) ? 'none' : 'flex'
+		document.getElementById('itemEditor').classList.toggle('active', isItem)
+		document.getElementById('libraryPanel').classList.toggle('active', isLibrary)
+		document.querySelector('.resource-btns').style.display = isLibrary ? 'none' : 'flex'
+		if (isLibrary) {
+			renderLibrary()
+		} else if (!isItem) {
+			renderResourceGrid()
+		}
+	})
+})
+document.getElementById('panelExpandBtn').addEventListener('click', () => {
+	const panel = document.getElementById('bottomPanel')
+	const btn = document.getElementById('panelExpandBtn')
+	panel.classList.toggle('fullscreen')
+	if (panel.classList.contains('fullscreen')) {
+		btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="7 16 7 21 2 21"/><polyline points="17 8 17 3 22 3"/><line x1="2" y1="21" x2="12" y2="11"/><line x1="22" y1="3" x2="12" y2="13"/></svg>'
+		btn.title = '退出全屏'
+	} else {
+		btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="17 8 17 3 22 3"/><polyline points="7 16 7 21 2 21"/><line x1="22" y1="3" x2="12" y2="13"/><line x1="2" y1="21" x2="12" y2="11"/></svg>'
+		btn.title = '全屏'
+	}
+})
+document.getElementById('gridBtn').addEventListener('click', () => {
+	state.showGrid = !state.showGrid
+	document.getElementById('gridBtn').classList.toggle('active', state.showGrid)
+	render()
+})
+document.getElementById('viewBtn').addEventListener('click', () => {
+	const toTop = state.viewMode === 'iso'
+	document.getElementById('viewBtn').classList.toggle('active', !toTop)
+	animateViewTransition(toTop)
+})
+document.getElementById('undoBtn').addEventListener('click', undo)
+document.getElementById('redoBtn').addEventListener('click', redo)
+document.getElementById('exportBtn').addEventListener('click', exportMap)
+document.getElementById('importBtn').addEventListener('click', importMap)
+document.getElementById('previewBtn').addEventListener('click', enterPreviewMode)
+document.getElementById('previewExitBtn').addEventListener('click', exitPreviewMode)
+document.getElementById('addLayerBtn').addEventListener('click', () => {
+	const name = `图层 ${state.layers.length + 1}`
+	state.layers.push({
+		name,
+		visible: true,
+		locked: false,
+		type: 'decor',
+		data: Array(state.mapHeight).fill(null).map(() => Array(state.mapWidth).fill(null))
+	})
+	renderLayerList()
+})
+document.getElementById('mapWidth').addEventListener('change', (e) => {
+	const newWidth = parseInt(e.target.value)
+	if (newWidth >= 10 && newWidth <= 100) {
+		state.mapWidth = newWidth
+		initMap()
+		render()
+	}
+})
+document.getElementById('mapHeight').addEventListener('change', (e) => {
+	const newHeight = parseInt(e.target.value)
+	if (newHeight >= 10 && newHeight <= 100) {
+		state.mapHeight = newHeight
+		initMap()
+		render()
+	}
+})
+document.addEventListener('keydown', (e) => {
+	const key = e.key.toLowerCase()
+	state.keysPressed[key] = true
+	if (state.previewMode) {
+		if (e.key === 'Escape') exitPreviewMode()
+		return
+	}
+	if (e.ctrlKey && e.key === 'z') {
+		e.preventDefault()
+		undo()
+	} else if (e.ctrlKey && e.key === 'y') {
+		e.preventDefault()
+		redo()
+	} else if (e.ctrlKey && e.key === 'g') {
+		e.preventDefault()
+		state.showGrid = !state.showGrid
+		document.getElementById('gridBtn').classList.toggle('active', state.showGrid)
+		render()
+	} else if (e.key === 'v') {
+		state.tool = 'select'
+		updateToolButtons()
+	} else if (e.key === 'r' && state.viewMode === 'top') {
+		state.tool = 'rect'
+		updateToolButtons()
+	} else if (e.key === 'e' && state.viewMode === 'top') {
+		state.tool = 'eraser'
+		updateToolButtons()
+	} else if (e.key === 't') {
+		const toTop = state.viewMode === 'iso'
+		document.getElementById('viewBtn').classList.toggle('active', !toTop)
+		animateViewTransition(toTop)
+	} else if (e.key === 'p') {
+		enterPreviewMode()
+	} else if (e.key === 'Delete' && state.selectedEntity) {
+		saveHistory()
+		const idx = state.entities.findIndex(ent => ent.id === state.selectedEntity.id)
+		if (idx >= 0) state.entities.splice(idx, 1)
+		state.selectedEntity = null
+		updatePropertyPanel()
+		render()
+	} else if (e.ctrlKey && e.key === 'c' && state.selectedEntity) {
+		state.clipboard = JSON.parse(JSON.stringify(state.selectedEntity))
+	} else if (e.ctrlKey && e.key === 'v' && state.clipboard) {
+		saveHistory()
+		const newEntity = JSON.parse(JSON.stringify(state.clipboard))
+		newEntity.id = Date.now()
+		newEntity.x = Math.min(state.mapWidth - 1, newEntity.x + 1)
+		newEntity.y = Math.min(state.mapHeight - 1, newEntity.y + 1)
+		state.entities.push(newEntity)
+		state.selectedEntity = newEntity
+		updatePropertyPanel()
+		render()
+	}
+})
+document.addEventListener('keyup', (e) => {
+	const key = e.key.toLowerCase()
+	state.keysPressed[key] = false
+})
+function openGallery(callback) {
+	state.gallery.callback = callback
+	state.gallery.selected = null
+	state.gallery.path = []
+	renderGallery()
+	document.getElementById('galleryModal').classList.add('open')
+}
+function closeGallery() {
+	document.getElementById('galleryModal').classList.remove('open')
+	state.gallery.callback = null
+}
+function renderGallery() {
+	const bread = document.getElementById('galleryBread')
+	const grid = document.getElementById('galleryGrid')
+	let breadHtml = '<span data-id="">根目录</span>'
+	let currentId = null
+	for (const fid of state.gallery.path) {
+		const folder = state.gallery.items.find(i => i.id === fid)
+		if (folder) {
+			breadHtml += ` / <span data-id="${fid}">${folder.name}</span>`
+			currentId = fid
+		}
+	}
+	bread.innerHTML = breadHtml
+	bread.querySelectorAll('span').forEach(span => {
+		span.addEventListener('click', () => {
+			const id = span.dataset.id
+			if (id === '') {
+				state.gallery.path = []
+			} else {
+				const idx = state.gallery.path.indexOf(id)
+				if (idx >= 0) state.gallery.path = state.gallery.path.slice(0, idx + 1)
+			}
+			state.gallery.selected = null
+			renderGallery()
+		})
+	})
+	const items = state.gallery.items.filter(i => i.parent === currentId)
+	grid.innerHTML = ''
+	for (const item of items) {
+		const div = document.createElement('div')
+		div.className = 'ed-gallery-item' + (item.type === 'folder' ? ' folder' : '') + (state.gallery.selected === item.id ? ' selected' : '')
+		if (item.type === 'folder') {
+			div.innerHTML = `<svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span class="item-name">${item.name}</span>`
+			div.addEventListener('dblclick', () => {
+				state.gallery.path.push(item.id)
+				state.gallery.selected = null
+				renderGallery()
+			})
+		} else {
+			div.innerHTML = `<img src="${item.url}"><span class="item-name">${item.name}</span>`
+		}
+		div.addEventListener('click', (e) => {
+			if (e.detail === 1) {
+				state.gallery.selected = item.id
+				renderGallery()
+			}
+		})
+		grid.appendChild(div)
+	}
+}
+function uploadToGallery(files) {
+	const currentParent = state.gallery.path.length > 0 ? state.gallery.path[state.gallery.path.length - 1] : null
+	for (const file of files) {
+		if (!file.type.startsWith('image/')) continue
+		const reader = new FileReader()
+		reader.onload = (e) => {
+			state.gallery.items.push({
+				id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+				type: 'image',
+				name: file.name,
+				url: e.target.result,
+				parent: currentParent
+			})
+			renderGallery()
+		}
+		reader.readAsDataURL(file)
+	}
+}
+function createGalleryFolder(name) {
+	const currentParent = state.gallery.path.length > 0 ? state.gallery.path[state.gallery.path.length - 1] : null
+	state.gallery.items.push({
+		id: 'folder_' + Date.now(),
+		type: 'folder',
+		name: name,
+		parent: currentParent
+	})
+	renderGallery()
+}
+document.getElementById('galleryClose').addEventListener('click', closeGallery)
+document.getElementById('galleryModal').addEventListener('click', (e) => {
+	if (e.target === e.currentTarget) closeGallery()
+})
+document.getElementById('galleryUpload').addEventListener('click', () => {
+	const input = document.createElement('input')
+	input.type = 'file'
+	input.accept = 'image/*'
+	input.multiple = true
+	input.onchange = (e) => uploadToGallery(e.target.files)
+	input.click()
+})
+document.getElementById('galleryNewFolder').addEventListener('click', () => {
+	const name = prompt('文件夹名称:')
+	if (name) createGalleryFolder(name)
+})
+document.getElementById('galleryConfirm').addEventListener('click', () => {
+	if (state.gallery.selected && state.gallery.callback) {
+		const item = state.gallery.items.find(i => i.id === state.gallery.selected)
+		if (item && item.type === 'image') {
+			state.gallery.callback(item.url)
+			closeGallery()
+		}
+	}
+})
+function genId() {
+	return Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
+}
+function renderItemTypes() {
+	const list = document.getElementById('itemTypesList')
+	list.innerHTML = ''
+	for (const type of state.itemTypes) {
+		const card = document.createElement('div')
+		card.className = 'item-type-card collapse-panel'
+		card.innerHTML = `
+			<div class="collapse-header">
+				<svg class="arrow" viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+				<span style="flex:1">${type.name} (${type.id})</span>
+				<button class="remove-btn" data-id="${type.id}">
+					<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+				</button>
+			</div>
+			<div class="collapse-body">
+				<div class="prop-row">
+					<label>ID</label>
+					<input type="text" value="${type.id}" data-field="id" data-type-id="${type.id}">
+				</div>
+				<div class="prop-row">
+					<label>名称</label>
+					<input type="text" value="${type.name}" data-field="name" data-type-id="${type.id}">
+				</div>
+				<div class="prop-row">
+					<label>标签</label>
+					<div class="tags-row" data-type-id="${type.id}">
+						${type.tags.map(t => `<span class="tag">${t}<button class="tag-remove" data-tag="${t}">x</button></span>`).join('')}
+						<button class="ed-btn sm add-indicator" data-action="add-tag"></button>
+					</div>
+				</div>
+				<div class="prop-row">
+					<label>继承</label>
+					<select data-field="parent" data-type-id="${type.id}">
+						<option value="">无</option>
+						${state.itemTypes.filter(t => t.id !== type.id).map(t => `<option value="${t.id}" ${type.parent === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+					</select>
+				</div>
+				<div class="props-section">
+					<div class="props-section-header">
+						<span>属性</span>
+						<button class="ed-btn sm add-indicator" data-action="add-prop" data-type-id="${type.id}"></button>
+					</div>
+					<div class="sortable-list" data-props-list="${type.id}">
+						${type.properties.map((p, pi) => renderPropertyItem(type.id, p, pi)).join('')}
+					</div>
+				</div>
+			</div>
+		`
+		card.querySelector('.collapse-header').addEventListener('click', (e) => {
+			if (e.target.closest('.remove-btn')) return
+			card.querySelector('.collapse-header').classList.toggle('open')
+			card.querySelector('.collapse-body').classList.toggle('open')
+		})
+		card.querySelector('.remove-btn').addEventListener('click', () => {
+			state.itemTypes = state.itemTypes.filter(t => t.id !== type.id)
+			renderItemTypes()
+			renderItemInstances()
+		})
+		list.appendChild(card)
+	}
+	bindItemTypeEvents()
+}
+function renderPropertyItem(typeId, prop, index) {
+	const isEnum = prop.type === 'enum'
+	return `
+		<div class="sortable-item" data-prop-idx="${index}" draggable="true">
+			<span class="drag-handle">≡</span>
+			<span class="item-content">${prop.name} (${prop.type}${!isEnum ? `: ${prop.min}-${prop.max}` : ''})</span>
+			<button class="ed-btn sm" data-action="edit-prop" data-type-id="${typeId}" data-prop-idx="${index}">
+				<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+			</button>
+			<button class="remove-btn" data-action="remove-prop" data-type-id="${typeId}" data-prop-idx="${index}">
+				<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+			</button>
+		</div>
+	`
+}
+function bindItemTypeEvents() {
+	document.querySelectorAll('[data-field][data-type-id]').forEach(el => {
+		el.addEventListener('change', (e) => {
+			const typeId = el.dataset.typeId
+			const field = el.dataset.field
+			const type = state.itemTypes.find(t => t.id === typeId)
+			if (type) {
+				if (field === 'id') {
+					const oldId = type.id
+					type.id = e.target.value
+					state.items.forEach(item => {
+						if (item.typeId === oldId) item.typeId = type.id
+					})
+				} else if (field === 'parent') {
+					type.parent = e.target.value || null
+				} else {
+					type[field] = e.target.value
+				}
+				renderItemTypes()
+				renderItemInstances()
+			}
+		})
+	})
+	document.querySelectorAll('.tags-row').forEach(row => {
+		const typeId = row.dataset.typeId
+		row.querySelectorAll('.tag-remove').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const tag = btn.dataset.tag
+				const type = state.itemTypes.find(t => t.id === typeId)
+				if (type) {
+					type.tags = type.tags.filter(t => t !== tag)
+					renderItemTypes()
+				}
+			})
+		})
+		row.querySelector('[data-action="add-tag"]')?.addEventListener('click', () => {
+			const tag = prompt('标签名称:')
+			if (tag) {
+				const type = state.itemTypes.find(t => t.id === typeId)
+				if (type && !type.tags.includes(tag)) {
+					type.tags.push(tag)
+					renderItemTypes()
+				}
+			}
+		})
+	})
+	document.querySelectorAll('[data-action="add-prop"]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const typeId = btn.dataset.typeId
+			const type = state.itemTypes.find(t => t.id === typeId)
+			if (type) {
+				const name = prompt('属性名称:')
+				if (name) {
+					type.properties.push({
+						name: name,
+						type: 'number',
+						min: 0,
+						max: 100,
+						enumValues: []
+					})
+					renderItemTypes()
+				}
+			}
+		})
+	})
+	document.querySelectorAll('[data-action="edit-prop"]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const typeId = btn.dataset.typeId
+			const propIdx = parseInt(btn.dataset.propIdx)
+			const type = state.itemTypes.find(t => t.id === typeId)
+			if (type && type.properties[propIdx]) {
+				editProperty(type, propIdx)
+			}
+		})
+	})
+	document.querySelectorAll('[data-action="remove-prop"]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const typeId = btn.dataset.typeId
+			const propIdx = parseInt(btn.dataset.propIdx)
+			const type = state.itemTypes.find(t => t.id === typeId)
+			if (type) {
+				type.properties.splice(propIdx, 1)
+				renderItemTypes()
+			}
+		})
+	})
+	document.querySelectorAll('[data-props-list]').forEach(list => {
+		const typeId = list.dataset.propsList
+		let dragIdx = null
+		list.querySelectorAll('.sortable-item').forEach(item => {
+			item.addEventListener('dragstart', (e) => {
+				dragIdx = parseInt(item.dataset.propIdx)
+				item.style.opacity = '0.5'
+			})
+			item.addEventListener('dragend', () => {
+				item.style.opacity = '1'
+				dragIdx = null
+			})
+			item.addEventListener('dragover', (e) => {
+				e.preventDefault()
+			})
+			item.addEventListener('drop', (e) => {
+				e.preventDefault()
+				const dropIdx = parseInt(item.dataset.propIdx)
+				if (dragIdx !== null && dragIdx !== dropIdx) {
+					const type = state.itemTypes.find(t => t.id === typeId)
+					if (type) {
+						const [moved] = type.properties.splice(dragIdx, 1)
+						type.properties.splice(dropIdx, 0, moved)
+						renderItemTypes()
+					}
+				}
+			})
+		})
+	})
+}
+function editProperty(type, propIdx) {
+	const prop = type.properties[propIdx]
+	const modal = document.createElement('div')
+	modal.className = 'ed-gallery-modal open'
+	modal.innerHTML = `
+		<div class="ed-gallery-box" style="max-width:400px;height:auto">
+			<div class="ed-gallery-hd">
+				<span style="color:#fff">编辑属性</span>
+				<button class="ed-btn sm close-modal">
+					<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+				</button>
+			</div>
+			<div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+				<div class="prop-row">
+					<label>属性名</label>
+					<input type="text" id="propName" value="${prop.name}">
+				</div>
+				<div class="prop-row">
+					<label>类型</label>
+					<select id="propType">
+						<option value="number" ${prop.type === 'number' ? 'selected' : ''}>数值</option>
+						<option value="enum" ${prop.type === 'enum' ? 'selected' : ''}>枚举</option>
+					</select>
+				</div>
+				<div id="numberFields" style="${prop.type === 'enum' ? 'display:none' : ''}">
+					<div class="prop-row">
+						<label>最小值</label>
+						<input type="number" id="propMin" value="${prop.min || 0}">
+					</div>
+					<div class="prop-row">
+						<label>最大值</label>
+						<input type="number" id="propMax" value="${prop.max || 100}">
+					</div>
+				</div>
+				<div id="enumFields" class="enum-editor" style="${prop.type !== 'enum' ? 'display:none' : ''}">
+					<div style="font-size:11px;color:#666;margin-bottom:8px">枚举值</div>
+					<div id="enumList">
+						${(prop.enumValues || []).map((v, i) => `<div class="enum-item"><span style="color:#555">≡</span><input type="text" value="${v}" data-enum-idx="${i}"><button class="remove-btn" data-enum-idx="${i}"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`).join('')}
+					</div>
+					<button class="ed-btn sm" id="addEnumBtn" style="margin-top:8px">+ 添加枚举值</button>
+				</div>
+			</div>
+			<div class="ed-gallery-ft">
+				<button class="gal-upload close-modal">取消</button>
+				<button class="gal-confirm" id="saveProp">保存</button>
+			</div>
+		</div>
+	`
+	document.body.appendChild(modal)
+	const propTypeSelect = modal.querySelector('#propType')
+	propTypeSelect.addEventListener('change', () => {
+		modal.querySelector('#numberFields').style.display = propTypeSelect.value === 'enum' ? 'none' : ''
+		modal.querySelector('#enumFields').style.display = propTypeSelect.value === 'enum' ? '' : 'none'
+	})
+	modal.querySelector('#addEnumBtn').addEventListener('click', () => {
+		const enumList = modal.querySelector('#enumList')
+		const idx = enumList.children.length
+		const div = document.createElement('div')
+		div.className = 'enum-item'
+		div.innerHTML = `<span style="color:#555">≡</span><input type="text" value="" data-enum-idx="${idx}"><button class="remove-btn" data-enum-idx="${idx}"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`
+		div.querySelector('.remove-btn').addEventListener('click', () => div.remove())
+		enumList.appendChild(div)
+	})
+	modal.querySelectorAll('#enumList .remove-btn').forEach(btn => {
+		btn.addEventListener('click', () => btn.closest('.enum-item').remove())
+	})
+	modal.querySelectorAll('.close-modal').forEach(btn => {
+		btn.addEventListener('click', () => modal.remove())
+	})
+	modal.addEventListener('click', (e) => {
+		if (e.target === modal) modal.remove()
+	})
+	modal.querySelector('#saveProp').addEventListener('click', () => {
+		prop.name = modal.querySelector('#propName').value
+		prop.type = propTypeSelect.value
+		if (prop.type === 'number') {
+			prop.min = parseFloat(modal.querySelector('#propMin').value) || 0
+			prop.max = parseFloat(modal.querySelector('#propMax').value) || 100
+		} else {
+			prop.enumValues = [...modal.querySelectorAll('#enumList input')].map(inp => inp.value).filter(v => v)
+		}
+		modal.remove()
+		renderItemTypes()
+		renderItemInstances()
+	})
+}
+function getInheritedProperties(typeId) {
+	const props = []
+	const visited = new Set()
+	let currentTypeId = typeId
+	while (currentTypeId && !visited.has(currentTypeId)) {
+		visited.add(currentTypeId)
+		const type = state.itemTypes.find(t => t.id === currentTypeId)
+		if (type) {
+			for (const p of type.properties) {
+				if (!props.find(ep => ep.name === p.name)) {
+					props.push({ ...p, fromType: type.id })
+				}
+			}
+			currentTypeId = type.parent
+		} else {
+			break
+		}
+	}
+	return props
+}
+function renderItemInstances() {
+	const list = document.getElementById('itemInstancesList')
+	list.innerHTML = ''
+	for (const item of state.items) {
+		const type = state.itemTypes.find(t => t.id === item.typeId)
+		const inheritedProps = type ? getInheritedProperties(type.id) : []
+		const card = document.createElement('div')
+		card.className = 'item-instance-card collapse-panel'
+		card.innerHTML = `
+			<div class="collapse-header">
+				<svg class="arrow" viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+				<span style="flex:1">${item.name} (${item.id})</span>
+				<button class="remove-btn" data-id="${item.id}">
+					<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+				</button>
+			</div>
+			<div class="collapse-body">
+				<div class="prop-row">
+					<label>ID</label>
+					<input type="text" value="${item.id}" data-field="id" data-item-id="${item.id}">
+				</div>
+				<div class="prop-row">
+					<label>名称</label>
+					<input type="text" value="${item.name}" data-field="name" data-item-id="${item.id}">
+				</div>
+				<div class="prop-row">
+					<label>种类</label>
+					<select data-field="typeId" data-item-id="${item.id}">
+						<option value="">无</option>
+						${state.itemTypes.map(t => `<option value="${t.id}" ${item.typeId === t.id ? 'selected' : ''}>${t.name}</option>`).join('')}
+					</select>
+				</div>
+				<div class="prop-row">
+					<label>贴图</label>
+					<div class="sprite-preview" data-item-id="${item.id}" data-sprite-type="base">
+						${item.sprite ? `<img src="${item.sprite}">` : ''}
+					</div>
+				</div>
+				${inheritedProps.length > 0 ? `
+				<div class="props-section">
+					<div class="props-section-header"><span>继承属性</span></div>
+					${inheritedProps.map(p => {
+						const val = item.propertyValues[p.name]
+						if (p.type === 'enum') {
+							return `<div class="prop-row"><label>${p.name}</label><select data-prop-name="${p.name}" data-item-id="${item.id}">${(p.enumValues || []).map(ev => `<option value="${ev}" ${val === ev ? 'selected' : ''}>${ev}</option>`).join('')}</select></div>`
+						}
+						return `<div class="prop-row"><label>${p.name}</label><input type="number" value="${val !== undefined ? val : p.min}" min="${p.min}" max="${p.max}" data-prop-name="${p.name}" data-item-id="${item.id}"></div>`
+					}).join('')}
+				</div>` : ''}
+				<div class="props-section">
+					<div class="props-section-header">
+						<span>额外属性</span>
+						<button class="ed-btn sm add-indicator" data-action="add-extra-prop" data-item-id="${item.id}"></button>
+					</div>
+					<div class="sortable-list">
+						${(item.extraProperties || []).map((ep, i) => `
+							<div class="sortable-item">
+								<span class="drag-handle">≡</span>
+								<span class="item-content">${ep.name}: ${ep.value}</span>
+								<button class="remove-btn" data-action="remove-extra-prop" data-item-id="${item.id}" data-prop-idx="${i}">
+									<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+								</button>
+							</div>
+						`).join('')}
+					</div>
+				</div>
+				<div class="props-section">
+					<div class="props-section-header">
+						<span>条件贴图</span>
+						<button class="ed-btn sm add-indicator" data-action="add-cond-sprite" data-item-id="${item.id}"></button>
+					</div>
+					${(item.conditionalSprites || []).map((cs, i) => renderCondSpriteItem(item, cs, i, inheritedProps)).join('')}
+				</div>
+			</div>
+		`
+		card.querySelector('.collapse-header').addEventListener('click', (e) => {
+			if (e.target.closest('.remove-btn')) return
+			card.querySelector('.collapse-header').classList.toggle('open')
+			card.querySelector('.collapse-body').classList.toggle('open')
+		})
+		card.querySelector('.collapse-header .remove-btn').addEventListener('click', () => {
+			state.items = state.items.filter(i => i.id !== item.id)
+			renderItemInstances()
+		})
+		list.appendChild(card)
+	}
+	bindItemInstanceEvents()
+}
+function renderCondSpriteItem(item, cs, idx, inheritedProps) {
+	const allProps = [...inheritedProps, ...(item.extraProperties || [])]
+	return `
+		<div class="cond-sprite-item" data-cond-idx="${idx}">
+			<div class="cond-sprite-row">
+				<label style="width:40px;font-size:11px;color:#666">优先级</label>
+				<input type="number" value="${cs.priority}" style="width:50px" data-cond-field="priority" data-item-id="${item.id}" data-cond-idx="${idx}">
+				<button class="remove-btn" data-action="remove-cond-sprite" data-item-id="${item.id}" data-cond-idx="${idx}">
+					<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+				</button>
+			</div>
+			<div class="cond-sprite-row">
+				<label style="width:40px;font-size:11px;color:#666">条件</label>
+				<select data-cond-field="property" data-item-id="${item.id}" data-cond-idx="${idx}" style="flex:1">
+					${allProps.map(p => `<option value="${p.name}" ${cs.condition.property === p.name ? 'selected' : ''}>${p.name}</option>`).join('')}
+				</select>
+				<select data-cond-field="operator" data-item-id="${item.id}" data-cond-idx="${idx}" style="width:50px">
+					<option value=">" ${cs.condition.operator === '>' ? 'selected' : ''}>></option>
+					<option value="<" ${cs.condition.operator === '<' ? 'selected' : ''}><</option>
+					<option value=">=" ${cs.condition.operator === '>=' ? 'selected' : ''}>>=</option>
+					<option value="<=" ${cs.condition.operator === '<=' ? 'selected' : ''}><=</option>
+					<option value="==" ${cs.condition.operator === '==' ? 'selected' : ''}>=</option>
+					<option value="!=" ${cs.condition.operator === '!=' ? 'selected' : ''}>!=</option>
+				</select>
+				<input type="text" value="${cs.condition.value}" style="width:60px" data-cond-field="value" data-item-id="${item.id}" data-cond-idx="${idx}">
+			</div>
+			<div class="cond-sprite-row">
+				<label style="width:40px;font-size:11px;color:#666">贴图</label>
+				<div class="sprite-preview" data-item-id="${item.id}" data-sprite-type="cond" data-cond-idx="${idx}" style="width:32px;height:32px">
+					${cs.sprite ? `<img src="${cs.sprite}">` : ''}
+				</div>
+			</div>
+		</div>
+	`
+}
+function bindItemInstanceEvents() {
+	document.querySelectorAll('[data-field][data-item-id]').forEach(el => {
+		el.addEventListener('change', (e) => {
+			const itemId = el.dataset.itemId
+			const field = el.dataset.field
+			const item = state.items.find(i => i.id === itemId)
+			if (item) {
+				if (field === 'id') {
+					item.id = e.target.value
+				} else if (field === 'typeId') {
+					item.typeId = e.target.value || null
+					item.propertyValues = {}
+				} else {
+					item[field] = e.target.value
+				}
+				renderItemInstances()
+			}
+		})
+	})
+	document.querySelectorAll('[data-prop-name][data-item-id]').forEach(el => {
+		el.addEventListener('change', (e) => {
+			const itemId = el.dataset.itemId
+			const propName = el.dataset.propName
+			const item = state.items.find(i => i.id === itemId)
+			if (item) {
+				item.propertyValues[propName] = el.tagName === 'SELECT' ? e.target.value : parseFloat(e.target.value)
+			}
+		})
+	})
+	document.querySelectorAll('.sprite-preview[data-item-id]').forEach(el => {
+		el.addEventListener('click', () => {
+			const itemId = el.dataset.itemId
+			const spriteType = el.dataset.spriteType
+			const condIdx = el.dataset.condIdx
+			const item = state.items.find(i => i.id === itemId)
+			if (item) {
+				openGallery((url) => {
+					if (spriteType === 'base') {
+						item.sprite = url
+					} else if (spriteType === 'cond' && condIdx !== undefined) {
+						item.conditionalSprites[parseInt(condIdx)].sprite = url
+					}
+					renderItemInstances()
+				})
+			}
+		})
+	})
+	document.querySelectorAll('[data-action="add-extra-prop"]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const itemId = btn.dataset.itemId
+			const item = state.items.find(i => i.id === itemId)
+			if (item) {
+				const name = prompt('属性名称:')
+				if (name) {
+					if (!item.extraProperties) item.extraProperties = []
+					item.extraProperties.push({ name, type: 'number', min: 0, max: 100, value: 0 })
+					renderItemInstances()
+				}
+			}
+		})
+	})
+	document.querySelectorAll('[data-action="remove-extra-prop"]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const itemId = btn.dataset.itemId
+			const propIdx = parseInt(btn.dataset.propIdx)
+			const item = state.items.find(i => i.id === itemId)
+			if (item && item.extraProperties) {
+				item.extraProperties.splice(propIdx, 1)
+				renderItemInstances()
+			}
+		})
+	})
+	document.querySelectorAll('[data-action="add-cond-sprite"]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const itemId = btn.dataset.itemId
+			const item = state.items.find(i => i.id === itemId)
+			if (item) {
+				if (!item.conditionalSprites) item.conditionalSprites = []
+				item.conditionalSprites.push({
+					priority: item.conditionalSprites.length + 1,
+					condition: { property: '', operator: '<', value: 0 },
+					sprite: null
+				})
+				renderItemInstances()
+			}
+		})
+	})
+	document.querySelectorAll('[data-action="remove-cond-sprite"]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const itemId = btn.dataset.itemId
+			const condIdx = parseInt(btn.dataset.condIdx)
+			const item = state.items.find(i => i.id === itemId)
+			if (item && item.conditionalSprites) {
+				item.conditionalSprites.splice(condIdx, 1)
+				renderItemInstances()
+			}
+		})
+	})
+	document.querySelectorAll('[data-cond-field][data-item-id]').forEach(el => {
+		el.addEventListener('change', (e) => {
+			const itemId = el.dataset.itemId
+			const condIdx = parseInt(el.dataset.condIdx)
+			const field = el.dataset.condField
+			const item = state.items.find(i => i.id === itemId)
+			if (item && item.conditionalSprites && item.conditionalSprites[condIdx]) {
+				const cs = item.conditionalSprites[condIdx]
+				if (field === 'priority') {
+					cs.priority = parseInt(e.target.value) || 1
+				} else if (field === 'property' || field === 'operator' || field === 'value') {
+					cs.condition[field] = field === 'value' ? (isNaN(parseFloat(e.target.value)) ? e.target.value : parseFloat(e.target.value)) : e.target.value
+				}
+			}
+		})
+	})
+}
+document.getElementById('addItemType').addEventListener('click', () => {
+	const id = 'type_' + genId()
+	state.itemTypes.push({
+		id: id,
+		name: '新种类',
+		tags: [],
+		parent: null,
+		properties: []
+	})
+	renderItemTypes()
+})
+document.getElementById('addItemInstance').addEventListener('click', () => {
+	const id = 'item_' + genId()
+	state.items.push({
+		id: id,
+		name: '新物品',
+		typeId: null,
+		sprite: null,
+		propertyValues: {},
+		extraProperties: [],
+		conditionalSprites: []
+	})
+	renderItemInstances()
+})
+let currentAddResourceTab = 'terrain'
+function openAddResourceModal(tab) {
+	currentAddResourceTab = tab
+	const modal = document.getElementById('addResourceModal')
+	const title = document.getElementById('addResourceModalTitle')
+	const heightRow = document.getElementById('heightRow')
+	const spriteRow = document.getElementById('spritePickerRow')
+	const titles = {
+		terrain: '添加地形',
+		entity: '添加实体',
+		structure: '添加结构',
+		furniture: '添加家具',
+		decor: '添加内饰'
+	}
+	title.textContent = titles[tab] || '添加资源'
+	heightRow.style.display = tab === 'entity' ? 'block' : 'none'
+	spriteRow.style.display = ['terrain', 'entity', 'furniture', 'decor'].includes(tab) ? 'block' : 'none'
+	document.getElementById('newResourceName').value = ''
+	document.getElementById('newResourceColor').value = '#166d3b'
+	document.getElementById('newResourceColorHex').value = '#166d3b'
+	document.getElementById('newResourceSprite').innerHTML = '点击选择图片'
+	document.getElementById('newResourceSprite').classList.remove('has-image')
+	document.getElementById('newResourceSprite').dataset.sprite = ''
+	if (tab === 'entity') document.getElementById('newResourceHeight').value = '32'
+	modal.classList.add('open')
+}
+function closeAddResourceModal() {
+	document.getElementById('addResourceModal').classList.remove('open')
+}
+document.getElementById('addResourceConfirm').addEventListener('click', () => {
+	const name = document.getElementById('newResourceName').value.trim()
+	if (!name) return alert('请输入名称')
+	const color = document.getElementById('newResourceColor').value
+	const sprite = document.getElementById('newResourceSprite').dataset.sprite || null
+	const id = currentAddResourceTab + '_' + Date.now()
+	const item = { id, name, color }
+	if (sprite) item.sprite = sprite
+	if (currentAddResourceTab === 'entity') {
+		item.height = parseInt(document.getElementById('newResourceHeight').value) || 32
+	}
+	resources[currentAddResourceTab].push(item)
+	closeAddResourceModal()
+	renderResourceGrid()
+})
+document.getElementById('addResourceCancel').addEventListener('click', closeAddResourceModal)
+document.getElementById('newResourceColor').addEventListener('input', (e) => {
+	document.getElementById('newResourceColorHex').value = e.target.value
+})
+document.getElementById('newResourceColorHex').addEventListener('input', (e) => {
+	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+		document.getElementById('newResourceColor').value = e.target.value
+	}
+})
+function enterBuildingCreateMode() {
+	state.buildingCreateMode = true
+	state.buildingSelectStart = null
+	state.buildingSelectEnd = null
+	state.buildingCreateName = ''
+	document.getElementById('buildingCreatePanel').classList.add('active')
+	document.getElementById('buildingNameInput').value = ''
+	document.getElementById('buildingAreaDisplay').textContent = '请在地图上框选区域'
+	document.getElementById('buildingConfirmBtn').disabled = true
+	canvas.style.cursor = 'crosshair'
+}
+function exitBuildingCreateMode() {
+	state.buildingCreateMode = false
+	state.buildingSelectStart = null
+	state.buildingSelectEnd = null
+	document.getElementById('buildingCreatePanel').classList.remove('active')
+	canvas.style.cursor = 'default'
+	render()
+}
+function updateBuildingConfirmBtn() {
+	const name = document.getElementById('buildingNameInput').value.trim()
+	const hasArea = state.buildingSelectStart && state.buildingSelectEnd
+	document.getElementById('buildingConfirmBtn').disabled = !(name && hasArea)
+}
+document.getElementById('buildingNameInput').addEventListener('input', updateBuildingConfirmBtn)
+document.getElementById('buildingConfirmBtn').addEventListener('click', () => {
+	const name = document.getElementById('buildingNameInput').value.trim()
+	if (!name || !state.buildingSelectStart || !state.buildingSelectEnd) return
+	const x1 = Math.min(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+	const y1 = Math.min(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+	const x2 = Math.max(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+	const y2 = Math.max(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+	const id = 'building_' + Date.now()
+	const building = {
+		id,
+		name,
+		color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
+		area: { x: x1, y: y1, width: x2 - x1 + 1, height: y2 - y1 + 1 },
+		portals: [],
+		interior: null
+	}
+	resources.building.push(building)
+	state.buildings.push(building)
+	exitBuildingCreateMode()
+	renderResourceGrid()
+})
+document.getElementById('buildingCancelBtn').addEventListener('click', exitBuildingCreateMode)
+function selectBuilding(building) {
+	state.selectedResource = building.id
+	const panel = document.getElementById('buildingProps')
+	panel.classList.add('active')
+	document.getElementById('buildingName').value = building.name
+	document.getElementById('buildingX').value = building.area.x
+	document.getElementById('buildingY').value = building.area.y
+	document.getElementById('buildingW').value = building.area.width
+	document.getElementById('buildingH').value = building.area.height
+	renderPortalList(building)
+	render()
+}
+function renderPortalList(building) {
+	const container = document.getElementById('portalListContent')
+	if (!container) return
+	let html = ''
+	building.portals.forEach((p, idx) => {
+		html += `<div class="portal-item">
+			<div class="portal-item-header">
+				<select data-building-id="${building.id}" data-portal-idx="${idx}" class="portal-type-select">
+					<option value="entrance" ${p.type==='entrance'?'selected':''}>入口</option>
+					<option value="exit" ${p.type==='exit'?'selected':''}>出口</option>
+					<option value="both" ${p.type==='both'?'selected':''}>出入口</option>
+				</select>
+				<button class="portal-delete-btn" data-building-id="${building.id}" data-portal-idx="${idx}">
+					<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+				</button>
+			</div>
+			${p.type !== 'exit' ? `<button class="portal-trigger-btn" data-building-id="${building.id}" data-portal-idx="${idx}">
+				${p.triggerArea ? '重新绘制触发区域' : '绘制触发区域'}
+			</button>` : ''}
+		</div>`
+	})
+	container.innerHTML = html
+	container.querySelectorAll('.portal-type-select').forEach(sel => {
+		sel.addEventListener('change', (e) => {
+			const bid = e.target.dataset.buildingId
+			const pidx = parseInt(e.target.dataset.portalIdx)
+			const b = resources.building.find(x => x.id === bid)
+			if (b && b.portals[pidx]) {
+				b.portals[pidx].type = e.target.value
+				renderPortalList(b)
+			}
+		})
+	})
+	container.querySelectorAll('.portal-delete-btn').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const bid = btn.dataset.buildingId
+			const pidx = parseInt(btn.dataset.portalIdx)
+			const b = resources.building.find(x => x.id === bid)
+			if (b) {
+				b.portals.splice(pidx, 1)
+				renderPortalList(b)
+			}
+		})
+	})
+	container.querySelectorAll('.portal-trigger-btn').forEach(btn => {
+		btn.addEventListener('click', () => {
+			startPortalTriggerDraw(btn.dataset.buildingId, parseInt(btn.dataset.portalIdx))
+		})
+	})
+}
+document.getElementById('portalAddBtn').addEventListener('click', () => {
+	const building = resources.building.find(b => b.id === state.selectedResource)
+	if (building) {
+		building.portals.push({ id: 'portal_' + Date.now(), type: 'entrance', triggerArea: null })
+		renderPortalList(building)
+	}
+})
+function startPortalTriggerDraw(buildingId, portalIdx) {
+	state.portalDrawMode = true
+	state.portalDrawTarget = { buildingId, portalIdx }
+	state.buildingSelectStart = null
+	state.buildingSelectEnd = null
+	canvas.style.cursor = 'crosshair'
+}
+function finishPortalTriggerDraw() {
+	if (!state.portalDrawTarget || !state.buildingSelectStart || !state.buildingSelectEnd) {
+		state.portalDrawMode = false
+		state.portalDrawTarget = null
+		canvas.style.cursor = 'default'
+		return
+	}
+	const x1 = Math.min(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+	const y1 = Math.min(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+	const x2 = Math.max(state.buildingSelectStart.x, state.buildingSelectEnd.x)
+	const y2 = Math.max(state.buildingSelectStart.y, state.buildingSelectEnd.y)
+	const building = resources.building.find(b => b.id === state.portalDrawTarget.buildingId)
+	if (building && building.portals[state.portalDrawTarget.portalIdx]) {
+		building.portals[state.portalDrawTarget.portalIdx].triggerArea = {
+			x: x1, y: y1, width: x2 - x1 + 1, height: y2 - y1 + 1
+		}
+		renderPortalList(building)
+	}
+	state.portalDrawMode = false
+	state.portalDrawTarget = null
+	state.buildingSelectStart = null
+	state.buildingSelectEnd = null
+	canvas.style.cursor = 'default'
+	render()
+}
+document.getElementById('editInteriorBtn').addEventListener('click', () => {
+	const building = resources.building.find(b => b.id === state.selectedResource)
+	if (building) enterInteriorMode(building.id)
+})
+function enterInteriorMode(buildingId) {
+	const building = resources.building.find(b => b.id === buildingId)
+	if (!building) return
+	if (!building.interior) {
+		building.interior = {
+			floor: { material: 'wood', color: '#8b4513' },
+			walls: { material: 'plaster', color: '#f5f5dc', height: 3 },
+			lighting: { ambient: { intensity: 80, color: '#ffffff' }, sources: [] },
+			tiles: [],
+			furniture: [],
+			structures: []
+		}
+		const iw = building.area.width * 3
+		const ih = building.area.height * 3
+		for (let y = 0; y < ih; y++) {
+			building.interior.tiles[y] = []
+			for (let x = 0; x < iw; x++) {
+				building.interior.tiles[y][x] = null
+			}
+		}
+	}
+	state.interiorMode = true
+	state.currentBuildingInterior = buildingId
+	document.getElementById('interiorReturnBtn').style.display = 'flex'
+	document.getElementById('buildingProps').classList.remove('active')
+	updateInteriorTabs()
+	render()
+}
+function exitInteriorMode() {
+	state.interiorMode = false
+	state.currentBuildingInterior = null
+	document.getElementById('interiorReturnBtn').style.display = 'none'
+	updateOutdoorTabs()
+	render()
+}
+document.getElementById('interiorReturnBtn').addEventListener('click', exitInteriorMode)
+function updateInteriorTabs() {
+	const tabBar = document.querySelector('.resource-tabs')
+	tabBar.innerHTML = `
+		<div class="resource-tab active" data-tab="structure">结构</div>
+		<div class="resource-tab" data-tab="furniture">家具</div>
+		<div class="resource-tab" data-tab="decor">内饰</div>
+	`
+	bindTabEvents()
+	renderResourceGrid()
+	const btnRow = document.querySelector('.resource-btns')
+	if (btnRow) {
+		btnRow.innerHTML = `
+			<button class="resource-btn" id="floorBtn">地板</button>
+			<button class="resource-btn" id="wallBtn">墙面</button>
+			<button class="resource-btn" id="lightBtn">光照</button>
+		`
+		document.getElementById('floorBtn').addEventListener('click', () => {
+			document.getElementById('floorModal').classList.add('open')
+		})
+		document.getElementById('wallBtn').addEventListener('click', () => {
+			document.getElementById('wallModal').classList.add('open')
+		})
+		document.getElementById('lightBtn').addEventListener('click', () => {
+			const building = resources.building.find(b => b.id === state.currentBuildingInterior)
+			if (building && building.interior) {
+				document.getElementById('ambientIntensity').value = building.interior.lighting.ambient.intensity
+				document.getElementById('ambientIntensityValue').textContent = building.interior.lighting.ambient.intensity + '%'
+				document.getElementById('ambientColor').value = building.interior.lighting.ambient.color
+				document.getElementById('ambientColorHex').value = building.interior.lighting.ambient.color
+				renderLightSourceList()
+			}
+			document.getElementById('lightingModal').classList.add('open')
+		})
+	}
+}
+function updateOutdoorTabs() {
+	const tabBar = document.querySelector('.resource-tabs')
+	tabBar.innerHTML = `
+		<div class="resource-tab active" data-tab="terrain">地形</div>
+		<div class="resource-tab" data-tab="building">建筑</div>
+		<div class="resource-tab" data-tab="entity">实体</div>
+		<div class="resource-tab" data-tab="trigger">触发器</div>
+	`
+	bindTabEvents()
+	renderResourceGrid()
+	const btnRow = document.querySelector('.resource-btns')
+	if (btnRow) btnRow.innerHTML = ''
+}
+function bindTabEvents() {
+	document.querySelectorAll('.resource-tab').forEach(tab => {
+		tab.addEventListener('click', () => {
+			document.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'))
+			tab.classList.add('active')
+			renderResourceGrid()
+		})
+	})
+}
+function renderLightSourceList() {
+	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
+	if (!building || !building.interior) return
+	const container = document.getElementById('lightSourceList')
+	let html = ''
+	building.interior.lighting.sources.forEach((src, idx) => {
+		html += `<div class="light-source-item">
+			<div class="light-source-header">
+				<select class="light-type-select" data-idx="${idx}">
+					<option value="point" ${src.type==='point'?'selected':''}>点光源</option>
+					<option value="directional" ${src.type==='directional'?'selected':''}>方向光</option>
+				</select>
+				<button class="light-source-delete" data-idx="${idx}">
+					<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+				</button>
+			</div>
+			<div class="settings-row">
+				<label>位置</label>
+				<input type="number" class="light-x" data-idx="${idx}" value="${src.x}" style="width:60px">
+				<input type="number" class="light-y" data-idx="${idx}" value="${src.y}" style="width:60px">
+			</div>
+			<div class="settings-row">
+				<label>强度</label>
+				<input type="range" class="light-intensity" data-idx="${idx}" min="0" max="100" value="${src.intensity}">
+			</div>
+			<div class="settings-row">
+				<label>颜色</label>
+				<input type="color" class="light-color" data-idx="${idx}" value="${src.color}">
+			</div>
+			${src.type === 'point' ? `<div class="settings-row">
+				<label>范围</label>
+				<input type="number" class="light-range" data-idx="${idx}" value="${src.range || 5}" min="1">
+			</div>` : ''}
+		</div>`
+	})
+	container.innerHTML = html
+	container.querySelectorAll('.light-type-select').forEach(sel => {
+		sel.addEventListener('change', (e) => {
+			const idx = parseInt(e.target.dataset.idx)
+			building.interior.lighting.sources[idx].type = e.target.value
+			renderLightSourceList()
+		})
+	})
+	container.querySelectorAll('.light-source-delete').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const idx = parseInt(btn.dataset.idx)
+			building.interior.lighting.sources.splice(idx, 1)
+			renderLightSourceList()
+		})
+	})
+	container.querySelectorAll('.light-x').forEach(inp => {
+		inp.addEventListener('input', (e) => {
+			building.interior.lighting.sources[parseInt(e.target.dataset.idx)].x = parseInt(e.target.value) || 0
+		})
+	})
+	container.querySelectorAll('.light-y').forEach(inp => {
+		inp.addEventListener('input', (e) => {
+			building.interior.lighting.sources[parseInt(e.target.dataset.idx)].y = parseInt(e.target.value) || 0
+		})
+	})
+	container.querySelectorAll('.light-intensity').forEach(inp => {
+		inp.addEventListener('input', (e) => {
+			building.interior.lighting.sources[parseInt(e.target.dataset.idx)].intensity = parseInt(e.target.value)
+		})
+	})
+	container.querySelectorAll('.light-color').forEach(inp => {
+		inp.addEventListener('input', (e) => {
+			building.interior.lighting.sources[parseInt(e.target.dataset.idx)].color = e.target.value
+		})
+	})
+	container.querySelectorAll('.light-range').forEach(inp => {
+		inp.addEventListener('input', (e) => {
+			building.interior.lighting.sources[parseInt(e.target.dataset.idx)].range = parseInt(e.target.value) || 5
+		})
+	})
+}
+document.getElementById('addLightSource').addEventListener('click', () => {
+	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
+	if (building && building.interior) {
+		building.interior.lighting.sources.push({
+			type: 'point', x: 0, y: 0, intensity: 50, color: '#ffffff', range: 5
+		})
+		renderLightSourceList()
+	}
+})
+document.getElementById('ambientIntensity').addEventListener('input', (e) => {
+	document.getElementById('ambientIntensityValue').textContent = e.target.value + '%'
+})
+document.getElementById('ambientColor').addEventListener('input', (e) => {
+	document.getElementById('ambientColorHex').value = e.target.value
+})
+document.getElementById('ambientColorHex').addEventListener('input', (e) => {
+	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+		document.getElementById('ambientColor').value = e.target.value
+	}
+})
+document.getElementById('lightingModalConfirm').addEventListener('click', () => {
+	const intensity = parseInt(document.getElementById('ambientIntensity').value) / 100
+	const color = document.getElementById('ambientColor').value
+	lighting.ambient.intensity = intensity
+	lighting.ambient.color = color
+	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
+	if (building && building.interior) {
+		building.interior.lighting.ambient.intensity = parseInt(document.getElementById('ambientIntensity').value)
+		building.interior.lighting.ambient.color = color
+	}
+	document.getElementById('lightingModal').classList.remove('open')
+	render()
+})
+document.getElementById('lightingModalCancel').addEventListener('click', () => {
+	document.getElementById('lightingModal').classList.remove('open')
+})
+document.getElementById('floorModalConfirm').addEventListener('click', () => {
+	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
+	if (building && building.interior) {
+		building.interior.floor.color = document.getElementById('floorColor').value
+	}
+	document.getElementById('floorModal').classList.remove('open')
+	render()
+})
+document.getElementById('floorModalCancel').addEventListener('click', () => {
+	document.getElementById('floorModal').classList.remove('open')
+})
+document.getElementById('wallModalConfirm').addEventListener('click', () => {
+	const building = resources.building.find(b => b.id === state.currentBuildingInterior)
+	if (building && building.interior) {
+		building.interior.walls.color = document.getElementById('wallColor').value
+		building.interior.walls.height = parseInt(document.getElementById('wallHeight').value) || 3
+		building.interior.walls.opacity = parseInt(document.getElementById('wallOpacity').value) / 100
+	}
+	document.getElementById('wallModal').classList.remove('open')
+	render()
+})
+document.getElementById('wallModalCancel').addEventListener('click', () => {
+	document.getElementById('wallModal').classList.remove('open')
+})
+document.getElementById('floorColor').addEventListener('input', (e) => {
+	document.getElementById('floorColorHex').value = e.target.value
+})
+document.getElementById('floorColorHex').addEventListener('input', (e) => {
+	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+		document.getElementById('floorColor').value = e.target.value
+	}
+})
+document.getElementById('wallColor').addEventListener('input', (e) => {
+	document.getElementById('wallColorHex').value = e.target.value
+})
+document.getElementById('wallColorHex').addEventListener('input', (e) => {
+	if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+		document.getElementById('wallColor').value = e.target.value
+	}
+})
+document.getElementById('wallHeight').addEventListener('input', (e) => {
+	document.getElementById('wallHeightValue').textContent = e.target.value
+})
+document.getElementById('wallOpacity').addEventListener('input', (e) => {
+	document.getElementById('wallOpacityValue').textContent = e.target.value + '%'
+})
+window.addEventListener('resize', resizeCanvas)
+canvas.addEventListener('touchstart', handleTouchStart, { passive: false })
+canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
+canvas.addEventListener('touchend', handleTouchEnd, { passive: false })
+initMap()
+initPostProcess()
+resizeCanvas()
+fitMapToView()
+renderLayerList()
+renderResourceGrid()
+renderItemTypes()
+renderItemInstances()
+saveHistory()
+document.getElementById('gridBtn').classList.add('active')
+function gameLoop(timestamp) {
+	engineUpdate(timestamp)
+	if (state.needsRender || state.previewMode || engine.particles.length > 0 || engine.tweens.length > 0) {
+		render()
+		state.needsRender = false
+	}
+	requestAnimationFrame(gameLoop)
+}
+requestAnimationFrame(gameLoop)
+function renderLibrary() {
+	const lib = state.library
+	const bread = document.getElementById('libraryBread')
+	const grid = document.getElementById('libraryGrid')
+	const currentParent = lib.path.length > 0 ? lib.path[lib.path.length - 1] : null
+	let breadHtml = '<span data-path="">根目录</span>'
+	let pathCopy = []
+	for (const pid of lib.path) {
+		pathCopy.push(pid)
+		const folder = lib.items.find(i => i.id === pid)
+		if (folder) {
+			breadHtml += '<span class="library-bread-sep">/</span>'
+			breadHtml += `<span data-path="${pathCopy.join(',')}">${folder.name}</span>`
+		}
+	}
+	bread.innerHTML = breadHtml
+	bread.querySelectorAll('span[data-path]').forEach(sp => {
+		sp.addEventListener('click', () => {
+			const p = sp.dataset.path
+			lib.path = p ? p.split(',') : []
+			lib.selected = []
+			renderLibrary()
+		})
+		sp.addEventListener('dragover', (e) => {
+			e.preventDefault()
+			sp.classList.add('drop-target')
+		})
+		sp.addEventListener('dragleave', () => sp.classList.remove('drop-target'))
+		sp.addEventListener('drop', (e) => {
+			e.preventDefault()
+			sp.classList.remove('drop-target')
+			if (!lib.dragItem) return
+			const p = sp.dataset.path
+			const newParent = p ? p.split(',').pop() : null
+			moveLibraryItem(lib.dragItem, newParent)
+			lib.dragItem = null
+		})
+	})
+	const items = lib.items.filter(i => i.parent === currentParent).sort((a, b) => {
+		if (a.type === 'folder' && b.type !== 'folder') return -1
+		if (a.type !== 'folder' && b.type === 'folder') return 1
+		return (a.name || '').localeCompare(b.name || '')
+	})
+	let gridHtml = ''
+	for (const item of items) {
+		const isSelected = lib.selected.includes(item.id)
+		if (item.type === 'folder') {
+			gridHtml += `<div class="library-item folder${isSelected ? ' selected' : ''}" data-id="${item.id}" draggable="true">
+				<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+				<span>${item.name}</span>
+			</div>`
+		} else {
+			const src = item.url.startsWith('data:') ? item.url : (item.url.includes('://') ? item.url.replace('https://sexyai.top/', 'https://r2.sexyai.top/') : 'https://r2.sexyai.top/' + item.url)
+			gridHtml += `<div class="library-item${isSelected ? ' selected' : ''}" data-id="${item.id}" draggable="true">
+				<img src="${src}">
+			</div>`
+		}
+	}
+	for (let i = 0; i < lib.uploading.length; i++) {
+		gridHtml += '<div class="library-item uploading"></div>'
+	}
+	grid.innerHTML = gridHtml || '<div style="grid-column:1/-1;text-align:center;color:#666;padding:40px">空</div>'
+	bindLibraryItemEvents()
+}
+function bindLibraryItemEvents() {
+	const lib = state.library
+	const grid = document.getElementById('libraryGrid')
+	grid.querySelectorAll('.library-item[data-id]').forEach(el => {
+		const id = el.dataset.id
+		const item = lib.items.find(i => i.id === id)
+		if (!item) return
+		el.addEventListener('click', (e) => {
+			if (e.shiftKey && lib.lastClickedId) {
+				const allItems = Array.from(grid.querySelectorAll('.library-item[data-id]'))
+				const lastIdx = allItems.findIndex(x => x.dataset.id === lib.lastClickedId)
+				const currIdx = allItems.findIndex(x => x.dataset.id === id)
+				const start = Math.min(lastIdx, currIdx)
+				const end = Math.max(lastIdx, currIdx)
+				for (let i = start; i <= end; i++) {
+					const itemId = allItems[i].dataset.id
+					if (!lib.selected.includes(itemId)) lib.selected.push(itemId)
+				}
+				renderLibrary()
+			} else if (e.ctrlKey || e.metaKey) {
+				const idx = lib.selected.indexOf(id)
+				if (idx >= 0) lib.selected.splice(idx, 1)
+				else lib.selected.push(id)
+				lib.lastClickedId = id
+				renderLibrary()
+			} else {
+				lib.selected = [id]
+				lib.lastClickedId = id
+				renderLibrary()
+			}
+		})
+		el.addEventListener('dblclick', () => {
+			if (item.type === 'folder') {
+				lib.path.push(id)
+				lib.selected = []
+				renderLibrary()
+			}
+		})
+		el.addEventListener('contextmenu', (e) => {
+			e.preventDefault()
+			showLibraryContextMenu(e.clientX, e.clientY, item)
+		})
+		el.addEventListener('dragstart', (e) => {
+			lib.dragItem = id
+			e.dataTransfer.effectAllowed = 'move'
+		})
+		el.addEventListener('dragend', () => lib.dragItem = null)
+		if (item.type === 'folder') {
+			el.addEventListener('dragover', (e) => {
+				e.preventDefault()
+				el.classList.add('drag-over')
+			})
+			el.addEventListener('dragleave', () => el.classList.remove('drag-over'))
+			el.addEventListener('drop', (e) => {
+				e.preventDefault()
+				el.classList.remove('drag-over')
+				if (lib.dragItem && lib.dragItem !== id) {
+					moveLibraryItem(lib.dragItem, id)
+					lib.dragItem = null
+				}
+			})
+		}
+	})
+	let selectBox = null
+	let startX = 0, startY = 0
+	grid.addEventListener('mousedown', (e) => {
+		if (e.target === grid) {
+			startX = e.clientX
+			startY = e.clientY
+			selectBox = document.createElement('div')
+			selectBox.className = 'library-select-box'
+			const rect = grid.getBoundingClientRect()
+			selectBox.style.left = (e.clientX - rect.left + grid.scrollLeft) + 'px'
+			selectBox.style.top = (e.clientY - rect.top + grid.scrollTop) + 'px'
+			selectBox.style.width = '0'
+			selectBox.style.height = '0'
+			grid.appendChild(selectBox)
+			lib.selected = []
+		}
+	})
+	document.addEventListener('mousemove', (e) => {
+		if (!selectBox) return
+		const rect = grid.getBoundingClientRect()
+		const x1 = Math.min(startX, e.clientX) - rect.left + grid.scrollLeft
+		const y1 = Math.min(startY, e.clientY) - rect.top + grid.scrollTop
+		const x2 = Math.max(startX, e.clientX) - rect.left + grid.scrollLeft
+		const y2 = Math.max(startY, e.clientY) - rect.top + grid.scrollTop
+		selectBox.style.left = x1 + 'px'
+		selectBox.style.top = y1 + 'px'
+		selectBox.style.width = (x2 - x1) + 'px'
+		selectBox.style.height = (y2 - y1) + 'px'
+		const boxRect = { left: x1, top: y1, right: x2, bottom: y2 }
+		grid.querySelectorAll('.library-item[data-id]').forEach(el => {
+			const elRect = el.getBoundingClientRect()
+			const itemRect = {
+				left: elRect.left - rect.left + grid.scrollLeft,
+				top: elRect.top - rect.top + grid.scrollTop,
+				right: elRect.right - rect.left + grid.scrollLeft,
+				bottom: elRect.bottom - rect.top + grid.scrollTop
+			}
+			const intersects = !(itemRect.right < boxRect.left || itemRect.left > boxRect.right || itemRect.bottom < boxRect.top || itemRect.top > boxRect.bottom)
+			if (intersects && !lib.selected.includes(el.dataset.id)) {
+				lib.selected.push(el.dataset.id)
+				el.classList.add('selected')
+			} else if (!intersects && lib.selected.includes(el.dataset.id)) {
+				lib.selected = lib.selected.filter(x => x !== el.dataset.id)
+				el.classList.remove('selected')
+			}
+		})
+	})
+	document.addEventListener('mouseup', () => {
+		if (selectBox) {
+			selectBox.remove()
+			selectBox = null
+		}
+	})
+}
+function showLibraryContextMenu(x, y, item) {
+	const old = document.querySelector('.library-ctx')
+	if (old) old.remove()
+	const ctx = document.createElement('div')
+	ctx.className = 'library-ctx'
+	ctx.style.left = x + 'px'
+	ctx.style.top = y + 'px'
+	let html = ''
+	if (item.type === 'folder') {
+		html += '<div class="rename">重命名</div>'
+	}
+	html += '<div class="del">删除</div>'
+	ctx.innerHTML = html
+	const rename = ctx.querySelector('.rename')
+	if (rename) {
+		rename.addEventListener('click', () => {
+			const name = prompt('文件夹名称', item.name)
+			if (name && name.trim()) {
+				item.name = name.trim()
+				saveLibrary()
+				renderLibrary()
+			}
+			ctx.remove()
+		})
+	}
+	ctx.querySelector('.del').addEventListener('click', () => {
+		deleteLibraryItem(item.id)
+		ctx.remove()
+	})
+	document.body.appendChild(ctx)
+	setTimeout(() => {
+		const handler = () => {
+			ctx.remove()
+			document.removeEventListener('click', handler)
+		}
+		document.addEventListener('click', handler)
+	}, 0)
+}
+function moveLibraryItem(id, newParent) {
+	const lib = state.library
+	const item = lib.items.find(i => i.id === id)
+	if (!item || item.id === newParent) return
+	item.parent = newParent
+	saveLibrary()
+	renderLibrary()
+}
+function deleteLibraryItem(id) {
+	const lib = state.library
+	const children = lib.items.filter(i => i.parent === id)
+	children.forEach(c => deleteLibraryItem(c.id))
+	lib.items = lib.items.filter(i => i.id !== id)
+	lib.selected = lib.selected.filter(s => s !== id)
+	saveLibrary()
+	renderLibrary()
+}
+function uploadLibraryFiles(files) {
+	const lib = state.library
+	const currentParent = lib.path.length > 0 ? lib.path[lib.path.length - 1] : null
+	for (const file of files) {
+		if (!file.type.startsWith('image/')) continue
+		lib.uploading.push(1)
+		renderLibrary()
+		const fd = new FormData()
+		fd.append('suffix', file.name.split('.').pop())
+		fd.append('file', file, 'file-' + Date.now())
+		fetch('https://sexyai.top/api/file/upload', {
+			method: 'POST',
+			body: fd
+		}).then(r => r.json()).then(d => {
+			lib.uploading.pop()
+			if (d.data && d.data[0]) {
+				lib.items.push({
+					id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+					type: 'image',
+					name: file.name,
+					url: d.data[0],
+					parent: currentParent
+				})
+				saveLibrary()
+			}
+			renderLibrary()
+		}).catch(() => {
+			lib.uploading.pop()
+			renderLibrary()
+		})
+	}
+}
+function createLibraryFolder(name) {
+	const lib = state.library
+	const currentParent = lib.path.length > 0 ? lib.path[lib.path.length - 1] : null
+	lib.items.push({
+		id: 'folder_' + Date.now(),
+		type: 'folder',
+		name: name,
+		parent: currentParent
+	})
+	saveLibrary()
+	renderLibrary()
+}
+function saveLibrary() {
+	localStorage.setItem('25d_library', JSON.stringify(state.library.items))
+}
+function loadLibrary() {
+	const saved = localStorage.getItem('25d_library')
+	if (saved) {
+		try { state.library.items = JSON.parse(saved) } catch (e) {}
+	}
+}
+document.getElementById('libraryNewFolder').addEventListener('click', () => {
+	const name = prompt('文件夹名称:')
+	if (name && name.trim()) createLibraryFolder(name.trim())
+})
+document.getElementById('libraryUpload').addEventListener('click', () => {
+	document.getElementById('libraryFileInput').click()
+})
+document.getElementById('libraryFileInput').addEventListener('change', (e) => {
+	uploadLibraryFiles(e.target.files)
+	e.target.value = ''
+})
+const leftPanel = document.getElementById('leftPanel')
+const rightPanel = document.getElementById('rightPanel')
+const bottomPanel = document.getElementById('bottomPanel')
+const leftResizer = document.getElementById('leftResizer')
+const rightResizer = document.getElementById('rightResizer')
+const bottomResizer = document.getElementById('bottomResizer')
+let leftPanelWidth = 200
+let rightPanelWidth = 240
+let bottomPanelHeight = 160
+document.getElementById('leftPanelToggle').addEventListener('click', () => {
+	leftPanel.classList.toggle('collapsed')
+	if (leftPanel.classList.contains('collapsed')) {
+		leftResizer.style.left = '32px'
+	} else {
+		leftResizer.style.left = leftPanelWidth + 'px'
+	}
+	requestAnimationFrame(resizeCanvas)
+})
+document.getElementById('rightPanelToggle').addEventListener('click', () => {
+	rightPanel.classList.toggle('collapsed')
+	if (rightPanel.classList.contains('collapsed')) {
+		rightResizer.style.right = '32px'
+	} else {
+		rightResizer.style.right = rightPanelWidth + 'px'
+	}
+	requestAnimationFrame(resizeCanvas)
+})
+document.getElementById('bottomPanelCollapse').addEventListener('click', () => {
+	bottomPanel.classList.toggle('collapsed')
+	if (bottomPanel.classList.contains('collapsed')) {
+		bottomResizer.style.bottom = '36px'
+	} else {
+		bottomResizer.style.bottom = bottomPanelHeight + 'px'
+	}
+	requestAnimationFrame(resizeCanvas)
+})
+function initResizer(resizer, panel, prop, min, max, isVertical) {
+	let startPos, startSize
+	const onMouseMove = (e) => {
+		e.preventDefault()
+		let delta = isVertical ? startPos - e.clientY : (prop === 'width' && panel === rightPanel ? startPos - e.clientX : e.clientX - startPos)
+		let newSize = Math.min(max, Math.max(min, startSize + delta))
+		panel.style[prop] = newSize + 'px'
+		if (isVertical) {
+			bottomPanelHeight = newSize
+			resizer.style.bottom = newSize + 'px'
+		} else if (panel === leftPanel) {
+			leftPanelWidth = newSize
+			resizer.style.left = newSize + 'px'
+		} else {
+			rightPanelWidth = newSize
+			resizer.style.right = newSize + 'px'
+		}
+		requestAnimationFrame(resizeCanvas)
+	}
+	const onMouseUp = () => {
+		document.removeEventListener('mousemove', onMouseMove)
+		document.removeEventListener('mouseup', onMouseUp)
+		resizer.classList.remove('active')
+	}
+	resizer.addEventListener('mousedown', (e) => {
+		if (panel.classList.contains('collapsed')) return
+		e.preventDefault()
+		startPos = isVertical ? e.clientY : e.clientX
+		startSize = parseInt(getComputedStyle(panel)[prop])
+		resizer.classList.add('active')
+		document.addEventListener('mousemove', onMouseMove)
+		document.addEventListener('mouseup', onMouseUp)
+	})
+}
+initResizer(leftResizer, leftPanel, 'width', 100, 400, false)
+initResizer(rightResizer, rightPanel, 'width', 100, 500, false)
+initResizer(bottomResizer, bottomPanel, 'height', 100, 400, true)
+loadLibrary()
+</script>
+</body>
+</html>

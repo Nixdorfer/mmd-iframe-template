@@ -1,9 +1,11 @@
 .claude/
-*.cfg
 .ref/
 
 nul
 *.md
 README.md
 
-template/25DGame/
+template/3DGame/node_modules/
+template/3DGame/package.json
+template/3DGame/package-lock.json
+template/3DGame/generate-textures.js

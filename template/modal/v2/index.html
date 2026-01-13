@@ -24,6 +24,10 @@ body {
 	box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 	position: relative;
 	z-index: 1;
+	contain: layout style;
+}
+.container img, .container video {
+	will-change: transform;
 }
 
 .modal-header {
@@ -1037,6 +1041,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		document.documentElement.style.setProperty('--btn', '#' + (G.defBtnBg || G.btn || '166d3b'));
 	}
 
+	var imgCache = {};
 	function applyBgImg(el, url, mode, offset, bgColor) {
 		if (!el) return;
 		var bg = bgColor || '#050505';
@@ -1044,26 +1049,24 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 			el.style.background = 'url(' + url + ') center/contain no-repeat ' + bg;
 			return;
 		}
-		var img = typeof Image === 'function' ? new Image() : document.createElement('img');
-		img.onload = function() {
+		var calcPos = function(ix, iy) {
 			var sx = el.offsetWidth || window.innerWidth, sy = el.offsetHeight || window.innerHeight;
-			var ix = img.naturalWidth, iy = img.naturalHeight;
 			var sLandscape = sx > sy, iLandscape = ix > iy;
-			var pos;
 			if (sLandscape === iLandscape) {
 				var sr = sx / sy, ir = ix / iy;
-				if (ir > sr) {
-					pos = offset + '% center';
-				} else {
-					pos = 'center ' + offset + '%';
-				}
-			} else {
-				if (sLandscape) {
-					pos = 'center ' + offset + '%';
-				} else {
-					pos = offset + '% center';
-				}
+				return ir > sr ? offset + '% center' : 'center ' + offset + '%';
 			}
+			return sLandscape ? 'center ' + offset + '%' : offset + '% center';
+		};
+		if (imgCache[url]) {
+			var pos = calcPos(imgCache[url].w, imgCache[url].h);
+			el.style.background = 'url(' + url + ') ' + pos + '/cover no-repeat ' + bg;
+			return;
+		}
+		var img = typeof Image === 'function' ? new Image() : document.createElement('img');
+		img.onload = function() {
+			imgCache[url] = {w: img.naturalWidth, h: img.naturalHeight};
+			var pos = calcPos(img.naturalWidth, img.naturalHeight);
 			el.style.background = 'url(' + url + ') ' + pos + '/cover no-repeat ' + bg;
 		};
 		img.onerror = function() {

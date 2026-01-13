@@ -40,7 +40,7 @@ window.L = {
 		var c = pending.length;
 		pending.forEach(function(n) {
 			self.loaded[n] = 1;
-			fetch(self.base + "template/modal/v2/library/" + n + ".js").then(function(r) {
+			fetch(self.base + (n === "store" ? "library/" : "template/modal/v2/library/") + n + ".js").then(function(r) {
 				return r.text();
 			}).then(function(t) {
 				new Function(t)();
@@ -87,7 +87,7 @@ window.L = {
 		console.log("[Loader] navigator.json 响应状态:", r.status);
 		return r.json();
 	}).then(function(nav) {
-		console.log("[Loader] navigator.json 加载成功, 版本:", nav.version);
+		console.log("[Loader] navigator.json 加载成功");
 		var proj = nav.projects[L.project];
 		console.log("[Loader] 查找项目:", L.project, ", 结果:", proj);
 		if (!proj) {
@@ -96,8 +96,8 @@ window.L = {
 			parent.postMessage({t: "error", msg: "未找到: " + L.project}, "*");
 			return;
 		}
-		L.version = nav.version;
-		L.major = L.paramMajor || nav.version.split(".")[0];
+		L.version = proj.version;
+		L.major = L.paramMajor || proj.version.split(".")[0];
 		var templateUrl = L.base + proj.index + "/v" + L.major + "/index.html";
 		console.log("[Loader] 正在获取模板:", templateUrl);
 		fetch(templateUrl).then(function(r) {
@@ -118,7 +118,7 @@ window.L = {
 				platform: L.platform,
 				version: L.version,
 				major: L.major
-			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+\"template/modal/v2/library/\"+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
+			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+(n===\"store\"?\"library/\":\"template/modal/v2/library/\")+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
 			var W = function(e) {
 				console.log("[Loader] 写入文档, 编辑器长度:", e ? e.length : 0);
 				document.open();

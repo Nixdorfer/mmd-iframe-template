@@ -1850,6 +1850,16 @@
               r: "-50-50",
               d: "垂直偏移%"
             },
+            mobileHeaderPct: {
+              t: "slider",
+              r: "0-50",
+              d: "页眉占比%"
+            },
+            mobileFooterPct: {
+              t: "slider",
+              r: "0-50",
+              d: "页脚占比%"
+            },
             pcHeightPct: {
               t: "slider",
               r: "10-100",
@@ -1877,6 +1887,16 @@
               t: "slider",
               r: "-50-50",
               d: "垂直偏移%"
+            },
+            pcHeaderPct: {
+              t: "slider",
+              r: "0-50",
+              d: "页眉占比%"
+            },
+            pcFooterPct: {
+              t: "slider",
+              r: "0-50",
+              d: "页脚占比%"
             },
             headerPct: {
               t: "slider",
@@ -3768,9 +3788,11 @@
           else if (el.dataset.statusbar) {
             self.statusBarSel = true;
             self.sel = null;
+            self.rowSel = null;
             self.tab = 1;
             self.renderLContent();
-            self.renderR()
+            self.renderR();
+            self.hiSel()
           } else if (el.dataset.pg !== undefined) {
             var newPg = parseInt(el.dataset.pg);
             if (newPg !== self.pg || self.statusBarSel) {
@@ -3878,7 +3900,7 @@
           var zoneEl = e.target.closest('.modal-header') || e.target.closest('.modal-content') || e.target.closest('.modal-footer');
           var backdrop = e.target.closest('#backdrop');
           if (zoneEl) {
-            var clickedZone = zoneEl.classList.contains('modal-header') ? 'header' : zoneEl.classList.contains('modal-footer') ? 'footer' : 'content';
+            var clickedZone = zoneEl.classList.contains('modal-header') ? 'header' : zoneEl.classList.contains('modal-footer') ? 'footer' : null;
             self.sel = null;
             self.rowSel = null;
             self.multiSel = [];
@@ -3886,8 +3908,8 @@
             self.tab = 1;
             self.renderR();
             self.hiSel();
-            var zoneNames = {header: '标题栏', content: '内容区', footer: '结尾栏'};
-            self.showStatus(zoneNames[clickedZone])
+            var zoneNames = {header: '标题栏', footer: '结尾栏'};
+            self.showStatus(clickedZone ? zoneNames[clickedZone] : '窗口')
           } else if (backdrop) {
             self.sel = null;
             self.rowSel = null;
@@ -4179,6 +4201,7 @@
       await FS.write('d_pj', JSON.stringify(this.pj));
       await FS.write('d_cur', this.cur)
     },
+    rafPending: false,
     save: function(noHist) {
       var self = this;
       if (!noHist) {
@@ -4198,17 +4221,30 @@
           }
         }
       }
-      if (this.cur && !noHist) {
-        var d = this.pj[this.cur].data,
-          pg = d && d.pages && d.pages[this.pg];
-        if (pg && pg.type === 'phone') {
-          if (window.phoneRender) window.phoneRender(pg)
+      if (this.cur) {
+        var doRender = function() {
+          var d = self.pj[self.cur].data,
+            pg = d && d.pages && d.pages[self.pg];
+          if (pg && pg.type === 'phone') {
+            if (window.phoneRender) window.phoneRender(pg)
+          } else {
+            if (window.modalRender) window.modalRender(d, self.pg)
+          }
+        };
+        if (noHist) {
+          if (!this.rafPending) {
+            this.rafPending = true;
+            requestAnimationFrame(function() {
+              self.rafPending = false;
+              doRender()
+            })
+          }
         } else {
-          if (window.modalRender) window.modalRender(d, this.pg)
+          doRender();
+          setTimeout(function() {
+            self.hiSel()
+          }, 0)
         }
-        setTimeout(function() {
-          self.hiSel()
-        }, 0)
       }
     },
     undo: function() {
@@ -5287,6 +5323,8 @@
       h += self.ctrl('mobileMaxWidthPct', pgCfg.mobileMaxWidthPct, pg.mobileMaxWidthPct, 'pg');
       h += self.ctrl('mobileModalOffsetX', pgCfg.mobileModalOffsetX, pg.mobileModalOffsetX, 'pg');
       h += self.ctrl('mobileModalOffsetY', pgCfg.mobileModalOffsetY, pg.mobileModalOffsetY, 'pg');
+      h += self.ctrl('mobileHeaderPct', pgCfg.mobileHeaderPct, pg.mobileHeaderPct, 'pg');
+      h += self.ctrl('mobileFooterPct', pgCfg.mobileFooterPct, pg.mobileFooterPct, 'pg');
       h += '</div></div>';
       h += '<div class="ed-fold"><div class="ed-fold-hd"><span>桌面端布局</span><span class="arr">▶</span></div><div class="ed-fold-bd">';
       h += self.ctrl('pcHeightPct', pgCfg.pcHeightPct, pg.pcHeightPct, 'pg');
@@ -5294,6 +5332,8 @@
       h += self.ctrl('pcMaxWidthPct', pgCfg.pcMaxWidthPct, pg.pcMaxWidthPct, 'pg');
       h += self.ctrl('pcModalOffsetX', pgCfg.pcModalOffsetX, pg.pcModalOffsetX, 'pg');
       h += self.ctrl('pcModalOffsetY', pgCfg.pcModalOffsetY, pg.pcModalOffsetY, 'pg');
+      h += self.ctrl('pcHeaderPct', pgCfg.pcHeaderPct, pg.pcHeaderPct, 'pg');
+      h += self.ctrl('pcFooterPct', pgCfg.pcFooterPct, pg.pcFooterPct, 'pg');
       h += '</div></div>';
       return h
     },
@@ -5303,15 +5343,15 @@
       if (!d || !d.pages) return '';
       var pg = d.pages[this.pg] || {};
       var pgCfg = this.cfg.page.props;
-      var zoneNames = {header: '标题栏', content: '内容区', footer: '结尾栏'};
+      var zoneNames = {header: '标题栏', footer: '结尾栏'};
+      if (!this.zoneSel || this.zoneSel === 'content') {
+        return this.renderWin();
+      }
       var h = '<div class="ed-sec"><div class="ed-title">' + zoneNames[this.zoneSel] + '</div>';
       if (this.zoneSel === 'header') {
         h += this.ctrl('headerPct', pgCfg.headerPct, pg.headerPct, 'pg');
       } else if (this.zoneSel === 'footer') {
         h += this.ctrl('footerPct', pgCfg.footerPct, pg.footerPct, 'pg');
-      } else {
-        h += '</div>';
-        return h + this.renderWin();
       }
       h += '</div>';
       return h
