@@ -60,8 +60,7 @@
             bl = !k(u);
             if (bl) {
                 a('外域XHR请求', { method: m, url: u });
-                if (loaded) { bl = false; return oO.apply(this, arguments); }
-                return;
+                if (loaded) bl = false;
             }
             return oO.apply(this, arguments);
         };
