@@ -9,27 +9,44 @@
     function l(t, d) {
         console.warn('[Defender] ' + t, d || '');
     }
-    function a(t, d) {
-        l(t, d);
-        if (window.__T__) window.__T__();
-        if (window.__A__) window.__A__();
+    function gW() {
         var w = document.getElementById('__da__');
         if (!w) {
             w = document.createElement('div');
             w.id = '__da__';
-            w.style.cssText = 'position:fixed!important;top:50px!important;right:10px!important;z-index:2147483646!important;display:flex!important;flex-direction:column!important;gap:8px!important;pointer-events:none!important';
+            w.style.cssText = 'position:fixed!important;top:50px!important;right:10px!important;z-index:2147483646!important;display:flex!important;flex-direction:column!important;gap:8px!important;pointer-events:none!important;max-width:400px!important';
             (document.body || document.documentElement).appendChild(w);
         }
+        return w;
+    }
+    function ntf(title, detail, clr) {
+        var w = gW();
         var n = document.createElement('div');
-        n.style.cssText = 'background:#8b0000!important;color:#fff!important;padding:10px 16px!important;border-radius:8px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:13px!important;font-weight:500!important;box-shadow:0 4px 12px rgba(139,0,0,0.4)!important;opacity:0!important;transform:translateX(20px)!important;transition:opacity 0.3s,transform 0.3s!important;white-space:nowrap!important';
-        n.textContent = '[拦截] ' + t;
+        n.style.cssText = 'background:' + clr + '!important;color:#fff!important;padding:10px 16px!important;border-radius:8px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:13px!important;font-weight:500!important;box-shadow:0 4px 12px rgba(0,0,0,0.4)!important;opacity:0!important;transform:translateX(20px)!important;transition:opacity 0.3s,transform 0.3s!important;word-break:break-all!important';
+        var h = document.createElement('div');
+        h.textContent = title;
+        h.style.cssText = 'font-weight:600!important;margin-bottom:4px!important';
+        n.appendChild(h);
+        if (detail) {
+            var d = document.createElement('div');
+            d.textContent = detail;
+            d.style.cssText = 'font-size:11px!important;opacity:0.9!important;max-height:60px!important;overflow:hidden!important;text-overflow:ellipsis!important';
+            n.appendChild(d);
+        }
         w.appendChild(n);
         setTimeout(function() { n.style.opacity = '1'; n.style.transform = 'translateX(0)'; }, 10);
         setTimeout(function() {
             n.style.opacity = '0';
             n.style.transform = 'translateX(20px)';
             setTimeout(function() { n.remove(); }, 300);
-        }, 3000);
+        }, 5000);
+    }
+    function a(t, d) {
+        l(t, d);
+        if (window.__T__) window.__T__();
+        if (window.__A__) window.__A__();
+        var detail = d && d.url ? d.url : (d && d.method ? d.method : '');
+        ntf('[拦截] ' + t, detail, '#8b0000');
     }
     function k(u) {
         try {
@@ -118,6 +135,27 @@
     }
     ap();
     setInterval(function() { if (window.fetch !== sF || window.XMLHttpRequest !== sX) ap(); }, 100);
+    var errShown = {};
+    function showErr(msg, src) {
+        var key = msg + '|' + src;
+        if (errShown[key]) return;
+        errShown[key] = true;
+        setTimeout(function() { delete errShown[key]; }, 5000);
+        ntf('[错误] ' + msg, src, '#b35900');
+    }
+    window.addEventListener('error', function(e) {
+        if (e.filename && /404|not found/i.test(e.message)) return;
+        if (e.message) showErr(e.message, e.filename ? e.filename + ':' + e.lineno : '');
+        else if (e.target && e.target.src) {
+            var src = e.target.src || e.target.href || '';
+            if (src && !/404/.test(src)) showErr('资源加载失败', src);
+        }
+    }, true);
+    window.addEventListener('unhandledrejection', function(e) {
+        var msg = e.reason ? (e.reason.message || String(e.reason)) : '未处理的Promise错误';
+        if (/404|not found/i.test(msg)) return;
+        showErr(msg, '');
+    });
     async function B() {
         var _f = window.__OF__ || c.f;
         var gender = 'male';
