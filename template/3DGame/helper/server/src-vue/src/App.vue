@@ -114,7 +114,7 @@ onUnmounted(() => {
       <div class="le-pn">
         <div class="hdr">
           <div class="hdr-ico"></div>
-          <div class="hdr-tx">3DGame AI 服务器</div>
+          <div class="hdr-tx">集成式集群化AI工作流服务器</div>
           <div class="hdr-stb">
             <div class="stb-dot" :class="{ off: !status.running }"></div>
             <span>:{{ status.apiPort }}</span>

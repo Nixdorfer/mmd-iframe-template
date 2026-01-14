@@ -14,7 +14,7 @@ var assets embed.FS
 func main() {
 	app := NewApp()
 	err := wails.Run(&options.App{
-		Title:     "3DGame AI 服务器",
+		Title:     "集成式集群化AI工作流服务器",
 		Width:     720,
 		Height:    720,
 		MinWidth:  600,
