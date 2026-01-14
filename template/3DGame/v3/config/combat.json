@@ -1,0 +1,139 @@
+{
+	"healthTypes": {
+		"base": { "name": "基础生命值", "color": "#ff3333", "description": "归零即死亡" },
+		"armor": { "name": "护甲", "color": "#ff8800", "description": "钝器/利器/热能/冲击优先消耗", "absorbTypes": ["blunt", "sharp", "thermal", "impact"] },
+		"breath": { "name": "呼吸", "color": "#33ff33", "description": "毒素/真空优先消耗", "absorbTypes": ["toxin", "vacuum"] },
+		"arcane": { "name": "魔法", "color": "#aa33ff", "description": "灵能攻击优先消耗", "absorbTypes": ["psionic"] },
+		"shield": { "name": "能量屏障", "color": "#33ccff", "description": "独立护盾 不算entity血量", "external": true }
+	},
+	"damageTypes": {
+		"blunt": {
+			"name": "钝器伤害",
+			"description": "由重量和冲击力造成",
+			"targetHealth": "armor",
+			"hasMaxMass": true
+		},
+		"sharp": {
+			"name": "利器伤害",
+			"description": "由锋利物体造成",
+			"targetHealth": "armor"
+		},
+		"thermal": {
+			"name": "热能伤害",
+			"description": "光束剑/粒子炮/等离子体等",
+			"targetHealth": "armor"
+		},
+		"psionic": {
+			"name": "灵能伤害",
+			"description": "精神/魔法攻击",
+			"targetHealth": "arcane"
+		},
+		"impact": {
+			"name": "冲击伤害",
+			"description": "爆炸冲击波 仅在非真空环境有效",
+			"targetHealth": "armor",
+			"requiresAtmosphere": true
+		},
+		"toxin": {
+			"name": "毒素伤害",
+			"description": "化学毒素/生物毒素",
+			"targetHealth": "breath"
+		},
+		"vacuum": {
+			"name": "真空伤害",
+			"description": "暴露于真空环境",
+			"targetHealth": "breath"
+		},
+		"hack": {
+			"name": "入侵伤害",
+			"description": "电子入侵/数据攻击",
+			"targetHealth": "base",
+			"requiresCyber": true
+		},
+		"radiation": {
+			"name": "辐射伤害",
+			"description": "核辐射/宇宙射线",
+			"targetHealth": "base"
+		},
+		"gauss": {
+			"name": "高斯伤害",
+			"description": "无视除能量屏障外所有防御 直接对基础生命值造成百分比伤害",
+			"targetHealth": "base",
+			"ignoreAllDefense": true,
+			"percentDamage": true
+		}
+	},
+	"explosionComponents": {
+		"description": "爆炸同时造成多种伤害",
+		"components": {
+			"smallFragments": { "type": "sharp", "description": "小破片" },
+			"largeFragments": { "type": "blunt", "description": "大破片" },
+			"shockwave": { "type": "impact", "description": "冲击波 仅非真空" },
+			"heatwave": { "type": "thermal", "description": "热浪" }
+		}
+	},
+	"armorStats": {
+		"hp": { "suffix": "Hp", "name": "防御血量", "description": "增加对应类型的生命值上限" },
+		"harden": { "suffix": "Harden", "name": "防御硬化", "description": "减少受到的该类型伤害百分比" },
+		"resist": { "suffix": "Resist", "name": "防御抵抗", "description": "抵消对应的防御无效效果" },
+		"maxMass": { "name": "最大防御质量", "description": "钝器防御专属 超过此质量的钝器效果线性下降至0%", "unit": "kg" }
+	},
+	"weaponStats": {
+		"carryDmg": { "suffix": "CarryDmg", "name": "连带伤害", "description": "对其他类型血量也造成伤害" },
+		"pierce": { "suffix": "Pierce", "name": "防御贯穿", "description": "抵消防御硬化 硬化为0则增加伤害" },
+		"bypass": { "suffix": "Bypass", "name": "防御无效", "description": "该百分比伤害直接对基础生命值造成 最高100%" },
+		"lethal": { "name": "致死攻击", "description": "只要造成任何伤害即杀死目标" },
+		"shieldPierce": { "name": "屏障穿透", "description": "无视能量屏障 所有近战默认拥有" }
+	},
+	"gaussWeapon": {
+		"description": "高斯武器特性",
+		"ignoreDefense": ["blunt", "sharp", "thermal", "psionic", "impact", "toxin", "vacuum", "hack", "radiation"],
+		"ignoreArmor": true,
+		"percentBaseDamage": true,
+		"advancedEffect": {
+			"name": "延迟即死",
+			"description": "高级高斯武器击中entity后附加延迟即死效果",
+			"delayMin": 3,
+			"delayMax": 10
+		}
+	},
+	"meleeShieldBypass": {
+		"description": "所有近战攻击默认无视能量屏障",
+		"enabled": true
+	},
+	"zombieInfection": {
+		"description": "丧尸咬伤感染机制",
+		"enabled": true,
+		"infectionChance": 0.35,
+		"attackType": "bite",
+		"buff": "buff_zombie_infection",
+		"resistStat": "infection_resist",
+		"symptoms": [
+			{ "time": 0.3, "effect": "fever", "description": "发烧" },
+			{ "time": 0.6, "effect": "weakness", "description": "虚弱" },
+			{ "time": 0.9, "effect": "delirium", "description": "神志不清" }
+		]
+	},
+	"statusEffects": {
+		"bleeding": {
+			"applyChance": 0.2,
+			"damageTypes": ["sharp"],
+			"buff": "buff_bleeding"
+		},
+		"burning": {
+			"applyChance": 0.5,
+			"damageTypes": ["thermal"],
+			"buff": "buff_burning"
+		},
+		"poison": {
+			"applyChance": 0.3,
+			"damageTypes": ["toxin"],
+			"buff": "buff_poison"
+		},
+		"radiation": {
+			"applyChance": 0.1,
+			"damageTypes": ["radiation"],
+			"buff": "buff_radiation"
+		}
+	}
+}

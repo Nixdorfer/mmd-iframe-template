@@ -1,0 +1,659 @@
+{
+	"presets": {
+		"bld_police_station": [
+			{ "name": "标准警局", "walls": ["wall_concrete"], "floors": ["floor_tile_white"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_cabinet_file", "fnt_security_camera", "fnt_locker", "fnt_gun_rack", "fnt_computer", "fnt_lamp_ceiling"] },
+			{ "name": "高科技警局", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_security_camera", "fnt_metal_detector", "fnt_alarm_panel", "fnt_led_panel", "fnt_safe"] },
+			{ "name": "老式警局", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_table_desk", "fnt_chair_wood", "fnt_cabinet_file", "fnt_gun_rack", "fnt_bookshelf", "fnt_lamp_table", "fnt_clock_wall", "fnt_radio"] }
+		],
+		"bld_fire_station": [
+			{ "name": "标准消防站", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_locker", "fnt_bed_bunk", "fnt_table_dining", "fnt_chair_wood", "fnt_tv", "fnt_fridge", "fnt_stove", "fnt_alarm_panel"] },
+			{ "name": "现代消防站", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_locker", "fnt_bed_double", "fnt_computer", "fnt_tv", "fnt_microwave", "fnt_fridge", "fnt_ac_unit", "fnt_lamp_ceiling"] },
+			{ "name": "社区消防站", "walls": ["wall_brick"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_locker", "fnt_bed_single", "fnt_table_round", "fnt_chair_wood", "fnt_radio", "fnt_clock_wall", "fnt_fireplace", "fnt_rug_large"] }
+		],
+		"bld_hospital": [
+			{ "name": "综合医院", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_hospital_bed", "fnt_exam_table", "fnt_med_cabinet", "fnt_iv_stand", "fnt_defibrillator", "fnt_computer", "fnt_lamp_ceiling", "fnt_curtain"] },
+			{ "name": "高端私立医院", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_hospital_bed", "fnt_sofa_single", "fnt_tv", "fnt_med_cabinet", "fnt_plant_potted", "fnt_painting_small", "fnt_lamp_floor", "fnt_ac_unit"] },
+			{ "name": "急诊中心", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_hospital_bed", "fnt_exam_table", "fnt_defibrillator", "fnt_iv_stand", "fnt_med_cabinet", "fnt_computer", "fnt_security_camera", "fnt_lamp_ceiling"] }
+		],
+		"bld_school": [
+			{ "name": "普通学校", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_school_desk", "fnt_chair_wood", "fnt_blackboard", "fnt_bookshelf", "fnt_locker", "fnt_clock_wall", "fnt_lamp_ceiling", "fnt_trash_can"] },
+			{ "name": "现代化学校", "walls": ["wall_glass"], "floors": ["floor_wood_laminate"], "furnitures": ["fnt_school_desk", "fnt_chair_office", "fnt_whiteboard", "fnt_computer", "fnt_tv", "fnt_bookshelf", "fnt_lamp_ceiling", "fnt_ac_unit"] },
+			{ "name": "老式学校", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_school_desk", "fnt_chair_wood", "fnt_blackboard", "fnt_bookshelf", "fnt_clock_grand", "fnt_lamp_table", "fnt_rug_large", "fnt_plant_potted"] }
+		],
+		"bld_convenience_store": [
+			{ "name": "连锁便利店", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_display_shelf", "fnt_fridge", "fnt_cash_register", "fnt_microwave", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_vending_drink", "fnt_trash_can"] },
+			{ "name": "24小时便利店", "walls": ["wall_glass"], "floors": ["floor_tile_white"], "furnitures": ["fnt_display_shelf", "fnt_fridge", "fnt_cash_register", "fnt_atm", "fnt_vending_snack", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_coffee_maker"] },
+			{ "name": "社区小卖部", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_display_shelf", "fnt_fridge", "fnt_cash_register", "fnt_chair_wood", "fnt_radio", "fnt_lamp_table", "fnt_fan_ceiling", "fnt_clock_wall"] }
+		],
+		"bld_supermarket": [
+			{ "name": "大型超市", "walls": ["wall_concrete"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_display_shelf", "fnt_fridge", "fnt_cash_register", "fnt_security_camera", "fnt_shopping_cart", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_vending_drink"] },
+			{ "name": "高档超市", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_display_shelf", "fnt_fridge", "fnt_cash_register", "fnt_plant_potted", "fnt_aquarium", "fnt_lamp_chandelier", "fnt_ac_unit", "fnt_security_camera"] },
+			{ "name": "折扣超市", "walls": ["wall_metal_panel"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_display_shelf", "fnt_fridge", "fnt_cash_register", "fnt_forklift", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_dumpster", "fnt_security_camera"] }
+		],
+		"bld_apartment_small": [
+			{ "name": "单身公寓", "walls": ["wall_drywall"], "floors": ["floor_wood_laminate"], "furnitures": ["fnt_bed_single", "fnt_wardrobe", "fnt_table_desk", "fnt_chair_office", "fnt_fridge", "fnt_microwave", "fnt_tv", "fnt_lamp_floor"] },
+			{ "name": "温馨小屋", "walls": ["wall_drywall"], "floors": ["floor_carpet_beige"], "furnitures": ["fnt_bed_single", "fnt_nightstand", "fnt_sofa_single", "fnt_table_coffee", "fnt_tv", "fnt_plant_potted", "fnt_lamp_table", "fnt_rug_small"] },
+			{ "name": "极简公寓", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_bed_single", "fnt_table_desk", "fnt_chair_wood", "fnt_bookshelf", "fnt_lamp_floor", "fnt_plant_potted", "fnt_clock_wall", "fnt_rug_small"] }
+		],
+		"bld_apartment_large": [
+			{ "name": "家庭公寓", "walls": ["wall_drywall"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bed_double", "fnt_bed_single", "fnt_wardrobe", "fnt_sofa_corner", "fnt_table_dining", "fnt_tv", "fnt_fridge", "fnt_lamp_ceiling"] },
+			{ "name": "豪华公寓", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_bed_double", "fnt_dresser", "fnt_sofa_corner", "fnt_piano", "fnt_chandelier", "fnt_painting_large", "fnt_aquarium", "fnt_plant_large"] },
+			{ "name": "现代公寓", "walls": ["wall_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_bed_double", "fnt_wardrobe", "fnt_sofa_double", "fnt_tv", "fnt_computer", "fnt_ac_unit", "fnt_lamp_floor", "fnt_rug_large"] }
+		],
+		"bld_house": [
+			{ "name": "郊区别墅", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bed_double", "fnt_wardrobe", "fnt_sofa_corner", "fnt_table_dining", "fnt_fridge", "fnt_stove", "fnt_tv", "fnt_fireplace"] },
+			{ "name": "现代住宅", "walls": ["wall_glass"], "floors": ["floor_wood_laminate"], "furnitures": ["fnt_bed_double", "fnt_dresser", "fnt_sofa_double", "fnt_table_coffee", "fnt_tv", "fnt_computer", "fnt_ac_unit", "fnt_plant_large"] },
+			{ "name": "乡村小屋", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bed_double", "fnt_wardrobe", "fnt_table_round", "fnt_chair_wood", "fnt_fireplace", "fnt_bookshelf", "fnt_lamp_table", "fnt_rug_large"] }
+		],
+		"bld_factory": [
+			{ "name": "制造工厂", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_workbench", "fnt_anvil", "fnt_generator", "fnt_locker", "fnt_forklift", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_trash_can"] },
+			{ "name": "高科技工厂", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_workbench", "fnt_computer", "fnt_robot_arm", "fnt_server_rack", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_security_camera", "fnt_generator"] },
+			{ "name": "老旧工厂", "walls": ["wall_brick"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_workbench", "fnt_anvil", "fnt_chest_metal", "fnt_locker", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_barrel_fire", "fnt_dumpster"] }
+		],
+		"bld_warehouse": [
+			{ "name": "物流仓库", "walls": ["wall_metal_panel"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_display_shelf", "fnt_chest_metal", "fnt_forklift", "fnt_generator", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_dumpster", "fnt_locker"] },
+			{ "name": "冷藏仓库", "walls": ["wall_insulated"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_fridge", "fnt_chest_metal", "fnt_forklift", "fnt_generator", "fnt_ac_unit", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_locker"] },
+			{ "name": "老式仓库", "walls": ["wall_brick"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_chest_wood", "fnt_display_shelf", "fnt_barrel_medieval", "fnt_lamp_table", "fnt_fan_ceiling", "fnt_locker", "fnt_trash_can", "fnt_radio"] }
+		],
+		"bld_restaurant": [
+			{ "name": "家庭餐厅", "walls": ["wall_drywall"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_table_dining", "fnt_chair_wood", "fnt_counter_kitchen", "fnt_stove", "fnt_fridge", "fnt_cash_register", "fnt_lamp_ceiling", "fnt_plant_potted"] },
+			{ "name": "高档餐厅", "walls": ["wall_wood_panel"], "floors": ["floor_marble_white"], "furnitures": ["fnt_table_round", "fnt_chair_arm", "fnt_chandelier", "fnt_piano", "fnt_painting_large", "fnt_vase", "fnt_plant_large", "fnt_aquarium"] },
+			{ "name": "快餐店", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_table_dining", "fnt_bench", "fnt_counter_kitchen", "fnt_fridge", "fnt_cash_register", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_tv"] }
+		],
+		"bld_fast_food": [
+			{ "name": "连锁快餐", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_table_dining", "fnt_bench", "fnt_counter_kitchen", "fnt_fridge", "fnt_cash_register", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_trash_can"] },
+			{ "name": "汉堡店", "walls": ["wall_glass"], "floors": ["floor_tile_white"], "furnitures": ["fnt_table_round", "fnt_stool", "fnt_counter_kitchen", "fnt_stove", "fnt_fridge", "fnt_cash_register", "fnt_tv", "fnt_lamp_ceiling"] },
+			{ "name": "披萨店", "walls": ["wall_brick"], "floors": ["floor_tile_terracotta"], "furnitures": ["fnt_table_dining", "fnt_chair_wood", "fnt_oven", "fnt_counter_kitchen", "fnt_fridge", "fnt_cash_register", "fnt_lamp_ceiling", "fnt_jukebox"] }
+		],
+		"bld_office_small": [
+			{ "name": "创业办公室", "walls": ["wall_drywall"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_cabinet_file", "fnt_whiteboard", "fnt_lamp_ceiling", "fnt_plant_potted", "fnt_coffee_maker"] },
+			{ "name": "律师事务所", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_table_desk", "fnt_chair_arm", "fnt_bookshelf", "fnt_cabinet_file", "fnt_lamp_table", "fnt_painting_small", "fnt_clock_wall", "fnt_safe"] },
+			{ "name": "设计工作室", "walls": ["wall_glass"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_whiteboard", "fnt_lamp_floor", "fnt_plant_large", "fnt_sofa_single", "fnt_bookshelf"] }
+		],
+		"bld_office_tower": [
+			{ "name": "企业总部", "walls": ["wall_glass"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_cabinet_file", "fnt_sofa_double", "fnt_plant_large", "fnt_lamp_ceiling", "fnt_ac_unit"] },
+			{ "name": "金融中心", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_table_desk", "fnt_chair_arm", "fnt_computer", "fnt_tv", "fnt_safe", "fnt_chandelier", "fnt_painting_large", "fnt_aquarium"] },
+			{ "name": "科技园区", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_server_rack", "fnt_whiteboard", "fnt_lamp_ceiling", "fnt_plant_potted", "fnt_vending_drink"] }
+		],
+		"bld_church": [
+			{ "name": "社区教堂", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bench", "fnt_organ", "fnt_candelabra", "fnt_painting_large", "fnt_chandelier", "fnt_bookshelf", "fnt_rug_large", "fnt_clock_grand"] },
+			{ "name": "哥特教堂", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_bench", "fnt_organ", "fnt_stained_glass", "fnt_candelabra", "fnt_gargoyle", "fnt_chandelier", "fnt_coffin", "fnt_skull_pile"] },
+			{ "name": "现代教堂", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_bench", "fnt_piano", "fnt_tv", "fnt_lamp_ceiling", "fnt_plant_large", "fnt_painting_large", "fnt_ac_unit", "fnt_microphone_stand"] }
+		],
+		"bld_bank": [
+			{ "name": "商业银行", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_table_desk", "fnt_chair_arm", "fnt_safe", "fnt_atm", "fnt_security_camera", "fnt_metal_detector", "fnt_chandelier", "fnt_plant_large"] },
+			{ "name": "社区银行", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_safe", "fnt_atm", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_plant_potted"] },
+			{ "name": "金库", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_safe", "fnt_chest_metal", "fnt_security_camera", "fnt_alarm_panel", "fnt_lamp_ceiling", "fnt_metal_detector", "fnt_locker", "fnt_table_desk"] }
+		],
+		"bld_museum": [
+			{ "name": "艺术博物馆", "walls": ["wall_drywall"], "floors": ["floor_marble_white"], "furnitures": ["fnt_painting_large", "fnt_mannequin", "fnt_trophy_case", "fnt_bench", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_plant_large", "fnt_bookshelf"] },
+			{ "name": "历史博物馆", "walls": ["wall_stone"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_trophy_case", "fnt_weapon_display", "fnt_armor_stand_medieval", "fnt_painting_large", "fnt_chandelier", "fnt_bench", "fnt_bookshelf", "fnt_clock_grand"] },
+			{ "name": "科技博物馆", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_computer", "fnt_tv", "fnt_hologram_table", "fnt_robot_arm", "fnt_bench", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_plant_potted"] }
+		],
+		"bld_library": [
+			{ "name": "公共图书馆", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bookshelf", "fnt_table_desk", "fnt_chair_wood", "fnt_lamp_table", "fnt_computer", "fnt_clock_wall", "fnt_plant_potted", "fnt_rug_large"] },
+			{ "name": "大学图书馆", "walls": ["wall_glass"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_bookshelf", "fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_sofa_double", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_plant_large"] },
+			{ "name": "古典图书馆", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bookshelf", "fnt_table_desk", "fnt_chair_arm", "fnt_chandelier", "fnt_clock_grand", "fnt_painting_large", "fnt_fireplace", "fnt_rug_large"] }
+		],
+		"bld_gym": [
+			{ "name": "健身中心", "walls": ["wall_glass"], "floors": ["floor_rubber"], "furnitures": ["fnt_locker", "fnt_bench", "fnt_mirror_bath", "fnt_tv", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_fan_ceiling"] },
+			{ "name": "私人健身房", "walls": ["wall_concrete"], "floors": ["floor_rubber"], "furnitures": ["fnt_locker", "fnt_bench", "fnt_mirror_bath", "fnt_tv", "fnt_sofa_single", "fnt_fridge", "fnt_lamp_ceiling", "fnt_ac_unit"] },
+			{ "name": "社区健身房", "walls": ["wall_brick"], "floors": ["floor_wood_laminate"], "furnitures": ["fnt_locker", "fnt_bench", "fnt_mirror_bath", "fnt_radio", "fnt_fan_ceiling", "fnt_clock_wall", "fnt_vending_drink", "fnt_lamp_ceiling"] }
+		],
+		"bld_hotel": [
+			{ "name": "商务酒店", "walls": ["wall_drywall"], "floors": ["floor_carpet_beige"], "furnitures": ["fnt_bed_double", "fnt_nightstand", "fnt_table_desk", "fnt_chair_office", "fnt_tv", "fnt_fridge", "fnt_lamp_table", "fnt_curtain"] },
+			{ "name": "豪华酒店", "walls": ["wall_wood_panel"], "floors": ["floor_marble_white"], "furnitures": ["fnt_bed_double", "fnt_dresser", "fnt_sofa_double", "fnt_table_coffee", "fnt_chandelier", "fnt_painting_large", "fnt_bathtub", "fnt_plant_large"] },
+			{ "name": "经济酒店", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_bed_single", "fnt_nightstand", "fnt_table_desk", "fnt_chair_wood", "fnt_tv", "fnt_lamp_table", "fnt_clock_wall", "fnt_trash_can"] }
+		],
+		"bld_train_station": [
+			{ "name": "城市火车站", "walls": ["wall_concrete"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_bench", "fnt_vending_drink", "fnt_vending_snack", "fnt_clock_wall", "fnt_tv", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_trash_can"] },
+			{ "name": "地铁站", "walls": ["wall_tile"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_bench", "fnt_vending_drink", "fnt_atm", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_trash_can", "fnt_clock_wall"] },
+			{ "name": "古典火车站", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_bench", "fnt_clock_grand", "fnt_chandelier", "fnt_bookshelf", "fnt_plant_potted", "fnt_painting_small", "fnt_lamp_floor", "fnt_mailbox"] }
+		],
+		"bld_bus_station": [
+			{ "name": "公交总站", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_bench", "fnt_vending_drink", "fnt_clock_wall", "fnt_tv", "fnt_lamp_ceiling", "fnt_trash_can", "fnt_security_camera", "fnt_fan_ceiling"] },
+			{ "name": "长途汽车站", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_bench", "fnt_vending_drink", "fnt_vending_snack", "fnt_atm", "fnt_tv", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_locker"] },
+			{ "name": "乡村车站", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bench", "fnt_clock_wall", "fnt_lamp_table", "fnt_radio", "fnt_plant_potted", "fnt_mailbox", "fnt_fan_ceiling", "fnt_trash_can"] }
+		],
+		"bld_airport": [
+			{ "name": "国际机场", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_bench", "fnt_sofa_double", "fnt_atm", "fnt_vending_drink", "fnt_tv", "fnt_security_camera", "fnt_metal_detector", "fnt_lamp_ceiling"] },
+			{ "name": "私人机场", "walls": ["wall_glass"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_sofa_corner", "fnt_table_coffee", "fnt_tv", "fnt_fridge", "fnt_plant_large", "fnt_painting_large", "fnt_lamp_ceiling", "fnt_ac_unit"] },
+			{ "name": "货运机场", "walls": ["wall_metal_panel"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_forklift", "fnt_locker", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_radio"] }
+		],
+		"bld_port": [
+			{ "name": "货运港口", "walls": ["wall_metal_panel"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_forklift", "fnt_locker", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_radio"] },
+			{ "name": "客运码头", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_bench", "fnt_vending_drink", "fnt_tv", "fnt_clock_wall", "fnt_lamp_ceiling", "fnt_plant_potted", "fnt_security_camera", "fnt_trash_can"] },
+			{ "name": "渔港", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_chest_wood", "fnt_fishing_net", "fnt_rum_barrel", "fnt_ship_lantern", "fnt_anchor", "fnt_lamp_table", "fnt_bench", "fnt_radio"] }
+		],
+		"bld_military_base": [
+			{ "name": "陆军基地", "walls": ["wall_reinforced_concrete"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_bed_bunk", "fnt_locker", "fnt_gun_rack", "fnt_table_desk", "fnt_computer", "fnt_security_camera", "fnt_alarm_panel", "fnt_generator"] },
+			{ "name": "空军基地", "walls": ["wall_metal_panel"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_bed_single", "fnt_locker", "fnt_computer", "fnt_tv", "fnt_radio", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_ac_unit"] },
+			{ "name": "海军基地", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_bed_bunk", "fnt_locker", "fnt_gun_rack", "fnt_navigation_table", "fnt_computer", "fnt_radio", "fnt_security_camera", "fnt_lamp_ceiling"] }
+		],
+		"bld_prison": [
+			{ "name": "高级监狱", "walls": ["wall_reinforced_concrete"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_prison_bed", "fnt_prison_toilet", "fnt_security_camera", "fnt_alarm_panel", "fnt_metal_detector", "fnt_lamp_ceiling", "fnt_locker", "fnt_table_desk"] },
+			{ "name": "普通监狱", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_prison_bed", "fnt_prison_toilet", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_table_desk", "fnt_chair_wood", "fnt_locker", "fnt_bench"] },
+			{ "name": "拘留所", "walls": ["wall_brick"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_prison_bed", "fnt_prison_toilet", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_locker"] }
+		],
+		"bld_farm": [
+			{ "name": "家庭农场", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bed_double", "fnt_table_dining", "fnt_chair_wood", "fnt_stove", "fnt_fridge", "fnt_workbench", "fnt_lamp_table", "fnt_fireplace"] },
+			{ "name": "现代农场", "walls": ["wall_metal_panel"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_bed_double", "fnt_computer", "fnt_fridge", "fnt_generator", "fnt_workbench", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_tv"] },
+			{ "name": "有机农场", "walls": ["wall_adobe"], "floors": ["floor_dirt"], "furnitures": ["fnt_bed_single", "fnt_table_round", "fnt_chair_wood", "fnt_stove", "fnt_chest_wood", "fnt_plant_large", "fnt_lamp_table", "fnt_rug_large"] }
+		],
+		"bld_mine": [
+			{ "name": "煤矿", "walls": ["wall_stone"], "floors": ["floor_dirt"], "furnitures": ["fnt_workbench", "fnt_locker", "fnt_chest_metal", "fnt_generator", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_barrel_fire", "fnt_radio"] },
+			{ "name": "金矿", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_workbench", "fnt_safe", "fnt_chest_metal", "fnt_generator", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_locker", "fnt_radio"] },
+			{ "name": "钻石矿", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_workbench", "fnt_safe", "fnt_security_camera", "fnt_alarm_panel", "fnt_generator", "fnt_lamp_ceiling", "fnt_locker", "fnt_computer"] }
+		],
+		"bld_power_plant": [
+			{ "name": "火力发电厂", "walls": ["wall_concrete"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_generator", "fnt_computer", "fnt_alarm_panel", "fnt_locker", "fnt_table_desk", "fnt_chair_office", "fnt_lamp_ceiling", "fnt_fan_ceiling"] },
+			{ "name": "核电站", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_generator", "fnt_computer", "fnt_alarm_panel", "fnt_security_camera", "fnt_rad_scrubber", "fnt_hazmat_locker", "fnt_lamp_ceiling", "fnt_ac_unit"] },
+			{ "name": "太阳能电站", "walls": ["wall_glass"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_generator", "fnt_computer", "fnt_table_desk", "fnt_chair_office", "fnt_lamp_ceiling", "fnt_plant_potted", "fnt_ac_unit", "fnt_tv"] }
+		],
+		"bld_gas_station": [
+			{ "name": "加油站", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_cash_register", "fnt_display_shelf", "fnt_fridge", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_trash_can", "fnt_clock_wall"] },
+			{ "name": "高速服务区", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_cash_register", "fnt_display_shelf", "fnt_fridge", "fnt_vending_drink", "fnt_vending_snack", "fnt_bench", "fnt_tv", "fnt_lamp_ceiling"] },
+			{ "name": "乡村加油站", "walls": ["wall_wood_plank"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_cash_register", "fnt_display_shelf", "fnt_fridge", "fnt_chair_wood", "fnt_radio", "fnt_lamp_table", "fnt_fan_ceiling", "fnt_clock_wall"] }
+		],
+		"bld_pharmacy": [
+			{ "name": "连锁药店", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_display_shelf", "fnt_med_cabinet", "fnt_cash_register", "fnt_fridge", "fnt_computer", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_plant_potted"] },
+			{ "name": "社区药房", "walls": ["wall_brick"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_display_shelf", "fnt_med_cabinet", "fnt_cash_register", "fnt_chair_wood", "fnt_lamp_table", "fnt_clock_wall", "fnt_plant_potted", "fnt_bookshelf"] },
+			{ "name": "24小时药店", "walls": ["wall_glass"], "floors": ["floor_tile_white"], "furnitures": ["fnt_display_shelf", "fnt_med_cabinet", "fnt_cash_register", "fnt_computer", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_vending_drink", "fnt_atm"] }
+		],
+		"bld_clinic": [
+			{ "name": "社区诊所", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_exam_table", "fnt_med_cabinet", "fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_lamp_ceiling", "fnt_plant_potted", "fnt_clock_wall"] },
+			{ "name": "专科诊所", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_exam_table", "fnt_hospital_bed", "fnt_med_cabinet", "fnt_computer", "fnt_tv", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_plant_large"] },
+			{ "name": "急诊诊所", "walls": ["wall_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_exam_table", "fnt_hospital_bed", "fnt_defibrillator", "fnt_iv_stand", "fnt_med_cabinet", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_computer"] }
+		],
+		"bld_bar": [
+			{ "name": "酒吧", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_stool", "fnt_table_round", "fnt_chair_wood", "fnt_whiskey_shelf", "fnt_fridge", "fnt_cash_register", "fnt_lamp_table", "fnt_jukebox"] },
+			{ "name": "鸡尾酒吧", "walls": ["wall_glass"], "floors": ["floor_marble_black"], "furnitures": ["fnt_stool", "fnt_sofa_single", "fnt_table_coffee", "fnt_whiskey_shelf", "fnt_fridge", "fnt_lamp_floor", "fnt_neon_sign", "fnt_aquarium"] },
+			{ "name": "运动酒吧", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_stool", "fnt_bench", "fnt_table_round", "fnt_tv", "fnt_pool_table", "fnt_fridge", "fnt_lamp_ceiling", "fnt_jukebox"] }
+		],
+		"bld_nightclub": [
+			{ "name": "夜店", "walls": ["wall_concrete"], "floors": ["floor_led_dance"], "furnitures": ["fnt_sofa_corner", "fnt_table_coffee", "fnt_stool", "fnt_neon_sign", "fnt_led_panel", "fnt_lamp_floor", "fnt_fridge", "fnt_cash_register"] },
+			{ "name": "高档会所", "walls": ["wall_glass"], "floors": ["floor_marble_black"], "furnitures": ["fnt_sofa_corner", "fnt_table_coffee", "fnt_chandelier", "fnt_piano", "fnt_painting_large", "fnt_aquarium", "fnt_plant_large", "fnt_fridge"] },
+			{ "name": "地下俱乐部", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_sofa_double", "fnt_stool", "fnt_barrel_fire", "fnt_neon_sign", "fnt_jukebox", "fnt_fridge", "fnt_lamp_floor", "fnt_security_camera"] }
+		],
+		"bld_magic_academy": [
+			{ "name": "古典魔法学院", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_magic_bookshelf", "fnt_spell_lectern", "fnt_crystal_ball", "fnt_wand_rack", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large", "fnt_candle"] },
+			{ "name": "元素学院", "walls": ["wall_marble"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_magic_bookshelf", "fnt_enchant_table", "fnt_mana_container", "fnt_rune_stone", "fnt_chandelier", "fnt_plant_large", "fnt_magic_mirror", "fnt_lamp_floor"] },
+			{ "name": "暗黑学院", "walls": ["wall_obsidian"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_magic_bookshelf", "fnt_spell_lectern", "fnt_cauldron", "fnt_skull_pile", "fnt_candelabra", "fnt_coffin", "fnt_magic_mirror", "fnt_eye_lamp"] }
+		],
+		"bld_wizard_tower": [
+			{ "name": "高塔研究室", "walls": ["wall_stone"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_magic_bookshelf", "fnt_alchemy_table", "fnt_crystal_ball", "fnt_spell_scroll_case", "fnt_chandelier", "fnt_telescope", "fnt_rug_large", "fnt_clock_grand"] },
+			{ "name": "星象塔", "walls": ["wall_glass"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_magic_bookshelf", "fnt_crystal_ball", "fnt_brass_telescope", "fnt_star_map", "fnt_sofa_single", "fnt_lamp_floor", "fnt_rug_large", "fnt_plant_potted"] },
+			{ "name": "死灵法师塔", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_magic_bookshelf", "fnt_cauldron", "fnt_coffin", "fnt_skull_pile", "fnt_candelabra", "fnt_magic_mirror", "fnt_spell_scroll_case", "fnt_eye_lamp"] }
+		],
+		"bld_alchemy_workshop": [
+			{ "name": "炼金工坊", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_alchemy_table", "fnt_cauldron", "fnt_magic_bookshelf", "fnt_chest_wood", "fnt_workbench", "fnt_lamp_table", "fnt_plant_potted", "fnt_shelf_wall"] },
+			{ "name": "药剂实验室", "walls": ["wall_brick"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_alchemy_table", "fnt_chem_station", "fnt_med_cabinet", "fnt_fridge", "fnt_lamp_ceiling", "fnt_bookshelf", "fnt_plant_large", "fnt_workbench"] },
+			{ "name": "魔法药房", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_alchemy_table", "fnt_display_shelf", "fnt_cauldron", "fnt_cash_register", "fnt_magic_bookshelf", "fnt_chandelier", "fnt_plant_potted", "fnt_rug_large"] }
+		],
+		"bld_enchantment_hall": [
+			{ "name": "附魔大厅", "walls": ["wall_marble"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_enchant_table", "fnt_magic_bookshelf", "fnt_rune_stone", "fnt_mana_container", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large", "fnt_candelabra"] },
+			{ "name": "符文工坊", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_enchant_table", "fnt_workbench", "fnt_rune_stone", "fnt_chest_metal", "fnt_lamp_table", "fnt_bookshelf", "fnt_anvil", "fnt_candle"] },
+			{ "name": "灵魂熔炉", "walls": ["wall_obsidian"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_enchant_table", "fnt_cauldron", "fnt_mana_container", "fnt_skull_pile", "fnt_candelabra", "fnt_coffin", "fnt_magic_mirror", "fnt_eye_lamp"] }
+		],
+		"bld_summoning_circle": [
+			{ "name": "召唤阵", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_magic_circle", "fnt_spell_lectern", "fnt_magic_bookshelf", "fnt_candelabra", "fnt_rune_stone", "fnt_mana_container", "fnt_rug_large", "fnt_chandelier"] },
+			{ "name": "元素召唤室", "walls": ["wall_marble"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_magic_circle", "fnt_crystal_ball", "fnt_mana_container", "fnt_rune_stone", "fnt_lamp_floor", "fnt_plant_large", "fnt_bookshelf", "fnt_rug_large"] },
+			{ "name": "恶魔门", "walls": ["wall_obsidian"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_magic_circle", "fnt_spell_lectern", "fnt_skull_pile", "fnt_candelabra", "fnt_coffin", "fnt_eye_lamp", "fnt_magic_mirror", "fnt_void_portal"] }
+		],
+		"bld_arcane_library": [
+			{ "name": "奥术图书馆", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_magic_bookshelf", "fnt_spell_scroll_case", "fnt_table_desk", "fnt_chair_arm", "fnt_crystal_ball", "fnt_chandelier", "fnt_rug_large", "fnt_clock_grand"] },
+			{ "name": "禁忌书库", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_magic_bookshelf", "fnt_forbidden_tome", "fnt_skull_pile", "fnt_candelabra", "fnt_coffin", "fnt_magic_mirror", "fnt_eye_lamp", "fnt_madness_mirror"] },
+			{ "name": "知识殿堂", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_magic_bookshelf", "fnt_spell_scroll_case", "fnt_sofa_double", "fnt_table_coffee", "fnt_chandelier", "fnt_painting_large", "fnt_plant_large", "fnt_aquarium"] }
+		],
+		"bld_buddhist_temple": [
+			{ "name": "大雄宝殿", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_buddha_statue", "fnt_buddhist_altar", "fnt_incense_burner", "fnt_meditation_cushion", "fnt_lotus_lamp", "fnt_sutra_shelf", "fnt_prayer_wheel", "fnt_rug_large"] },
+			{ "name": "禅宗寺院", "walls": ["wall_wood_plank"], "floors": ["floor_tatami"], "furnitures": ["fnt_buddha_statue", "fnt_meditation_cushion", "fnt_incense_burner", "fnt_bodhi_tree", "fnt_wooden_fish", "fnt_lotus_lamp", "fnt_zabuton", "fnt_shoji_screen"] },
+			{ "name": "藏传佛寺", "walls": ["wall_adobe"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_buddha_statue", "fnt_prayer_wheel", "fnt_buddhist_altar", "fnt_merit_box", "fnt_bell_tower_small", "fnt_lotus_lamp", "fnt_rug_large", "fnt_incense_burner"] }
+		],
+		"bld_zen_monastery": [
+			{ "name": "禅院", "walls": ["wall_wood_plank"], "floors": ["floor_tatami"], "furnitures": ["fnt_meditation_cushion", "fnt_zabuton", "fnt_incense_burner", "fnt_shoji_screen", "fnt_ikebana", "fnt_paper_lantern", "fnt_chabudai", "fnt_tokonoma"] },
+			{ "name": "冥想堂", "walls": ["wall_wood_panel"], "floors": ["floor_zen_garden"], "furnitures": ["fnt_meditation_cushion", "fnt_bodhi_tree", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_wooden_fish", "fnt_buddha_statue", "fnt_zabuton", "fnt_rug_large"] },
+			{ "name": "书院", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_sutra_shelf", "fnt_table_desk", "fnt_zabuton", "fnt_incense_burner", "fnt_paper_lantern", "fnt_ikebana", "fnt_bookshelf", "fnt_meditation_cushion"] }
+		],
+		"bld_pagoda": [
+			{ "name": "佛塔", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_buddha_statue", "fnt_buddhist_altar", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_sutra_shelf", "fnt_prayer_wheel", "fnt_bell_tower_small", "fnt_rug_large"] },
+			{ "name": "舍利塔", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_buddha_statue", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_merit_box", "fnt_candelabra", "fnt_rug_large", "fnt_painting_large", "fnt_chandelier"] },
+			{ "name": "钟楼", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bell_tower_small", "fnt_incense_burner", "fnt_meditation_cushion", "fnt_lotus_lamp", "fnt_sutra_shelf", "fnt_wooden_fish", "fnt_rug_large", "fnt_bench"] }
+		],
+		"bld_sutra_hall": [
+			{ "name": "藏经阁", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_sutra_shelf", "fnt_magic_bookshelf", "fnt_table_desk", "fnt_chair_wood", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_rug_large", "fnt_chandelier"] },
+			{ "name": "抄经堂", "walls": ["wall_wood_plank"], "floors": ["floor_tatami"], "furnitures": ["fnt_table_desk", "fnt_zabuton", "fnt_sutra_shelf", "fnt_incense_burner", "fnt_paper_lantern", "fnt_ikebana", "fnt_bookshelf", "fnt_meditation_cushion"] },
+			{ "name": "讲经堂", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bench", "fnt_spell_lectern", "fnt_sutra_shelf", "fnt_buddha_statue", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_chandelier", "fnt_rug_large"] }
+		],
+		"bld_meditation_hall": [
+			{ "name": "禅堂", "walls": ["wall_wood_plank"], "floors": ["floor_tatami"], "furnitures": ["fnt_meditation_cushion", "fnt_zabuton", "fnt_incense_burner", "fnt_wooden_fish", "fnt_lotus_lamp", "fnt_shoji_screen", "fnt_bodhi_tree", "fnt_rug_large"] },
+			{ "name": "静修室", "walls": ["wall_wood_panel"], "floors": ["floor_zen_garden"], "furnitures": ["fnt_meditation_cushion", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_plant_potted", "fnt_ikebana", "fnt_paper_lantern", "fnt_zabuton", "fnt_shoji_screen"] },
+			{ "name": "念佛堂", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_meditation_cushion", "fnt_buddha_statue", "fnt_wooden_fish", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_sutra_shelf", "fnt_prayer_wheel", "fnt_rug_large"] }
+		],
+		"bld_bell_tower_buddhist": [
+			{ "name": "钟楼", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bell_tower_small", "fnt_meditation_cushion", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_bench", "fnt_rug_large", "fnt_wooden_fish", "fnt_chandelier"] },
+			{ "name": "鼓楼", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bell_tower_small", "fnt_bench", "fnt_incense_burner", "fnt_paper_lantern", "fnt_rug_large", "fnt_meditation_cushion", "fnt_lotus_lamp", "fnt_zabuton"] },
+			{ "name": "法器堂", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_dharma_rack", "fnt_bell_tower_small", "fnt_wooden_fish", "fnt_incense_burner", "fnt_lotus_lamp", "fnt_sutra_shelf", "fnt_rug_large", "fnt_chandelier"] }
+		],
+		"bld_taoist_temple": [
+			{ "name": "三清殿", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_taoist_statue", "fnt_incense_altar", "fnt_dragon_incense", "fnt_taiji_diagram", "fnt_peach_wood_sword_rack", "fnt_lotus_lamp", "fnt_rug_large", "fnt_chandelier"] },
+			{ "name": "玉皇殿", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_taoist_statue", "fnt_trigram_altar", "fnt_incense_altar", "fnt_crane_statue", "fnt_bagua_mirror", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large"] },
+			{ "name": "财神殿", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_taoist_statue", "fnt_merit_box", "fnt_incense_altar", "fnt_dragon_incense", "fnt_lotus_lamp", "fnt_rug_large", "fnt_chandelier", "fnt_plant_potted"] }
+		],
+		"bld_alchemy_furnace": [
+			{ "name": "丹房", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_alchemy_furnace", "fnt_immortal_gourd", "fnt_talisman_desk", "fnt_chest_wood", "fnt_workbench", "fnt_lamp_table", "fnt_plant_potted", "fnt_shelf_wall"] },
+			{ "name": "炼丹室", "walls": ["wall_stone"], "floors": ["floor_tile_terracotta"], "furnitures": ["fnt_alchemy_furnace", "fnt_alchemy_table", "fnt_cauldron", "fnt_magic_bookshelf", "fnt_chest_wood", "fnt_lamp_table", "fnt_candle", "fnt_rug_large"] },
+			{ "name": "仙丹阁", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_alchemy_furnace", "fnt_display_shelf", "fnt_cash_register", "fnt_immortal_gourd", "fnt_crane_statue", "fnt_chandelier", "fnt_rug_large", "fnt_plant_potted"] }
+		],
+		"bld_martial_arena_taoist": [
+			{ "name": "演武场", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_training_dummy", "fnt_weapon_rack_medieval", "fnt_bench", "fnt_taiji_diagram", "fnt_peach_wood_sword_rack", "fnt_lamp_ceiling", "fnt_rug_large", "fnt_locker"] },
+			{ "name": "剑阁", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_weapon_display", "fnt_peach_wood_sword_rack", "fnt_training_dummy", "fnt_bench", "fnt_taiji_diagram", "fnt_crane_statue", "fnt_chandelier", "fnt_rug_large"] },
+			{ "name": "拳馆", "walls": ["wall_brick"], "floors": ["floor_rubber"], "furnitures": ["fnt_training_dummy", "fnt_locker", "fnt_bench", "fnt_mirror_bath", "fnt_taiji_diagram", "fnt_fan_ceiling", "fnt_lamp_ceiling", "fnt_clock_wall"] }
+		],
+		"bld_celestial_observatory": [
+			{ "name": "观星台", "walls": ["wall_glass"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_brass_telescope", "fnt_trigram_altar", "fnt_crystal_ball", "fnt_star_map", "fnt_sofa_single", "fnt_lamp_floor", "fnt_rug_large", "fnt_bookshelf"] },
+			{ "name": "天文阁", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_brass_telescope", "fnt_table_desk", "fnt_chair_arm", "fnt_bookshelf", "fnt_clock_grand", "fnt_chandelier", "fnt_rug_large", "fnt_plant_potted"] },
+			{ "name": "星象殿", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_brass_telescope", "fnt_trigram_altar", "fnt_crystal_ball", "fnt_taoist_statue", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large", "fnt_crane_statue"] }
+		],
+		"bld_talisman_workshop": [
+			{ "name": "符箓坊", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_talisman_desk", "fnt_magic_bookshelf", "fnt_incense_altar", "fnt_bagua_mirror", "fnt_lamp_table", "fnt_chest_wood", "fnt_rug_large", "fnt_candle"] },
+			{ "name": "法印室", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_talisman_desk", "fnt_trigram_altar", "fnt_incense_altar", "fnt_bagua_mirror", "fnt_candelabra", "fnt_rune_stone", "fnt_rug_large", "fnt_magic_bookshelf"] },
+			{ "name": "符店", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_talisman_desk", "fnt_display_shelf", "fnt_cash_register", "fnt_bagua_mirror", "fnt_lamp_table", "fnt_plant_potted", "fnt_rug_large", "fnt_chair_wood"] }
+		],
+		"bld_spirit_shrine": [
+			{ "name": "灵祠", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_taoist_statue", "fnt_incense_altar", "fnt_merit_box", "fnt_dragon_incense", "fnt_lotus_lamp", "fnt_rug_large", "fnt_bench", "fnt_chandelier"] },
+			{ "name": "土地庙", "walls": ["wall_adobe"], "floors": ["floor_dirt"], "furnitures": ["fnt_taoist_statue", "fnt_incense_burner", "fnt_merit_box", "fnt_candle", "fnt_bench", "fnt_plant_potted", "fnt_rug_small", "fnt_lamp_table"] },
+			{ "name": "城隍庙", "walls": ["wall_wood_panel"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_taoist_statue", "fnt_trigram_altar", "fnt_incense_altar", "fnt_merit_box", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large", "fnt_bench"] }
+		],
+		"bld_cyberware_corp": [
+			{ "name": "义体公司总部", "walls": ["wall_glass"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_cyberware_bench", "fnt_data_terminal", "fnt_server_rack", "fnt_holo_projector", "fnt_led_panel", "fnt_sofa_double", "fnt_lamp_ceiling", "fnt_plant_large"] },
+			{ "name": "研发中心", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_cyberware_bench", "fnt_neural_link", "fnt_organ_tank", "fnt_computer", "fnt_server_rack", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_security_camera"] },
+			{ "name": "展示厅", "walls": ["wall_glass"], "floors": ["floor_led_dance"], "furnitures": ["fnt_cyberware_bench", "fnt_holo_projector", "fnt_led_panel", "fnt_neon_sign", "fnt_sofa_corner", "fnt_plant_large", "fnt_aquarium", "fnt_braindance_chair"] }
+		],
+		"bld_ripperdoc_clinic": [
+			{ "name": "黑市诊所", "walls": ["wall_concrete"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_cyberware_bench", "fnt_exam_table", "fnt_med_cabinet", "fnt_organ_tank", "fnt_neon_sign", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_locker"] },
+			{ "name": "高端改造室", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_cyberware_bench", "fnt_cyber_pod", "fnt_med_cabinet", "fnt_neural_link", "fnt_holo_projector", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_plant_potted"] },
+			{ "name": "地下手术室", "walls": ["wall_brick"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_cyberware_bench", "fnt_exam_table", "fnt_organ_tank", "fnt_barrel_fire", "fnt_neon_sign", "fnt_lamp_table", "fnt_locker", "fnt_radio"] }
+		],
+		"bld_hacker_den": [
+			{ "name": "黑客据点", "walls": ["wall_concrete"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_data_terminal", "fnt_server_rack", "fnt_computer", "fnt_neon_sign", "fnt_led_panel", "fnt_sofa_single", "fnt_fridge", "fnt_lamp_floor"] },
+			{ "name": "数据堡垒", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_quantum_computer", "fnt_server_rack", "fnt_data_terminal", "fnt_security_camera", "fnt_alarm_panel", "fnt_ac_unit", "fnt_lamp_ceiling", "fnt_generator"] },
+			{ "name": "网吧", "walls": ["wall_drywall"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_computer", "fnt_chair_office", "fnt_table_desk", "fnt_neon_sign", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_tv"] }
+		],
+		"bld_data_fortress": [
+			{ "name": "数据中心", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_server_rack", "fnt_quantum_computer", "fnt_data_terminal", "fnt_security_camera", "fnt_alarm_panel", "fnt_ac_unit", "fnt_generator", "fnt_lamp_ceiling"] },
+			{ "name": "信息堡垒", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_server_rack", "fnt_data_terminal", "fnt_energy_shield_gen", "fnt_security_camera", "fnt_alarm_panel", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_locker"] },
+			{ "name": "云端服务器", "walls": ["wall_glass"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_server_rack", "fnt_quantum_computer", "fnt_holo_projector", "fnt_led_panel", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_plant_potted", "fnt_sofa_single"] }
+		],
+		"bld_braindance_parlor": [
+			{ "name": "超梦馆", "walls": ["wall_glass"], "floors": ["floor_led_dance"], "furnitures": ["fnt_braindance_chair", "fnt_holo_projector", "fnt_neon_sign", "fnt_led_panel", "fnt_sofa_corner", "fnt_fridge", "fnt_lamp_floor", "fnt_plant_potted"] },
+			{ "name": "虚拟影院", "walls": ["wall_concrete"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_braindance_chair", "fnt_tv", "fnt_sofa_double", "fnt_neon_sign", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_plant_potted"] },
+			{ "name": "地下俱乐部", "walls": ["wall_brick"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_braindance_chair", "fnt_neon_sign", "fnt_stool", "fnt_fridge", "fnt_jukebox", "fnt_lamp_floor", "fnt_barrel_fire", "fnt_security_camera"] }
+		],
+		"bld_combat_implant_shop": [
+			{ "name": "战斗植入店", "walls": ["wall_metal_panel"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_cyberware_bench", "fnt_display_shelf", "fnt_weapon_display", "fnt_cash_register", "fnt_neon_sign", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_locker"] },
+			{ "name": "军用改造中心", "walls": ["wall_reinforced_concrete"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_cyberware_bench", "fnt_neural_link", "fnt_weapon_display", "fnt_gun_rack", "fnt_security_camera", "fnt_alarm_panel", "fnt_lamp_ceiling", "fnt_locker"] },
+			{ "name": "黑市武器店", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_cyberware_bench", "fnt_weapon_display", "fnt_gun_rack", "fnt_neon_sign", "fnt_cash_register", "fnt_security_camera", "fnt_lamp_table", "fnt_safe"] }
+		],
+		"bld_megacorp_tower": [
+			{ "name": "超企总部", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_server_rack", "fnt_holo_projector", "fnt_led_panel", "fnt_sofa_corner", "fnt_plant_large", "fnt_aquarium"] },
+			{ "name": "董事会议室", "walls": ["wall_glass"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_round_table", "fnt_chair_arm", "fnt_holo_projector", "fnt_led_panel", "fnt_painting_large", "fnt_chandelier", "fnt_plant_large", "fnt_safe"] },
+			{ "name": "顶层公寓", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_cyber_pod", "fnt_sofa_corner", "fnt_braindance_chair", "fnt_holo_projector", "fnt_aquarium", "fnt_chandelier", "fnt_plant_large", "fnt_safe"] }
+		],
+		"bld_cyber_nightclub": [
+			{ "name": "赛博夜店", "walls": ["wall_glass"], "floors": ["floor_led_dance"], "furnitures": ["fnt_neon_sign", "fnt_led_panel", "fnt_sofa_corner", "fnt_stool", "fnt_holo_projector", "fnt_fridge", "fnt_braindance_chair", "fnt_security_camera"] },
+			{ "name": "地下酒吧", "walls": ["wall_concrete"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_neon_sign", "fnt_stool", "fnt_whiskey_shelf", "fnt_fridge", "fnt_jukebox", "fnt_lamp_floor", "fnt_barrel_fire", "fnt_security_camera"] },
+			{ "name": "VIP会所", "walls": ["wall_glass"], "floors": ["floor_marble_black"], "furnitures": ["fnt_sofa_corner", "fnt_table_coffee", "fnt_chandelier", "fnt_holo_projector", "fnt_aquarium", "fnt_neon_sign", "fnt_braindance_chair", "fnt_plant_large"] }
+		],
+		"bld_pokemon_gym": [
+			{ "name": "普通道馆", "walls": ["wall_drywall"], "floors": ["floor_rubber"], "furnitures": ["fnt_battle_arena_marker", "fnt_pokeball_shelf", "fnt_training_dummy", "fnt_bench", "fnt_locker", "fnt_lamp_ceiling", "fnt_trophy_pokemon", "fnt_tv"] },
+			{ "name": "冠军道馆", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_battle_arena_marker", "fnt_battle_simulator", "fnt_trophy_pokemon", "fnt_sofa_corner", "fnt_chandelier", "fnt_painting_large", "fnt_plant_large", "fnt_aquarium"] },
+			{ "name": "训练场", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_battle_arena_marker", "fnt_training_dummy", "fnt_pokeball_shelf", "fnt_bench", "fnt_locker", "fnt_tv", "fnt_lamp_ceiling", "fnt_ac_unit"] }
+		],
+		"bld_pokemon_center": [
+			{ "name": "精灵中心", "walls": ["wall_glass"], "floors": ["floor_tile_white"], "furnitures": ["fnt_pokemon_healer", "fnt_pc_storage", "fnt_sofa_double", "fnt_bench", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_plant_potted", "fnt_tv"] },
+			{ "name": "急诊中心", "walls": ["wall_drywall"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_pokemon_healer", "fnt_hospital_bed", "fnt_med_cabinet", "fnt_pc_storage", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_plant_potted", "fnt_bench"] },
+			{ "name": "乡村中心", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_pokemon_healer", "fnt_pc_storage", "fnt_bench", "fnt_table_round", "fnt_chair_wood", "fnt_lamp_table", "fnt_plant_potted", "fnt_clock_wall"] }
+		],
+		"bld_pokemart": [
+			{ "name": "精灵商店", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_display_shelf", "fnt_pokeball_shelf", "fnt_cash_register", "fnt_evolution_stone_case", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_plant_potted", "fnt_bench"] },
+			{ "name": "旗舰店", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_display_shelf", "fnt_pokeball_shelf", "fnt_evolution_stone_case", "fnt_trophy_pokemon", "fnt_chandelier", "fnt_sofa_double", "fnt_plant_large", "fnt_aquarium"] },
+			{ "name": "便利商店", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_display_shelf", "fnt_pokeball_shelf", "fnt_cash_register", "fnt_fridge", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_clock_wall", "fnt_bench"] }
+		],
+		"bld_breeding_center": [
+			{ "name": "培育中心", "walls": ["wall_glass"], "floors": ["floor_tile_white"], "furnitures": ["fnt_incubator", "fnt_berry_planter", "fnt_pc_storage", "fnt_table_desk", "fnt_chair_office", "fnt_lamp_ceiling", "fnt_plant_large", "fnt_aquarium"] },
+			{ "name": "孵化场", "walls": ["wall_drywall"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_incubator", "fnt_hospital_bed", "fnt_med_cabinet", "fnt_computer", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_plant_potted", "fnt_bench"] },
+			{ "name": "农场育种", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_incubator", "fnt_berry_planter", "fnt_chest_wood", "fnt_table_round", "fnt_chair_wood", "fnt_lamp_table", "fnt_plant_large", "fnt_rug_large"] }
+		],
+		"bld_pokemon_lab": [
+			{ "name": "研究所", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_pokedex_terminal", "fnt_pc_storage", "fnt_computer", "fnt_bookshelf", "fnt_table_desk", "fnt_chair_office", "fnt_lamp_ceiling", "fnt_plant_large"] },
+			{ "name": "博士实验室", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_pokedex_terminal", "fnt_battle_simulator", "fnt_pc_storage", "fnt_bookshelf", "fnt_sofa_double", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_aquarium"] },
+			{ "name": "野外观测站", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_pokedex_terminal", "fnt_computer", "fnt_brass_telescope", "fnt_bookshelf", "fnt_table_desk", "fnt_lamp_table", "fnt_plant_large", "fnt_rug_large"] }
+		],
+		"bld_contest_hall": [
+			{ "name": "华丽大赛馆", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_battle_arena_marker", "fnt_trophy_pokemon", "fnt_bench", "fnt_chandelier", "fnt_painting_large", "fnt_plant_large", "fnt_tv", "fnt_lamp_ceiling"] },
+			{ "name": "表演舞台", "walls": ["wall_drywall"], "floors": ["floor_led_dance"], "furnitures": ["fnt_battle_arena_marker", "fnt_neon_sign", "fnt_led_panel", "fnt_bench", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_tv", "fnt_vending_drink"] },
+			{ "name": "评审室", "walls": ["wall_wood_panel"], "floors": ["floor_carpet_gray"], "furnitures": ["fnt_table_desk", "fnt_chair_arm", "fnt_computer", "fnt_tv", "fnt_bookshelf", "fnt_lamp_table", "fnt_plant_potted", "fnt_clock_wall"] }
+		],
+		"bld_pokemon_league": [
+			{ "name": "联盟总部", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_battle_arena_marker", "fnt_battle_simulator", "fnt_trophy_pokemon", "fnt_chandelier", "fnt_painting_large", "fnt_sofa_corner", "fnt_plant_large", "fnt_aquarium"] },
+			{ "name": "冠军殿堂", "walls": ["wall_glass"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_battle_arena_marker", "fnt_trophy_pokemon", "fnt_chandelier", "fnt_painting_large", "fnt_bench", "fnt_plant_large", "fnt_lamp_ceiling", "fnt_rug_large"] },
+			{ "name": "名人堂", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_trophy_pokemon", "fnt_trophy_case", "fnt_painting_large", "fnt_bench", "fnt_chandelier", "fnt_plant_large", "fnt_lamp_ceiling", "fnt_rug_large"] }
+		],
+		"bld_safari_zone_gate": [
+			{ "name": "狩猎区入口", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_pokeball_shelf", "fnt_cash_register", "fnt_bench", "fnt_display_shelf", "fnt_lamp_ceiling", "fnt_plant_large", "fnt_clock_wall", "fnt_mailbox"] },
+			{ "name": "接待中心", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_pokedex_terminal", "fnt_sofa_double", "fnt_plant_large", "fnt_tv", "fnt_lamp_ceiling"] },
+			{ "name": "装备站", "walls": ["wall_metal_panel"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_pokeball_shelf", "fnt_display_shelf", "fnt_locker", "fnt_bench", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_vending_drink", "fnt_trash_can"] }
+		],
+		"bld_shopping_mall": [
+			{ "name": "购物中心", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_bench", "fnt_escalator", "fnt_plant_large", "fnt_fountain", "fnt_lamp_ceiling", "fnt_security_camera"] },
+			{ "name": "精品商场", "walls": ["wall_glass"], "floors": ["floor_marble_black"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_chandelier", "fnt_sofa_double", "fnt_painting_large", "fnt_plant_large", "fnt_aquarium", "fnt_security_camera"] },
+			{ "name": "折扣广场", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_bench", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_trash_can", "fnt_security_camera"] }
+		],
+		"bld_department_store": [
+			{ "name": "百货商店", "walls": ["wall_glass"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_mannequin", "fnt_bench", "fnt_escalator", "fnt_lamp_ceiling", "fnt_ac_unit", "fnt_security_camera"] },
+			{ "name": "高档百货", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_mannequin", "fnt_chandelier", "fnt_sofa_double", "fnt_plant_large", "fnt_painting_large", "fnt_aquarium"] },
+			{ "name": "平价百货", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_bench", "fnt_vending_drink", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_clock_wall", "fnt_trash_can"] }
+		],
+		"bld_ninja_dojo": [
+			{ "name": "忍者道场", "walls": ["wall_wood_panel"], "floors": ["floor_tatami"], "furnitures": ["fnt_training_dummy", "fnt_sword_stand", "fnt_shoji_screen", "fnt_zabuton", "fnt_paper_lantern", "fnt_tokonoma", "fnt_locker", "fnt_rug_large"] },
+			{ "name": "暗杀训练场", "walls": ["wall_stone"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_training_dummy", "fnt_sword_stand", "fnt_weapon_display", "fnt_locker", "fnt_bench", "fnt_candle", "fnt_rug_large", "fnt_chest_wood"] },
+			{ "name": "忍术学院", "walls": ["wall_wood_plank"], "floors": ["floor_tatami"], "furnitures": ["fnt_school_desk", "fnt_zabuton", "fnt_sword_stand", "fnt_bookshelf", "fnt_shoji_screen", "fnt_paper_lantern", "fnt_training_dummy", "fnt_tokonoma"] }
+		],
+		"bld_shinto_shrine": [
+			{ "name": "神社", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_butsudan", "fnt_incense_burner", "fnt_merit_box", "fnt_paper_lantern", "fnt_shoji_screen", "fnt_rug_large", "fnt_bench", "fnt_ikebana"] },
+			{ "name": "�的稻荷神社", "walls": ["wall_wood_plank"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_butsudan", "fnt_merit_box", "fnt_paper_lantern", "fnt_tokonoma", "fnt_bench", "fnt_plant_potted", "fnt_rug_large", "fnt_candle"] },
+			{ "name": "天满宫", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_butsudan", "fnt_sutra_shelf", "fnt_incense_burner", "fnt_paper_lantern", "fnt_merit_box", "fnt_chandelier", "fnt_bench", "fnt_rug_large"] }
+		],
+		"bld_onsen": [
+			{ "name": "温泉旅馆", "walls": ["wall_wood_panel"], "floors": ["floor_tatami"], "furnitures": ["fnt_ofuro", "fnt_futon", "fnt_kotatsu", "fnt_chabudai", "fnt_zabuton", "fnt_shoji_screen", "fnt_paper_lantern", "fnt_ikebana"] },
+			{ "name": "露天温泉", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_ofuro", "fnt_bench", "fnt_plant_large", "fnt_paper_lantern", "fnt_locker", "fnt_rug_large", "fnt_towel_rack", "fnt_mirror_bath"] },
+			{ "name": "高级浴场", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_bathtub", "fnt_locker", "fnt_mirror_bath", "fnt_bench", "fnt_plant_large", "fnt_chandelier", "fnt_rug_large", "fnt_ac_unit"] }
+		],
+		"bld_samurai_castle": [
+			{ "name": "武士城堡", "walls": ["wall_stone"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_throne_medieval", "fnt_sword_stand", "fnt_weapon_display", "fnt_tansu", "fnt_shoji_screen", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large"] },
+			{ "name": "天守阁", "walls": ["wall_wood_panel"], "floors": ["floor_tatami"], "furnitures": ["fnt_throne_medieval", "fnt_sword_stand", "fnt_tokonoma", "fnt_shoji_screen", "fnt_paper_lantern", "fnt_tansu", "fnt_rug_large", "fnt_ikebana"] },
+			{ "name": "大名居所", "walls": ["wall_wood_panel"], "floors": ["floor_tatami"], "furnitures": ["fnt_futon", "fnt_kotatsu", "fnt_tansu", "fnt_tokonoma", "fnt_shoji_screen", "fnt_paper_lantern", "fnt_ikebana", "fnt_sword_stand"] }
+		],
+		"bld_tea_house": [
+			{ "name": "茶室", "walls": ["wall_wood_plank"], "floors": ["floor_tatami"], "furnitures": ["fnt_chabudai", "fnt_zabuton", "fnt_tokonoma", "fnt_shoji_screen", "fnt_ikebana", "fnt_paper_lantern", "fnt_rug_small", "fnt_plant_potted"] },
+			{ "name": "�的茶道馆", "walls": ["wall_wood_panel"], "floors": ["floor_tatami"], "furnitures": ["fnt_chabudai", "fnt_zabuton", "fnt_tokonoma", "fnt_ikebana", "fnt_shoji_screen", "fnt_paper_lantern", "fnt_bookshelf", "fnt_rug_large"] },
+			{ "name": "甘味处", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_chabudai", "fnt_zabuton", "fnt_display_shelf", "fnt_cash_register", "fnt_fridge", "fnt_paper_lantern", "fnt_plant_potted", "fnt_clock_wall"] }
+		],
+		"bld_sumo_arena": [
+			{ "name": "相扑场", "walls": ["wall_wood_panel"], "floors": ["floor_tatami"], "furnitures": ["fnt_bench", "fnt_locker", "fnt_training_dummy", "fnt_trophy_case", "fnt_paper_lantern", "fnt_chandelier", "fnt_rug_large", "fnt_tv"] },
+			{ "name": "训练馆", "walls": ["wall_wood_plank"], "floors": ["floor_rubber"], "furnitures": ["fnt_training_dummy", "fnt_locker", "fnt_bench", "fnt_mirror_bath", "fnt_fan_ceiling", "fnt_lamp_ceiling", "fnt_clock_wall", "fnt_rug_large"] },
+			{ "name": "部屋", "walls": ["wall_wood_panel"], "floors": ["floor_tatami"], "furnitures": ["fnt_futon", "fnt_kotatsu", "fnt_tansu", "fnt_chabudai", "fnt_zabuton", "fnt_paper_lantern", "fnt_shoji_screen", "fnt_rug_large"] }
+		],
+		"bld_cult_temple": [
+			{ "name": "邪教神殿", "walls": ["wall_obsidian"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_eldritch_altar", "fnt_tentacle_statue", "fnt_ritual_circle", "fnt_cult_banner", "fnt_eye_lamp", "fnt_candelabra", "fnt_skull_pile", "fnt_coffin"] },
+			{ "name": "隐秘集会所", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_eldritch_altar", "fnt_bench", "fnt_cult_banner", "fnt_candle", "fnt_forbidden_tome", "fnt_eye_lamp", "fnt_rug_large", "fnt_skull_pile"] },
+			{ "name": "深渊圣殿", "walls": ["wall_obsidian"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_void_portal", "fnt_eldritch_altar", "fnt_tentacle_statue", "fnt_ritual_circle", "fnt_eye_lamp", "fnt_madness_mirror", "fnt_skull_pile", "fnt_star_spawn_egg"] }
+		],
+		"bld_eldritch_library": [
+			{ "name": "禁忌图书馆", "walls": ["wall_stone"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_forbidden_tome", "fnt_magic_bookshelf", "fnt_table_desk", "fnt_chair_arm", "fnt_candelabra", "fnt_eye_lamp", "fnt_rug_large", "fnt_skull_pile"] },
+			{ "name": "疯狂书库", "walls": ["wall_obsidian"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_forbidden_tome", "fnt_madness_mirror", "fnt_spell_scroll_case", "fnt_candelabra", "fnt_tentacle_statue", "fnt_eye_lamp", "fnt_rug_large", "fnt_coffin"] },
+			{ "name": "古老档案室", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_forbidden_tome", "fnt_bookshelf", "fnt_table_desk", "fnt_chair_wood", "fnt_candle", "fnt_lamp_table", "fnt_rug_large", "fnt_clock_grand"] }
+		],
+		"bld_asylum": [
+			{ "name": "疯人院", "walls": ["wall_concrete"], "floors": ["floor_tile_white"], "furnitures": ["fnt_hospital_bed", "fnt_prison_toilet", "fnt_med_cabinet", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_locker", "fnt_table_desk", "fnt_chair_office"] },
+			{ "name": "精神病院", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_hospital_bed", "fnt_exam_table", "fnt_med_cabinet", "fnt_computer", "fnt_lamp_ceiling", "fnt_tv", "fnt_sofa_single", "fnt_plant_potted"] },
+			{ "name": "阿卡姆疗养院", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_hospital_bed", "fnt_bookshelf", "fnt_forbidden_tome", "fnt_eye_lamp", "fnt_candelabra", "fnt_rug_large", "fnt_painting_large", "fnt_clock_grand"] }
+		],
+		"bld_ritual_chamber": [
+			{ "name": "仪式房间", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_ritual_circle", "fnt_sacrifice_table", "fnt_candelabra", "fnt_forbidden_tome", "fnt_skull_pile", "fnt_eye_lamp", "fnt_rug_large", "fnt_coffin"] },
+			{ "name": "召唤室", "walls": ["wall_obsidian"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_ritual_circle", "fnt_void_portal", "fnt_tentacle_statue", "fnt_candelabra", "fnt_eye_lamp", "fnt_mana_container", "fnt_madness_mirror", "fnt_skull_pile"] },
+			{ "name": "献祭堂", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_sacrifice_table", "fnt_ritual_circle", "fnt_candelabra", "fnt_cult_banner", "fnt_skull_pile", "fnt_eye_lamp", "fnt_coffin", "fnt_rug_large"] }
+		],
+		"bld_deep_one_lair": [
+			{ "name": "深潜者巢穴", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_tentacle_statue", "fnt_specimen_jar", "fnt_eldritch_altar", "fnt_eye_lamp", "fnt_skull_pile", "fnt_coffin", "fnt_star_spawn_egg", "fnt_ritual_circle"] },
+			{ "name": "水下神殿", "walls": ["wall_obsidian"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_void_portal", "fnt_tentacle_statue", "fnt_eldritch_altar", "fnt_eye_lamp", "fnt_star_spawn_egg", "fnt_madness_mirror", "fnt_ritual_circle", "fnt_skull_pile"] },
+			{ "name": "印斯茅斯废墟", "walls": ["wall_brick"], "floors": ["floor_dirt"], "furnitures": ["fnt_specimen_jar", "fnt_skull_pile", "fnt_coffin", "fnt_barrel_fire", "fnt_chest_wood", "fnt_candle", "fnt_eye_lamp", "fnt_rug_large"] }
+		],
+		"bld_miskatonic_university": [
+			{ "name": "米斯卡托尼克大学", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_forbidden_tome", "fnt_bookshelf", "fnt_table_desk", "fnt_chair_arm", "fnt_blackboard", "fnt_chandelier", "fnt_clock_grand", "fnt_rug_large"] },
+			{ "name": "神秘学系", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_forbidden_tome", "fnt_specimen_jar", "fnt_crystal_ball", "fnt_table_desk", "fnt_bookshelf", "fnt_candelabra", "fnt_rug_large", "fnt_skull_pile"] },
+			{ "name": "考古实验室", "walls": ["wall_drywall"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_specimen_jar", "fnt_trophy_case", "fnt_table_desk", "fnt_computer", "fnt_bookshelf", "fnt_lamp_ceiling", "fnt_sarcophagus", "fnt_canopic_jars"] }
+		],
+		"bld_clockwork_factory": [
+			{ "name": "发条工厂", "walls": ["wall_brick"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_steam_engine", "fnt_gear_display", "fnt_workbench", "fnt_mechanical_arm", "fnt_pressure_gauge", "fnt_lamp_ceiling", "fnt_brass_clock", "fnt_locker"] },
+			{ "name": "精密车间", "walls": ["wall_metal_panel"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_workbench", "fnt_mechanical_arm", "fnt_gear_display", "fnt_pressure_gauge", "fnt_steam_vent", "fnt_lamp_ceiling", "fnt_brass_clock", "fnt_locker"] },
+			{ "name": "蒸汽工坊", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_steam_engine", "fnt_workbench", "fnt_anvil", "fnt_gear_display", "fnt_steam_vent", "fnt_lamp_table", "fnt_brass_clock", "fnt_chest_metal"] }
+		],
+		"bld_airship_dock": [
+			{ "name": "飞艇码头", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_airship_wheel", "fnt_navigation_table", "fnt_brass_telescope", "fnt_pressure_gauge", "fnt_locker", "fnt_lamp_ceiling", "fnt_bench", "fnt_radio"] },
+			{ "name": "空中港口", "walls": ["wall_glass"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bench", "fnt_brass_telescope", "fnt_clock_grand", "fnt_chandelier", "fnt_sofa_double", "fnt_plant_potted", "fnt_lamp_ceiling", "fnt_bookshelf"] },
+			{ "name": "维修站", "walls": ["wall_brick"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_workbench", "fnt_steam_engine", "fnt_gear_display", "fnt_mechanical_arm", "fnt_locker", "fnt_lamp_ceiling", "fnt_pressure_gauge", "fnt_chest_metal"] }
+		],
+		"bld_inventors_workshop": [
+			{ "name": "发明家工坊", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_workbench", "fnt_gear_display", "fnt_brass_telescope", "fnt_tesla_coil", "fnt_bookshelf", "fnt_lamp_table", "fnt_brass_clock", "fnt_chest_metal"] },
+			{ "name": "创新实验室", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_workbench", "fnt_tesla_coil", "fnt_mechanical_arm", "fnt_computer", "fnt_gear_display", "fnt_lamp_ceiling", "fnt_bookshelf", "fnt_pressure_gauge"] },
+			{ "name": "机械师小屋", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_workbench", "fnt_anvil", "fnt_gear_display", "fnt_chest_wood", "fnt_lamp_table", "fnt_brass_clock", "fnt_bookshelf", "fnt_rug_large"] }
+		],
+		"bld_steam_bathhouse": [
+			{ "name": "蒸汽浴室", "walls": ["wall_tile"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_copper_bathtub", "fnt_steam_vent", "fnt_locker", "fnt_bench", "fnt_mirror_bath", "fnt_lamp_ceiling", "fnt_pressure_gauge", "fnt_brass_clock"] },
+			{ "name": "豪华浴场", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_copper_bathtub", "fnt_steam_vent", "fnt_chandelier", "fnt_sofa_single", "fnt_plant_large", "fnt_mirror_bath", "fnt_brass_clock", "fnt_rug_large"] },
+			{ "name": "公共澡堂", "walls": ["wall_brick"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_bathtub", "fnt_steam_vent", "fnt_locker", "fnt_bench", "fnt_mirror_bath", "fnt_fan_ceiling", "fnt_brass_clock", "fnt_trash_can"] }
+		],
+		"bld_gear_emporium": [
+			{ "name": "齿轮商店", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_gear_display", "fnt_display_shelf", "fnt_cash_register", "fnt_brass_clock", "fnt_pneumatic_tube", "fnt_lamp_table", "fnt_chandelier", "fnt_rug_large"] },
+			{ "name": "机械配件店", "walls": ["wall_metal_panel"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_gear_display", "fnt_display_shelf", "fnt_workbench", "fnt_cash_register", "fnt_pressure_gauge", "fnt_lamp_ceiling", "fnt_brass_clock", "fnt_locker"] },
+			{ "name": "发明家商店", "walls": ["wall_glass"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_gear_display", "fnt_automaton_stand", "fnt_display_shelf", "fnt_cash_register", "fnt_brass_telescope", "fnt_chandelier", "fnt_brass_clock", "fnt_sofa_single"] }
+		],
+		"bld_automaton_showroom": [
+			{ "name": "自动机展厅", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_automaton_stand", "fnt_gear_display", "fnt_bench", "fnt_chandelier", "fnt_brass_clock", "fnt_plant_large", "fnt_rug_large", "fnt_painting_large"] },
+			{ "name": "机器人画廊", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_automaton_stand", "fnt_mannequin", "fnt_gear_display", "fnt_bench", "fnt_chandelier", "fnt_brass_clock", "fnt_bookshelf", "fnt_rug_large"] },
+			{ "name": "发明展览馆", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_automaton_stand", "fnt_tesla_coil", "fnt_gear_display", "fnt_bench", "fnt_lamp_ceiling", "fnt_tv", "fnt_brass_clock", "fnt_plant_potted"] }
+		],
+		"bld_vampire_castle": [
+			{ "name": "吸血鬼城堡", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_gothic_throne", "fnt_coffin", "fnt_blood_fountain", "fnt_candelabra", "fnt_organ", "fnt_chandelier", "fnt_painting_large", "fnt_rug_large"] },
+			{ "name": "血族宅邸", "walls": ["wall_marble"], "floors": ["floor_marble_black"], "furnitures": ["fnt_coffin", "fnt_gothic_mirror", "fnt_sofa_corner", "fnt_piano", "fnt_chandelier", "fnt_painting_large", "fnt_blood_fountain", "fnt_candelabra"] },
+			{ "name": "古堡废墟", "walls": ["wall_stone"], "floors": ["floor_dirt"], "furnitures": ["fnt_coffin", "fnt_skull_pile", "fnt_gargoyle", "fnt_candelabra", "fnt_spider_chandelier", "fnt_barrel_fire", "fnt_chest_wood", "fnt_rug_large"] }
+		],
+		"bld_blood_bank": [
+			{ "name": "血库", "walls": ["wall_concrete"], "floors": ["floor_tile_white"], "furnitures": ["fnt_fridge", "fnt_med_cabinet", "fnt_hospital_bed", "fnt_exam_table", "fnt_computer", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_locker"] },
+			{ "name": "血族餐厅", "walls": ["wall_brick"], "floors": ["floor_marble_black"], "furnitures": ["fnt_blood_fountain", "fnt_table_dining", "fnt_chair_arm", "fnt_chandelier", "fnt_candelabra", "fnt_gothic_mirror", "fnt_rug_large", "fnt_painting_large"] },
+			{ "name": "地下血室", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_coffin", "fnt_blood_fountain", "fnt_chest_metal", "fnt_candelabra", "fnt_skull_pile", "fnt_eye_lamp", "fnt_rug_large", "fnt_safe"] }
+		],
+		"bld_crypt": [
+			{ "name": "地下墓穴", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_coffin", "fnt_skull_pile", "fnt_candelabra", "fnt_gargoyle", "fnt_iron_maiden", "fnt_chest_wood", "fnt_rug_large", "fnt_candle"] },
+			{ "name": "家族墓室", "walls": ["wall_marble"], "floors": ["floor_marble_black"], "furnitures": ["fnt_coffin", "fnt_sarcophagus", "fnt_painting_large", "fnt_chandelier", "fnt_candelabra", "fnt_rug_large", "fnt_bench", "fnt_plant_potted"] },
+			{ "name": "吸血鬼棺室", "walls": ["wall_obsidian"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_coffin", "fnt_blood_fountain", "fnt_candelabra", "fnt_gothic_mirror", "fnt_skull_pile", "fnt_spider_chandelier", "fnt_rug_large", "fnt_chest_metal"] }
+		],
+		"bld_gothic_cathedral": [
+			{ "name": "哥特大教堂", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_bench", "fnt_organ", "fnt_stained_glass", "fnt_candelabra", "fnt_gargoyle", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large"] },
+			{ "name": "黑暗教会", "walls": ["wall_obsidian"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_gothic_throne", "fnt_organ", "fnt_coffin", "fnt_skull_pile", "fnt_spider_chandelier", "fnt_candelabra", "fnt_stained_glass", "fnt_blood_fountain"] },
+			{ "name": "废弃教堂", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bench", "fnt_candelabra", "fnt_skull_pile", "fnt_coffin", "fnt_barrel_fire", "fnt_chest_wood", "fnt_rug_large", "fnt_painting_large"] }
+		],
+		"bld_werewolf_den": [
+			{ "name": "狼人巢穴", "walls": ["wall_stone"], "floors": ["floor_dirt"], "furnitures": ["fnt_fur_rug", "fnt_fire_pit", "fnt_chest_wood", "fnt_weapon_rack_medieval", "fnt_barrel_medieval", "fnt_candle", "fnt_skull_pile", "fnt_bench"] },
+			{ "name": "野兽洞穴", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_fur_rug", "fnt_fire_pit", "fnt_meat_drying_rack", "fnt_chest_wood", "fnt_candle", "fnt_skull_pile", "fnt_barrel_fire", "fnt_rug_large"] },
+			{ "name": "月光祭坛", "walls": ["wall_obsidian"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_ritual_circle", "fnt_fur_rug", "fnt_candelabra", "fnt_skull_pile", "fnt_eye_lamp", "fnt_fire_pit", "fnt_coffin", "fnt_rug_large"] }
+		],
+		"bld_witch_cottage": [
+			{ "name": "女巫小屋", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_cauldron", "fnt_magic_bookshelf", "fnt_bed_single", "fnt_table_round", "fnt_chair_wood", "fnt_candle", "fnt_plant_potted", "fnt_rug_large"] },
+			{ "name": "药草小屋", "walls": ["wall_adobe"], "floors": ["floor_dirt"], "furnitures": ["fnt_cauldron", "fnt_alchemy_table", "fnt_plant_large", "fnt_chest_wood", "fnt_lamp_table", "fnt_bookshelf", "fnt_rug_large", "fnt_fireplace"] },
+			{ "name": "黑魔法巢穴", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_cauldron", "fnt_magic_bookshelf", "fnt_skull_pile", "fnt_candelabra", "fnt_coffin", "fnt_madness_mirror", "fnt_eye_lamp", "fnt_rug_large"] }
+		],
+		"bld_survivor_camp": [
+			{ "name": "幸存者营地", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_scrap_bed", "fnt_barrel_fire", "fnt_junk_barricade", "fnt_water_collector", "fnt_meat_drying_rack", "fnt_tire_seat", "fnt_chest_wood", "fnt_radio"] },
+			{ "name": "避难所", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_bed_bunk", "fnt_locker", "fnt_fridge", "fnt_generator", "fnt_radio", "fnt_lamp_ceiling", "fnt_water_collector", "fnt_med_cabinet"] },
+			{ "name": "临时据点", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_scrap_bed", "fnt_barrel_fire", "fnt_junk_barricade", "fnt_scrap_generator", "fnt_tire_seat", "fnt_car_door_table", "fnt_radio", "fnt_locker"] }
+		],
+		"bld_bunker": [
+			{ "name": "地下掩体", "walls": ["wall_reinforced_concrete"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_bed_bunk", "fnt_locker", "fnt_generator", "fnt_rad_scrubber", "fnt_hazmat_locker", "fnt_fridge", "fnt_radio", "fnt_alarm_panel"] },
+			{ "name": "军用碉堡", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_bed_single", "fnt_gun_rack", "fnt_computer", "fnt_security_camera", "fnt_generator", "fnt_radio", "fnt_alarm_panel", "fnt_locker"] },
+			{ "name": "防空洞", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_bed_bunk", "fnt_bench", "fnt_water_collector", "fnt_fridge", "fnt_rad_scrubber", "fnt_lamp_ceiling", "fnt_radio", "fnt_locker"] }
+		],
+		"bld_scrap_yard": [
+			{ "name": "废品场", "walls": ["wall_metal_panel"], "floors": ["floor_dirt"], "furnitures": ["fnt_workbench", "fnt_junk_barricade", "fnt_scrap_generator", "fnt_car_door_table", "fnt_tire_seat", "fnt_barrel_fire", "fnt_locker", "fnt_dumpster"] },
+			{ "name": "拆车场", "walls": ["wall_concrete"], "floors": ["floor_concrete_industrial"], "furnitures": ["fnt_workbench", "fnt_forklift", "fnt_chest_metal", "fnt_locker", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_radio", "fnt_dumpster"] },
+			{ "name": "废料回收站", "walls": ["wall_brick"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_workbench", "fnt_display_shelf", "fnt_cash_register", "fnt_scrap_generator", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_locker", "fnt_radio"] }
+		],
+		"bld_raider_outpost": [
+			{ "name": "掠夺者据点", "walls": ["wall_concrete"], "floors": ["floor_dirt"], "furnitures": ["fnt_scrap_bed", "fnt_barrel_fire", "fnt_junk_barricade", "fnt_gun_rack", "fnt_skull_pile", "fnt_tire_seat", "fnt_car_door_table", "fnt_radio"] },
+			{ "name": "土匪营地", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_hammock", "fnt_barrel_fire", "fnt_weapon_rack_medieval", "fnt_chest_wood", "fnt_meat_drying_rack", "fnt_tire_seat", "fnt_skull_pile", "fnt_radio"] },
+			{ "name": "武装堡垒", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_bed_bunk", "fnt_gun_rack", "fnt_junk_barricade", "fnt_scrap_generator", "fnt_security_camera", "fnt_alarm_panel", "fnt_locker", "fnt_radio"] }
+		],
+		"bld_water_purifier": [
+			{ "name": "净水站", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_water_collector", "fnt_generator", "fnt_computer", "fnt_pressure_gauge", "fnt_locker", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_radio"] },
+			{ "name": "水处理厂", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_water_collector", "fnt_generator", "fnt_table_desk", "fnt_chair_office", "fnt_computer", "fnt_lamp_ceiling", "fnt_locker", "fnt_alarm_panel"] },
+			{ "name": "简易净水器", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_water_collector", "fnt_scrap_generator", "fnt_barrel_fire", "fnt_chest_wood", "fnt_tire_seat", "fnt_radio", "fnt_car_door_table", "fnt_locker"] }
+		],
+		"bld_trading_post_wasteland": [
+			{ "name": "废土商站", "walls": ["wall_metal_panel"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_safe", "fnt_gun_rack", "fnt_junk_barricade", "fnt_lamp_ceiling", "fnt_security_camera", "fnt_locker"] },
+			{ "name": "拾荒者市场", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_display_shelf", "fnt_car_door_table", "fnt_tire_seat", "fnt_barrel_fire", "fnt_chest_wood", "fnt_radio", "fnt_junk_barricade", "fnt_safe"] },
+			{ "name": "武器商人", "walls": ["wall_concrete"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_gun_rack", "fnt_weapon_display", "fnt_cash_register", "fnt_safe", "fnt_junk_barricade", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_locker"] }
+		],
+		"bld_pirate_tavern": [
+			{ "name": "海盗酒馆", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_rum_barrel", "fnt_table_round", "fnt_stool", "fnt_hammock", "fnt_ship_lantern", "fnt_jolly_roger", "fnt_anchor", "fnt_fishing_net"] },
+			{ "name": "走私者酒吧", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_rum_barrel", "fnt_whiskey_shelf", "fnt_stool", "fnt_table_round", "fnt_treasure_chest", "fnt_ship_lantern", "fnt_jolly_roger", "fnt_safe"] },
+			{ "name": "船长餐厅", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_table_dining", "fnt_chair_arm", "fnt_rum_barrel", "fnt_ship_wheel", "fnt_anchor", "fnt_chandelier", "fnt_painting_large", "fnt_navigation_table"] }
+		],
+		"bld_pirate_hideout": [
+			{ "name": "海盗藏身处", "walls": ["wall_stone"], "floors": ["floor_dirt"], "furnitures": ["fnt_treasure_chest", "fnt_hammock", "fnt_rum_barrel", "fnt_cannon", "fnt_jolly_roger", "fnt_ship_lantern", "fnt_anchor", "fnt_fishing_net"] },
+			{ "name": "海盗洞穴", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_treasure_chest", "fnt_rum_barrel", "fnt_cannon", "fnt_barrel_fire", "fnt_hammock", "fnt_ship_lantern", "fnt_jolly_roger", "fnt_chest_wood"] },
+			{ "name": "秘密基地", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_treasure_chest", "fnt_safe", "fnt_navigation_table", "fnt_hammock", "fnt_rum_barrel", "fnt_ship_lantern", "fnt_spyglass_stand", "fnt_cannon"] }
+		],
+		"bld_shipyard": [
+			{ "name": "造船厂", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_workbench", "fnt_anvil", "fnt_anchor", "fnt_ship_wheel", "fnt_rope_coil", "fnt_chest_wood", "fnt_ship_lantern", "fnt_locker"] },
+			{ "name": "维修码头", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_workbench", "fnt_anchor", "fnt_rope_coil", "fnt_chest_metal", "fnt_locker", "fnt_lamp_ceiling", "fnt_forklift", "fnt_radio"] },
+			{ "name": "海军船坞", "walls": ["wall_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_cannon", "fnt_anchor", "fnt_navigation_table", "fnt_locker", "fnt_computer", "fnt_security_camera", "fnt_lamp_ceiling", "fnt_radio"] }
+		],
+		"bld_treasure_vault": [
+			{ "name": "宝藏库", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_treasure_chest", "fnt_safe", "fnt_display_shelf", "fnt_ship_lantern", "fnt_anchor", "fnt_skull_pile", "fnt_chest_metal", "fnt_rug_large"] },
+			{ "name": "海盗金库", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_treasure_chest", "fnt_safe", "fnt_security_camera", "fnt_alarm_panel", "fnt_chest_metal", "fnt_lamp_ceiling", "fnt_rug_large", "fnt_painting_large"] },
+			{ "name": "沉船遗宝", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_treasure_chest", "fnt_rum_barrel", "fnt_anchor", "fnt_fishing_net", "fnt_skull_pile", "fnt_ship_lantern", "fnt_chest_wood", "fnt_coffin"] }
+		],
+		"bld_lighthouse": [
+			{ "name": "灯塔", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_spyglass_stand", "fnt_ship_lantern", "fnt_bed_single", "fnt_table_desk", "fnt_chair_wood", "fnt_bookshelf", "fnt_radio", "fnt_clock_wall"] },
+			{ "name": "导航塔", "walls": ["wall_concrete"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_spyglass_stand", "fnt_computer", "fnt_radio", "fnt_navigation_table", "fnt_lamp_ceiling", "fnt_locker", "fnt_bench", "fnt_clock_wall"] },
+			{ "name": "灯塔小屋", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bed_single", "fnt_table_round", "fnt_chair_wood", "fnt_fireplace", "fnt_bookshelf", "fnt_lamp_table", "fnt_ship_lantern", "fnt_rug_large"] }
+		],
+		"bld_smugglers_cove": [
+			{ "name": "走私者海湾", "walls": ["wall_stone"], "floors": ["floor_dirt"], "furnitures": ["fnt_treasure_chest", "fnt_rum_barrel", "fnt_cannon", "fnt_hammock", "fnt_barrel_fire", "fnt_fishing_net", "fnt_ship_lantern", "fnt_anchor"] },
+			{ "name": "秘密港口", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_safe", "fnt_navigation_table", "fnt_rum_barrel", "fnt_cannon", "fnt_ship_lantern", "fnt_jolly_roger", "fnt_locker", "fnt_chest_wood"] },
+			{ "name": "黑市码头", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_safe", "fnt_gun_rack", "fnt_security_camera", "fnt_ship_lantern", "fnt_jolly_roger", "fnt_locker"] }
+		],
+		"bld_saloon": [
+			{ "name": "西部酒馆", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_saloon_door", "fnt_poker_table", "fnt_whiskey_shelf", "fnt_stool", "fnt_piano", "fnt_spittoon", "fnt_wanted_poster", "fnt_lamp_table"] },
+			{ "name": "赌场", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_poker_table", "fnt_whiskey_shelf", "fnt_stool", "fnt_safe", "fnt_chandelier", "fnt_painting_large", "fnt_cash_register", "fnt_lamp_floor"] },
+			{ "name": "酒吧", "walls": ["wall_brick"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_whiskey_shelf", "fnt_stool", "fnt_table_round", "fnt_chair_wood", "fnt_jukebox", "fnt_pool_table", "fnt_lamp_ceiling", "fnt_tv"] }
+		],
+		"bld_sheriffs_office": [
+			{ "name": "警长办公室", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_sheriff_desk", "fnt_chair_wood", "fnt_gun_cabinet", "fnt_jail_cell", "fnt_wanted_poster", "fnt_lamp_table", "fnt_clock_wall", "fnt_safe"] },
+			{ "name": "治安官府", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_sheriff_desk", "fnt_chair_arm", "fnt_gun_cabinet", "fnt_jail_cell", "fnt_bookshelf", "fnt_wanted_poster", "fnt_chandelier", "fnt_rug_large"] },
+			{ "name": "监狱", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_jail_cell", "fnt_prison_bed", "fnt_prison_toilet", "fnt_sheriff_desk", "fnt_gun_cabinet", "fnt_lamp_ceiling", "fnt_wanted_poster", "fnt_locker"] }
+		],
+		"bld_general_store_western": [
+			{ "name": "杂货店", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_barrel_medieval", "fnt_chest_wood", "fnt_lamp_table", "fnt_clock_wall", "fnt_wanted_poster", "fnt_stool"] },
+			{ "name": "商贸站", "walls": ["wall_adobe"], "floors": ["floor_dirt"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_saddle_rack", "fnt_gun_cabinet", "fnt_barrel_medieval", "fnt_lamp_table", "fnt_cactus_pot", "fnt_bench"] },
+			{ "name": "前哨商店", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_display_shelf", "fnt_cash_register", "fnt_safe", "fnt_chuck_wagon", "fnt_horse_trough", "fnt_lamp_ceiling", "fnt_wanted_poster", "fnt_rug_large"] }
+		],
+		"bld_stable": [
+			{ "name": "马厩", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_horse_trough", "fnt_saddle_rack", "fnt_chest_wood", "fnt_hay_bed", "fnt_lamp_table", "fnt_workbench", "fnt_barrel_medieval", "fnt_bench"] },
+			{ "name": "马术俱乐部", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_horse_trough", "fnt_saddle_rack", "fnt_trophy_case", "fnt_locker", "fnt_bench", "fnt_lamp_ceiling", "fnt_clock_wall", "fnt_rug_large"] },
+			{ "name": "驿站", "walls": ["wall_wood_panel"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_horse_trough", "fnt_saddle_rack", "fnt_bed_single", "fnt_table_round", "fnt_chair_wood", "fnt_fireplace", "fnt_lamp_table", "fnt_chest_wood"] }
+		],
+		"bld_gunsmith_western": [
+			{ "name": "枪匠铺", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_gun_cabinet", "fnt_workbench", "fnt_anvil", "fnt_display_shelf", "fnt_cash_register", "fnt_lamp_table", "fnt_wanted_poster", "fnt_safe"] },
+			{ "name": "武器商店", "walls": ["wall_brick"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_gun_cabinet", "fnt_weapon_display", "fnt_display_shelf", "fnt_cash_register", "fnt_safe", "fnt_chandelier", "fnt_rug_large", "fnt_security_camera"] },
+			{ "name": "军火库", "walls": ["wall_reinforced_concrete"], "floors": ["floor_concrete_polished"], "furnitures": ["fnt_gun_cabinet", "fnt_weapon_display", "fnt_safe", "fnt_security_camera", "fnt_alarm_panel", "fnt_lamp_ceiling", "fnt_locker", "fnt_workbench"] }
+		],
+		"bld_ranch": [
+			{ "name": "牧场", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bed_double", "fnt_table_dining", "fnt_chair_wood", "fnt_fireplace", "fnt_saddle_rack", "fnt_gun_cabinet", "fnt_lamp_table", "fnt_rug_large"] },
+			{ "name": "农舍", "walls": ["wall_adobe"], "floors": ["floor_dirt"], "furnitures": ["fnt_bed_single", "fnt_table_round", "fnt_chair_wood", "fnt_stove", "fnt_fridge", "fnt_chest_wood", "fnt_lamp_table", "fnt_cactus_pot"] },
+			{ "name": "豪华牧场", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bed_double", "fnt_sofa_corner", "fnt_fireplace", "fnt_chandelier", "fnt_painting_large", "fnt_trophy_case", "fnt_piano", "fnt_rug_large"] }
+		],
+		"bld_gold_mine": [
+			{ "name": "金矿", "walls": ["wall_stone"], "floors": ["floor_dirt"], "furnitures": ["fnt_workbench", "fnt_anvil", "fnt_chest_metal", "fnt_safe", "fnt_lamp_table", "fnt_barrel_medieval", "fnt_locker", "fnt_barrel_fire"] },
+			{ "name": "矿井", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_workbench", "fnt_chest_wood", "fnt_generator", "fnt_locker", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_barrel_fire", "fnt_radio"] },
+			{ "name": "采矿营地", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_bed_bunk", "fnt_table_round", "fnt_stool", "fnt_barrel_fire", "fnt_chest_wood", "fnt_lamp_table", "fnt_radio", "fnt_locker"] }
+		],
+		"bld_knights_castle": [
+			{ "name": "骑士城堡", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_throne_medieval", "fnt_round_table", "fnt_banner_stand", "fnt_armor_stand_medieval", "fnt_weapon_rack_medieval", "fnt_chandelier", "fnt_tapestry", "fnt_rug_large"] },
+			{ "name": "王室宫殿", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_throne_medieval", "fnt_round_table", "fnt_chandelier", "fnt_painting_large", "fnt_piano", "fnt_tapestry", "fnt_rug_large", "fnt_plant_large"] },
+			{ "name": "要塞", "walls": ["wall_reinforced_concrete"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_armor_stand_medieval", "fnt_weapon_rack_medieval", "fnt_banner_stand", "fnt_bed_bunk", "fnt_locker", "fnt_lamp_ceiling", "fnt_cannon", "fnt_security_camera"] }
+		],
+		"bld_blacksmith_medieval": [
+			{ "name": "铁匠铺", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_forge", "fnt_anvil", "fnt_workbench", "fnt_weapon_rack_medieval", "fnt_chest_metal", "fnt_barrel_medieval", "fnt_lamp_table", "fnt_locker"] },
+			{ "name": "武器锻造厂", "walls": ["wall_brick"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_forge", "fnt_anvil", "fnt_weapon_display", "fnt_workbench", "fnt_chest_metal", "fnt_lamp_ceiling", "fnt_fan_ceiling", "fnt_locker"] },
+			{ "name": "皇家锻造所", "walls": ["wall_marble"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_forge", "fnt_anvil", "fnt_armor_stand_medieval", "fnt_weapon_display", "fnt_chandelier", "fnt_trophy_case", "fnt_rug_large", "fnt_painting_large"] }
+		],
+		"bld_mead_hall": [
+			{ "name": "蜜酒大厅", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_viking_throne", "fnt_mead_barrel", "fnt_fire_pit", "fnt_fur_rug", "fnt_bench", "fnt_weapon_wall_norse", "fnt_longship_prow", "fnt_horn_rack"] },
+			{ "name": "宴会厅", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_table_dining", "fnt_bench", "fnt_mead_barrel", "fnt_fire_pit", "fnt_chandelier", "fnt_tapestry", "fnt_fur_rug", "fnt_trophy_case"] },
+			{ "name": "首领大厅", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_viking_throne", "fnt_round_table", "fnt_mead_barrel", "fnt_fire_pit", "fnt_weapon_wall_norse", "fnt_saga_stone", "fnt_fur_rug", "fnt_chandelier"] }
+		],
+		"bld_viking_longhouse": [
+			{ "name": "维京长屋", "walls": ["wall_wood_plank"], "floors": ["floor_wood_pine"], "furnitures": ["fnt_bed_double", "fnt_fire_pit", "fnt_mead_barrel", "fnt_fur_rug", "fnt_weapon_wall_norse", "fnt_chest_wood", "fnt_loom_norse", "fnt_horn_rack"] },
+			{ "name": "部落居所", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_hay_bed", "fnt_fire_pit", "fnt_fur_rug", "fnt_chest_wood", "fnt_barrel_medieval", "fnt_candle", "fnt_weapon_rack_medieval", "fnt_bench"] },
+			{ "name": "酋长住所", "walls": ["wall_wood_panel"], "floors": ["floor_wood_oak"], "furnitures": ["fnt_bed_double", "fnt_viking_throne", "fnt_fur_rug", "fnt_fire_pit", "fnt_mead_barrel", "fnt_saga_stone", "fnt_chandelier", "fnt_painting_large"] }
+		],
+		"bld_temple_of_odin": [
+			{ "name": "奥丁神殿", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_rune_altar", "fnt_saga_stone", "fnt_fire_pit", "fnt_fur_rug", "fnt_world_tree_carving", "fnt_candelabra", "fnt_bench", "fnt_horn_rack"] },
+			{ "name": "神圣树林", "walls": ["wall_wood_plank"], "floors": ["floor_dirt"], "furnitures": ["fnt_rune_altar", "fnt_world_tree_carving", "fnt_fire_pit", "fnt_fur_rug", "fnt_candle", "fnt_skull_pile", "fnt_bench", "fnt_plant_large"] },
+			{ "name": "先祖圣地", "walls": ["wall_stone"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_rune_altar", "fnt_saga_stone", "fnt_rune_stone", "fnt_world_tree_carving", "fnt_fire_pit", "fnt_skull_pile", "fnt_fur_rug", "fnt_candelabra"] }
+		],
+		"bld_pyramid": [
+			{ "name": "金字塔", "walls": ["wall_stone"], "floors": ["floor_hieroglyph"], "furnitures": ["fnt_sarcophagus", "fnt_canopic_jars", "fnt_hieroglyph_panel", "fnt_oil_lamp_egyptian", "fnt_treasure_chest", "fnt_sphinx_statue", "fnt_obelisk_small", "fnt_rug_large"] },
+			{ "name": "法老墓室", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_sarcophagus", "fnt_pharaoh_throne", "fnt_canopic_jars", "fnt_hieroglyph_panel", "fnt_chandelier", "fnt_painting_large", "fnt_rug_large", "fnt_golden_cat"] },
+			{ "name": "祭司密室", "walls": ["wall_stone"], "floors": ["floor_magic_circle"], "furnitures": ["fnt_ankh_stand", "fnt_embalming_table", "fnt_canopic_jars", "fnt_papyrus_scroll_rack", "fnt_oil_lamp_egyptian", "fnt_hieroglyph_panel", "fnt_rug_large", "fnt_skull_pile"] }
+		],
+		"bld_temple_of_ra": [
+			{ "name": "太阳神殿", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_obelisk_small", "fnt_sphinx_statue", "fnt_hieroglyph_panel", "fnt_lotus_pool", "fnt_bench", "fnt_chandelier", "fnt_oil_lamp_egyptian", "fnt_rug_large"] },
+			{ "name": "神圣祭坛", "walls": ["wall_stone"], "floors": ["floor_hieroglyph"], "furnitures": ["fnt_ankh_stand", "fnt_obelisk_small", "fnt_oil_lamp_egyptian", "fnt_incense_burner", "fnt_bench", "fnt_hieroglyph_panel", "fnt_rug_large", "fnt_golden_cat"] },
+			{ "name": "光明圣殿", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_sphinx_statue", "fnt_lotus_pool", "fnt_obelisk_small", "fnt_chandelier", "fnt_plant_large", "fnt_bench", "fnt_painting_large", "fnt_rug_large"] }
+		],
+		"bld_parthenon": [
+			{ "name": "帕特农神庙", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_greek_column", "fnt_statue_zeus", "fnt_amphora", "fnt_marble_bench", "fnt_olympic_torch", "fnt_chandelier", "fnt_rug_large", "fnt_painting_large"] },
+			{ "name": "神殿", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_oracle_tripod", "fnt_amphora", "fnt_greek_column", "fnt_marble_bench", "fnt_olympic_torch", "fnt_incense_burner", "fnt_rug_large", "fnt_plant_large"] },
+			{ "name": "圣山祭坛", "walls": ["wall_stone"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_oracle_tripod", "fnt_greek_column", "fnt_amphora", "fnt_olympic_torch", "fnt_fire_pit", "fnt_bench", "fnt_rug_large", "fnt_statue_zeus"] }
+		],
+		"bld_agora": [
+			{ "name": "集市广场", "walls": ["wall_marble"], "floors": ["floor_stone_cobble"], "furnitures": ["fnt_agora_stall", "fnt_amphora", "fnt_greek_column", "fnt_marble_bench", "fnt_fountain", "fnt_plant_large", "fnt_olive_oil_press", "fnt_cash_register"] },
+			{ "name": "商业中心", "walls": ["wall_brick"], "floors": ["floor_tile_ceramic"], "furnitures": ["fnt_agora_stall", "fnt_display_shelf", "fnt_cash_register", "fnt_bench", "fnt_lamp_ceiling", "fnt_plant_potted", "fnt_clock_wall", "fnt_fountain"] },
+			{ "name": "哲学广场", "walls": ["wall_marble"], "floors": ["floor_marble_white"], "furnitures": ["fnt_philosophers_chair", "fnt_marble_bench", "fnt_greek_column", "fnt_bookshelf", "fnt_statue_zeus", "fnt_fountain", "fnt_plant_large", "fnt_lyre"] }
+		],
+		"bld_space_station": [
+			{ "name": "空间站", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_cryo_pod", "fnt_gravity_bed", "fnt_hologram_table", "fnt_ai_core", "fnt_star_map", "fnt_plasma_lamp", "fnt_teleporter_pad", "fnt_food_synthesizer"] },
+			{ "name": "指挥中心", "walls": ["wall_glass"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_hologram_table", "fnt_quantum_computer", "fnt_chair_office", "fnt_star_map", "fnt_led_panel", "fnt_plasma_lamp", "fnt_security_camera", "fnt_ai_core"] },
+			{ "name": "科研舱", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_med_bay", "fnt_quantum_computer", "fnt_cryo_pod", "fnt_hologram_table", "fnt_plasma_lamp", "fnt_robot_arm", "fnt_ai_core", "fnt_bookshelf"] }
+		],
+		"bld_spaceport": [
+			{ "name": "太空港", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_bench", "fnt_hologram_table", "fnt_vending_drink", "fnt_star_map", "fnt_led_panel", "fnt_security_camera", "fnt_plasma_lamp", "fnt_plant_large"] },
+			{ "name": "登机大厅", "walls": ["wall_glass"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_sofa_corner", "fnt_table_coffee", "fnt_hologram_table", "fnt_food_synthesizer", "fnt_plasma_lamp", "fnt_led_panel", "fnt_plant_large", "fnt_aquarium"] },
+			{ "name": "货运中心", "walls": ["wall_metal_panel"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_forklift", "fnt_chest_metal", "fnt_computer", "fnt_security_camera", "fnt_robot_arm", "fnt_plasma_lamp", "fnt_locker", "fnt_teleporter_pad"] }
+		],
+		"bld_research_lab_scifi": [
+			{ "name": "科研实验室", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_quantum_computer", "fnt_hologram_table", "fnt_med_bay", "fnt_robot_arm", "fnt_bookshelf", "fnt_plasma_lamp", "fnt_ai_core", "fnt_cryo_pod"] },
+			{ "name": "生物实验室", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_med_bay", "fnt_cryo_pod", "fnt_med_cabinet", "fnt_computer", "fnt_plasma_lamp", "fnt_ac_unit", "fnt_robot_arm", "fnt_security_camera"] },
+			{ "name": "武器实验室", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_robot_arm", "fnt_quantum_computer", "fnt_energy_shield_gen", "fnt_weapon_display", "fnt_security_camera", "fnt_alarm_panel", "fnt_plasma_lamp", "fnt_locker"] }
+		],
+		"bld_cloning_facility": [
+			{ "name": "克隆设施", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_cryo_pod", "fnt_med_bay", "fnt_ai_core", "fnt_quantum_computer", "fnt_plasma_lamp", "fnt_security_camera", "fnt_robot_arm", "fnt_locker"] },
+			{ "name": "基因实验室", "walls": ["wall_drywall"], "floors": ["floor_tile_white"], "furnitures": ["fnt_cryo_pod", "fnt_med_cabinet", "fnt_computer", "fnt_bookshelf", "fnt_plasma_lamp", "fnt_ac_unit", "fnt_security_camera", "fnt_locker"] },
+			{ "name": "复制中心", "walls": ["wall_reinforced_concrete"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_cryo_pod", "fnt_ai_core", "fnt_quantum_computer", "fnt_teleporter_pad", "fnt_plasma_lamp", "fnt_energy_shield_gen", "fnt_security_camera", "fnt_alarm_panel"] }
+		],
+		"bld_android_factory": [
+			{ "name": "机器人工厂", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_robot_arm", "fnt_ai_core", "fnt_quantum_computer", "fnt_workbench", "fnt_plasma_lamp", "fnt_security_camera", "fnt_generator", "fnt_locker"] },
+			{ "name": "仿生人车间", "walls": ["wall_glass"], "floors": ["floor_tile_anti_static"], "furnitures": ["fnt_robot_arm", "fnt_cyberware_bench", "fnt_neural_link", "fnt_ai_core", "fnt_plasma_lamp", "fnt_hologram_table", "fnt_locker", "fnt_security_camera"] },
+			{ "name": "组装线", "walls": ["wall_reinforced_concrete"], "floors": ["floor_metal_diamond"], "furnitures": ["fnt_robot_arm", "fnt_workbench", "fnt_forklift", "fnt_chest_metal", "fnt_generator", "fnt_plasma_lamp", "fnt_security_camera", "fnt_computer"] }
+		],
+		"bld_alien_embassy": [
+			{ "name": "外星大使馆", "walls": ["wall_glass"], "floors": ["floor_rune_glow"], "furnitures": ["fnt_hologram_table", "fnt_sofa_corner", "fnt_teleporter_pad", "fnt_ai_core", "fnt_plasma_lamp", "fnt_aquarium", "fnt_plant_large", "fnt_star_map"] },
+			{ "name": "接待大厅", "walls": ["wall_glass"], "floors": ["floor_marble_white"], "furnitures": ["fnt_sofa_corner", "fnt_table_coffee", "fnt_hologram_table", "fnt_chandelier", "fnt_painting_large", "fnt_plant_large", "fnt_plasma_lamp", "fnt_aquarium"] },
+			{ "name": "谈判室", "walls": ["wall_glass"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_round_table", "fnt_chair_arm", "fnt_hologram_table", "fnt_led_panel", "fnt_star_map", "fnt_plasma_lamp", "fnt_security_camera", "fnt_ai_core"] }
+		],
+		"bld_terraforming_hub": [
+			{ "name": "地球化中心", "walls": ["wall_glass"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_quantum_computer", "fnt_hologram_table", "fnt_robot_arm", "fnt_generator", "fnt_ai_core", "fnt_plasma_lamp", "fnt_plant_large", "fnt_star_map"] },
+			{ "name": "大气处理站", "walls": ["wall_metal_panel"], "floors": ["floor_metal_grate"], "furnitures": ["fnt_generator", "fnt_computer", "fnt_pressure_gauge", "fnt_ac_unit", "fnt_plasma_lamp", "fnt_alarm_panel", "fnt_locker", "fnt_radio"] },
+			{ "name": "生态舱", "walls": ["wall_glass"], "floors": ["floor_dirt"], "furnitures": ["fnt_plant_large", "fnt_water_collector", "fnt_berry_planter", "fnt_computer", "fnt_plasma_lamp", "fnt_ai_core", "fnt_hologram_table", "fnt_bench"] }
+		],
+		"bld_holodeck": [
+			{ "name": "全息甲板", "walls": ["wall_glass"], "floors": ["floor_led_dance"], "furnitures": ["fnt_hologram_table", "fnt_braindance_chair", "fnt_ai_core", "fnt_plasma_lamp", "fnt_led_panel", "fnt_sofa_corner", "fnt_neon_sign", "fnt_security_camera"] },
+			{ "name": "虚拟现实室", "walls": ["wall_concrete"], "floors": ["floor_cyber_grid"], "furnitures": ["fnt_braindance_chair", "fnt_hologram_table", "fnt_computer", "fnt_tv", "fnt_plasma_lamp", "fnt_sofa_double", "fnt_vending_drink", "fnt_ac_unit"] },
+			{ "name": "模拟训练室", "walls": ["wall_reinforced_concrete"], "floors": ["floor_rubber"], "furnitures": ["fnt_hologram_table", "fnt_training_dummy", "fnt_ai_core", "fnt_plasma_lamp", "fnt_locker", "fnt_bench", "fnt_security_camera", "fnt_weapon_display"] }
+		]
+	}
+}

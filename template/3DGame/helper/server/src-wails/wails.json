@@ -1,0 +1,17 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "3DGame-AI-Server",
+  "outputfilename": "server",
+  "frontend:dir": "frontend",
+  "author": {
+    "name": "3DGame",
+    "email": ""
+  },
+  "info": {
+    "companyName": "3DGame",
+    "productName": "3DGame AI Server",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2024",
+    "comments": "AI Asset Generation Server"
+  }
+}

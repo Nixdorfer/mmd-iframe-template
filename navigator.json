@@ -9,20 +9,12 @@
       "editor": "template/modal/v2/library/editor.html"
     },
     "3DGame": {
-      "version": "1.0.1",
-      "versionDesc": "stable",
-      "name": "3D游戏模板",
-      "desc": "3D游戏模板 具有3D游戏引擎功能",
+      "version": "3.2.0",
+      "versionDesc": "nightly",
+      "name": "3D游戏引擎",
+      "desc": "基于WebGLv2的3D游戏引擎",
       "index": "template/3DGame",
-      "editor": "template/3DGame/v1/editor.html"
-    },
-    "3DGame-WebGL": {
-      "version": "2.0.4",
-      "versionDesc": "alpha",
-      "name": "3D游戏模板 (WebGL)",
-      "desc": "WebGL 2.0 3D游戏引擎 真3D渲染",
-      "index": "template/3DGame",
-      "editor": "template/3DGame/v2/editor.html"
+      "editor": "template/3DGame/v3/editor.html"
     }
   }
 }

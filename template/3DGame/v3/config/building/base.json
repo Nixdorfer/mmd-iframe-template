@@ -1,0 +1,6389 @@
+{
+	"buildings": [
+		{
+			"id": "bld_police_station",
+			"name": "警察局",
+			"type": "police",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_police",
+				"npc_detective",
+				"npc_swat"
+			],
+			"furnitureSlots": 25,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 64,
+				"y": 48,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_fire_station",
+			"name": "消防局",
+			"type": "fire",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_firefighter",
+				"npc_paramedic"
+			],
+			"furnitureSlots": 20,
+			"hp": 7000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_hospital",
+			"name": "医院",
+			"type": "hospital",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 8,
+			"npcTypes": [
+				"npc_doctor",
+				"npc_nurse",
+				"npc_patient",
+				"npc_receptionist"
+			],
+			"furnitureSlots": 60,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 6,
+			"voxelSize": {
+				"x": 96,
+				"y": 96,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 154
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_school",
+			"name": "学校",
+			"type": "school",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_teacher",
+				"npc_student",
+				"npc_janitor"
+			],
+			"furnitureSlots": 40,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 80,
+				"y": 48,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_convenience_store",
+			"name": "便利店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 32
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_supermarket",
+			"name": "超市",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_customer",
+				"npc_security"
+			],
+			"furnitureSlots": 50,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 16,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_apartment_small",
+			"name": "小型公寓",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 1,
+			"npcTypes": [
+				"npc_civilian"
+			],
+			"furnitureSlots": 30,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 4,
+			"voxelSize": {
+				"x": 32,
+				"y": 64,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 34,
+				"z": 34
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_apartment_large",
+			"name": "大型公寓",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 1,
+			"npcTypes": [
+				"npc_civilian",
+				"npc_security"
+			],
+			"furnitureSlots": 80,
+			"hp": 8000,
+			"fireResist": false,
+			"floors": 12,
+			"voxelSize": {
+				"x": 48,
+				"y": 192,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 51,
+				"z": 51
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_house",
+			"name": "独栋住宅",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 0.5,
+			"npcTypes": [
+				"npc_civilian"
+			],
+			"furnitureSlots": 20,
+			"hp": 2500,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 32,
+				"y": 32,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 65,
+				"z": 65
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_factory",
+			"name": "工厂",
+			"type": "factory",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_worker",
+				"npc_foreman",
+				"npc_security"
+			],
+			"furnitureSlots": 40,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 128,
+				"y": 32,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 103,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 206,
+				"z": 154
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_warehouse",
+			"name": "仓库",
+			"type": "warehouse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_worker",
+				"npc_security"
+			],
+			"furnitureSlots": 30,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 80,
+				"y": 24,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_restaurant",
+			"name": "餐厅",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_chef",
+				"npc_waiter",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 2500,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 42,
+				"z": 34
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_fast_food",
+			"name": "快餐店",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_cook",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 32
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_office_small",
+			"name": "小型办公楼",
+			"type": "office",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_office_worker",
+				"npc_receptionist",
+				"npc_security"
+			],
+			"furnitureSlots": 40,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 5,
+			"voxelSize": {
+				"x": 48,
+				"y": 80,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 51,
+				"z": 51
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_office_tower",
+			"name": "办公大厦",
+			"type": "office",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_office_worker",
+				"npc_executive",
+				"npc_receptionist",
+				"npc_security"
+			],
+			"furnitureSlots": 150,
+			"hp": 20000,
+			"fireResist": true,
+			"floors": 30,
+			"voxelSize": {
+				"x": 64,
+				"y": 480,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 68,
+				"z": 68
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_church",
+			"name": "教堂",
+			"type": "church",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_priest",
+				"npc_civilian"
+			],
+			"furnitureSlots": 30,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 48,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 94
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_bank",
+			"name": "银行",
+			"type": "bank",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_banker",
+				"npc_teller",
+				"npc_security",
+				"npc_customer"
+			],
+			"furnitureSlots": 35,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 59,
+				"z": 51
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_museum",
+			"name": "博物馆",
+			"type": "museum",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_curator",
+				"npc_guide",
+				"npc_security",
+				"npc_visitor"
+			],
+			"furnitureSlots": 60,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 80,
+				"y": 48,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 84,
+				"z": 84
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_library",
+			"name": "图书馆",
+			"type": "library",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_librarian",
+				"npc_student",
+				"npc_visitor"
+			],
+			"furnitureSlots": 45,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 68,
+				"z": 51
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_gym",
+			"name": "健身房",
+			"type": "gym",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_trainer",
+				"npc_customer",
+				"npc_receptionist"
+			],
+			"furnitureSlots": 30,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_hotel",
+			"name": "酒店",
+			"type": "hotel",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_receptionist",
+				"npc_bellboy",
+				"npc_housekeeper",
+				"npc_guest",
+				"npc_security"
+			],
+			"furnitureSlots": 100,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 15,
+			"voxelSize": {
+				"x": 64,
+				"y": 240,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_train_station",
+			"name": "火车站",
+			"type": "station",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 10,
+			"npcTypes": [
+				"npc_conductor",
+				"npc_ticket_agent",
+				"npc_traveler",
+				"npc_security"
+			],
+			"furnitureSlots": 50,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 128,
+				"y": 32,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 103,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 206,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_bus_station",
+			"name": "汽车站",
+			"type": "station",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_driver",
+				"npc_ticket_agent",
+				"npc_traveler"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_airport",
+			"name": "机场",
+			"type": "airport",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 15,
+			"npcTypes": [
+				"npc_pilot",
+				"npc_flight_attendant",
+				"npc_security",
+				"npc_customs",
+				"npc_traveler"
+			],
+			"furnitureSlots": 200,
+			"hp": 30000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 256,
+				"y": 48,
+				"z": 192
+			},
+			"sizeMin": {
+				"x": 205,
+				"z": 154
+			},
+			"sizeMax": {
+				"x": 410,
+				"z": 308
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_port",
+			"name": "港口",
+			"type": "port",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_docker",
+				"npc_sailor",
+				"npc_customs",
+				"npc_security"
+			],
+			"furnitureSlots": 40,
+			"hp": 20000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 160,
+				"y": 32,
+				"z": 128
+			},
+			"sizeMin": {
+				"x": 128,
+				"z": 103
+			},
+			"sizeMax": {
+				"x": 256,
+				"z": 206
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_military_base",
+			"name": "军事基地",
+			"type": "military",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_soldier",
+				"npc_officer",
+				"npc_mechanic"
+			],
+			"furnitureSlots": 80,
+			"hp": 25000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 128,
+				"y": 32,
+				"z": 128
+			},
+			"sizeMin": {
+				"x": 103,
+				"z": 103
+			},
+			"sizeMax": {
+				"x": 206,
+				"z": 206
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_prison",
+			"name": "监狱",
+			"type": "prison",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_guard",
+				"npc_warden",
+				"npc_prisoner"
+			],
+			"furnitureSlots": 100,
+			"hp": 20000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 96,
+				"y": 48,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 154
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_farm",
+			"name": "农场",
+			"type": "farm",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_farmer"
+			],
+			"furnitureSlots": 15,
+			"hp": 1500,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 98,
+				"z": 65
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_mine",
+			"name": "矿场",
+			"type": "mine",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_miner",
+				"npc_foreman"
+			],
+			"furnitureSlots": 20,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 130,
+				"z": 98
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_power_plant",
+			"name": "发电厂",
+			"type": "powerplant",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 10,
+			"npcTypes": [
+				"npc_engineer",
+				"npc_technician",
+				"npc_security"
+			],
+			"furnitureSlots": 30,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 96,
+				"y": 48,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_gas_station",
+			"name": "加油站",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_customer"
+			],
+			"furnitureSlots": 10,
+			"hp": 1500,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 12,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 80,
+				"z": 50
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_pharmacy",
+			"name": "药店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_pharmacist",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_clinic",
+			"name": "诊所",
+			"type": "hospital",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_doctor",
+				"npc_nurse",
+				"npc_patient"
+			],
+			"furnitureSlots": 20,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 39,
+				"z": 32
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_bar",
+			"name": "酒吧",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_bartender",
+				"npc_customer"
+			],
+			"furnitureSlots": 20,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_nightclub",
+			"name": "夜店",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_bartender",
+				"npc_dj",
+				"npc_security",
+				"npc_customer"
+			],
+			"furnitureSlots": 30,
+			"hp": 3500,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_magic_academy",
+			"name": "魔法学院",
+			"type": "magic",
+			"faction": "western_magic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_archmage",
+				"npc_wizard",
+				"npc_apprentice",
+				"npc_magic_librarian"
+			],
+			"furnitureSlots": 80,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 96,
+				"y": 80,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 139,
+				"z": 139
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_wizard_tower",
+			"name": "施法塔",
+			"type": "magic",
+			"faction": "western_magic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_wizard",
+				"npc_familiar"
+			],
+			"furnitureSlots": 25,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 8,
+			"voxelSize": {
+				"x": 32,
+				"y": 128,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 34,
+				"z": 34
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_alchemy_workshop",
+			"name": "炼金工坊",
+			"type": "magic",
+			"faction": "western_magic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_alchemist",
+				"npc_apprentice"
+			],
+			"furnitureSlots": 30,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 71
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_enchantment_hall",
+			"name": "附魔大厅",
+			"type": "magic",
+			"faction": "western_magic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_enchanter",
+				"npc_runesmith"
+			],
+			"furnitureSlots": 35,
+			"hp": 6000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 56,
+				"y": 24,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 81,
+				"z": 81
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_summoning_circle",
+			"name": "召唤阵",
+			"type": "magic",
+			"faction": "western_magic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_summoner",
+				"npc_bound_demon"
+			],
+			"furnitureSlots": 15,
+			"hp": 3000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 71
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_arcane_library",
+			"name": "奥术图书馆",
+			"type": "magic",
+			"faction": "western_magic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_magic_librarian",
+				"npc_scholar",
+				"npc_apprentice"
+			],
+			"furnitureSlots": 60,
+			"hp": 7000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 64,
+				"y": 48,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 94,
+				"z": 94
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_buddhist_temple",
+			"name": "寺庙",
+			"type": "temple",
+			"faction": "buddhist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_abbot",
+				"npc_monk",
+				"npc_pilgrim"
+			],
+			"furnitureSlots": 50,
+			"hp": 10000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 80,
+				"y": 40,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 139
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_zen_monastery",
+			"name": "禅院",
+			"type": "temple",
+			"faction": "buddhist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 2,
+			"npcTypes": [
+				"npc_zen_master",
+				"npc_monk"
+			],
+			"furnitureSlots": 30,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 24,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 94,
+				"z": 71
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_pagoda",
+			"name": "佛塔",
+			"type": "temple",
+			"faction": "buddhist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_monk"
+			],
+			"furnitureSlots": 20,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 7,
+			"voxelSize": {
+				"x": 32,
+				"y": 112,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 47,
+				"z": 47
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_sutra_hall",
+			"name": "藏经阁",
+			"type": "temple",
+			"faction": "buddhist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_monk",
+				"npc_scholar_monk"
+			],
+			"furnitureSlots": 40,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_meditation_hall",
+			"name": "禅堂",
+			"type": "temple",
+			"faction": "buddhist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_monk",
+				"npc_pilgrim"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 56,
+				"y": 20,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 81,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_bell_tower_buddhist",
+			"name": "钟楼",
+			"type": "temple",
+			"faction": "buddhist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_monk"
+			],
+			"furnitureSlots": 5,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 24,
+				"y": 48,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 20,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 36,
+				"z": 36
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_taoist_temple",
+			"name": "道观",
+			"type": "temple",
+			"faction": "taoist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_taoist_master",
+				"npc_taoist_priest",
+				"npc_pilgrim"
+			],
+			"furnitureSlots": 45,
+			"hp": 9000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 72,
+				"y": 36,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 105,
+				"z": 116
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_alchemy_furnace",
+			"name": "丹房",
+			"type": "temple",
+			"faction": "taoist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_dan_master",
+				"npc_taoist_priest"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 20,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 47,
+				"z": 47
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_martial_arena_taoist",
+			"name": "演武场",
+			"type": "temple",
+			"faction": "taoist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_martial_master",
+				"npc_disciple"
+			],
+			"furnitureSlots": 15,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 16,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 94,
+				"z": 94
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_celestial_observatory",
+			"name": "观星台",
+			"type": "temple",
+			"faction": "taoist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_astronomer",
+				"npc_taoist_priest"
+			],
+			"furnitureSlots": 15,
+			"hp": 7000,
+			"fireResist": false,
+			"floors": 4,
+			"voxelSize": {
+				"x": 28,
+				"y": 64,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 42,
+				"z": 42
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_talisman_workshop",
+			"name": "符箓坊",
+			"type": "temple",
+			"faction": "taoist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_talisman_master",
+				"npc_disciple"
+			],
+			"furnitureSlots": 25,
+			"hp": 3500,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 53,
+				"z": 42
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_spirit_shrine",
+			"name": "神祠",
+			"type": "temple",
+			"faction": "taoist",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_shrine_keeper"
+			],
+			"furnitureSlots": 10,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 24,
+				"y": 20,
+				"z": 20
+			},
+			"sizeMin": {
+				"x": 20,
+				"z": 16
+			},
+			"sizeMax": {
+				"x": 36,
+				"z": 29
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_cyberware_corp",
+			"name": "义体公司",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_corpo_exec",
+				"npc_cyber_surgeon",
+				"npc_security_drone",
+				"npc_receptionist"
+			],
+			"furnitureSlots": 100,
+			"hp": 25000,
+			"fireResist": true,
+			"floors": 20,
+			"voxelSize": {
+				"x": 80,
+				"y": 320,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_ripperdoc_clinic",
+			"name": "改造诊所",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_ripperdoc",
+				"npc_cyber_patient"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 39,
+				"z": 32
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_hacker_den",
+			"name": "黑客据点",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_netrunner",
+				"npc_fixer"
+			],
+			"furnitureSlots": 20,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 12,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_data_fortress",
+			"name": "数据堡垒",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_sysadmin",
+				"npc_security_drone",
+				"npc_ai_construct"
+			],
+			"furnitureSlots": 50,
+			"hp": 18000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 64,
+				"y": 80,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_braindance_parlor",
+			"name": "超梦馆",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_bd_technician",
+				"npc_customer"
+			],
+			"furnitureSlots": 30,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_combat_implant_shop",
+			"name": "战斗植入店",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_implant_dealer",
+				"npc_security"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 53,
+				"z": 42
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_megacorp_tower",
+			"name": "巨型企业塔",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 8,
+			"npcTypes": [
+				"npc_corpo_exec",
+				"npc_corpo_guard",
+				"npc_office_worker",
+				"npc_security_drone"
+			],
+			"furnitureSlots": 200,
+			"hp": 50000,
+			"fireResist": true,
+			"floors": 50,
+			"voxelSize": {
+				"x": 96,
+				"y": 800,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 154
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_cyber_nightclub",
+			"name": "赛博夜总会",
+			"type": "cyber",
+			"faction": "cyberpunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_bartender",
+				"npc_dj",
+				"npc_fixer",
+				"npc_customer"
+			],
+			"furnitureSlots": 40,
+			"hp": 4500,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_pokemon_gym",
+			"name": "宝可梦道场",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_gym_leader",
+				"npc_gym_trainer",
+				"npc_challenger"
+			],
+			"furnitureSlots": 40,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 80,
+				"y": 40,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_pokemon_center",
+			"name": "宝可梦中心",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_nurse_joy",
+				"npc_trainer"
+			],
+			"furnitureSlots": 30,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_pokemart",
+			"name": "宝可梦商店",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_mart_clerk",
+				"npc_trainer"
+			],
+			"furnitureSlots": 20,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 52
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_breeding_center",
+			"name": "培育屋",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_breeder",
+				"npc_daycare_lady"
+			],
+			"furnitureSlots": 35,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 56,
+				"y": 20,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_pokemon_lab",
+			"name": "宝可梦研究所",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 4,
+			"npcTypes": [
+				"npc_professor",
+				"npc_researcher",
+				"npc_assistant"
+			],
+			"furnitureSlots": 50,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 72,
+				"y": 48,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 90
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_contest_hall",
+			"name": "华丽大赛会场",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_contest_judge",
+				"npc_coordinator",
+				"npc_audience"
+			],
+			"furnitureSlots": 60,
+			"hp": 9000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 80,
+				"y": 36,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_pokemon_league",
+			"name": "宝可梦联盟",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 10,
+			"npcTypes": [
+				"npc_elite_four",
+				"npc_champion",
+				"npc_league_guard"
+			],
+			"furnitureSlots": 100,
+			"hp": 30000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 120,
+				"y": 80,
+				"z": 120
+			},
+			"sizeMin": {
+				"x": 96,
+				"z": 96
+			},
+			"sizeMax": {
+				"x": 192,
+				"z": 192
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_safari_zone_gate",
+			"name": "狩猎地带入口",
+			"type": "pokemon",
+			"faction": "pokemon",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_safari_warden",
+				"npc_receptionist"
+			],
+			"furnitureSlots": 15,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 20,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 52
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_shopping_mall",
+			"name": "大型商场",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_customer",
+				"npc_security",
+				"npc_cleaner"
+			],
+			"furnitureSlots": 150,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 4,
+			"voxelSize": {
+				"x": 128,
+				"y": 64,
+				"z": 128
+			},
+			"sizeMin": {
+				"x": 103,
+				"z": 103
+			},
+			"sizeMax": {
+				"x": 206,
+				"z": 206
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_department_store",
+			"name": "百货公司",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_customer",
+				"npc_sales_clerk"
+			],
+			"furnitureSlots": 100,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 6,
+			"voxelSize": {
+				"x": 80,
+				"y": 96,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_electronics_store",
+			"name": "电器商店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_sales_clerk",
+				"npc_technician",
+				"npc_customer"
+			],
+			"furnitureSlots": 35,
+			"hp": 3500,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 47,
+				"z": 39
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_clothing_store",
+			"name": "服装店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_sales_clerk",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 28
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_jewelry_store",
+			"name": "珠宝店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_jeweler",
+				"npc_security",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 4000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 28,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 28,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_bookstore",
+			"name": "书店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_customer"
+			],
+			"furnitureSlots": 30,
+			"hp": 2500,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 39,
+				"z": 32
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_pet_shop",
+			"name": "宠物店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_pet_seller",
+				"npc_customer"
+			],
+			"furnitureSlots": 20,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 28
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_hardware_store",
+			"name": "五金店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_shopkeeper",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 52
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_furniture_store",
+			"name": "家具店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_sales_clerk",
+				"npc_customer"
+			],
+			"furnitureSlots": 60,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 90
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_auto_dealer",
+			"name": "汽车经销商",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_salesman",
+				"npc_mechanic",
+				"npc_customer"
+			],
+			"furnitureSlots": 30,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 80,
+				"y": 20,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_gun_shop",
+			"name": "枪械店",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_gun_dealer",
+				"npc_security"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 34,
+				"z": 26
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_pawn_shop",
+			"name": "当铺",
+			"type": "shop",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_pawnbroker",
+				"npc_customer"
+			],
+			"furnitureSlots": 20,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 28,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 28,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_medical_center",
+			"name": "医疗中心",
+			"type": "hospital",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_doctor",
+				"npc_nurse",
+				"npc_patient",
+				"npc_receptionist",
+				"npc_surgeon"
+			],
+			"furnitureSlots": 80,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 4,
+			"voxelSize": {
+				"x": 80,
+				"y": 64,
+				"z": 72
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 58
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 116
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_dental_clinic",
+			"name": "牙科诊所",
+			"type": "hospital",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_dentist",
+				"npc_dental_nurse",
+				"npc_patient"
+			],
+			"furnitureSlots": 15,
+			"hp": 2500,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_veterinary_clinic",
+			"name": "宠物医院",
+			"type": "hospital",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_vet",
+				"npc_vet_nurse",
+				"npc_pet_owner"
+			],
+			"furnitureSlots": 20,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 35,
+				"z": 28
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_psychiatric_hospital",
+			"name": "精神病院",
+			"type": "hospital",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_psychiatrist",
+				"npc_nurse",
+				"npc_patient",
+				"npc_orderly"
+			],
+			"furnitureSlots": 60,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 72,
+				"y": 48,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_nursing_home",
+			"name": "养老院",
+			"type": "hospital",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_nurse",
+				"npc_caregiver",
+				"npc_elderly"
+			],
+			"furnitureSlots": 50,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 90
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_morgue",
+			"name": "太平间",
+			"type": "hospital",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_coroner",
+				"npc_mortician"
+			],
+			"furnitureSlots": 15,
+			"hp": 4000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 52
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_villa",
+			"name": "别墅",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 0.5,
+			"npcTypes": [
+				"npc_civilian",
+				"npc_butler"
+			],
+			"furnitureSlots": 45,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 56,
+				"y": 48,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 113,
+				"z": 98
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_mansion",
+			"name": "豪宅",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 0.5,
+			"npcTypes": [
+				"npc_wealthy",
+				"npc_butler",
+				"npc_maid",
+				"npc_security"
+			],
+			"furnitureSlots": 80,
+			"hp": 10000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 80,
+				"y": 48,
+				"z": 72
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 58
+			},
+			"sizeMax": {
+				"x": 160,
+				"z": 145
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_townhouse",
+			"name": "联排别墅",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 0.5,
+			"npcTypes": [
+				"npc_civilian"
+			],
+			"furnitureSlots": 25,
+			"hp": 3500,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 24,
+				"y": 48,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 20,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 50,
+				"z": 80
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_dormitory",
+			"name": "宿舍楼",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 1,
+			"npcTypes": [
+				"npc_student",
+				"npc_dorm_manager"
+			],
+			"furnitureSlots": 60,
+			"hp": 7000,
+			"fireResist": false,
+			"floors": 6,
+			"voxelSize": {
+				"x": 48,
+				"y": 96,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 98,
+				"z": 80
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_trailer_park",
+			"name": "房车营地",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 0.5,
+			"npcTypes": [
+				"npc_civilian"
+			],
+			"furnitureSlots": 10,
+			"hp": 800,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 24,
+				"y": 12,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 20,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 50,
+				"z": 80
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_penthouse",
+			"name": "顶层公寓",
+			"type": "residence",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 0.5,
+			"npcTypes": [
+				"npc_wealthy",
+				"npc_butler"
+			],
+			"furnitureSlots": 50,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 68,
+				"z": 68
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_cinema",
+			"name": "电影院",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cashier",
+				"npc_usher",
+				"npc_customer"
+			],
+			"furnitureSlots": 50,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_theater",
+			"name": "剧院",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_actor",
+				"npc_director",
+				"npc_audience"
+			],
+			"furnitureSlots": 60,
+			"hp": 8000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 72,
+				"y": 48,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_concert_hall",
+			"name": "音乐厅",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_musician",
+				"npc_conductor",
+				"npc_audience"
+			],
+			"furnitureSlots": 70,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 80,
+				"y": 40,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 154
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_stadium",
+			"name": "体育场",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_athlete",
+				"npc_coach",
+				"npc_fan",
+				"npc_security"
+			],
+			"furnitureSlots": 100,
+			"hp": 25000,
+			"fireResist": true,
+			"floors": 4,
+			"voxelSize": {
+				"x": 200,
+				"y": 64,
+				"z": 200
+			},
+			"sizeMin": {
+				"x": 160,
+				"z": 160
+			},
+			"sizeMax": {
+				"x": 320,
+				"z": 320
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_bowling_alley",
+			"name": "保龄球馆",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_staff",
+				"npc_customer"
+			],
+			"furnitureSlots": 30,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 56,
+				"y": 16,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 54,
+				"z": 77
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_arcade",
+			"name": "游戏厅",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_staff",
+				"npc_customer"
+			],
+			"furnitureSlots": 35,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 47,
+				"z": 39
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_casino",
+			"name": "赌场",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_dealer",
+				"npc_gambler",
+				"npc_security",
+				"npc_waitress"
+			],
+			"furnitureSlots": 80,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 96,
+				"y": 48,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_spa",
+			"name": "水疗中心",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_therapist",
+				"npc_receptionist",
+				"npc_customer"
+			],
+			"furnitureSlots": 35,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 47,
+				"z": 39
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_swimming_pool",
+			"name": "游泳馆",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_lifeguard",
+				"npc_swimmer"
+			],
+			"furnitureSlots": 25,
+			"hp": 5000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 20,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_amusement_park_entrance",
+			"name": "游乐园入口",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_ticket_seller",
+				"npc_mascot",
+				"npc_visitor"
+			],
+			"furnitureSlots": 20,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 40,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 52
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_zoo_entrance",
+			"name": "动物园入口",
+			"type": "entertainment",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_zookeeper",
+				"npc_ticket_seller",
+				"npc_visitor"
+			],
+			"furnitureSlots": 15,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 20,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 52
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_courthouse",
+			"name": "法院",
+			"type": "government",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_judge",
+				"npc_lawyer",
+				"npc_bailiff",
+				"npc_defendant"
+			],
+			"furnitureSlots": 50,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 80,
+				"y": 48,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_city_hall",
+			"name": "市政厅",
+			"type": "government",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_mayor",
+				"npc_clerk",
+				"npc_secretary",
+				"npc_security"
+			],
+			"furnitureSlots": 60,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 4,
+			"voxelSize": {
+				"x": 96,
+				"y": 64,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_post_office",
+			"name": "邮局",
+			"type": "government",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_postal_worker",
+				"npc_customer"
+			],
+			"furnitureSlots": 20,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 52
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_embassy",
+			"name": "大使馆",
+			"type": "government",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_diplomat",
+				"npc_guard",
+				"npc_secretary"
+			],
+			"furnitureSlots": 40,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 56,
+				"y": 48,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_dmv",
+			"name": "车管所",
+			"type": "government",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_clerk",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_coffee_shop",
+			"name": "咖啡馆",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_barista",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 28,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 28,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_bakery",
+			"name": "面包店",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_baker",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 28,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 28,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_fine_dining",
+			"name": "高级餐厅",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_chef",
+				"npc_sommelier",
+				"npc_waiter",
+				"npc_customer"
+			],
+			"furnitureSlots": 35,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 20,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 51,
+				"z": 42
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_food_court",
+			"name": "美食广场",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cook",
+				"npc_cashier",
+				"npc_customer"
+			],
+			"furnitureSlots": 50,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 80,
+				"y": 16,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 77,
+				"z": 63
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_food_truck",
+			"name": "餐车",
+			"type": "restaurant",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cook"
+			],
+			"furnitureSlots": 5,
+			"hp": 800,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 16,
+				"y": 12,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 13,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 16,
+				"z": 32
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_university",
+			"name": "大学",
+			"type": "school",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_professor",
+				"npc_student",
+				"npc_dean",
+				"npc_janitor"
+			],
+			"furnitureSlots": 100,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 120,
+				"y": 80,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 96,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 192,
+				"z": 154
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_kindergarten",
+			"name": "幼儿园",
+			"type": "school",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_teacher",
+				"npc_child",
+				"npc_caregiver"
+			],
+			"furnitureSlots": 25,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_driving_school",
+			"name": "驾校",
+			"type": "school",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_instructor",
+				"npc_student"
+			],
+			"furnitureSlots": 15,
+			"hp": 2500,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 39,
+				"z": 47
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_dance_studio",
+			"name": "舞蹈工作室",
+			"type": "school",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_dance_teacher",
+				"npc_student"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 39,
+				"z": 32
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_martial_arts_dojo",
+			"name": "武馆",
+			"type": "school",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_sensei",
+				"npc_student"
+			],
+			"furnitureSlots": 20,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_car_wash",
+			"name": "洗车店",
+			"type": "service",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_worker",
+				"npc_customer"
+			],
+			"furnitureSlots": 10,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 47
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_auto_repair",
+			"name": "汽修店",
+			"type": "service",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_mechanic",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 20,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_laundromat",
+			"name": "自助洗衣店",
+			"type": "service",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_attendant",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_hair_salon",
+			"name": "理发店",
+			"type": "service",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_hairdresser",
+				"npc_customer"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 28,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 28,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_tattoo_parlor",
+			"name": "纹身店",
+			"type": "service",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_tattoo_artist",
+				"npc_customer"
+			],
+			"furnitureSlots": 12,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 24,
+				"y": 16,
+				"z": 20
+			},
+			"sizeMin": {
+				"x": 20,
+				"z": 16
+			},
+			"sizeMax": {
+				"x": 24,
+				"z": 20
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_funeral_home",
+			"name": "殡仪馆",
+			"type": "service",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_funeral_director",
+				"npc_mourner"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 20,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_recycling_center",
+			"name": "回收站",
+			"type": "service",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_worker"
+			],
+			"furnitureSlots": 15,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 56,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_radio_station",
+			"name": "广播电台",
+			"type": "media",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_dj",
+				"npc_technician",
+				"npc_producer"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 58
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_tv_station",
+			"name": "电视台",
+			"type": "media",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_anchor",
+				"npc_cameraman",
+				"npc_producer",
+				"npc_technician"
+			],
+			"furnitureSlots": 60,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 72,
+				"y": 80,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_newspaper_office",
+			"name": "报社",
+			"type": "media",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_journalist",
+				"npc_editor",
+				"npc_photographer"
+			],
+			"furnitureSlots": 40,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 48,
+				"y": 48,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 47,
+				"z": 39
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_ninja_dojo",
+			"name": "忍者道场",
+			"type": "ninja",
+			"faction": "japanese",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_ninja_master",
+				"npc_ninja",
+				"npc_ninja_student"
+			],
+			"furnitureSlots": 30,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_shinto_shrine",
+			"name": "神社",
+			"type": "shrine",
+			"faction": "japanese",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 2,
+			"npcTypes": [
+				"npc_shrine_maiden",
+				"npc_kannushi",
+				"npc_pilgrim"
+			],
+			"furnitureSlots": 25,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 28,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 81
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_onsen",
+			"name": "温泉旅馆",
+			"type": "inn",
+			"faction": "japanese",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_innkeeper",
+				"npc_attendant",
+				"npc_guest"
+			],
+			"furnitureSlots": 40,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 63,
+				"z": 54
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_samurai_castle",
+			"name": "武士城堡",
+			"type": "castle",
+			"faction": "japanese",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_daimyo",
+				"npc_samurai",
+				"npc_servant",
+				"npc_guard"
+			],
+			"furnitureSlots": 100,
+			"hp": 25000,
+			"fireResist": false,
+			"floors": 5,
+			"voxelSize": {
+				"x": 96,
+				"y": 80,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 193,
+				"z": 193
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_tea_house",
+			"name": "茶室",
+			"type": "restaurant",
+			"faction": "japanese",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_tea_master",
+				"npc_geisha",
+				"npc_guest"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 28
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_sumo_arena",
+			"name": "相扑场",
+			"type": "arena",
+			"faction": "japanese",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_sumo_wrestler",
+				"npc_referee",
+				"npc_audience"
+			],
+			"furnitureSlots": 35,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_cult_temple",
+			"name": "邪神神殿",
+			"type": "temple",
+			"faction": "lovecraft",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_high_priest",
+				"npc_cultist",
+				"npc_acolyte"
+			],
+			"furnitureSlots": 40,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 40,
+				"z": 72
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 58
+			},
+			"sizeMax": {
+				"x": 94,
+				"z": 105
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_eldritch_library",
+			"name": "禁忌图书馆",
+			"type": "library",
+			"faction": "lovecraft",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_mad_scholar",
+				"npc_librarian_occult"
+			],
+			"furnitureSlots": 50,
+			"hp": 7000,
+			"fireResist": false,
+			"floors": 3,
+			"voxelSize": {
+				"x": 56,
+				"y": 48,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 81,
+				"z": 71
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_asylum",
+			"name": "疯人院",
+			"type": "hospital",
+			"faction": "lovecraft",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_asylum_doctor",
+				"npc_orderly",
+				"npc_patient_insane"
+			],
+			"furnitureSlots": 60,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 72,
+				"y": 48,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_ritual_chamber",
+			"name": "祭祀密室",
+			"type": "ritual",
+			"faction": "lovecraft",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_cultist",
+				"npc_sacrifice"
+			],
+			"furnitureSlots": 15,
+			"hp": 5000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 20,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_deep_one_lair",
+			"name": "深潜者巢穴",
+			"type": "lair",
+			"faction": "lovecraft",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_deep_one",
+				"npc_hybrid"
+			],
+			"furnitureSlots": 20,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 24,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 81
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_miskatonic_university",
+			"name": "密斯卡托尼克大学",
+			"type": "school",
+			"faction": "lovecraft",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_professor_occult",
+				"npc_student",
+				"npc_investigator"
+			],
+			"furnitureSlots": 80,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 4,
+			"voxelSize": {
+				"x": 96,
+				"y": 64,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_clockwork_factory",
+			"name": "发条工厂",
+			"type": "factory",
+			"faction": "steampunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_engineer_steam",
+				"npc_worker",
+				"npc_automaton"
+			],
+			"furnitureSlots": 50,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 80,
+				"y": 48,
+				"z": 72
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 58
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 116
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_airship_dock",
+			"name": "飞艇码头",
+			"type": "station",
+			"faction": "steampunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_airship_captain",
+				"npc_mechanic_steam",
+				"npc_passenger"
+			],
+			"furnitureSlots": 40,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 4,
+			"voxelSize": {
+				"x": 120,
+				"y": 80,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 96,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 192,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_inventors_workshop",
+			"name": "发明家工坊",
+			"type": "workshop",
+			"faction": "steampunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_inventor",
+				"npc_assistant"
+			],
+			"furnitureSlots": 30,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 53
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_steam_bathhouse",
+			"name": "蒸汽浴场",
+			"type": "entertainment",
+			"faction": "steampunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_attendant",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_gear_emporium",
+			"name": "齿轮商场",
+			"type": "shop",
+			"faction": "steampunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_gear_merchant",
+				"npc_customer"
+			],
+			"furnitureSlots": 35,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_automaton_showroom",
+			"name": "自动机展厅",
+			"type": "shop",
+			"faction": "steampunk",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_automaton_dealer",
+				"npc_automaton",
+				"npc_customer"
+			],
+			"furnitureSlots": 40,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_vampire_castle",
+			"name": "吸血鬼城堡",
+			"type": "castle",
+			"faction": "gothic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_vampire_lord",
+				"npc_vampire",
+				"npc_thrall",
+				"npc_butler_undead"
+			],
+			"furnitureSlots": 100,
+			"hp": 30000,
+			"fireResist": false,
+			"floors": 5,
+			"voxelSize": {
+				"x": 120,
+				"y": 100,
+				"z": 100
+			},
+			"sizeMin": {
+				"x": 96,
+				"z": 80
+			},
+			"sizeMax": {
+				"x": 240,
+				"z": 200
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_blood_bank",
+			"name": "血库",
+			"type": "hospital",
+			"faction": "gothic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_vampire_doctor",
+				"npc_donor"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 53,
+				"z": 42
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_crypt",
+			"name": "地下墓穴",
+			"type": "tomb",
+			"faction": "gothic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_vampire",
+				"npc_ghoul",
+				"npc_skeleton"
+			],
+			"furnitureSlots": 25,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 81
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_gothic_cathedral",
+			"name": "哥特大教堂",
+			"type": "church",
+			"faction": "gothic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_dark_priest",
+				"npc_acolyte",
+				"npc_worshipper"
+			],
+			"furnitureSlots": 60,
+			"hp": 15000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 80,
+				"y": 80,
+				"z": 120
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 96
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 173
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_werewolf_den",
+			"name": "狼人巢穴",
+			"type": "lair",
+			"faction": "gothic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_werewolf_alpha",
+				"npc_werewolf"
+			],
+			"furnitureSlots": 15,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 71
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_witch_cottage",
+			"name": "女巫小屋",
+			"type": "cottage",
+			"faction": "gothic",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_witch",
+				"npc_familiar"
+			],
+			"furnitureSlots": 20,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 28,
+				"y": 32,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 28,
+				"z": 24
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_survivor_camp",
+			"name": "幸存者营地",
+			"type": "camp",
+			"faction": "apocalypse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_survivor",
+				"npc_camp_leader",
+				"npc_scavenger"
+			],
+			"furnitureSlots": 25,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 98,
+				"z": 98
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_bunker",
+			"name": "地堡",
+			"type": "shelter",
+			"faction": "apocalypse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 2,
+			"npcTypes": [
+				"npc_survivor",
+				"npc_prepper"
+			],
+			"furnitureSlots": 30,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_scrap_yard",
+			"name": "废料场",
+			"type": "salvage",
+			"faction": "apocalypse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_scavenger",
+				"npc_mechanic_wasteland"
+			],
+			"furnitureSlots": 20,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 16,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 90
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_raider_outpost",
+			"name": "掠夺者哨站",
+			"type": "outpost",
+			"faction": "apocalypse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_raider",
+				"npc_raider_boss"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 80,
+				"z": 73
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_water_purifier",
+			"name": "净水站",
+			"type": "utility",
+			"faction": "apocalypse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_engineer_wasteland"
+			],
+			"furnitureSlots": 15,
+			"hp": 6000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 20,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 73,
+				"z": 65
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_trading_post_wasteland",
+			"name": "废土交易站",
+			"type": "shop",
+			"faction": "apocalypse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_wasteland_merchant",
+				"npc_guard_wasteland",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 39,
+				"z": 35
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_pirate_tavern",
+			"name": "海盗酒馆",
+			"type": "restaurant",
+			"faction": "pirate",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_bartender",
+				"npc_pirate",
+				"npc_wench"
+			],
+			"furnitureSlots": 30,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 53
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_pirate_hideout",
+			"name": "海盗据点",
+			"type": "hideout",
+			"faction": "pirate",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_pirate_captain",
+				"npc_pirate",
+				"npc_quartermaster"
+			],
+			"furnitureSlots": 35,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 81,
+				"z": 71
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_shipyard",
+			"name": "造船厂",
+			"type": "factory",
+			"faction": "pirate",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_shipwright",
+				"npc_worker"
+			],
+			"furnitureSlots": 40,
+			"hp": 10000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 96,
+				"y": 40,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 154,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_treasure_vault",
+			"name": "宝藏库",
+			"type": "vault",
+			"faction": "pirate",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_guard_pirate"
+			],
+			"furnitureSlots": 15,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 20,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 47,
+				"z": 47
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_lighthouse",
+			"name": "灯塔",
+			"type": "utility",
+			"faction": "pirate",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_lighthouse_keeper"
+			],
+			"furnitureSlots": 10,
+			"hp": 8000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 20,
+				"y": 80,
+				"z": 20
+			},
+			"sizeMin": {
+				"x": 16,
+				"z": 16
+			},
+			"sizeMax": {
+				"x": 21,
+				"z": 21
+			},
+			"layout": "tower"
+		},
+		{
+			"id": "bld_smugglers_cove",
+			"name": "走私者洞穴",
+			"type": "hideout",
+			"faction": "pirate",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_smuggler",
+				"npc_pirate"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 24,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_saloon",
+			"name": "酒吧沙龙",
+			"type": "restaurant",
+			"faction": "western",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_bartender",
+				"npc_cowboy",
+				"npc_saloon_girl",
+				"npc_pianist"
+			],
+			"furnitureSlots": 30,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 53
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_sheriffs_office",
+			"name": "警长办公室",
+			"type": "police",
+			"faction": "western",
+			"ensureSpawn": true,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_sheriff",
+				"npc_deputy",
+				"npc_prisoner"
+			],
+			"furnitureSlots": 20,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 16,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 53,
+				"z": 47
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_general_store_western",
+			"name": "杂货店",
+			"type": "shop",
+			"faction": "western",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_shopkeeper",
+				"npc_customer"
+			],
+			"furnitureSlots": 25,
+			"hp": 2500,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 28
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 23
+			},
+			"sizeMax": {
+				"x": 32,
+				"z": 28
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_stable",
+			"name": "马厩",
+			"type": "stable",
+			"faction": "western",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_stable_hand"
+			],
+			"furnitureSlots": 15,
+			"hp": 2000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 20,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 81
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_gunsmith_western",
+			"name": "枪匠铺",
+			"type": "shop",
+			"faction": "western",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_gunsmith"
+			],
+			"furnitureSlots": 15,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 28,
+				"y": 16,
+				"z": 24
+			},
+			"sizeMin": {
+				"x": 23,
+				"z": 20
+			},
+			"sizeMax": {
+				"x": 42,
+				"z": 36
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_ranch",
+			"name": "牧场",
+			"type": "farm",
+			"faction": "western",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_rancher",
+				"npc_cowboy"
+			],
+			"furnitureSlots": 25,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 32,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 113,
+				"z": 98
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_gold_mine",
+			"name": "金矿",
+			"type": "mine",
+			"faction": "western",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_miner",
+				"npc_prospector"
+			],
+			"furnitureSlots": 20,
+			"hp": 6000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 98,
+				"z": 80
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_knights_castle",
+			"name": "骑士城堡",
+			"type": "castle",
+			"faction": "medieval",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 8,
+			"npcTypes": [
+				"npc_king",
+				"npc_knight",
+				"npc_squire",
+				"npc_servant",
+				"npc_guard_medieval"
+			],
+			"furnitureSlots": 150,
+			"hp": 50000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 160,
+				"y": 100,
+				"z": 160
+			},
+			"sizeMin": {
+				"x": 128,
+				"z": 128
+			},
+			"sizeMax": {
+				"x": 320,
+				"z": 320
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_blacksmith_medieval",
+			"name": "铁匠铺",
+			"type": "shop",
+			"faction": "medieval",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_blacksmith",
+				"npc_apprentice"
+			],
+			"furnitureSlots": 20,
+			"hp": 4000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 36,
+				"y": 20,
+				"z": 32
+			},
+			"sizeMin": {
+				"x": 29,
+				"z": 26
+			},
+			"sizeMax": {
+				"x": 73,
+				"z": 65
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_jousting_arena",
+			"name": "马上比武场",
+			"type": "arena",
+			"faction": "medieval",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_knight",
+				"npc_squire",
+				"npc_herald",
+				"npc_audience"
+			],
+			"furnitureSlots": 30,
+			"hp": 8000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 80,
+				"y": 20,
+				"z": 120
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 96
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 192
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_monastery",
+			"name": "修道院",
+			"type": "church",
+			"faction": "medieval",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 2,
+			"npcTypes": [
+				"npc_abbot",
+				"npc_monk",
+				"npc_scribe"
+			],
+			"furnitureSlots": 45,
+			"hp": 10000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 72,
+				"y": 40,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 105,
+				"z": 116
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_tavern_medieval",
+			"name": "中世纪酒馆",
+			"type": "restaurant",
+			"faction": "medieval",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_innkeeper",
+				"npc_barmaid",
+				"npc_traveler"
+			],
+			"furnitureSlots": 25,
+			"hp": 3000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 53
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_guild_hall",
+			"name": "公会大厅",
+			"type": "guild",
+			"faction": "medieval",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 2,
+			"npcTypes": [
+				"npc_guild_master",
+				"npc_craftsman",
+				"npc_merchant"
+			],
+			"furnitureSlots": 40,
+			"hp": 7000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 56,
+				"y": 36,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_dungeon",
+			"name": "地牢",
+			"type": "prison",
+			"faction": "medieval",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_jailer",
+				"npc_torturer",
+				"npc_prisoner"
+			],
+			"furnitureSlots": 20,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 40,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_mead_hall",
+			"name": "蜜酒大厅",
+			"type": "restaurant",
+			"faction": "norse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 2,
+			"npcTypes": [
+				"npc_jarl",
+				"npc_viking",
+				"npc_skald",
+				"npc_thrall"
+			],
+			"furnitureSlots": 40,
+			"hp": 8000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 24,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 94,
+				"z": 116
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_viking_longhouse",
+			"name": "维京长屋",
+			"type": "residence",
+			"faction": "norse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": true,
+			"spawnRadius": 1,
+			"npcTypes": [
+				"npc_viking",
+				"npc_shieldmaiden"
+			],
+			"furnitureSlots": 25,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 32,
+				"y": 16,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 26,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 65,
+				"z": 113
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_temple_of_odin",
+			"name": "奥丁神殿",
+			"type": "temple",
+			"faction": "norse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_gothi",
+				"npc_volva",
+				"npc_worshipper"
+			],
+			"furnitureSlots": 35,
+			"hp": 10000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 56,
+				"y": 32,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 81,
+				"z": 94
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_rune_stones",
+			"name": "符文石阵",
+			"type": "ritual",
+			"faction": "norse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_rune_master"
+			],
+			"furnitureSlots": 5,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 58
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_shipwright_norse",
+			"name": "龙船工坊",
+			"type": "factory",
+			"faction": "norse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_shipwright",
+				"npc_worker"
+			],
+			"furnitureSlots": 30,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 64,
+				"y": 24,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 128
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_berserker_den",
+			"name": "狂战士营地",
+			"type": "camp",
+			"faction": "norse",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_berserker",
+				"npc_ulfhednar"
+			],
+			"furnitureSlots": 15,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 58
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_pyramid",
+			"name": "金字塔",
+			"type": "tomb",
+			"faction": "egyptian",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_mummy",
+				"npc_anubis_guard",
+				"npc_priest_egyptian"
+			],
+			"furnitureSlots": 60,
+			"hp": 50000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 128,
+				"y": 100,
+				"z": 128
+			},
+			"sizeMin": {
+				"x": 103,
+				"z": 103
+			},
+			"sizeMax": {
+				"x": 258,
+				"z": 258
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_temple_of_ra",
+			"name": "拉神殿",
+			"type": "temple",
+			"faction": "egyptian",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 4,
+			"npcTypes": [
+				"npc_high_priest_ra",
+				"npc_priest_egyptian",
+				"npc_worshipper"
+			],
+			"furnitureSlots": 50,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 80,
+				"y": 48,
+				"z": 96
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 77
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 139
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_embalming_house",
+			"name": "防腐工坊",
+			"type": "workshop",
+			"faction": "egyptian",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_embalmer",
+				"npc_assistant"
+			],
+			"furnitureSlots": 20,
+			"hp": 4000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 16,
+				"z": 36
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 29
+			},
+			"sizeMax": {
+				"x": 64,
+				"z": 58
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_pharaohs_palace",
+			"name": "法老宫殿",
+			"type": "palace",
+			"faction": "egyptian",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 8,
+			"npcTypes": [
+				"npc_pharaoh",
+				"npc_vizier",
+				"npc_guard_egyptian",
+				"npc_servant"
+			],
+			"furnitureSlots": 120,
+			"hp": 40000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 120,
+				"y": 60,
+				"z": 100
+			},
+			"sizeMin": {
+				"x": 96,
+				"z": 80
+			},
+			"sizeMax": {
+				"x": 240,
+				"z": 200
+			},
+			"layout": "scattered"
+		},
+		{
+			"id": "bld_sphinx_statue",
+			"name": "狮身人面像",
+			"type": "monument",
+			"faction": "egyptian",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_sphinx_guardian"
+			],
+			"furnitureSlots": 5,
+			"hp": 30000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 80,
+				"y": 40,
+				"z": 120
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 96
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 173
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_obelisk",
+			"name": "方尖碑",
+			"type": "monument",
+			"faction": "egyptian",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [],
+			"furnitureSlots": 0,
+			"hp": 20000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 16,
+				"y": 80,
+				"z": 16
+			},
+			"sizeMin": {
+				"x": 13,
+				"z": 13
+			},
+			"sizeMax": {
+				"x": 24,
+				"z": 24
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_parthenon",
+			"name": "帕特农神庙",
+			"type": "temple",
+			"faction": "greek",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_oracle",
+				"npc_priest_greek",
+				"npc_worshipper"
+			],
+			"furnitureSlots": 50,
+			"hp": 20000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 96,
+				"y": 40,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 77,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 139,
+				"z": 94
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_agora",
+			"name": "市集广场",
+			"type": "market",
+			"faction": "greek",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_merchant",
+				"npc_philosopher",
+				"npc_citizen"
+			],
+			"furnitureSlots": 40,
+			"hp": 6000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 80,
+				"y": 16,
+				"z": 80
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 64
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 116
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_colosseum",
+			"name": "竞技场",
+			"type": "arena",
+			"faction": "greek",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_gladiator",
+				"npc_lanista",
+				"npc_audience"
+			],
+			"furnitureSlots": 60,
+			"hp": 30000,
+			"fireResist": true,
+			"floors": 4,
+			"voxelSize": {
+				"x": 160,
+				"y": 64,
+				"z": 160
+			},
+			"sizeMin": {
+				"x": 128,
+				"z": 128
+			},
+			"sizeMax": {
+				"x": 256,
+				"z": 256
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_gymnasium_greek",
+			"name": "体育馆",
+			"type": "gym",
+			"faction": "greek",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_athlete",
+				"npc_trainer_greek"
+			],
+			"furnitureSlots": 30,
+			"hp": 5000,
+			"fireResist": false,
+			"floors": 1,
+			"voxelSize": {
+				"x": 56,
+				"y": 20,
+				"z": 48
+			},
+			"sizeMin": {
+				"x": 45,
+				"z": 39
+			},
+			"sizeMax": {
+				"x": 90,
+				"z": 78
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_academy_greek",
+			"name": "学园",
+			"type": "school",
+			"faction": "greek",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_philosopher",
+				"npc_student",
+				"npc_mathematician"
+			],
+			"furnitureSlots": 40,
+			"hp": 8000,
+			"fireResist": false,
+			"floors": 2,
+			"voxelSize": {
+				"x": 64,
+				"y": 32,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 90
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_oracle_temple",
+			"name": "神谕神殿",
+			"type": "temple",
+			"faction": "greek",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_oracle",
+				"npc_priestess",
+				"npc_pilgrim"
+			],
+			"furnitureSlots": 25,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 71,
+				"z": 81
+			},
+			"layout": "courtyard"
+		},
+		{
+			"id": "bld_space_station",
+			"name": "空间站",
+			"type": "station",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 10,
+			"npcTypes": [
+				"npc_astronaut",
+				"npc_scientist",
+				"npc_engineer_space",
+				"npc_ai_assistant"
+			],
+			"furnitureSlots": 100,
+			"hp": 30000,
+			"fireResist": true,
+			"floors": 5,
+			"voxelSize": {
+				"x": 120,
+				"y": 80,
+				"z": 120
+			},
+			"sizeMin": {
+				"x": 96,
+				"z": 96
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 116
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_spaceport",
+			"name": "太空港",
+			"type": "airport",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 8,
+			"npcTypes": [
+				"npc_pilot_space",
+				"npc_customs_officer",
+				"npc_passenger",
+				"npc_alien"
+			],
+			"furnitureSlots": 150,
+			"hp": 40000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 200,
+				"y": 60,
+				"z": 160
+			},
+			"sizeMin": {
+				"x": 160,
+				"z": 128
+			},
+			"sizeMax": {
+				"x": 192,
+				"z": 154
+			},
+			"layout": "single"
+		},
+		{
+			"id": "bld_research_lab_scifi",
+			"name": "高科技研究所",
+			"type": "lab",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 3,
+			"npcTypes": [
+				"npc_scientist",
+				"npc_android",
+				"npc_lab_assistant"
+			],
+			"furnitureSlots": 50,
+			"hp": 12000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 64,
+				"y": 48,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 90
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_cloning_facility",
+			"name": "克隆设施",
+			"type": "lab",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_geneticist",
+				"npc_clone",
+				"npc_technician"
+			],
+			"furnitureSlots": 35,
+			"hp": 10000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 48,
+				"y": 32,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 39,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 78,
+				"z": 64
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_android_factory",
+			"name": "机器人工厂",
+			"type": "factory",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_engineer_robot",
+				"npc_android",
+				"npc_worker_robot"
+			],
+			"furnitureSlots": 60,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 80,
+				"y": 48,
+				"z": 72
+			},
+			"sizeMin": {
+				"x": 64,
+				"z": 58
+			},
+			"sizeMax": {
+				"x": 128,
+				"z": 116
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_alien_embassy",
+			"name": "外星大使馆",
+			"type": "embassy",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 5,
+			"npcTypes": [
+				"npc_alien_ambassador",
+				"npc_alien",
+				"npc_translator",
+				"npc_guard_space"
+			],
+			"furnitureSlots": 45,
+			"hp": 15000,
+			"fireResist": true,
+			"floors": 3,
+			"voxelSize": {
+				"x": 64,
+				"y": 48,
+				"z": 56
+			},
+			"sizeMin": {
+				"x": 52,
+				"z": 45
+			},
+			"sizeMax": {
+				"x": 104,
+				"z": 90
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_terraforming_hub",
+			"name": "地形改造中心",
+			"type": "utility",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_terraformer",
+				"npc_engineer_space"
+			],
+			"furnitureSlots": 30,
+			"hp": 20000,
+			"fireResist": true,
+			"floors": 2,
+			"voxelSize": {
+				"x": 72,
+				"y": 40,
+				"z": 64
+			},
+			"sizeMin": {
+				"x": 58,
+				"z": 52
+			},
+			"sizeMax": {
+				"x": 116,
+				"z": 104
+			},
+			"layout": "compound"
+		},
+		{
+			"id": "bld_holodeck",
+			"name": "全息甲板",
+			"type": "entertainment",
+			"faction": "scifi",
+			"ensureSpawn": false,
+			"isPlayerSpawn": false,
+			"spawnRadius": 0,
+			"npcTypes": [
+				"npc_technician",
+				"npc_customer"
+			],
+			"furnitureSlots": 20,
+			"hp": 5000,
+			"fireResist": true,
+			"floors": 1,
+			"voxelSize": {
+				"x": 40,
+				"y": 20,
+				"z": 40
+			},
+			"sizeMin": {
+				"x": 32,
+				"z": 32
+			},
+			"sizeMax": {
+				"x": 58,
+				"z": 58
+			},
+			"layout": "courtyard"
+		}
+	]
+}

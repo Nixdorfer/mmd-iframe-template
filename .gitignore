@@ -3,10 +3,25 @@
 
 nul
 *.md
-README.md
+*.log
+*.exe
+*.exe~
+*.dll
+!README.md
 
-defender/encode.cmd
 defender/messages.json
 
-template/3DGame/node_modules/
-template/3DGame/*.json
+template/3DGame/helper/Flux/
+template/3DGame/helper/comfyui/
+template/3DGame/helper/hunyuan3d/
+template/3DGame/helper/unirig/
+template/3DGame/helper/hy-motion/
+template/3DGame/helper/stable-audio/
+template/3DGame/helper/chatterbox/
+template/3DGame/helper/output/
+template/3DGame/helper/server/src-vue/node_modules/
+template/3DGame/helper/server/src-vue/package-lock.json
+template/3DGame/helper/server/src-vue/dist/
+template/3DGame/helper/server/src-wails/build/
+template/3DGame/helper/server/src-wails/go.sum
+template/3DGame/helper/server/src-wails/frontend/

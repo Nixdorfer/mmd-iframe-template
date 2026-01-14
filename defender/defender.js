@@ -5,32 +5,12 @@
     var h = location.hostname, p = h.split('.'), b = p.length >= 2 ? p.slice(-2).join('.') : h, e = b.replace(/\./g, '\\.');
     var P = [new RegExp('^' + e + '$'), new RegExp('^.+\\.' + e + '$'), /^raw\.githubusercontent\.com$/, /^unpkg\.com$/];
     var A = { 'raw.githubusercontent.com': '/Nixdorfer/mmd-iframe-template/refs/heads/main/' };
+    var loaded = false;
     function l(t, d) {
         console.warn('[Defender] ' + t, d || '');
     }
-    function inf() {
-        try {
-            var st = (new Error()).stack || '';
-            var lines = st.split('\n');
-            for (var i = 0; i < lines.length; i++) {
-                var m = lines[i].match(/https?:\/\/[^\s\)]+/);
-                if (m) {
-                    try {
-                        var u = new URL(m[0]);
-                        if (!P.some(function(r) { return r.test(u.hostname); })) {
-                            var sc = document.querySelector('script[src*="' + u.hostname + '"]');
-                            if (sc) { sc.remove(); l('感染源已清除', u.href); return; }
-                            var el = document.querySelector('[src*="' + u.hostname + '"],[href*="' + u.hostname + '"]');
-                            if (el) { el.remove(); l('感染源已清除', u.href); return; }
-                        }
-                    } catch (e) {}
-                }
-            }
-        } catch (e) {}
-    }
     function a(t, d) {
         l(t, d);
-        inf();
         if (window.__T__) window.__T__();
         if (window.__A__) window.__A__();
         var w = document.getElementById('__da__');
@@ -67,96 +47,78 @@
     }
     var sF = function(i, n) {
         var u = i instanceof Request ? i.url : String(i);
-        if (!k(u)) { a('外域Fetch请求', { url: u }); return Promise.reject(new Error('blocked')); }
+        if (!k(u)) {
+            a('外域Fetch请求', { url: u });
+            if (!loaded) return Promise.reject(new Error('blocked'));
+        }
         return c.f.call(window, i, n);
     };
     var oX = c.X;
     var sX = function() {
         var x = new oX(), oO = x.open.bind(x), oS = x.send.bind(x), bl = false;
-        x.open = function(m, u) { bl = !k(u); if (bl) { a('外域XHR请求', { method: m, url: u }); return; } return oO.apply(this, arguments); };
+        x.open = function(m, u) {
+            bl = !k(u);
+            if (bl) {
+                a('外域XHR请求', { method: m, url: u });
+                if (loaded) { bl = false; return oO.apply(this, arguments); }
+                return;
+            }
+            return oO.apply(this, arguments);
+        };
         x.send = function() {
-            if (bl) { var s = this; setTimeout(function() { try { Object.defineProperty(s, 'status', { value: 0 }); Object.defineProperty(s, 'readyState', { value: 4 }); Object.defineProperty(s, 'responseText', { value: '' }); Object.defineProperty(s, 'response', { value: '' }); } catch(e) {} s.dispatchEvent(new ProgressEvent('error')); if (s.onerror) s.onerror(new ProgressEvent('error')); }, 0); return; }
+            if (bl) {
+                var s = this;
+                setTimeout(function() {
+                    try {
+                        Object.defineProperty(s, 'status', { value: 0 });
+                        Object.defineProperty(s, 'readyState', { value: 4 });
+                        Object.defineProperty(s, 'responseText', { value: '' });
+                        Object.defineProperty(s, 'response', { value: '' });
+                    } catch(e) {}
+                    s.dispatchEvent(new ProgressEvent('error'));
+                    if (s.onerror) s.onerror(new ProgressEvent('error'));
+                }, 0);
+                return;
+            }
             try { return oS.apply(this, arguments); } catch(e) { throw e; }
         };
         return x;
     };
     sX.prototype = oX.prototype; sX.UNSENT = 0; sX.OPENED = 1; sX.HEADERS_RECEIVED = 2; sX.LOADING = 3; sX.DONE = 4;
     var oW = c.W;
-    var sW = function(u, p) { if (!k(u)) { a('外域WebSocket', { url: u }); throw new DOMException('blocked', 'SecurityError'); } return p ? new oW(u, p) : new oW(u); };
+    var sW = function(u, p) {
+        if (!k(u)) {
+            a('外域WebSocket', { url: u });
+            if (!loaded) throw new DOMException('blocked', 'SecurityError');
+        }
+        return p ? new oW(u, p) : new oW(u);
+    };
     sW.prototype = oW.prototype; sW.CONNECTING = 0; sW.OPEN = 1; sW.CLOSING = 2; sW.CLOSED = 3;
     var oE = c.E;
-    var sE = oE ? function(u, f) { if (!k(u)) { a('外域EventSource', { url: u }); throw new DOMException('blocked', 'SecurityError'); } return f ? new oE(u, f) : new oE(u); } : null;
+    var sE = oE ? function(u, f) {
+        if (!k(u)) {
+            a('外域EventSource', { url: u });
+            if (!loaded) throw new DOMException('blocked', 'SecurityError');
+        }
+        return f ? new oE(u, f) : new oE(u);
+    } : null;
     if (sE && oE) sE.prototype = oE.prototype;
     function ap() {
         L(window, 'fetch', sF); L(window, 'XMLHttpRequest', sX); L(window, 'WebSocket', sW);
         if (sE) L(window, 'EventSource', sE);
-        if (navigator.sendBeacon) { var oB = navigator.sendBeacon.bind(navigator); L(navigator, 'sendBeacon', function(u, d) { if (!k(u)) { a('外域Beacon', { url: u }); return false; } return oB(u, d); }); }
+        if (navigator.sendBeacon) {
+            var oB = navigator.sendBeacon.bind(navigator);
+            L(navigator, 'sendBeacon', function(u, d) {
+                if (!k(u)) {
+                    a('外域Beacon', { url: u });
+                    if (!loaded) return false;
+                }
+                return oB(u, d);
+            });
+        }
     }
     ap();
     setInterval(function() { if (window.fetch !== sF || window.XMLHttpRequest !== sX) ap(); }, 100);
-    var oC = document.createElement.bind(document);
-    var sD = c.g(HTMLScriptElement.prototype, 'src');
-    var iD = c.g(HTMLIFrameElement.prototype, 'src');
-    document.createElement = function(t) {
-        var el = oC(t);
-        var n = t.toLowerCase();
-        if (n === 'script') {
-            c.d(el, 'src', {
-                set: function(v) { if (k(v)) sD.set.call(this, v); else a('外域Script注入', { url: v, method: 'createElement.src' }); },
-                get: function() { return sD.get.call(this); },
-                configurable: false
-            });
-        } else if (n === 'iframe') {
-            c.d(el, 'src', {
-                set: function(v) { if (!v || v === 'about:blank' || v === '' || k(v)) iD.set.call(this, v); else a('外域Iframe注入', { url: v, method: 'createElement.src' }); },
-                get: function() { return iD.get.call(this); },
-                configurable: false
-            });
-        }
-        return el;
-    };
-    try {
-        c.d(HTMLScriptElement.prototype, 'src', {
-            set: function(v) { if (k(v)) sD.set.call(this, v); else a('外域Script注入', { url: v, method: 'prototype.src' }); },
-            get: function() { return sD.get.call(this); },
-            configurable: false
-        });
-    } catch (e) {}
-    function D() {
-        function ck(n, si) {
-            if (!n.tagName) return;
-            var t = n.tagName.toUpperCase(), s;
-            if (t === 'SCRIPT') { s = n.src || n.getAttribute('src'); if (s && !k(s)) { n.remove(); if (!si) a('外域Script', { url: s, method: 'DOM注入' }); } }
-            if (t === 'IFRAME') { s = n.src || n.getAttribute('src'); if (s && s !== 'about:blank' && s !== '' && !k(s)) { n.remove(); if (!si) a('外域Iframe', { url: s, method: 'DOM注入' }); } }
-            if (t === 'LINK' && n.rel === 'preconnect') { s = n.href || n.getAttribute('href'); if (s && !k(s)) { n.remove(); if (!si) a('外域Preconnect', { url: s }); } }
-        }
-        var ob = new MutationObserver(function(m) {
-            m.forEach(function(mu) {
-                if (mu.type === 'childList') {
-                    mu.addedNodes.forEach(function(n) {
-                        ck(n);
-                        if (n.querySelectorAll) n.querySelectorAll('script, iframe, link').forEach(function(el) { ck(el); });
-                    });
-                } else if (mu.type === 'attributes') {
-                    var at = mu.attributeName;
-                    if (at === 'src') {
-                        var t = mu.target.tagName.toUpperCase();
-                        var s = mu.target.getAttribute('src');
-                        if (t === 'SCRIPT' && s && !k(s)) { mu.target.remove(); a('外域Script', { url: s, method: '属性修改' }); }
-                        if (t === 'IFRAME' && s && s !== 'about:blank' && s !== '' && !k(s)) { mu.target.remove(); a('外域Iframe', { url: s, method: '属性修改' }); }
-                    } else if (at === 'href' && mu.target.tagName === 'LINK' && mu.target.rel === 'preconnect') {
-                        var hr = mu.target.getAttribute('href');
-                        if (hr && !k(hr)) { mu.target.remove(); a('外域Preconnect', { url: hr, method: '属性修改' }); }
-                    }
-                }
-            });
-        });
-        if (document.documentElement) {
-            ob.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
-            document.querySelectorAll('script, iframe, link').forEach(function(el) { ck(el, true); });
-        }
-    }
-    D();
     async function B() {
         var _f = window.__OF__ || c.f;
         var gender = 'male';
@@ -234,6 +196,7 @@
                         t.style.transform = 'none';
                         t.id = '__db__';
                         rdy = true;
+                        loaded = true;
                         setTimeout(function() { op = 0.3; eB(); }, 2000);
                     }, 300);
                 }, 50);

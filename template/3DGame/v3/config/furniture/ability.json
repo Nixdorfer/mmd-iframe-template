@@ -1,0 +1,33 @@
+{
+	"furnitures": [
+		{ "id": "fnt_esper_training_pod", "name": "超能力训练舱", "category": "ability", "size": { "x": 2, "y": 3, "z": 2 }, "weight": 300, "hp": 200, "value": 5000, "trainingType": "esper", "trainingBonus": 1.4, "powerUse": 10 },
+		{ "id": "fnt_power_dampener", "name": "能力抑制器", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 50, "hp": 150, "value": 3000, "suppressRadius": 15, "suppressPower": 0.7, "powerUse": 5 },
+		{ "id": "fnt_system_scan_station", "name": "系统扫描站", "category": "ability", "size": { "x": 2, "y": 2, "z": 1 }, "weight": 80, "hp": 120, "value": 2000, "levelScan": true, "abilityAnalysis": true, "powerUse": 4 },
+		{ "id": "fnt_aim_diffusion_field", "name": "AIM扩散力场", "category": "ability", "size": { "x": 3, "y": 3, "z": 3 }, "weight": 200, "hp": 250, "value": 8000, "abilityBonus": 1.2, "fieldRadius": 20, "powerUse": 15 },
+		{ "id": "fnt_level_upper_speaker", "name": "等级提升扬声器", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 20, "hp": 60, "value": 1500, "tempLevelUp": true, "dangerLevel": "high", "powerUse": 3 },
+		{ "id": "fnt_electromaster_charger", "name": "电击使充电站", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 100, "hp": 150, "value": 2500, "electricBonus": 1.3, "chargeAbility": true, "powerUse": 8 },
+		{ "id": "fnt_teleporter_beacon", "name": "空间移动信标", "category": "ability", "size": { "x": 1, "y": 1, "z": 1 }, "weight": 5, "hp": 40, "value": 800, "teleportTarget": true, "teleportBonus": 1.1 },
+		{ "id": "fnt_mental_out_headset", "name": "心理掌握头戴", "category": "ability", "size": { "x": 1, "y": 1, "z": 1 }, "weight": 1, "hp": 30, "value": 3000, "mentalBonus": 1.25, "controlRange": 50 },
+		{ "id": "fnt_vector_shield_gen", "name": "矢量护盾发生器", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 60, "hp": 200, "value": 5000, "reflectDamage": true, "vectorControl": true, "powerUse": 10 },
+		{ "id": "fnt_dark_matter_container", "name": "未元物质容器", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 50, "hp": 300, "value": 10000, "darkMatterStorage": 100, "creationBonus": 1.2 },
+		{ "id": "fnt_parameter_list_terminal", "name": "书库终端", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 30, "hp": 80, "value": 1500, "dataAccess": true, "researchBonus": 1.2, "powerUse": 2 },
+		{ "id": "fnt_clone_stasis_tube", "name": "克隆体培养管", "category": "ability", "size": { "x": 1, "y": 3, "z": 1 }, "weight": 150, "hp": 100, "value": 4000, "cloneSlot": 1, "stasis": true, "powerUse": 5 },
+		{ "id": "fnt_network_hub", "name": "御坂网络集线器", "category": "ability", "size": { "x": 2, "y": 2, "z": 2 }, "weight": 100, "hp": 150, "value": 6000, "networkBonus": 1.3, "communication": true, "powerUse": 8 },
+		{ "id": "fnt_anti_skill_locker", "name": "警备员储物柜", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 40, "hp": 150, "value": 500, "storage": 20, "storageType": "anti_skill_gear", "lockable": true },
+		{ "id": "fnt_judgment_desk", "name": "风纪委员办公桌", "category": "ability", "size": { "x": 2, "y": 1, "z": 1 }, "weight": 35, "hp": 80, "value": 400, "storage": 10, "judgmentAccess": true },
+		{ "id": "fnt_imagine_breaker_seal", "name": "幻想杀手封印", "category": "ability", "size": { "x": 1, "y": 1, "z": 1 }, "weight": 20, "hp": 500, "value": 100000, "negateAbility": true, "sealSlot": 1 },
+		{ "id": "fnt_magic_side_detector", "name": "魔法侧探测器", "category": "ability", "size": { "x": 1, "y": 1, "z": 1 }, "weight": 15, "hp": 60, "value": 2000, "detectMagic": true, "detectRadius": 30, "powerUse": 2 },
+		{ "id": "fnt_kiharas_experiment_table", "name": "木原实验台", "category": "ability", "size": { "x": 3, "y": 1, "z": 2 }, "weight": 100, "hp": 150, "value": 8000, "experimentBonus": 1.5, "dangerLevel": "extreme" },
+		{ "id": "fnt_holistic_esper_chair", "name": "绝对能力者之椅", "category": "ability", "size": { "x": 2, "y": 2, "z": 2 }, "weight": 80, "hp": 200, "value": 20000, "comfort": 90, "canSit": true, "abilityBonus": 1.4 },
+		{ "id": "fnt_ac_map_display", "name": "学园都市地图", "category": "ability", "size": { "x": 3, "y": 2, "z": 0 }, "weight": 10, "hp": 40, "value": 600, "mapDisplay": true, "holographic": true, "wallMount": true, "powerUse": 1 },
+		{ "id": "fnt_windowless_building_model", "name": "无窗大楼模型", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 30, "hp": 100, "value": 5000, "beauty": 25, "mysteryBonus": 1.1 },
+		{ "id": "fnt_tree_diagram_terminal", "name": "树形图设计者终端", "category": "ability", "size": { "x": 2, "y": 2, "z": 1 }, "weight": 80, "hp": 100, "value": 50000, "prediction": true, "calculationBonus": 2.0, "powerUse": 20 },
+		{ "id": "fnt_particle_accelerator", "name": "粒子加速器", "category": "ability", "size": { "x": 4, "y": 2, "z": 4 }, "weight": 2000, "hp": 400, "value": 100000, "railgunBoost": true, "powerGen": 50, "dangerLevel": "extreme" },
+		{ "id": "fnt_level_5_throne", "name": "等级5王座", "category": "ability", "size": { "x": 2, "y": 3, "z": 2 }, "weight": 150, "hp": 250, "value": 15000, "comfort": 95, "canSit": true, "abilityBonus": 1.35, "beauty": 45 },
+		{ "id": "fnt_dormitory_bed", "name": "学生宿舍床", "category": "ability", "size": { "x": 2, "y": 1, "z": 3 }, "weight": 30, "hp": 80, "value": 300, "comfort": 60, "canSleep": true, "sleepQuality": 0.7 },
+		{ "id": "fnt_school_cafeteria_table", "name": "学校食堂桌", "category": "ability", "size": { "x": 3, "y": 1, "z": 2 }, "weight": 50, "hp": 100, "value": 400, "seats": 6 },
+		{ "id": "fnt_vending_machine_gekota", "name": "御坂最爱贩卖机", "category": "ability", "size": { "x": 1, "y": 2, "z": 1 }, "weight": 150, "hp": 150, "value": 1200, "sellItems": ["drink", "gekota"], "kickable": true, "powerUse": 2 },
+		{ "id": "fnt_last_order_bed", "name": "最终之作专用床", "category": "ability", "size": { "x": 2, "y": 1, "z": 3 }, "weight": 35, "hp": 100, "value": 1000, "comfort": 80, "canSleep": true, "sleepQuality": 0.85, "networkMonitor": true },
+		{ "id": "fnt_board_chairman_chair", "name": "理事长之椅", "category": "ability", "size": { "x": 2, "y": 3, "z": 2 }, "weight": 100, "hp": 200, "value": 30000, "comfort": 100, "canSit": true, "commandBonus": 1.5, "beauty": 50, "lifeSupport": true }
+	]
+}
