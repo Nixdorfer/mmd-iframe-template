@@ -6502,27 +6502,44 @@ document.querySelectorAll('.ast-sub-hd').forEach(hd => {
 		if (bd) bd.classList.toggle('open')
 	})
 })
+const astBaseUrl = 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/template/3DGame/v3'
 const astCfgMap = {
-	buildings: { path: 'config/building', key: 'buildings', files: ['base.json'] },
-	entities: { path: 'config/entity', key: 'entities', files: ['base.json', 'bodyParts.json', 'pokemon.json'] },
-	furniture: { path: 'config/furniture', key: 'furnitures', files: ['base.json'] },
-	items: { path: 'config/item', key: 'items', files: ['base.json'] },
-	buffs: { path: 'config/buff', key: 'buffs', files: ['base.json'] },
-	skills: { path: 'config/skill', key: 'skills', files: ['base.json'] },
-	walls: { path: 'config/wall', key: 'walls', files: ['base.json'] },
-	floors: { path: 'config/floor', key: 'floors', files: ['base.json'] }
+	buildings: { key: 'buildings', files: ['building/base.json'] },
+	entities: { key: 'entities', files: ['entity/base.json'] },
+	furniture: { key: 'furnitures', files: ['furniture/base.json'] },
+	items: { key: 'items', files: ['item/base.json'] },
+	buffs: { key: 'buffs', files: ['buff/base.json'] },
+	skills: { key: 'skills', files: ['skill/base.json'] },
+	walls: { key: 'walls', files: ['wall/base.json'] },
+	floors: { key: 'floors', files: ['floor/base.json'] }
 }
+async function lodCfgFile(cfgRoot, filePath, key) {
+	const url = filePath.startsWith('http') ? filePath : `${cfgRoot}/${filePath}`
+	try {
+		const res = await fetch(url)
+		const data = await res.json()
+		let items = []
+		if (data.includes && Array.isArray(data.includes)) {
+			for (const inc of data.includes) {
+				const subItems = await lodCfgFile(cfgRoot, inc, key)
+				items = items.concat(subItems)
+			}
+		}
+		if (data[key]) items = items.concat(data[key])
+		if (data.entities) items = items.concat(data.entities)
+		if (data.pokemon) items = items.concat(data.pokemon.map(p => ({ ...p, category: 'pokemon' })))
+		return items
+	} catch (e) { return [] }
+}
+const cfgRoot = `${astBaseUrl}/config`
 async function lodSysAst() {
 	for (const [cat, cfg] of Object.entries(astCfgMap)) {
 		const ctn = document.getElementById(`ast-${cat}-sys`)
 		if (!ctn) continue
 		let items = []
 		for (const file of cfg.files) {
-			try {
-				const res = await fetch(`${cfg.path}/${file}`)
-				const data = await res.json()
-				if (data[cfg.key]) items = items.concat(data[cfg.key])
-			} catch (e) {}
+			const fileItems = await lodCfgFile(cfgRoot, file, cfg.key)
+			items = items.concat(fileItems)
 		}
 		ctn.innerHTML = items.map(item =>
 			`<div class="ast-item sys" data-id="${item.id}" data-cat="${cat}">${item.name}</div>`

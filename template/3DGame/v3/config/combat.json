@@ -1,10 +1,34 @@
 {
 	"healthTypes": {
-		"base": { "name": "基础生命值", "color": "#ff3333", "description": "归零即死亡" },
-		"armor": { "name": "护甲", "color": "#ff8800", "description": "钝器/利器/热能/冲击优先消耗", "absorbTypes": ["blunt", "sharp", "thermal", "impact"] },
-		"breath": { "name": "呼吸", "color": "#33ff33", "description": "毒素/真空优先消耗", "absorbTypes": ["toxin", "vacuum"] },
-		"arcane": { "name": "魔法", "color": "#aa33ff", "description": "灵能攻击优先消耗", "absorbTypes": ["psionic"] },
-		"shield": { "name": "能量屏障", "color": "#33ccff", "description": "独立护盾 不算entity血量", "external": true }
+		"base": {
+			"name": "基础生命值",
+			"color": "#ff3333",
+			"description": "归零即死亡"
+		},
+		"armor": {
+			"name": "护甲",
+			"color": "#ff8800",
+			"description": "钝器/利器/热能/冲击优先消耗",
+			"absorbTypes": ["blunt", "sharp", "thermal", "impact"]
+		},
+		"breath": {
+			"name": "呼吸",
+			"color": "#33ff33",
+			"description": "毒素/真空优先消耗",
+			"absorbTypes": ["toxin", "vacuum"]
+		},
+		"arcane": {
+			"name": "魔法",
+			"color": "#aa33ff",
+			"description": "灵能攻击优先消耗",
+			"absorbTypes": ["psionic"]
+		},
+		"shield": {
+			"name": "能量屏障",
+			"color": "#33ccff",
+			"description": "独立护盾 不算entity血量",
+			"external": true
+		}
 	},
 	"damageTypes": {
 		"blunt": {
@@ -66,24 +90,70 @@
 	"explosionComponents": {
 		"description": "爆炸同时造成多种伤害",
 		"components": {
-			"smallFragments": { "type": "sharp", "description": "小破片" },
-			"largeFragments": { "type": "blunt", "description": "大破片" },
-			"shockwave": { "type": "impact", "description": "冲击波 仅非真空" },
-			"heatwave": { "type": "thermal", "description": "热浪" }
+			"smallFragments": {
+				"type": "sharp",
+				"description": "小破片"
+			},
+			"largeFragments": {
+				"type": "blunt",
+				"description": "大破片"
+			},
+			"shockwave": {
+				"type": "impact",
+				"description": "冲击波 仅非真空"
+			},
+			"heatwave": {
+				"type": "thermal",
+				"description": "热浪"
+			}
 		}
 	},
 	"armorStats": {
-		"hp": { "suffix": "Hp", "name": "防御血量", "description": "增加对应类型的生命值上限" },
-		"harden": { "suffix": "Harden", "name": "防御硬化", "description": "减少受到的该类型伤害百分比" },
-		"resist": { "suffix": "Resist", "name": "防御抵抗", "description": "抵消对应的防御无效效果" },
-		"maxMass": { "name": "最大防御质量", "description": "钝器防御专属 超过此质量的钝器效果线性下降至0%", "unit": "kg" }
+		"hp": {
+			"suffix": "Hp",
+			"name": "防御血量",
+			"description": "增加对应类型的生命值上限"
+		},
+		"harden": {
+			"suffix": "Harden",
+			"name": "防御硬化",
+			"description": "减少受到的该类型伤害百分比"
+		},
+		"resist": {
+			"suffix": "Resist",
+			"name": "防御抵抗",
+			"description": "抵消对应的防御无效效果"
+		},
+		"maxMass": {
+			"name": "最大防御质量",
+			"description": "钝器防御专属 超过此质量的钝器效果线性下降至0%",
+			"unit": "kg"
+		}
 	},
 	"weaponStats": {
-		"carryDmg": { "suffix": "CarryDmg", "name": "连带伤害", "description": "对其他类型血量也造成伤害" },
-		"pierce": { "suffix": "Pierce", "name": "防御贯穿", "description": "抵消防御硬化 硬化为0则增加伤害" },
-		"bypass": { "suffix": "Bypass", "name": "防御无效", "description": "该百分比伤害直接对基础生命值造成 最高100%" },
-		"lethal": { "name": "致死攻击", "description": "只要造成任何伤害即杀死目标" },
-		"shieldPierce": { "name": "屏障穿透", "description": "无视能量屏障 所有近战默认拥有" }
+		"carryDmg": {
+			"suffix": "CarryDmg",
+			"name": "连带伤害",
+			"description": "对其他类型血量也造成伤害"
+		},
+		"pierce": {
+			"suffix": "Pierce",
+			"name": "防御贯穿",
+			"description": "抵消防御硬化 硬化为0则增加伤害"
+		},
+		"bypass": {
+			"suffix": "Bypass",
+			"name": "防御无效",
+			"description": "该百分比伤害直接对基础生命值造成 最高100%"
+		},
+		"lethal": {
+			"name": "致死攻击",
+			"description": "只要造成任何伤害即杀死目标"
+		},
+		"shieldPierce": {
+			"name": "屏障穿透",
+			"description": "无视能量屏障 所有近战默认拥有"
+		}
 	},
 	"gaussWeapon": {
 		"description": "高斯武器特性",
@@ -109,9 +179,21 @@
 		"buff": "buff_zombie_infection",
 		"resistStat": "infection_resist",
 		"symptoms": [
-			{ "time": 0.3, "effect": "fever", "description": "发烧" },
-			{ "time": 0.6, "effect": "weakness", "description": "虚弱" },
-			{ "time": 0.9, "effect": "delirium", "description": "神志不清" }
+			{
+				"time": 0.3,
+				"effect": "fever",
+				"description": "发烧"
+			},
+			{
+				"time": 0.6,
+				"effect": "weakness",
+				"description": "虚弱"
+			},
+			{
+				"time": 0.9,
+				"effect": "delirium",
+				"description": "神志不清"
+			}
 		]
 	},
 	"statusEffects": {

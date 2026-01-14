@@ -84,7 +84,24 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	a.addLog("system", "服务器已启动")
+	a.cleanupResidualProcesses()
 	go a.startHttpServer()
+}
+
+func (a *App) cleanupResidualProcesses() {
+	ports := []int{8188, 7860, 7861, 7862, 7863, 7864}
+	for _, port := range ports {
+		a.killProcessOnPort(port)
+	}
+}
+
+func (a *App) killProcessOnPort(port int) {
+	cmd := exec.Command("cmd", "/c", fmt.Sprintf("for /f \"tokens=5\" %%a in ('netstat -ano ^| findstr :%d ^| findstr LISTENING') do taskkill /F /PID %%a 2>nul", port))
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	output, _ := cmd.CombinedOutput()
+	if len(output) > 0 && !strings.Contains(string(output), "没有") && !strings.Contains(string(output), "not found") {
+		a.addLog("system", fmt.Sprintf("已清理端口 %d 上的残留进程", port))
+	}
 }
 
 func (a *App) corsMiddleware(next http.Handler) http.Handler {

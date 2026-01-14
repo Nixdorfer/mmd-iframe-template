@@ -1,0 +1,93 @@
+{
+	"entities": [
+		{
+			"id": "ammo_9mm",
+			"name": "9mm子弹",
+			"category": "ammo",
+			"faction": "neutral",
+			"element": null,
+			"hp": 1,
+			"maxHp": 1,
+			"damage": 25,
+			"speed": 350,
+			"mass": 0.008,
+			"hardness": 0.9,
+			"elasticity": 0.1,
+			"fragility": 0.8,
+			"penetration": 1,
+			"lifetime": 2.0,
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -0.005,
+						"y": -0.005,
+						"z": -0.01,
+						"w": 0.01,
+						"h": 0.01,
+						"d": 0.02
+					}
+				]
+			}
+		},
+		{
+			"id": "ammo_556",
+			"name": "5.56mm子弹",
+			"category": "ammo",
+			"faction": "neutral",
+			"element": null,
+			"hp": 1,
+			"maxHp": 1,
+			"damage": 45,
+			"speed": 940,
+			"mass": 0.004,
+			"hardness": 0.95,
+			"elasticity": 0.05,
+			"fragility": 0.9,
+			"penetration": 2,
+			"lifetime": 3.0,
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -0.003,
+						"y": -0.003,
+						"z": -0.015,
+						"w": 0.006,
+						"h": 0.006,
+						"d": 0.03
+					}
+				]
+			}
+		},
+		{
+			"id": "ammo_12gauge",
+			"name": "12号霰弹",
+			"category": "ammo",
+			"faction": "neutral",
+			"element": null,
+			"hp": 1,
+			"maxHp": 1,
+			"damage": 15,
+			"pelletCount": 8,
+			"spread": 15,
+			"speed": 400,
+			"mass": 0.032,
+			"hardness": 0.7,
+			"elasticity": 0.2,
+			"fragility": 0.6,
+			"penetration": 0,
+			"lifetime": 1.0,
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -0.004,
+						"y": -0.004,
+						"z": -0.004,
+						"w": 0.008,
+						"h": 0.008,
+						"d": 0.008
+					}
+				]
+			}
+		}
+	]
+}

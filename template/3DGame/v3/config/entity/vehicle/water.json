@@ -1,0 +1,61 @@
+{
+	"entities": [
+		{
+			"id": "veh_boat",
+			"name": "快艇",
+			"baseClass": "vehicle.watercraft",
+			"category": "vehicle",
+			"faction": "neutral",
+			"element": null,
+			"hp": 400,
+			"maxHp": 400,
+			"armor": 15,
+			"speed": 0,
+			"maxSpeed": 80,
+			"acceleration": 6,
+			"mass": 800,
+			"hardness": 0.6,
+			"elasticity": 0.5,
+			"fragility": 0.5,
+			"seats": 4,
+			"canFloat": true,
+			"fuelCapacity": 100,
+			"fuelConsumption": 15,
+			"parts": [
+				{
+					"id": "engine",
+					"name": "引擎",
+					"hp": 100,
+					"canDetach": false,
+					"critMul": 3.0
+				},
+				{
+					"id": "propeller",
+					"name": "螺旋桨",
+					"hp": 50,
+					"canDetach": true,
+					"critMul": 4.0
+				},
+				{
+					"id": "hull",
+					"name": "船体",
+					"hp": 250,
+					"canDetach": false,
+					"critMul": 1.0
+				}
+			],
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -1.0,
+						"y": -0.5,
+						"z": -2.5,
+						"w": 2.0,
+						"h": 1.5,
+						"d": 5.0
+					}
+				]
+			}
+		}
+	]
+}

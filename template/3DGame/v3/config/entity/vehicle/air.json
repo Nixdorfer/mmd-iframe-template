@@ -1,0 +1,75 @@
+{
+	"entities": [
+		{
+			"id": "veh_helicopter",
+			"name": "直升机",
+			"baseClass": "vehicle.aircraft",
+			"category": "vehicle",
+			"faction": "neutral",
+			"element": null,
+			"hp": 800,
+			"maxHp": 800,
+			"armor": 30,
+			"speed": 0,
+			"maxSpeed": 280,
+			"acceleration": 10,
+			"mass": 3000,
+			"hardness": 0.6,
+			"elasticity": 0.2,
+			"fragility": 0.7,
+			"seats": 4,
+			"canFly": true,
+			"fuelCapacity": 400,
+			"fuelConsumption": 80,
+			"parts": [
+				{
+					"id": "engine",
+					"name": "引擎",
+					"hp": 150,
+					"canDetach": false,
+					"critMul": 3.0
+				},
+				{
+					"id": "rotor",
+					"name": "主旋翼",
+					"hp": 100,
+					"canDetach": true,
+					"critMul": 5.0
+				},
+				{
+					"id": "tail_rotor",
+					"name": "尾旋翼",
+					"hp": 80,
+					"canDetach": true,
+					"critMul": 4.0
+				},
+				{
+					"id": "cockpit",
+					"name": "驾驶舱",
+					"hp": 120,
+					"canDetach": false,
+					"critMul": 2.0
+				},
+				{
+					"id": "body",
+					"name": "机身",
+					"hp": 350,
+					"canDetach": false,
+					"critMul": 1.0
+				}
+			],
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -1.5,
+						"y": 0,
+						"z": -6.0,
+						"w": 3.0,
+						"h": 3.5,
+						"d": 12.0
+					}
+				]
+			}
+		}
+	]
+}
