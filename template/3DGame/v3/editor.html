@@ -212,6 +212,580 @@ body {
 	display: block;
 }
 
+.section-split {
+	flex: 1;
+	display: none;
+	min-height: 0;
+}
+
+.section-split.active {
+	display: flex;
+}
+
+.section-split .sec-le-pn {
+	width: 33.333%;
+	min-width: 200px;
+	max-width: 400px;
+	background: #111111;
+	border-right: 1px solid #333;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+}
+
+.section-split .sec-ri-pn {
+	flex: 1;
+	background: #0a0a0a;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.section-split .pn-hd {
+	padding: 12px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #888;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid #333;
+	flex-shrink: 0;
+}
+
+.section-split .pn-bd {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.section-split .sec-ri-pn .pn-bd {
+	padding: 16px;
+}
+
+.bld-tlb {
+	height: 40px;
+	background: #1a1a1a;
+	border-bottom: 1px solid #333;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+.bld-tool-btn {
+	height: 32px;
+	padding: 0 12px;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	color: #888;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.15s;
+}
+
+.bld-tool-btn:hover {
+	background: #333;
+	color: #aaa;
+}
+
+.bld-tool-btn.active {
+	background: #166d3b;
+	border-color: #1c8548;
+	color: #fff;
+}
+
+.bld-tool-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.bld-lyr-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.bld-lyr-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.bld-lyr-item:hover {
+	background: #252525;
+}
+
+.bld-lyr-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.bld-lyr-add {
+	width: 100%;
+	height: 32px;
+	background: #166d3b;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	margin-top: 8px;
+	transition: background 0.15s;
+}
+
+.bld-lyr-add:hover {
+	background: #1c8548;
+}
+
+.bld-cv-ctn {
+	flex: 1;
+	position: relative;
+	overflow: hidden;
+	background: #050505;
+}
+
+.bld-cv-ctn canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.bld-info {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	background: rgba(0,0,0,0.7);
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #888;
+}
+
+.bld-props {
+	border-top: 1px solid #333;
+	padding: 12px;
+	max-height: 200px;
+	overflow-y: auto;
+	flex-shrink: 0;
+}
+
+.type-tabs {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 12px;
+}
+
+.type-tab {
+	flex: 1;
+	height: 28px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	color: #888;
+	font-size: 11px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.type-tab:hover {
+	background: #252525;
+}
+
+.type-tab.active {
+	background: #166d3b;
+	border-color: #1c8548;
+	color: #fff;
+}
+
+.ast-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ast-cat-item {
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+}
+
+.ast-cat-hd {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: background 0.15s;
+}
+
+.ast-cat-hd:hover {
+	background: #252525;
+}
+
+.ast-cat-hd .arrow {
+	transition: transform 0.2s;
+	stroke: #666;
+}
+
+.ast-cat-hd.open .arrow {
+	transform: rotate(90deg);
+}
+
+.ast-cat-bd {
+	display: none;
+	padding: 8px;
+	border-top: 1px solid #333;
+}
+
+.ast-cat-bd.open {
+	display: block;
+}
+
+.ast-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 8px;
+	background: #252525;
+	border-radius: 4px;
+	margin-bottom: 4px;
+	cursor: pointer;
+	font-size: 12px;
+	transition: background 0.15s;
+}
+
+.ast-item:hover {
+	background: #333;
+}
+
+.ast-item.sel {
+	background: #166d3b;
+}
+
+.ast-add-btn {
+	width: 100%;
+	height: 28px;
+	background: transparent;
+	border: 1px dashed #444;
+	border-radius: 4px;
+	color: #888;
+	font-size: 11px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.ast-add-btn:hover {
+	background: #252525;
+	border-color: #555;
+}
+
+.ast-add-btn.ai-con {
+	background: #14532d;
+	border-color: #166d3b;
+	border-style: solid;
+	color: #4ade80;
+}
+
+.ast-sub-fld {
+	margin-bottom: 4px;
+}
+
+.ast-sub-hd {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 6px;
+	cursor: pointer;
+	font-size: 11px;
+	color: #888;
+	border-radius: 3px;
+	transition: background 0.15s;
+}
+
+.ast-sub-hd:hover {
+	background: #2a2a2a;
+}
+
+.ast-sub-hd .arrow {
+	transition: transform 0.2s;
+	stroke: #666;
+}
+
+.ast-sub-hd.open .arrow {
+	transform: rotate(90deg);
+}
+
+.ast-sub-bd {
+	display: none;
+	padding-left: 16px;
+}
+
+.ast-sub-bd.open {
+	display: block;
+}
+
+.ast-item.sys {
+	opacity: 0.7;
+	cursor: default;
+}
+
+.ast-item.sys:hover {
+	background: #252525;
+}
+
+.spawn-cfg-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.spawn-cfg-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.spawn-cfg-item:hover {
+	background: #252525;
+}
+
+.spawn-cfg-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.spawn-cfg-add {
+	width: 100%;
+	height: 28px;
+	background: transparent;
+	border: 1px dashed #444;
+	border-radius: 4px;
+	color: #888;
+	font-size: 11px;
+	cursor: pointer;
+	margin-top: 4px;
+	transition: all 0.15s;
+}
+
+.spawn-cfg-add:hover {
+	background: #252525;
+	border-color: #555;
+}
+
+.map-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.map-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.map-item:hover {
+	background: #252525;
+}
+
+.map-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.map-add {
+	width: 100%;
+	height: 32px;
+	background: #166d3b;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	margin-top: 8px;
+	transition: background 0.15s;
+}
+
+.map-add:hover {
+	background: #1c8548;
+}
+
+.map-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.map-cat-item {
+	display: flex;
+	align-items: center;
+	padding: 10px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.map-cat-item:hover {
+	background: #252525;
+}
+
+.map-cat-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.weather-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.weather-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.weather-item:hover {
+	background: #252525;
+}
+
+.weather-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.weather-add {
+	width: 100%;
+	height: 32px;
+	background: #166d3b;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	margin-top: 8px;
+	transition: background 0.15s;
+}
+
+.weather-add:hover {
+	background: #1c8548;
+}
+
+.sys-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.sys-cat-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.sys-cat-item:hover {
+	background: #252525;
+}
+
+.sys-cat-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.skill-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.skill-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.skill-item:hover {
+	background: #252525;
+}
+
+.skill-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.skill-add {
+	width: 100%;
+	height: 32px;
+	background: #166d3b;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	margin-top: 8px;
+	transition: background 0.15s;
+}
+
+.skill-add:hover {
+	background: #1c8548;
+}
+
 .main {
 	flex: 1;
 	display: flex;
@@ -742,20 +1316,95 @@ body {
 	border-color: #166d3b;
 }
 
-.config-row input[type="checkbox"] {
-	width: 18px;
-	height: 18px;
-	flex: none;
+.swt {
+	position: relative;
+	width: 36px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+.swt input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.swt-trk {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #333;
+	border-radius: 10px;
+	transition: background 0.2s;
+}
+
+.swt-trk:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 2px;
+	bottom: 2px;
+	background: #888;
+	border-radius: 50%;
+	transition: all 0.2s;
+}
+
+.swt input:checked + .swt-trk {
+	background: #166d3b;
+}
+
+.swt input:checked + .swt-trk:before {
+	transform: translateX(16px);
+	background: #fff;
 }
 
 .config-row input[type="range"] {
 	padding: 0;
+	max-width: 120px;
+	flex: 0 0 120px;
+}
+
+.config-row .sld-val {
+	width: 50px;
+	text-align: right;
+	font-size: 12px;
+	color: #fff;
+	cursor: default;
+	padding: 2px 4px;
+	border-radius: 3px;
+	flex-shrink: 0;
+}
+
+.config-row .sld-val:hover {
+	background: #252525;
+}
+
+.config-row .sld-ipt {
+	width: 50px;
+	height: 22px;
+	background: #1a1a1a;
+	border: 1px solid #166d3b;
+	border-radius: 3px;
+	color: #fff;
+	font-size: 12px;
+	text-align: right;
+	padding: 0 4px;
+	flex: 0 0 auto;
+}
+
+.config-row .sld-ipt:focus {
+	outline: none;
 }
 
 .config-row .unit {
 	color: #666;
 	font-size: 11px;
 	width: 30px;
+	flex-shrink: 0;
 }
 
 .empty-state {
@@ -1592,6 +2241,13 @@ body {
 	flex-shrink: 0;
 }
 
+#ai-server-lst {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
 .ai-server-tag {
 	height: 28px;
 	padding: 0 10px;
@@ -1640,6 +2296,10 @@ body {
 @keyframes pulse {
 	0%, 100% { opacity: 1; }
 	50% { opacity: 0.4; }
+}
+
+#ai-model-sel {
+	flex: 1;
 }
 
 .ai-server-tag .del-btn {
@@ -1841,6 +2501,16 @@ body {
 	color: #60a5fa;
 }
 
+.ai-task-item .wf-step.error {
+	background: #7f1d1d;
+	color: #f87171;
+}
+
+.ai-task-item .wf-step.retry {
+	background: #78350f;
+	color: #fbbf24;
+}
+
 .ai-task-item.status-done {
 	border-left: 3px solid #4ade80;
 }
@@ -1851,6 +2521,10 @@ body {
 
 .ai-task-item.status-pending {
 	border-left: 3px solid #555;
+}
+
+.ai-task-item.status-error {
+	border-left: 3px solid #f87171;
 }
 
 .ai-ctrl-bar {
@@ -1933,6 +2607,10 @@ body {
 
 .ai-stats .stat-val.blue {
 	color: #60a5fa;
+}
+
+.ai-stats .stat-val.red {
+	color: #f87171;
 }
 
 .ai-config-section {
@@ -2124,9 +2802,17 @@ body {
 			</div>
 		</div>
 		<div class="section-tabs">
-			<button class="section-tab active" data-section="editor">
-				<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-				编辑器
+			<button class="section-tab" data-section="building">
+				<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+				建筑
+			</button>
+			<button class="section-tab" data-section="spawn">
+				<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+				出生设置
+			</button>
+			<button class="section-tab active" data-section="assets">
+				<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+				资产
 			</button>
 			<button class="section-tab" data-section="map">
 				<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
@@ -2149,7 +2835,340 @@ body {
 				AI
 			</button>
 		</div>
-		<div class="main" id="section-editor">
+		<div class="section-split" id="section-building">
+			<div class="sec-le-pn">
+				<div class="pn-hd">建筑层</div>
+				<div class="pn-bd">
+					<div class="bld-lyr-lst" id="bld-lyr-lst"></div>
+					<button class="bld-lyr-add" id="bld-lyr-add">+ 新建层</button>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="bld-tlb">
+					<button class="bld-tool-btn active" data-bld-tool="line">
+						<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+						直线
+					</button>
+					<button class="bld-tool-btn" data-bld-tool="ground">
+						<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+						地面
+					</button>
+					<button class="bld-tool-btn" data-bld-tool="wall">
+						<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/></svg>
+						造墙
+					</button>
+					<button class="bld-tool-btn" data-bld-tool="window">
+						<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+						开窗
+					</button>
+					<button class="bld-tool-btn" data-bld-tool="door">
+						<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18"/><circle cx="15" cy="12" r="1"/></svg>
+						开门
+					</button>
+				</div>
+				<div class="bld-cv-ctn" id="bld-cv-ctn">
+					<canvas id="bld-canvas"></canvas>
+					<div class="bld-info" id="bld-info">长度: 0m</div>
+				</div>
+				<div class="bld-props" id="bld-props">
+					<div class="config-section">
+						<div class="config-section-title">直线属性</div>
+						<div class="config-row">
+							<label>宽度</label>
+							<input type="number" id="bld-line-width" value="0.2" min="0.0625" step="0.0625">
+							<span class="unit">m</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="section-split active" id="section-assets">
+			<div class="sec-le-pn">
+				<div class="pn-hd">资产分类</div>
+				<div class="pn-bd">
+					<div class="ast-cat-lst" id="ast-cat-lst">
+						<div class="ast-cat-item" data-cat="buildings">
+							<div class="ast-cat-hd open">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>建筑</span>
+							</div>
+							<div class="ast-cat-bd open" id="ast-buildings">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="buildings-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-buildings-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="buildings-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-buildings-cst">
+										<button class="ast-add-btn" data-cat="buildings">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="entities">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>实体</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-entities">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="entities-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-entities-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="entities-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-entities-cst">
+										<button class="ast-add-btn" data-cat="entities">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="furniture">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>家具</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-furniture">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="furniture-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-furniture-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="furniture-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-furniture-cst">
+										<button class="ast-add-btn" data-cat="furniture">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="items">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>物品</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-items">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="items-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-items-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="items-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-items-cst">
+										<button class="ast-add-btn" data-cat="items">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="buffs">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>BUFF</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-buffs">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="buffs-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-buffs-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="buffs-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-buffs-cst">
+										<button class="ast-add-btn" data-cat="buffs">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="skills">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>技能</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-skills">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="skills-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-skills-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="skills-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-skills-cst">
+										<button class="ast-add-btn" data-cat="skills">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="walls">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>墙壁</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-walls">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="walls-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-walls-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="walls-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-walls-cst">
+										<button class="ast-add-btn" data-cat="walls">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="floors">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>地面</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-floors">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="floors-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-floors-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="floors-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-floors-cst">
+										<button class="ast-add-btn" data-cat="floors">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">资产详情</div>
+				<div class="pn-bd" id="ast-detail">
+					<div class="empty-state">
+						<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+						<span>选择资产以查看详情</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="section-split" id="section-spawn">
+			<div class="sec-le-pn">
+				<div class="pn-hd">出生配置</div>
+				<div class="pn-bd">
+					<div class="pn-hd-fld">
+						<div class="pn-hd-fld-header open" data-fld="spawn-loc">
+							<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+							<span>出生地点</span>
+						</div>
+						<div class="pn-hd-fld-body open" id="spawn-loc-lst">
+							<div class="spawn-cfg-lst">
+								<div class="spawn-cfg-item sel" data-id="default">默认出生点</div>
+							</div>
+							<button class="spawn-cfg-add" data-type="loc">+ 添加</button>
+						</div>
+					</div>
+					<div class="pn-hd-fld">
+						<div class="pn-hd-fld-header" data-fld="spawn-items">
+							<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+							<span>出生物品</span>
+						</div>
+						<div class="pn-hd-fld-body" id="spawn-items-lst">
+							<div class="spawn-cfg-lst"></div>
+							<button class="spawn-cfg-add" data-type="items">+ 添加</button>
+						</div>
+					</div>
+					<div class="pn-hd-fld">
+						<div class="pn-hd-fld-header" data-fld="spawn-rel">
+							<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+							<span>出生关系</span>
+						</div>
+						<div class="pn-hd-fld-body" id="spawn-rel-lst">
+							<div class="spawn-cfg-lst"></div>
+							<button class="spawn-cfg-add" data-type="rel">+ 添加</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">配置详情</div>
+				<div class="pn-bd" id="spawn-detail">
+					<div class="config-section">
+						<div class="config-section-title">出生地点设置</div>
+						<div class="config-row">
+							<label>出生类型</label>
+							<select id="spawn-type">
+								<option value="biome">生物群系</option>
+								<option value="city" selected>城市区域</option>
+							</select>
+						</div>
+						<div class="config-row" id="spawn-biome-row" style="display:none">
+							<label>生物群系</label>
+							<select id="spawn-biome">
+								<option value="grassland">草地</option>
+								<option value="polar">极地</option>
+								<option value="swamp">沼泽</option>
+								<option value="desert">沙漠</option>
+								<option value="rainforest">雨林</option>
+								<option value="tundra">冻土</option>
+								<option value="savanna">稀树草原</option>
+							</select>
+						</div>
+						<div class="config-row" id="spawn-zone-row">
+							<label>城市区域</label>
+							<select id="spawn-zone">
+								<option value="downtown">市中心</option>
+								<option value="urban">城市区</option>
+								<option value="suburban" selected>结合部</option>
+								<option value="rural">乡村</option>
+								<option value="wild">旷野</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="main" id="section-editor" style="display:none">
 			<div class="le-pn" id="le-pn">
 				<div class="pn-header">
 					<span class="pn-title-text">资源</span>
@@ -2329,13 +3348,13 @@ body {
 							<div class="prop-row">
 								<div class="prop-col">
 									<div class="prop-label">确保生成</div>
-									<input type="checkbox" id="building-ensure">
+									<label class="swt"><input type="checkbox" id="building-ensure"><span class="swt-trk"></span></label>
 								</div>
 							</div>
 							<div class="prop-row">
 								<div class="prop-col">
 									<div class="prop-label">可作为出生点</div>
-									<input type="checkbox" id="building-spawn">
+									<label class="swt"><input type="checkbox" id="building-spawn"><span class="swt-trk"></span></label>
 								</div>
 							</div>
 							<div class="prop-row">
@@ -2513,8 +3532,23 @@ body {
 				</div>
 			</div>
 		</div>
-		<div class="section-cnt" id="section-map">
-					<div class="config-section">
+		<div class="section-split" id="section-map">
+			<div class="sec-le-pn">
+				<div class="pn-hd">地图设置</div>
+				<div class="pn-bd">
+					<div class="map-cat-lst" id="map-cat-lst">
+						<div class="map-cat-item sel" data-cat="planet">星球设置</div>
+						<div class="map-cat-item" data-cat="terrain">地貌参数</div>
+						<div class="map-cat-item" data-cat="terrain-weight">地貌生成权重</div>
+						<div class="map-cat-item" data-cat="city">城市参数</div>
+						<div class="map-cat-item" data-cat="city-weight">城市生成权重</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">地图属性</div>
+				<div class="pn-bd" id="map-detail">
+					<div class="config-section" data-cat="planet">
 						<div class="config-section-title">星球设置</div>
 						<div class="config-row">
 							<label>贴图风格</label>
@@ -2530,7 +3564,7 @@ body {
 						</div>
 						<div class="config-row">
 							<label>破败风格</label>
-							<input type="checkbox" id="cfg-ruined">
+							<label class="swt"><input type="checkbox" id="cfg-ruined"><span class="swt-trk"></span></label>
 						</div>
 						<div class="config-row">
 							<label>平均气温</label>
@@ -2561,7 +3595,7 @@ body {
 							<span class="unit">%</span>
 						</div>
 					</div>
-					<div class="config-section">
+					<div class="config-section" data-cat="terrain" style="display:none">
 						<div class="config-section-title">地貌参数</div>
 						<div class="config-row">
 							<label>湖泊密度</label>
@@ -2609,17 +3643,17 @@ body {
 							<span class="unit">m</span>
 						</div>
 					</div>
-					<div class="config-section">
+					<div class="config-section" data-cat="terrain-weight" style="display:none">
 						<div class="config-section-title">地貌生成权重</div>
-						<div class="config-row"><label>草地</label><input type="checkbox" id="cfg-biome-grassland" checked><input type="range" id="cfg-biome-grassland-weight" min="0" max="1000" value="300"></div>
-						<div class="config-row"><label>极地</label><input type="checkbox" id="cfg-biome-polar"><input type="range" id="cfg-biome-polar-weight" min="0" max="1000" value="50"></div>
-						<div class="config-row"><label>沼泽</label><input type="checkbox" id="cfg-biome-swamp"><input type="range" id="cfg-biome-swamp-weight" min="0" max="1000" value="100"></div>
-						<div class="config-row"><label>沙漠</label><input type="checkbox" id="cfg-biome-desert"><input type="range" id="cfg-biome-desert-weight" min="0" max="1000" value="150"></div>
-						<div class="config-row"><label>雨林</label><input type="checkbox" id="cfg-biome-rainforest"><input type="range" id="cfg-biome-rainforest-weight" min="0" max="1000" value="100"></div>
-						<div class="config-row"><label>冻土</label><input type="checkbox" id="cfg-biome-tundra"><input type="range" id="cfg-biome-tundra-weight" min="0" max="1000" value="80"></div>
-						<div class="config-row"><label>稀树草原</label><input type="checkbox" id="cfg-biome-savanna"><input type="range" id="cfg-biome-savanna-weight" min="0" max="1000" value="120"></div>
+						<div class="config-row"><label>草地</label><label class="swt"><input type="checkbox" id="cfg-biome-grassland" checked><span class="swt-trk"></span></label><input type="range" id="cfg-biome-grassland-weight" min="0" max="1000" value="300"></div>
+						<div class="config-row"><label>极地</label><label class="swt"><input type="checkbox" id="cfg-biome-polar"><span class="swt-trk"></span></label><input type="range" id="cfg-biome-polar-weight" min="0" max="1000" value="50"></div>
+						<div class="config-row"><label>沼泽</label><label class="swt"><input type="checkbox" id="cfg-biome-swamp"><span class="swt-trk"></span></label><input type="range" id="cfg-biome-swamp-weight" min="0" max="1000" value="100"></div>
+						<div class="config-row"><label>沙漠</label><label class="swt"><input type="checkbox" id="cfg-biome-desert"><span class="swt-trk"></span></label><input type="range" id="cfg-biome-desert-weight" min="0" max="1000" value="150"></div>
+						<div class="config-row"><label>雨林</label><label class="swt"><input type="checkbox" id="cfg-biome-rainforest"><span class="swt-trk"></span></label><input type="range" id="cfg-biome-rainforest-weight" min="0" max="1000" value="100"></div>
+						<div class="config-row"><label>冻土</label><label class="swt"><input type="checkbox" id="cfg-biome-tundra"><span class="swt-trk"></span></label><input type="range" id="cfg-biome-tundra-weight" min="0" max="1000" value="80"></div>
+						<div class="config-row"><label>稀树草原</label><label class="swt"><input type="checkbox" id="cfg-biome-savanna"><span class="swt-trk"></span></label><input type="range" id="cfg-biome-savanna-weight" min="0" max="1000" value="120"></div>
 					</div>
-					<div class="config-section">
+					<div class="config-section" data-cat="city" style="display:none">
 						<div class="config-section-title">城市参数</div>
 						<div class="config-row">
 							<label>城市模式</label>
@@ -2641,58 +3675,31 @@ body {
 							<span class="unit">km</span>
 						</div>
 					</div>
-					<div class="config-section">
-						<div class="config-section-title">城市区域权重</div>
-						<div class="config-row"><label>市中心</label><input type="checkbox" id="cfg-zone-downtown" checked><input type="range" id="cfg-zone-downtown-weight" min="0" max="1000" value="100"></div>
-						<div class="config-row"><label>城市区</label><input type="checkbox" id="cfg-zone-urban" checked><input type="range" id="cfg-zone-urban-weight" min="0" max="1000" value="300"></div>
-						<div class="config-row"><label>结合部</label><input type="checkbox" id="cfg-zone-suburban" checked><input type="range" id="cfg-zone-suburban-weight" min="0" max="1000" value="200"></div>
-						<div class="config-row"><label>乡村</label><input type="checkbox" id="cfg-zone-rural" checked><input type="range" id="cfg-zone-rural-weight" min="0" max="1000" value="150"></div>
+					<div class="config-section" data-cat="city-weight" style="display:none">
+						<div class="config-section-title">城市生成权重</div>
+						<div class="config-row"><label>市中心</label><label class="swt"><input type="checkbox" id="cfg-zone-downtown" checked><span class="swt-trk"></span></label><input type="range" id="cfg-zone-downtown-weight" min="0" max="1000" value="100"></div>
+						<div class="config-row"><label>城市区</label><label class="swt"><input type="checkbox" id="cfg-zone-urban" checked><span class="swt-trk"></span></label><input type="range" id="cfg-zone-urban-weight" min="0" max="1000" value="300"></div>
+						<div class="config-row"><label>结合部</label><label class="swt"><input type="checkbox" id="cfg-zone-suburban" checked><span class="swt-trk"></span></label><input type="range" id="cfg-zone-suburban-weight" min="0" max="1000" value="200"></div>
+						<div class="config-row"><label>乡村</label><label class="swt"><input type="checkbox" id="cfg-zone-rural" checked><span class="swt-trk"></span></label><input type="range" id="cfg-zone-rural-weight" min="0" max="1000" value="150"></div>
 					</div>
-					<div class="config-section">
-						<div class="config-section-title">出生地参数</div>
-						<div class="config-row">
-							<label>出生类型</label>
-							<select id="cfg-spawn-type">
-								<option value="biome">生物群系</option>
-								<option value="city" selected>城市区域</option>
-							</select>
-						</div>
-						<div class="config-row" id="spawn-biome-row">
-							<label>生物群系</label>
-							<select id="cfg-spawn-biome">
-								<option value="grassland">草地</option>
-								<option value="polar">极地</option>
-								<option value="swamp">沼泽</option>
-								<option value="desert">沙漠</option>
-								<option value="rainforest">雨林</option>
-								<option value="tundra">冻土</option>
-								<option value="savanna">稀树草原</option>
-							</select>
-						</div>
-						<div class="config-row" id="spawn-zone-row">
-							<label>城市区域</label>
-							<select id="cfg-spawn-zone">
-								<option value="downtown">市中心</option>
-								<option value="urban">城市区</option>
-								<option value="suburban" selected>结合部</option>
-								<option value="rural">乡村</option>
-								<option value="wild">旷野</option>
-							</select>
-						</div>
-					</div>
-					<div class="config-section">
-						<div class="config-section-title">出生物品</div>
-						<div class="spawn-item-list" id="spawn-item-list"></div>
-						<div class="spawn-item-add">
-							<select id="spawn-item-select">
-								<option value="">选择物品...</option>
-							</select>
-							<input type="number" id="spawn-item-count" min="1" value="1" placeholder="数量">
-							<button class="spawn-item-btn" id="add-spawn-item-btn">+</button>
-						</div>
-					</div>
+				</div>
+			</div>
 		</div>
-		<div class="section-cnt" id="section-weather">
+		<div class="section-split" id="section-weather">
+			<div class="sec-le-pn">
+				<div class="pn-hd">天气预设</div>
+				<div class="pn-bd">
+					<div class="weather-lst" id="weather-lst">
+						<div class="weather-item sel" data-id="sunny">晴天</div>
+						<div class="weather-item" data-id="cloudy">多云</div>
+						<div class="weather-item" data-id="rainy">雨天</div>
+					</div>
+					<button class="weather-add" id="weather-add">+ 添加天气</button>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">天气参数</div>
+				<div class="pn-bd" id="weather-detail">
 					<div class="config-section">
 						<div class="config-section-title">天气列表</div>
 						<div class="weather-list" id="weather-list"></div>
@@ -2737,20 +3744,52 @@ body {
 							<span class="unit">°C</span>
 						</div>
 					</div>
-		</div>
-		<div class="section-cnt" id="section-system">
-			<div class="config-section">
-				<div class="config-section-title">游玩设置</div>
-				<div class="config-row">
-					<label>上帝模式</label>
-					<input type="checkbox" id="cfg-godmode">
 				</div>
 			</div>
 		</div>
-		<div class="section-cnt" id="section-skills">
+		<div class="section-split" id="section-system">
+			<div class="sec-le-pn">
+				<div class="pn-hd">设置分类</div>
+				<div class="pn-bd">
+					<div class="sys-cat-lst" id="sys-cat-lst">
+						<div class="sys-cat-item sel" data-id="gameplay">游玩设置</div>
+						<div class="sys-cat-item" data-id="graphics">画质设置</div>
+						<div class="sys-cat-item" data-id="audio">音频设置</div>
+						<div class="sys-cat-item" data-id="controls">控制设置</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">设置详情</div>
+				<div class="pn-bd" id="sys-detail">
+					<div class="config-section">
+						<div class="config-section-title">游玩设置</div>
+						<div class="config-row">
+							<label>上帝模式</label>
+							<label class="swt"><input type="checkbox" id="cfg-godmode"><span class="swt-trk"></span></label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="section-split" id="section-skills">
+			<div class="sec-le-pn">
+				<div class="pn-hd">技能列表</div>
+				<div class="pn-bd">
+					<div class="skill-lst" id="skill-lst">
+						<div class="skill-item sel" data-id="hacker">骇客系统</div>
+						<div class="skill-item" data-id="magic">魔法系统</div>
+						<div class="skill-item" data-id="qi">真气系统</div>
+					</div>
+					<button class="skill-add" id="skill-add">+ 添加技能</button>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">技能属性</div>
+				<div class="pn-bd" id="skill-detail">
 					<div class="skill-system-item" data-skill="hacker">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-hacker">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-hacker"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">骇客系统 (赛博朋克)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2767,7 +3806,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="magic">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-magic">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-magic"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">魔法系统 (哈利波特)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2784,7 +3823,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="qi">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-qi">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-qi"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">真气系统 (修仙)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2801,7 +3840,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="ninjutsu">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-ninjutsu">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-ninjutsu"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">忍术系统 (火影)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2818,7 +3857,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="haki">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-haki">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-haki"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">霸气系统 (海贼王)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2835,7 +3874,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="curse">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-curse">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-curse"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">咒术系统 (咒术回战)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2852,7 +3891,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="force">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-force">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-force"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">原力系统 (星球大战)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2869,7 +3908,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="breath">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-breath">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-breath"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">呼吸系统 (鬼灭之刃)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2886,7 +3925,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="magecraft">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-magecraft">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-magecraft"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">魔术系统 (FATE)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2903,7 +3942,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="ability">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-ability">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-ability"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">能力系统 (魔禁)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2920,7 +3959,7 @@ body {
 					</div>
 					<div class="skill-system-item" data-skill="stand">
 						<div class="skill-system-header">
-							<input type="checkbox" class="skill-system-toggle" id="skill-stand">
+							<label class="swt"><input type="checkbox" class="skill-system-toggle" id="skill-stand"><span class="swt-trk"></span></label>
 							<span class="skill-system-name">替身系统 (JOJO)</span>
 						</div>
 						<div class="skill-system-body">
@@ -2934,6 +3973,8 @@ body {
 							<div class="config-row"><label>能力描述</label><input type="text" class="settings-input" value="时停"></div>
 						</div>
 					</div>
+				</div>
+			</div>
 		</div>
 		<div class="section-ai" id="section-ai">
 			<div class="ai-server-bar" id="ai-server-bar">
@@ -2971,12 +4012,11 @@ body {
 					</div>
 				</div>
 				<div class="ai-cnt" id="ai-cnt">
-					<div class="ai-task-lst" id="ai-task-lst">
-						<div class="ai-empty-state" id="ai-empty">
-							<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-							<span>上传YAML文件以加载任务</span>
-						</div>
+					<div class="ai-empty-state" id="ai-empty">
+						<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+						<span>上传YAML文件以加载任务</span>
 					</div>
+					<div class="ai-task-lst" id="ai-task-lst"></div>
 					<div class="ai-ctrl-bar">
 						<button class="ai-ctrl-btn" id="ai-load-btn">
 							<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -2994,6 +4034,7 @@ body {
 							<div class="stat">完成: <span class="stat-val green" id="ai-stat-done">0</span></div>
 							<div class="stat">处理中: <span class="stat-val blue" id="ai-stat-running">0</span></div>
 							<div class="stat">待处理: <span class="stat-val" id="ai-stat-pending">0</span></div>
+							<div class="stat">失败: <span class="stat-val red" id="ai-stat-error">0</span></div>
 						</div>
 					</div>
 				</div>
@@ -3002,6 +4043,13 @@ body {
 						<span class="pn-title-text">配置</span>
 					</div>
 					<div class="pn-body" id="ai-ri-cnt">
+						<div class="ai-config-section" id="ai-cfg-common">
+							<div class="section-title">图像生成模型</div>
+							<div class="ai-config-row">
+								<label>Checkpoint</label>
+								<select id="ai-model-sel"><option value="">加载中...</option></select>
+							</div>
+						</div>
 						<div class="ai-config-section" id="ai-cfg-model" style="display:none;">
 							<div class="section-title">模型生成配置</div>
 							<div class="ai-config-row">
@@ -3033,7 +4081,7 @@ body {
 							</div>
 							<div class="ai-config-row">
 								<label>无缝</label>
-								<input type="checkbox" id="ai-tex-seamless" checked>
+								<label class="swt"><input type="checkbox" id="ai-tex-seamless" checked><span class="swt-trk"></span></label>
 							</div>
 						</div>
 						<div class="ai-config-section" id="ai-cfg-voice" style="display:none;">
@@ -3595,12 +4643,14 @@ function render() {
 	requestAnimationFrame(render)
 }
 function updateGizmo() {
+	if (!renderer || !renderer.camera) return
 	const inner = document.getElementById('gizmo-inner')
 	const az = renderer.camera.azimuth
 	const el = renderer.camera.elevation
 	inner.style.transform = `rotateX(${el}deg) rotateY(${-az}deg)`
 }
 function updateCanvasInfo() {
+	if (!renderer || !renderer.screenToWorld) return
 	const world = renderer.screenToWorld(state.mouseX, state.mouseY, 0)
 	if (world) {
 		const x = Math.floor(world.x)
@@ -3731,15 +4781,69 @@ document.querySelectorAll('.section-tab').forEach(tab => {
 		document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'))
 		tab.classList.add('active')
 		const section = tab.dataset.section
-		document.getElementById('section-editor').style.display = section === 'editor' ? 'flex' : 'none'
+		document.getElementById('section-building').classList.toggle('active', section === 'building')
+		document.getElementById('section-spawn').classList.toggle('active', section === 'spawn')
+		document.getElementById('section-assets').classList.toggle('active', section === 'assets')
 		document.getElementById('section-map').classList.toggle('active', section === 'map')
 		document.getElementById('section-weather').classList.toggle('active', section === 'weather')
 		document.getElementById('section-system').classList.toggle('active', section === 'system')
 		document.getElementById('section-skills').classList.toggle('active', section === 'skills')
 		document.getElementById('section-ai').classList.toggle('active', section === 'ai')
-		if (section === 'editor') setTimeout(resizeCanvas, 50)
+		if (section === 'building') initBldEditor()
 	})
 })
+document.querySelectorAll('.map-cat-item').forEach(item => {
+	item.addEventListener('click', () => {
+		document.querySelectorAll('.map-cat-item').forEach(i => i.classList.remove('sel'))
+		item.classList.add('sel')
+		const cat = item.dataset.cat
+		document.querySelectorAll('#map-detail .config-section').forEach(sec => {
+			sec.style.display = sec.dataset.cat === cat ? '' : 'none'
+		})
+	})
+})
+function initSldVals() {
+	document.querySelectorAll('.config-row input[type="range"]').forEach(sld => {
+		if (sld.nextElementSibling?.classList.contains('sld-val')) return
+		const valSpan = document.createElement('span')
+		valSpan.className = 'sld-val'
+		valSpan.textContent = sld.value
+		sld.after(valSpan)
+		sld.addEventListener('input', () => {
+			valSpan.textContent = sld.value
+		})
+		valSpan.addEventListener('dblclick', () => {
+			const ipt = document.createElement('input')
+			ipt.type = 'number'
+			ipt.className = 'sld-ipt'
+			ipt.value = sld.value
+			ipt.min = sld.min
+			ipt.max = sld.max
+			ipt.step = sld.step || 1
+			valSpan.replaceWith(ipt)
+			ipt.focus()
+			ipt.select()
+			function finish() {
+				let v = parseFloat(ipt.value)
+				if (isNaN(v)) v = parseFloat(sld.value)
+				v = Math.max(parseFloat(sld.min), Math.min(parseFloat(sld.max), v))
+				sld.value = v
+				valSpan.textContent = v
+				ipt.replaceWith(valSpan)
+				sld.dispatchEvent(new Event('input'))
+			}
+			ipt.addEventListener('blur', finish)
+			ipt.addEventListener('keydown', e => {
+				if (e.key === 'Enter') finish()
+				if (e.key === 'Escape') {
+					valSpan.textContent = sld.value
+					ipt.replaceWith(valSpan)
+				}
+			})
+		})
+	})
+}
+initSldVals()
 document.getElementById('prv-btn').addEventListener('click', () => {
 	enterPreviewMode()
 })
@@ -3921,7 +5025,7 @@ container.addEventListener('dragover', e => {
 })
 container.addEventListener('drop', e => {
 	e.preventDefault()
-	if (!state.dragData) return
+	if (!state.dragData || !renderer) return
 	const rect = canvas.getBoundingClientRect()
 	const x = e.clientX - rect.left
 	const y = e.clientY - rect.top
@@ -4573,11 +5677,14 @@ document.querySelectorAll('.skill-system-toggle').forEach(toggle => {
 	})
 })
 function updateSpawnUI() {
-	const type = document.getElementById('cfg-spawn-type').value
+	const el = document.getElementById('spawn-type')
+	if (!el) return
+	const type = el.value
 	document.getElementById('spawn-biome-row').style.display = type === 'biome' ? 'flex' : 'none'
 	document.getElementById('spawn-zone-row').style.display = type === 'city' ? 'flex' : 'none'
 }
-document.getElementById('cfg-spawn-type').addEventListener('change', updateSpawnUI)
+const spawnTypeEl = document.getElementById('spawn-type')
+if (spawnTypeEl) spawnTypeEl.addEventListener('change', updateSpawnUI)
 updateSpawnUI()
 function updateSpawnItemSelect() {
 	const select = document.getElementById('spawn-item-select')
@@ -4606,7 +5713,8 @@ function renderSpawnItemList() {
 		list.appendChild(div)
 	})
 }
-document.getElementById('add-spawn-item-btn').addEventListener('click', () => {
+const addSpawnItemBtn = document.getElementById('add-spawn-item-btn')
+if (addSpawnItemBtn) addSpawnItemBtn.addEventListener('click', () => {
 	const select = document.getElementById('spawn-item-select')
 	const countInput = document.getElementById('spawn-item-count')
 	const entityId = select.value
@@ -4675,9 +5783,9 @@ function getProjectData() {
 				suburban: { enabled: document.getElementById('cfg-zone-suburban').checked, weight: document.getElementById('cfg-zone-suburban-weight').value },
 				rural: { enabled: document.getElementById('cfg-zone-rural').checked, weight: document.getElementById('cfg-zone-rural-weight').value }
 			},
-			spawnType: document.getElementById('cfg-spawn-type').value,
-			spawnBiome: document.getElementById('cfg-spawn-biome').value,
-			spawnZone: document.getElementById('cfg-spawn-zone').value
+			spawnType: document.getElementById('spawn-type')?.value || 'city',
+			spawnBiome: document.getElementById('spawn-biome')?.value || 'grassland',
+			spawnZone: document.getElementById('spawn-zone')?.value || 'suburban'
 		}
 	}
 }
@@ -4770,9 +5878,12 @@ function loadProjectData(data) {
 				}
 			})
 		}
-		if (data.config.spawnType) document.getElementById('cfg-spawn-type').value = data.config.spawnType
-		if (data.config.spawnBiome) document.getElementById('cfg-spawn-biome').value = data.config.spawnBiome
-		if (data.config.spawnZone) document.getElementById('cfg-spawn-zone').value = data.config.spawnZone
+		const spawnTypeEl = document.getElementById('spawn-type')
+		const spawnBiomeEl = document.getElementById('spawn-biome')
+		const spawnZoneEl = document.getElementById('spawn-zone')
+		if (data.config.spawnType && spawnTypeEl) spawnTypeEl.value = data.config.spawnType
+		if (data.config.spawnBiome && spawnBiomeEl) spawnBiomeEl.value = data.config.spawnBiome
+		if (data.config.spawnZone && spawnZoneEl) spawnZoneEl.value = data.config.spawnZone
 		updateSpawnUI()
 	}
 }
@@ -4827,7 +5938,9 @@ const aiState = {
 	processing: false,
 	curMenu: 'tasks',
 	curWorkflow: null,
-	workflowQueue: []
+	workflowQueue: [],
+	checkpoints: [],
+	selectedModel: ''
 }
 const WORKFLOW_STEPS = {
 	texture: ['flux'],
@@ -4836,12 +5949,15 @@ const WORKFLOW_STEPS = {
 	audio: ['stable-audio']
 }
 function aiAddServer(addr) {
-	if (!addr || aiState.servers.find(s => s.addr === addr)) return
+	if (!addr) return
+	if (!addr.includes(':')) addr = addr + ':9527'
+	if (aiState.servers.find(s => s.addr === addr)) return
 	const server = { addr, status: 'connecting', id: Date.now() }
 	aiState.servers.push(server)
 	aiRenderServers()
 	aiCheckServer(server)
 }
+aiAddServer('localhost:9527')
 function aiRemoveServer(id) {
 	aiState.servers = aiState.servers.filter(s => s.id !== id)
 	aiRenderServers()
@@ -4851,6 +5967,7 @@ async function aiCheckServer(server) {
 		const res = await fetch(`http://${server.addr}/api/status`, { method: 'GET', signal: AbortSignal.timeout(5000) })
 		if (res.ok) {
 			server.status = 'connected'
+			aiFetchCheckpoints(server)
 		} else {
 			server.status = 'error'
 		}
@@ -4859,6 +5976,34 @@ async function aiCheckServer(server) {
 	}
 	aiRenderServers()
 }
+async function aiFetchCheckpoints(server) {
+	try {
+		const res = await fetch(`http://${server.addr}/api/checkpoints`)
+		const data = await res.json()
+		if (data.ok && data.models) {
+			aiState.checkpoints = data.models
+			aiRenderModelSelect()
+		}
+	} catch (e) {}
+}
+function aiRenderModelSelect() {
+	const sel = document.getElementById('ai-model-sel')
+	if (aiState.checkpoints.length === 0) {
+		sel.innerHTML = '<option value="">无可用模型</option>'
+		return
+	}
+	sel.innerHTML = aiState.checkpoints.map(m => `<option value="${m}">${m}</option>`).join('')
+	if (aiState.selectedModel && aiState.checkpoints.includes(aiState.selectedModel)) {
+		sel.value = aiState.selectedModel
+	} else {
+		aiState.selectedModel = aiState.checkpoints[0]
+		sel.value = aiState.selectedModel
+	}
+}
+const aiModelSel = document.getElementById('ai-model-sel')
+if (aiModelSel) aiModelSel.addEventListener('change', e => {
+	aiState.selectedModel = e.target.value
+})
 function aiRenderServers() {
 	const lst = document.getElementById('ai-server-lst')
 	lst.innerHTML = aiState.servers.map(s => `
@@ -4911,24 +6056,26 @@ function aiParseYaml(text) {
 	})
 }
 function aiGetTaskStatus(task) {
-	const steps = Object.values(task.workflow)
-	if (steps.every(v => v)) return 'done'
-	if (steps.some(v => v === 'running')) return 'running'
-	if (steps.some(v => v)) return 'running'
+	const steps = WORKFLOW_STEPS[task.type || 'texture'] || []
+	const wfVals = steps.map(s => task.workflow[s])
+	if (wfVals.some(v => v === 'error')) return 'error'
+	if (wfVals.every(v => v === true)) return 'done'
+	if (wfVals.some(v => v === 'running' || (typeof v === 'string' && v.startsWith('retry')))) return 'running'
+	if (wfVals.some(v => v === true)) return 'running'
 	return 'pending'
 }
 function aiRenderTasks() {
 	const lst = document.getElementById('ai-task-lst')
 	const empty = document.getElementById('ai-empty')
 	if (!aiState.tasks.length) {
-		empty.style.display = 'flex'
-		lst.querySelectorAll('.ai-task-item').forEach(el => el.remove())
+		if (empty) empty.style.display = 'flex'
+		lst.innerHTML = ''
 		return
 	}
-	empty.style.display = 'none'
+	if (empty) empty.style.display = 'none'
 	lst.innerHTML = aiState.tasks.map(task => {
 		const status = aiGetTaskStatus(task)
-		const steps = Object.entries(task.workflow)
+		const steps = WORKFLOW_STEPS[task.type || 'texture'] || []
 		return `
 			<div class="ai-task-item status-${status} ${aiState.selectedTask?.id === task.id ? 'selected' : ''}" data-task-id="${task.id}">
 				<div class="task-hd">
@@ -4937,7 +6084,15 @@ function aiRenderTasks() {
 				</div>
 				<div class="task-prompt">${task.prompt || ''}</div>
 				<div class="task-workflow">
-					${steps.map(([k, v]) => `<span class="wf-step ${v === true ? 'done' : v === 'running' ? 'running' : ''}">${k}</span>`).join('')}
+					${steps.map(k => {
+						const v = task.workflow[k]
+						let cls = ''
+						if (v === true) cls = 'done'
+						else if (v === 'running') cls = 'running'
+						else if (v === 'error') cls = 'error'
+						else if (typeof v === 'string' && v.startsWith('retry')) cls = 'retry'
+						return `<span class="wf-step ${cls}">${k}</span>`
+					}).join('')}
 				</div>
 			</div>
 		`
@@ -4959,7 +6114,14 @@ function aiRenderTaskDetail() {
 		return
 	}
 	const t = aiState.selectedTask
-	const steps = Object.entries(t.workflow)
+	const steps = WORKFLOW_STEPS[t.type || 'texture'] || []
+	const getStepInfo = v => {
+		if (v === true) return { color: '#4ade80', text: '完成' }
+		if (v === 'running') return { color: '#60a5fa', text: '处理中' }
+		if (v === 'error') return { color: '#f87171', text: '失败' }
+		if (typeof v === 'string' && v.startsWith('retry')) return { color: '#fbbf24', text: `重试${v.slice(5)}` }
+		return { color: '#555', text: '待处理' }
+	}
 	cnt.innerHTML = `
 		<div style="margin-bottom:12px;">
 			<div style="font-size:11px;color:#666;margin-bottom:4px;">ID</div>
@@ -4977,29 +6139,37 @@ function aiRenderTaskDetail() {
 			<div style="font-size:11px;color:#666;margin-bottom:4px;">输出路径</div>
 			<div style="font-size:12px;color:#aaa;word-break:break-all;">${t.path || '-'}</div>
 		</div>
+		${t.error ? `<div style="margin-bottom:12px;">
+			<div style="font-size:11px;color:#666;margin-bottom:4px;">错误信息</div>
+			<div style="font-size:12px;color:#f87171;">${t.error}</div>
+		</div>` : ''}
 		<div>
 			<div style="font-size:11px;color:#666;margin-bottom:8px;">工作流状态</div>
-			${steps.map(([k, v]) => `
-				<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-					<span style="width:8px;height:8px;border-radius:50%;background:${v === true ? '#4ade80' : v === 'running' ? '#60a5fa' : '#555'};"></span>
+			${steps.map(k => {
+				const v = t.workflow[k]
+				const info = getStepInfo(v)
+				return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+					<span style="width:8px;height:8px;border-radius:50%;background:${info.color};"></span>
 					<span style="font-size:12px;color:#aaa;">${k}</span>
-					<span style="font-size:11px;color:#666;margin-left:auto;">${v === true ? '完成' : v === 'running' ? '处理中' : '待处理'}</span>
-				</div>
-			`).join('')}
+					<span style="font-size:11px;color:#666;margin-left:auto;">${info.text}</span>
+				</div>`
+			}).join('')}
 		</div>
 	`
 }
 function aiUpdateStats() {
-	let done = 0, running = 0, pending = 0
+	let done = 0, running = 0, pending = 0, error = 0
 	aiState.tasks.forEach(t => {
 		const s = aiGetTaskStatus(t)
 		if (s === 'done') done++
 		else if (s === 'running') running++
+		else if (s === 'error') error++
 		else pending++
 	})
 	document.getElementById('ai-stat-done').textContent = done
 	document.getElementById('ai-stat-running').textContent = running
 	document.getElementById('ai-stat-pending').textContent = pending
+	document.getElementById('ai-stat-error').textContent = error
 	document.getElementById('ai-start-btn').disabled = !aiState.tasks.length || !aiState.servers.some(s => s.status === 'connected')
 }
 function aiShowMenu(menu) {
@@ -5025,28 +6195,27 @@ async function aiStartProcessing() {
 	}
 	const pendingTasks = aiState.tasks.filter(t => aiGetTaskStatus(t) !== 'done')
 	const workflowOrder = ['flux', 'hy3d', 'unirig', 'hymotion', 'chatterbox', 'stable-audio']
+	let serverIdx = 0
 	for (const wfStep of workflowOrder) {
 		if (!aiState.processing) break
 		const tasksForStep = pendingTasks.filter(t => {
 			const steps = WORKFLOW_STEPS[t.type || 'texture'] || []
-			return steps.includes(wfStep) && !t.workflow[wfStep]
+			return steps.includes(wfStep) && !t.workflow[wfStep] && t.workflow[wfStep] !== 'error'
 		})
 		if (!tasksForStep.length) continue
 		aiState.curWorkflow = wfStep
-		const chunkSize = connectedServers.length
-		for (let i = 0; i < tasksForStep.length && aiState.processing; i += chunkSize) {
-			const chunk = tasksForStep.slice(i, i + chunkSize)
-			const promises = chunk.map((task, idx) => {
-				const server = connectedServers[idx % connectedServers.length]
-				return aiProcessTask(task, wfStep, server)
-			})
-			await Promise.all(promises)
+		for (const task of tasksForStep) {
+			if (!aiState.processing) break
+			const server = connectedServers[serverIdx % connectedServers.length]
+			serverIdx++
+			await aiProcessTask(task, wfStep, server)
 		}
 	}
 	aiState.curWorkflow = null
 	aiStopProcessing()
 }
-async function aiProcessTask(task, step, server) {
+async function aiProcessTask(task, step, server, retries = 0) {
+	const maxRetries = 3
 	task.workflow[step] = 'running'
 	aiRenderTasks()
 	aiRenderTaskDetail()
@@ -5057,13 +6226,23 @@ async function aiProcessTask(task, step, server) {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(endpoint.body)
 		})
-		if (res.ok) {
+		const data = await res.json()
+		if (res.ok && data.ok) {
 			task.workflow[step] = true
+			if (data.output) task.outputPath = data.output
 		} else {
-			task.workflow[step] = false
+			throw new Error(data.error || '请求失败')
 		}
 	} catch (e) {
-		task.workflow[step] = false
+		if (retries < maxRetries) {
+			task.workflow[step] = `retry${retries + 1}`
+			aiRenderTasks()
+			aiRenderTaskDetail()
+			await new Promise(r => setTimeout(r, 2000))
+			return aiProcessTask(task, step, server, retries + 1)
+		}
+		task.workflow[step] = 'error'
+		task.error = e.message || '未知错误'
 	}
 	aiRenderTasks()
 	aiRenderTaskDetail()
@@ -5072,7 +6251,7 @@ function aiGetEndpoint(step, task) {
 	const type = task.type || 'texture'
 	switch (step) {
 		case 'flux':
-			return { url: '/api/flux/generate', body: { prompt: task.prompt, output: task.path } }
+			return { url: '/api/flux/generate', body: { prompt: task.prompt, output: task.path, model: aiState.selectedModel } }
 		case 'hy3d':
 			return { url: '/api/hunyuan3d/generate', body: { image: task.path?.replace('.glb', '.png'), output: task.path } }
 		case 'unirig':
@@ -5146,6 +6325,211 @@ document.querySelectorAll('.ai-menu-item').forEach(el => {
 		aiShowMenu(el.dataset.aiMenu)
 	})
 })
+const bldState = {
+	lyrs: [],
+	curLyr: null,
+	tool: 'line',
+	lineWidth: 0.2,
+	drawing: false,
+	startPt: null,
+	canvas: null,
+	ctx: null
+}
+function initBldEditor() {
+	if (!bldState.canvas) {
+		bldState.canvas = document.getElementById('bld-canvas')
+		bldState.ctx = bldState.canvas.getContext('2d')
+		resizeBldCanvas()
+		bldState.canvas.addEventListener('mousedown', onBldMouseDown)
+		bldState.canvas.addEventListener('mousemove', onBldMouseMove)
+		bldState.canvas.addEventListener('mouseup', onBldMouseUp)
+		window.addEventListener('resize', resizeBldCanvas)
+	}
+	if (bldState.lyrs.length === 0) addBldLyr()
+	renderBldLyrList()
+	renderBldCanvas()
+}
+function resizeBldCanvas() {
+	const ctn = document.getElementById('bld-cv-ctn')
+	if (!ctn || !bldState.canvas) return
+	bldState.canvas.width = ctn.clientWidth
+	bldState.canvas.height = ctn.clientHeight
+	renderBldCanvas()
+}
+function addBldLyr() {
+	const lyr = {
+		id: Date.now(),
+		name: '第 ' + (bldState.lyrs.length + 1) + ' 层',
+		height: 3,
+		lines: [],
+		walls: [],
+		grounds: []
+	}
+	bldState.lyrs.unshift(lyr)
+	bldState.curLyr = lyr
+	renderBldLyrList()
+}
+function renderBldLyrList() {
+	const lst = document.getElementById('bld-lyr-lst')
+	if (!lst) return
+	lst.innerHTML = ''
+	bldState.lyrs.forEach(lyr => {
+		const item = document.createElement('div')
+		item.className = 'bld-lyr-item' + (bldState.curLyr === lyr ? ' sel' : '')
+		item.innerHTML = '<span>' + lyr.name + '</span><span style="color:#666;font-size:11px;">' + lyr.height + 'm</span>'
+		item.addEventListener('click', () => {
+			bldState.curLyr = lyr
+			renderBldLyrList()
+		})
+		lst.appendChild(item)
+	})
+}
+function renderBldCanvas() {
+	if (!bldState.ctx || !bldState.canvas) return
+	const ctx = bldState.ctx
+	const w = bldState.canvas.width
+	const h = bldState.canvas.height
+	ctx.fillStyle = '#0a0a0a'
+	ctx.fillRect(0, 0, w, h)
+	ctx.strokeStyle = '#222'
+	ctx.lineWidth = 1
+	const gridSize = 20
+	for (let x = 0; x <= w; x += gridSize) {
+		ctx.beginPath()
+		ctx.moveTo(x, 0)
+		ctx.lineTo(x, h)
+		ctx.stroke()
+	}
+	for (let y = 0; y <= h; y += gridSize) {
+		ctx.beginPath()
+		ctx.moveTo(0, y)
+		ctx.lineTo(w, y)
+		ctx.stroke()
+	}
+	if (bldState.curLyr) {
+		ctx.strokeStyle = '#4a9eff'
+		ctx.lineWidth = 2
+		bldState.curLyr.lines.forEach(line => {
+			ctx.beginPath()
+			ctx.moveTo(line.x1, line.y1)
+			ctx.lineTo(line.x2, line.y2)
+			ctx.stroke()
+		})
+	}
+}
+function onBldMouseDown(e) {
+	if (bldState.tool === 'line') {
+		bldState.drawing = true
+		bldState.startPt = { x: e.offsetX, y: e.offsetY }
+	}
+}
+function onBldMouseMove(e) {
+	if (bldState.drawing && bldState.tool === 'line') {
+		renderBldCanvas()
+		const ctx = bldState.ctx
+		ctx.strokeStyle = '#166d3b'
+		ctx.lineWidth = 2
+		ctx.beginPath()
+		ctx.moveTo(bldState.startPt.x, bldState.startPt.y)
+		ctx.lineTo(e.offsetX, e.offsetY)
+		ctx.stroke()
+		const dx = e.offsetX - bldState.startPt.x
+		const dy = e.offsetY - bldState.startPt.y
+		const len = Math.sqrt(dx * dx + dy * dy) / 20
+		document.getElementById('bld-info').textContent = '长度: ' + len.toFixed(2) + 'm'
+	}
+}
+function onBldMouseUp(e) {
+	if (bldState.drawing && bldState.tool === 'line' && bldState.curLyr) {
+		bldState.curLyr.lines.push({
+			id: Date.now(),
+			x1: bldState.startPt.x,
+			y1: bldState.startPt.y,
+			x2: e.offsetX,
+			y2: e.offsetY,
+			width: bldState.lineWidth
+		})
+		renderBldCanvas()
+	}
+	bldState.drawing = false
+	bldState.startPt = null
+	document.getElementById('bld-info').textContent = '长度: 0m'
+}
+document.getElementById('bld-lyr-add').addEventListener('click', addBldLyr)
+document.querySelectorAll('.bld-tool-btn').forEach(btn => {
+	btn.addEventListener('click', () => {
+		document.querySelectorAll('.bld-tool-btn').forEach(b => b.classList.remove('active'))
+		btn.classList.add('active')
+		bldState.tool = btn.dataset.bldTool
+		updateBldProps()
+	})
+})
+function updateBldProps() {
+	const props = document.getElementById('bld-props')
+	if (!props) return
+	let html = ''
+	if (bldState.tool === 'line') {
+		html = '<div class="config-section"><div class="config-section-title">直线属性</div><div class="config-row"><label>宽度</label><input type="number" id="bld-line-width" value="' + bldState.lineWidth + '" min="0.0625" step="0.0625"><span class="unit">m</span></div></div>'
+	} else if (bldState.tool === 'ground') {
+		html = '<div class="config-section"><div class="config-section-title">地面类型</div><div class="type-tabs"><button class="type-tab active">自然</button><button class="type-tab">室外</button><button class="type-tab">室内</button><button class="type-tab">屋顶</button></div></div>'
+	} else if (bldState.tool === 'wall') {
+		html = '<div class="config-section"><div class="config-section-title">墙壁材质</div><div class="config-row"><label>材质</label><select><option>砖墙</option><option>混凝土</option><option>木墙</option><option>玻璃</option></select></div></div>'
+	} else if (bldState.tool === 'window') {
+		html = '<div class="config-section"><div class="config-section-title">窗户属性</div><div class="config-row"><label>底部高度</label><input type="number" value="0.8" step="0.1"><span class="unit">m</span></div><div class="config-row"><label>顶部高度</label><input type="number" value="2.2" step="0.1"><span class="unit">m</span></div></div>'
+	} else if (bldState.tool === 'door') {
+		html = '<div class="config-section"><div class="config-section-title">门属性</div><div class="config-row"><label>门高度</label><input type="number" value="2.2" step="0.1"><span class="unit">m</span></div><div class="config-row"><label>门类型</label><select><option>木门</option><option>铁门</option><option>仅门框</option></select></div></div>'
+	}
+	props.innerHTML = html
+}
+document.querySelectorAll('.ast-cat-hd').forEach(hd => {
+	hd.addEventListener('click', () => {
+		hd.classList.toggle('open')
+		const bd = hd.nextElementSibling
+		if (bd) bd.classList.toggle('open')
+	})
+})
+document.querySelectorAll('.pn-hd-fld-header').forEach(hd => {
+	hd.addEventListener('click', () => {
+		hd.classList.toggle('open')
+		const bd = hd.nextElementSibling
+		if (bd) bd.classList.toggle('open')
+	})
+})
+document.querySelectorAll('.ast-sub-hd').forEach(hd => {
+	hd.addEventListener('click', () => {
+		hd.classList.toggle('open')
+		const bd = hd.nextElementSibling
+		if (bd) bd.classList.toggle('open')
+	})
+})
+const astCfgMap = {
+	buildings: { path: 'config/building', key: 'buildings', files: ['base.json'] },
+	entities: { path: 'config/entity', key: 'entities', files: ['base.json', 'bodyParts.json', 'pokemon.json'] },
+	furniture: { path: 'config/furniture', key: 'furnitures', files: ['base.json'] },
+	items: { path: 'config/item', key: 'items', files: ['base.json'] },
+	buffs: { path: 'config/buff', key: 'buffs', files: ['base.json'] },
+	skills: { path: 'config/skill', key: 'skills', files: ['base.json'] },
+	walls: { path: 'config/wall', key: 'walls', files: ['base.json'] },
+	floors: { path: 'config/floor', key: 'floors', files: ['base.json'] }
+}
+async function lodSysAst() {
+	for (const [cat, cfg] of Object.entries(astCfgMap)) {
+		const ctn = document.getElementById(`ast-${cat}-sys`)
+		if (!ctn) continue
+		let items = []
+		for (const file of cfg.files) {
+			try {
+				const res = await fetch(`${cfg.path}/${file}`)
+				const data = await res.json()
+				if (data[cfg.key]) items = items.concat(data[cfg.key])
+			} catch (e) {}
+		}
+		ctn.innerHTML = items.map(item =>
+			`<div class="ast-item sys" data-id="${item.id}" data-cat="${cat}">${item.name}</div>`
+		).join('')
+	}
+}
+lodSysAst()
 </script>
 </body>
 </html>

@@ -1,0 +1,127 @@
+{
+	"bipedal": {
+		"name": "双足机器人",
+		"skeleton": "mechanical",
+		"examples": ["android", "combat_droid", "service_bot"],
+		"physicsProfile": {
+			"mass": "heavy",
+			"stability": "medium",
+			"agility": "medium"
+		},
+		"defaultAnimations": {
+			"idle": "robot_bipedal_idle",
+			"walk": "robot_bipedal_walk",
+			"run": "robot_bipedal_run",
+			"attack": "robot_bipedal_attack"
+		},
+		"combatStyle": "versatile",
+		"attackTypes": ["punch", "laser", "missile", "melee_weapon"],
+		"powerSource": "battery",
+		"skillAnimationMapping": {
+			"attack_melee": "robot_punch",
+			"attack_laser": "robot_laser",
+			"attack_missile": "robot_missile",
+			"scan": "robot_scan"
+		}
+	},
+	"quadrupedal": {
+		"name": "四足机器人",
+		"skeleton": "mechanical_quad",
+		"examples": ["robo_dog", "spider_bot", "patrol_drone"],
+		"physicsProfile": {
+			"mass": "medium",
+			"stability": "very_high",
+			"agility": "high"
+		},
+		"defaultAnimations": {
+			"idle": "robot_quad_idle",
+			"walk": "robot_quad_walk",
+			"run": "robot_quad_run",
+			"attack": "robot_quad_attack"
+		},
+		"combatStyle": "mobile",
+		"attackTypes": ["bite", "pounce", "laser", "shock"],
+		"powerSource": "battery",
+		"skillAnimationMapping": {
+			"attack_bite": "robot_bite",
+			"attack_pounce": "robot_pounce",
+			"attack_laser": "robot_laser",
+			"attack_shock": "robot_shock"
+		}
+	},
+	"hovering": {
+		"name": "悬浮机器人",
+		"skeleton": "mechanical_hover",
+		"examples": ["surveillance_drone", "attack_drone", "medical_bot"],
+		"physicsProfile": {
+			"mass": "light",
+			"stability": "low",
+			"agility": "very_high"
+		},
+		"defaultAnimations": {
+			"idle": "robot_hover_idle",
+			"move": "robot_hover_move",
+			"attack": "robot_hover_attack"
+		},
+		"combatStyle": "ranged",
+		"attackTypes": ["laser", "missile", "emp", "scan"],
+		"powerSource": "reactor",
+		"canFly": true,
+		"skillAnimationMapping": {
+			"attack_laser": "hover_laser",
+			"attack_missile": "hover_missile",
+			"attack_emp": "hover_emp",
+			"scan": "hover_scan"
+		}
+	},
+	"turret": {
+		"name": "炮塔机器人",
+		"skeleton": "mechanical_turret",
+		"examples": ["defense_turret", "aa_turret", "missile_turret"],
+		"physicsProfile": {
+			"mass": "very_heavy",
+			"stability": "maximum",
+			"agility": "none"
+		},
+		"defaultAnimations": {
+			"idle": "turret_idle",
+			"track": "turret_track",
+			"attack": "turret_fire"
+		},
+		"combatStyle": "stationary",
+		"attackTypes": ["bullet", "laser", "missile", "flak"],
+		"powerSource": "external",
+		"isStationary": true,
+		"skillAnimationMapping": {
+			"attack_bullet": "turret_fire_rapid",
+			"attack_laser": "turret_fire_beam",
+			"attack_missile": "turret_fire_missile",
+			"attack_flak": "turret_fire_flak"
+		}
+	},
+	"swarm": {
+		"name": "蜂群机器人",
+		"skeleton": "mechanical_micro",
+		"examples": ["nanobots", "bee_drones", "repair_swarm"],
+		"physicsProfile": {
+			"mass": "negligible",
+			"stability": "none",
+			"agility": "extreme"
+		},
+		"defaultAnimations": {
+			"idle": "swarm_idle",
+			"move": "swarm_move",
+			"attack": "swarm_attack"
+		},
+		"combatStyle": "swarm",
+		"attackTypes": ["consume", "shock", "corrode", "disassemble"],
+		"powerSource": "distributed",
+		"isSwarm": true,
+		"skillAnimationMapping": {
+			"attack_consume": "swarm_consume",
+			"attack_shock": "swarm_shock",
+			"attack_corrode": "swarm_corrode",
+			"repair": "swarm_repair"
+		}
+	}
+}

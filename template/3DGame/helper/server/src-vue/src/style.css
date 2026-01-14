@@ -298,13 +298,31 @@ body {
 	overflow-y: auto;
 	font-family: 'Consolas', 'Monaco', monospace;
 	font-size: 11px;
+	user-select: text;
+	cursor: text;
 }
 
 .log-line {
-	color: var(--text-secondary);
+	color: var(--text-primary);
 	line-height: 1.6;
 	white-space: pre-wrap;
 	word-break: break-all;
+}
+
+.log-line.info {
+	color: var(--text-primary);
+}
+
+.log-line.warn {
+	color: var(--warning);
+}
+
+.log-line.error {
+	color: var(--error);
+}
+
+.log-line.debug {
+	color: var(--accent);
 }
 
 .log-path {
@@ -327,4 +345,35 @@ body {
 ::-webkit-scrollbar-thumb {
 	background: var(--bg-tertiary);
 	border-radius: 3px;
+}
+
+.ctx-msk {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 99;
+}
+
+.ctx-menu {
+	position: fixed;
+	z-index: 100;
+	background: var(--bg-tertiary);
+	border: 1px solid #444;
+	border-radius: 4px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+	padding: 4px 0;
+	min-width: 120px;
+}
+
+.ctx-item {
+	padding: 8px 16px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: background 0.1s;
+}
+
+.ctx-item:hover {
+	background: var(--accent);
 }

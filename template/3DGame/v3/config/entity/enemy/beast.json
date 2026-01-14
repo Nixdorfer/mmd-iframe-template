@@ -1,0 +1,93 @@
+{
+	"entities": [
+		{
+			"id": "ent_wolf",
+			"name": "野狼",
+			"baseClass": "animal.quadruped",
+			"category": "enemy",
+			"faction": "hostile",
+			"element": null,
+			"hp": 80,
+			"maxHp": 80,
+			"armor": 5,
+			"speed": 1.8,
+			"mass": 40,
+			"hardness": 0.6,
+			"elasticity": 0.5,
+			"fragility": 0.4,
+			"aiType": "pack",
+			"aiScript": "wolf_ai",
+			"triggerWords": ["撕咬", "扑击"],
+			"lootTable": ["itm_wolf_pelt", "itm_raw_meat"],
+			"parts": [
+				{
+					"id": "head",
+					"name": "头部",
+					"hp": 25,
+					"canDetach": true,
+					"critMul": 2.0
+				},
+				{
+					"id": "body",
+					"name": "躯体",
+					"hp": 55,
+					"canDetach": false,
+					"critMul": 1.0
+				}
+			],
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -0.3,
+						"y": 0,
+						"z": -0.5,
+						"w": 0.6,
+						"h": 0.8,
+						"d": 1.0
+					}
+				]
+			}
+		},
+		{
+			"id": "ent_slime",
+			"name": "史莱姆",
+			"baseClass": "monster.slime",
+			"category": "enemy",
+			"faction": "hostile",
+			"element": "water",
+			"hp": 40,
+			"maxHp": 40,
+			"armor": 0,
+			"speed": 0.5,
+			"mass": 20,
+			"hardness": 0.1,
+			"elasticity": 0.95,
+			"fragility": 0.2,
+			"aiType": "wander",
+			"aiScript": "slime_ai",
+			"triggerWords": ["撞击", "溶解"],
+			"lootTable": ["itm_slime_gel"],
+			"parts": [
+				{
+					"id": "core",
+					"name": "核心",
+					"hp": 40,
+					"canDetach": false,
+					"critMul": 1.5
+				}
+			],
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -0.3,
+						"y": 0,
+						"z": -0.3,
+						"w": 0.6,
+						"h": 0.5,
+						"d": 0.6
+					}
+				]
+			}
+		}
+	]
+}

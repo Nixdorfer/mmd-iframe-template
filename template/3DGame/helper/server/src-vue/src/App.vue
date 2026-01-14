@@ -12,6 +12,8 @@ const loading = ref({})
 const logs = ref([])
 const notifications = ref([])
 const selectedModel = ref('')
+const ready = ref(false)
+const ctxMenu = ref({ show: false, x: 0, y: 0 })
 let timer = null
 let logTimer = null
 let notiId = 0
@@ -25,20 +27,63 @@ function notify(msg, type = 'info') {
 }
 
 async function fetchLogs() {
+  if (!window.go?.main?.App) return
   try {
     const res = await window.go.main.App.GetLogs(selectedModel.value)
-    logs.value = res.map(l => `[${l.time}][${l.model}] ${l.message}`)
+    if (res) logs.value = res.map(l => ({
+      time: l.time,
+      model: l.model,
+      msg: l.message,
+      level: getLogLevel(l.message)
+    }))
   } catch (e) {}
 }
 
+function getLogLevel(msg) {
+  const lower = msg.toLowerCase()
+  if (lower.includes('error') || lower.includes('fail') || lower.includes('exception') || lower.includes('失败')) return 'error'
+  if (lower.includes('warn') || lower.includes('warning') || lower.includes('警告')) return 'warn'
+  if (lower.includes('debug') || lower.includes('[dbg]')) return 'debug'
+  return 'info'
+}
+
+function showCtxMenu(e) {
+  e.preventDefault()
+  ctxMenu.value = { show: true, x: e.clientX, y: e.clientY }
+}
+
+function hideCtxMenu() {
+  ctxMenu.value.show = false
+}
+
+function copyAllLogs() {
+  const text = logs.value.map(l => `[${l.time}][${l.model}] ${l.msg}`).join('\n')
+  navigator.clipboard.writeText(text)
+  notify('已复制全部日志', 'info')
+  hideCtxMenu()
+}
+
+function copyErrorLogs() {
+  const errLogs = logs.value.filter(l => l.level === 'error')
+  const text = errLogs.map(l => `[${l.time}][${l.model}] ${l.msg}`).join('\n')
+  navigator.clipboard.writeText(text)
+  notify(`已复制 ${errLogs.length} 条错误日志`, 'info')
+  hideCtxMenu()
+}
+
 async function fetchStatus() {
+  if (!window.go?.main?.App) return
   try {
     const res = await window.go.main.App.GetStatus()
-    status.value = res
+    if (res) {
+      status.value = res
+      ready.value = true
+    }
   } catch (e) {}
 }
 
 async function stopModel(name) {
+  if (!window.go?.main?.App) return
   loading.value[name] = true
   const label = getModelLabel(name)
   try {
@@ -52,9 +97,10 @@ async function stopModel(name) {
 }
 
 async function runDeploy() {
+  if (!window.go?.main?.App) return
   try {
     await window.go.main.App.RunDeploy()
-    notify('安装脚本已启动', 'info')
+    notify('开始部署', 'info')
   } catch (e) {
     notify(`启动失败: ${e}`, 'error')
   }
@@ -87,7 +133,11 @@ function getModelLabel(name) {
   return labels[name] || name
 }
 
-onMounted(() => {
+onMounted(async () => {
+  for (let i = 0; i < 10; i++) {
+    if (window.go?.main?.App) break
+    await new Promise(r => setTimeout(r, 200))
+  }
   fetchStatus()
   fetchLogs()
   timer = setInterval(fetchStatus, 5000)
@@ -180,11 +230,18 @@ onUnmounted(() => {
 
       <div class="ri-pn">
         <div class="pn-hd">控制台 {{ selectedModel ? `- ${getModelLabel(selectedModel)}` : '' }}</div>
-        <div class="log-ctn" ref="logCtn">
-          <div v-for="(log, i) in logs" :key="i" class="log-line">{{ log }}</div>
+        <div class="log-ctn" ref="logCtn" @contextmenu="showCtxMenu" @click="hideCtxMenu">
+          <div v-for="(log, i) in logs" :key="i" class="log-line" :class="log.level">
+            [{{ log.time }}][{{ log.model }}] {{ log.msg }}
+          </div>
         </div>
         <div class="log-path">{{ status.helperDir }}</div>
       </div>
     </div>
+    <div v-if="ctxMenu.show" class="ctx-menu" :style="{ left: ctxMenu.x + 'px', top: ctxMenu.y + 'px' }" @click.stop>
+      <div class="ctx-item" @click="copyAllLogs">复制全部</div>
+      <div class="ctx-item" @click="copyErrorLogs">复制全部错误</div>
+    </div>
+    <div v-if="ctxMenu.show" class="ctx-msk" @click="hideCtxMenu"></div>
   </div>
 </template>

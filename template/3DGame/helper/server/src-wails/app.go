@@ -2,12 +2,17 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -79,6 +84,176 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	a.addLog("system", "服务器已启动")
+	go a.startHttpServer()
+}
+
+func (a *App) corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (a *App) startHttpServer() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(a.GetStatus())
+	})
+	mux.HandleFunc("/api/logs", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		model := r.URL.Query().Get("model")
+		json.NewEncoder(w).Encode(a.GetLogs(model))
+	})
+	mux.HandleFunc("/api/deploy", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		a.RunDeploy()
+		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+	})
+	mux.HandleFunc("/api/stop", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		name := r.URL.Query().Get("name")
+		err := a.StopModel(name)
+		if err != nil {
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		} else {
+			json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+		}
+	})
+	mux.HandleFunc("/api/checkpoints", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		checkpoints := a.listCheckpoints()
+		json.NewEncoder(w).Encode(map[string]interface{}{"ok": true, "models": checkpoints})
+	})
+	mux.HandleFunc("/api/flux/generate", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req struct {
+			Prompt string `json:"prompt"`
+			Output string `json:"output"`
+			Model  string `json:"model"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": "无效请求"})
+			return
+		}
+		a.addLog("comfyui", fmt.Sprintf("生成图片: %s (模型: %s)", req.Prompt, req.Model))
+		result, err := a.generateFlux(req.Prompt, req.Output, req.Model)
+		if err != nil {
+			a.addLog("comfyui", fmt.Sprintf("生成失败: %v", err))
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": err.Error()})
+			return
+		}
+		a.addLog("comfyui", fmt.Sprintf("生成完成: %s", result))
+		json.NewEncoder(w).Encode(map[string]interface{}{"ok": true, "output": result})
+	})
+	mux.HandleFunc("/api/hunyuan3d/generate", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req struct {
+			Image  string `json:"image"`
+			Output string `json:"output"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": "无效请求"})
+			return
+		}
+		a.addLog("hunyuan3d", fmt.Sprintf("生成3D模型: %s", req.Image))
+		result, err := a.generateHunyuan3D(req.Image, req.Output)
+		if err != nil {
+			a.addLog("hunyuan3d", fmt.Sprintf("生成失败: %v", err))
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": err.Error()})
+			return
+		}
+		a.addLog("hunyuan3d", fmt.Sprintf("生成完成: %s", result))
+		json.NewEncoder(w).Encode(map[string]interface{}{"ok": true, "output": result})
+	})
+	mux.HandleFunc("/api/unirig/rig", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req struct {
+			Input  string `json:"input"`
+			Output string `json:"output"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": "无效请求"})
+			return
+		}
+		a.addLog("unirig", fmt.Sprintf("骨骼绑定: %s", req.Input))
+		result, err := a.rigUniRig(req.Input, req.Output)
+		if err != nil {
+			a.addLog("unirig", fmt.Sprintf("绑定失败: %v", err))
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": err.Error()})
+			return
+		}
+		a.addLog("unirig", fmt.Sprintf("绑定完成: %s", result))
+		json.NewEncoder(w).Encode(map[string]interface{}{"ok": true, "output": result})
+	})
+	mux.HandleFunc("/api/motion/generate", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req struct {
+			Model   string   `json:"model"`
+			Motions []string `json:"motions"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": "无效请求"})
+			return
+		}
+		a.addLog("hy-motion", fmt.Sprintf("生成动作: %s", req.Model))
+		result, err := a.generateMotion(req.Model, req.Motions)
+		if err != nil {
+			a.addLog("hy-motion", fmt.Sprintf("生成失败: %v", err))
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": err.Error()})
+			return
+		}
+		a.addLog("hy-motion", fmt.Sprintf("生成完成: %s", result))
+		json.NewEncoder(w).Encode(map[string]interface{}{"ok": true, "output": result})
+	})
+	mux.HandleFunc("/api/voice/generate", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req struct {
+			Text   string `json:"text"`
+			Output string `json:"output"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": "无效请求"})
+			return
+		}
+		a.addLog("chatterbox", fmt.Sprintf("生成语音: %s", req.Text))
+		result, err := a.generateVoice(req.Text, req.Output)
+		if err != nil {
+			a.addLog("chatterbox", fmt.Sprintf("生成失败: %v", err))
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": err.Error()})
+			return
+		}
+		a.addLog("chatterbox", fmt.Sprintf("生成完成: %s", result))
+		json.NewEncoder(w).Encode(map[string]interface{}{"ok": true, "output": result})
+	})
+	mux.HandleFunc("/api/audio/generate", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req struct {
+			Prompt string `json:"prompt"`
+			Output string `json:"output"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": "无效请求"})
+			return
+		}
+		a.addLog("stable-audio", fmt.Sprintf("生成音频: %s", req.Prompt))
+		result, err := a.generateAudio(req.Prompt, req.Output)
+		if err != nil {
+			a.addLog("stable-audio", fmt.Sprintf("生成失败: %v", err))
+			json.NewEncoder(w).Encode(map[string]interface{}{"ok": false, "error": err.Error()})
+			return
+		}
+		a.addLog("stable-audio", fmt.Sprintf("生成完成: %s", result))
+		json.NewEncoder(w).Encode(map[string]interface{}{"ok": true, "output": result})
+	})
+	a.addLog("system", "HTTP API 服务器启动于 :9527")
+	http.ListenAndServe(":9527", a.corsMiddleware(mux))
 }
 
 func (a *App) shutdown(ctx context.Context) {
@@ -411,4 +586,488 @@ func (a *App) installModel(name, repo, py311 string, reqs, extra []string, pytor
 		a.runCmd(name, modelDir, pipExe, "install", pkg, "-q")
 	}
 	a.addLog(name, "安装完成")
+}
+
+func (a *App) ensureModelRunning(name string, port int) error {
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
+	if err == nil {
+		resp.Body.Close()
+		a.addLog(name, fmt.Sprintf("端口 %d 已在响应，跳过启动", port))
+		return nil
+	}
+	status, _ := a.checkModelStatus(name)
+	if status == "running" || status == "working" {
+		for i := 0; i < 60; i++ {
+			time.Sleep(2 * time.Second)
+			resp, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
+			if err == nil {
+				resp.Body.Close()
+				return nil
+			}
+		}
+		return fmt.Errorf("模型 %s 启动超时", name)
+	}
+	if status != "ready" {
+		return fmt.Errorf("模型 %s 未安装", name)
+	}
+	if err := a.StartModel(name); err != nil {
+		return err
+	}
+	for i := 0; i < 60; i++ {
+		time.Sleep(2 * time.Second)
+		resp, err := http.Get(fmt.Sprintf("http://localhost:%d", port))
+		if err == nil {
+			resp.Body.Close()
+			return nil
+		}
+	}
+	return fmt.Errorf("模型 %s 启动超时", name)
+}
+
+func (a *App) getComfyModels() (map[string][]string, error) {
+	resp, err := http.Get("http://localhost:8188/object_info")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var info map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&info)
+	models := make(map[string][]string)
+	if ckpt, ok := info["CheckpointLoaderSimple"].(map[string]interface{}); ok {
+		if input, ok := ckpt["input"].(map[string]interface{}); ok {
+			if req, ok := input["required"].(map[string]interface{}); ok {
+				if ckptName, ok := req["ckpt_name"].([]interface{}); ok && len(ckptName) > 0 {
+					if names, ok := ckptName[0].([]interface{}); ok {
+						for _, n := range names {
+							if s, ok := n.(string); ok {
+								models["checkpoint"] = append(models["checkpoint"], s)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if vae, ok := info["VAELoader"].(map[string]interface{}); ok {
+		if input, ok := vae["input"].(map[string]interface{}); ok {
+			if req, ok := input["required"].(map[string]interface{}); ok {
+				if vaeName, ok := req["vae_name"].([]interface{}); ok && len(vaeName) > 0 {
+					if names, ok := vaeName[0].([]interface{}); ok {
+						for _, n := range names {
+							if s, ok := n.(string); ok {
+								models["vae"] = append(models["vae"], s)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return models, nil
+}
+
+func (a *App) generateFlux(prompt, output, model string) (string, error) {
+	if err := a.ensureModelRunning("comfyui", 8188); err != nil {
+		return "", err
+	}
+	ckptName := model
+	if ckptName == "" {
+		models, err := a.getComfyModels()
+		if err != nil {
+			return "", fmt.Errorf("获取模型列表失败: %v", err)
+		}
+		if len(models["checkpoint"]) == 0 {
+			return "", fmt.Errorf("未找到可用的checkpoint模型，请先下载FLUX或SD模型到ComfyUI/models/checkpoints目录")
+		}
+		ckptName = models["checkpoint"][0]
+		for _, n := range models["checkpoint"] {
+			lower := strings.ToLower(n)
+			if strings.Contains(lower, "flux") {
+				ckptName = n
+				break
+			}
+		}
+	}
+	a.addLog("comfyui", fmt.Sprintf("使用模型: %s", ckptName))
+	workflow := map[string]interface{}{
+		"3": map[string]interface{}{
+			"inputs": map[string]interface{}{
+				"seed":         time.Now().UnixNano() % 1000000000,
+				"steps":        20,
+				"cfg":          7,
+				"sampler_name": "euler",
+				"scheduler":    "normal",
+				"denoise":      1,
+				"model":        []interface{}{"4", 0},
+				"positive":     []interface{}{"6", 0},
+				"negative":     []interface{}{"7", 0},
+				"latent_image": []interface{}{"5", 0},
+			},
+			"class_type": "KSampler",
+		},
+		"4": map[string]interface{}{
+			"inputs": map[string]interface{}{
+				"ckpt_name": ckptName,
+			},
+			"class_type": "CheckpointLoaderSimple",
+		},
+		"5": map[string]interface{}{
+			"inputs": map[string]interface{}{
+				"width":      1024,
+				"height":     1024,
+				"batch_size": 1,
+			},
+			"class_type": "EmptyLatentImage",
+		},
+		"6": map[string]interface{}{
+			"inputs": map[string]interface{}{
+				"text": prompt,
+				"clip": []interface{}{"4", 1},
+			},
+			"class_type": "CLIPTextEncode",
+		},
+		"7": map[string]interface{}{
+			"inputs": map[string]interface{}{
+				"text": "",
+				"clip": []interface{}{"4", 1},
+			},
+			"class_type": "CLIPTextEncode",
+		},
+		"8": map[string]interface{}{
+			"inputs": map[string]interface{}{
+				"samples": []interface{}{"3", 0},
+				"vae":     []interface{}{"4", 2},
+			},
+			"class_type": "VAEDecode",
+		},
+		"9": map[string]interface{}{
+			"inputs": map[string]interface{}{
+				"filename_prefix": "flux_output",
+				"images":          []interface{}{"8", 0},
+			},
+			"class_type": "SaveImage",
+		},
+	}
+	promptData := map[string]interface{}{
+		"prompt":    workflow,
+		"client_id": fmt.Sprintf("server_%d", time.Now().UnixNano()),
+	}
+	body, _ := json.Marshal(promptData)
+	resp, err := http.Post("http://localhost:8188/prompt", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return "", fmt.Errorf("请求失败: %v", err)
+	}
+	defer resp.Body.Close()
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	if errMsg, ok := result["error"].(map[string]interface{}); ok {
+		if msg, ok := errMsg["message"].(string); ok {
+			return "", fmt.Errorf("ComfyUI错误: %s", msg)
+		}
+	}
+	promptId, ok := result["prompt_id"].(string)
+	if !ok {
+		return "", fmt.Errorf("无效响应: %v", result)
+	}
+	a.addLog("comfyui", fmt.Sprintf("任务已提交: %s", promptId))
+	var outputFile string
+	for i := 0; i < 180; i++ {
+		time.Sleep(time.Second)
+		histResp, err := http.Get(fmt.Sprintf("http://localhost:8188/history/%s", promptId))
+		if err != nil {
+			continue
+		}
+		var hist map[string]interface{}
+		json.NewDecoder(histResp.Body).Decode(&hist)
+		histResp.Body.Close()
+		if data, ok := hist[promptId].(map[string]interface{}); ok {
+			if outputs, ok := data["outputs"].(map[string]interface{}); ok {
+				if node9, ok := outputs["9"].(map[string]interface{}); ok {
+					if images, ok := node9["images"].([]interface{}); ok && len(images) > 0 {
+						if img, ok := images[0].(map[string]interface{}); ok {
+							outputFile = img["filename"].(string)
+							break
+						}
+					}
+				}
+			}
+		}
+	}
+	if outputFile == "" {
+		return "", fmt.Errorf("生成超时")
+	}
+	comfyOutput := filepath.Join(a.helperDir, "comfyui", "output", outputFile)
+	if output != "" {
+		outputPath := a.resolveOutputPath(output)
+		os.MkdirAll(filepath.Dir(outputPath), 0755)
+		if data, err := os.ReadFile(comfyOutput); err == nil {
+			os.WriteFile(outputPath, data, 0644)
+			return outputPath, nil
+		}
+	}
+	return comfyOutput, nil
+}
+
+func (a *App) generateHunyuan3D(imagePath, output string) (string, error) {
+	if err := a.ensureModelRunning("hunyuan3d", 7860); err != nil {
+		return "", err
+	}
+	imgPath := a.resolveOutputPath(imagePath)
+	imgData, err := os.ReadFile(imgPath)
+	if err != nil {
+		return "", fmt.Errorf("读取图片失败: %v", err)
+	}
+	imgBase64 := base64.StdEncoding.EncodeToString(imgData)
+	reqBody := map[string]interface{}{
+		"data": []interface{}{
+			fmt.Sprintf("data:image/png;base64,%s", imgBase64),
+			"",
+			42,
+			50,
+		},
+		"fn_index": 0,
+	}
+	body, _ := json.Marshal(reqBody)
+	resp, err := http.Post("http://localhost:7860/api/predict", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return "", fmt.Errorf("请求失败: %v", err)
+	}
+	defer resp.Body.Close()
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	data, ok := result["data"].([]interface{})
+	if !ok || len(data) == 0 {
+		return "", fmt.Errorf("生成失败")
+	}
+	glbInfo, ok := data[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("无效响应")
+	}
+	glbPath, ok := glbInfo["name"].(string)
+	if !ok {
+		return "", fmt.Errorf("无GLB文件")
+	}
+	if output != "" {
+		outputPath := a.resolveOutputPath(output)
+		os.MkdirAll(filepath.Dir(outputPath), 0755)
+		if data, err := os.ReadFile(glbPath); err == nil {
+			os.WriteFile(outputPath, data, 0644)
+			return outputPath, nil
+		}
+	}
+	return glbPath, nil
+}
+
+func (a *App) rigUniRig(inputPath, output string) (string, error) {
+	if err := a.ensureModelRunning("unirig", 7861); err != nil {
+		return "", err
+	}
+	glbPath := a.resolveOutputPath(inputPath)
+	glbData, err := os.ReadFile(glbPath)
+	if err != nil {
+		return "", fmt.Errorf("读取模型失败: %v", err)
+	}
+	glbBase64 := base64.StdEncoding.EncodeToString(glbData)
+	reqBody := map[string]interface{}{
+		"data": []interface{}{
+			fmt.Sprintf("data:model/gltf-binary;base64,%s", glbBase64),
+		},
+		"fn_index": 0,
+	}
+	body, _ := json.Marshal(reqBody)
+	resp, err := http.Post("http://localhost:7861/api/predict", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return "", fmt.Errorf("请求失败: %v", err)
+	}
+	defer resp.Body.Close()
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	data, ok := result["data"].([]interface{})
+	if !ok || len(data) == 0 {
+		return "", fmt.Errorf("绑定失败")
+	}
+	riggedInfo, ok := data[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("无效响应")
+	}
+	riggedPath, ok := riggedInfo["name"].(string)
+	if !ok {
+		return "", fmt.Errorf("无输出文件")
+	}
+	if output != "" {
+		outputPath := a.resolveOutputPath(output)
+		os.MkdirAll(filepath.Dir(outputPath), 0755)
+		if data, err := os.ReadFile(riggedPath); err == nil {
+			os.WriteFile(outputPath, data, 0644)
+			return outputPath, nil
+		}
+	}
+	return riggedPath, nil
+}
+
+func (a *App) generateMotion(modelPath string, motions []string) (string, error) {
+	if err := a.ensureModelRunning("hy-motion", 7862); err != nil {
+		return "", err
+	}
+	glbPath := a.resolveOutputPath(modelPath)
+	glbData, err := os.ReadFile(glbPath)
+	if err != nil {
+		return "", fmt.Errorf("读取模型失败: %v", err)
+	}
+	glbBase64 := base64.StdEncoding.EncodeToString(glbData)
+	motionText := strings.Join(motions, ", ")
+	if motionText == "" {
+		motionText = "idle"
+	}
+	reqBody := map[string]interface{}{
+		"data": []interface{}{
+			fmt.Sprintf("data:model/gltf-binary;base64,%s", glbBase64),
+			motionText,
+			30,
+		},
+		"fn_index": 0,
+	}
+	body, _ := json.Marshal(reqBody)
+	resp, err := http.Post("http://localhost:7862/api/predict", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return "", fmt.Errorf("请求失败: %v", err)
+	}
+	defer resp.Body.Close()
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	data, ok := result["data"].([]interface{})
+	if !ok || len(data) == 0 {
+		return "", fmt.Errorf("生成失败")
+	}
+	animInfo, ok := data[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("无效响应")
+	}
+	animPath, ok := animInfo["name"].(string)
+	if !ok {
+		return "", fmt.Errorf("无输出文件")
+	}
+	outputPath := a.resolveOutputPath(modelPath)
+	os.MkdirAll(filepath.Dir(outputPath), 0755)
+	if data, err := os.ReadFile(animPath); err == nil {
+		os.WriteFile(outputPath, data, 0644)
+		return outputPath, nil
+	}
+	return animPath, nil
+}
+
+func (a *App) generateVoice(text, output string) (string, error) {
+	if err := a.ensureModelRunning("chatterbox", 7864); err != nil {
+		return "", err
+	}
+	reqBody := map[string]interface{}{
+		"data": []interface{}{
+			text,
+			0.5,
+			0.5,
+		},
+		"fn_index": 0,
+	}
+	body, _ := json.Marshal(reqBody)
+	resp, err := http.Post("http://localhost:7864/api/predict", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return "", fmt.Errorf("请求失败: %v", err)
+	}
+	defer resp.Body.Close()
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	data, ok := result["data"].([]interface{})
+	if !ok || len(data) == 0 {
+		return "", fmt.Errorf("生成失败")
+	}
+	audioInfo, ok := data[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("无效响应")
+	}
+	audioPath, ok := audioInfo["name"].(string)
+	if !ok {
+		return "", fmt.Errorf("无输出文件")
+	}
+	if output != "" {
+		outputPath := a.resolveOutputPath(output)
+		os.MkdirAll(filepath.Dir(outputPath), 0755)
+		if data, err := os.ReadFile(audioPath); err == nil {
+			os.WriteFile(outputPath, data, 0644)
+			return outputPath, nil
+		}
+	}
+	return audioPath, nil
+}
+
+func (a *App) generateAudio(prompt, output string) (string, error) {
+	if err := a.ensureModelRunning("stable-audio", 7863); err != nil {
+		return "", err
+	}
+	reqBody := map[string]interface{}{
+		"data": []interface{}{
+			prompt,
+			"",
+			30.0,
+			100,
+			3.0,
+			42,
+		},
+		"fn_index": 0,
+	}
+	body, _ := json.Marshal(reqBody)
+	resp, err := http.Post("http://localhost:7863/api/predict", "application/json", bytes.NewReader(body))
+	if err != nil {
+		return "", fmt.Errorf("请求失败: %v", err)
+	}
+	defer resp.Body.Close()
+	var result map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&result)
+	data, ok := result["data"].([]interface{})
+	if !ok || len(data) == 0 {
+		return "", fmt.Errorf("生成失败")
+	}
+	audioInfo, ok := data[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("无效响应")
+	}
+	audioPath, ok := audioInfo["name"].(string)
+	if !ok {
+		return "", fmt.Errorf("无输出文件")
+	}
+	if output != "" {
+		outputPath := a.resolveOutputPath(output)
+		os.MkdirAll(filepath.Dir(outputPath), 0755)
+		if data, err := os.ReadFile(audioPath); err == nil {
+			os.WriteFile(outputPath, data, 0644)
+			return outputPath, nil
+		}
+	}
+	return audioPath, nil
+}
+
+func (a *App) resolveOutputPath(path string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
+	return filepath.Join(a.helperDir, "output", path)
+}
+
+func (a *App) listCheckpoints() []string {
+	var checkpoints []string
+	checkpointDir := filepath.Join(a.helperDir, "comfyui", "models", "checkpoints")
+	entries, err := os.ReadDir(checkpointDir)
+	if err != nil {
+		return checkpoints
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		name := entry.Name()
+		ext := strings.ToLower(filepath.Ext(name))
+		if ext == ".safetensors" || ext == ".ckpt" || ext == ".pt" {
+			checkpoints = append(checkpoints, name)
+		}
+	}
+	return checkpoints
 }

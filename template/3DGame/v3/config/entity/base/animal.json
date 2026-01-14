@@ -1,0 +1,202 @@
+{
+	"quadruped": {
+		"name": "四足动物",
+		"skeleton": "quadruped",
+		"examples": ["wolf", "horse", "lion", "deer", "dog", "cat"],
+		"physicsProfile": {
+			"mass": "medium",
+			"stability": "high",
+			"agility": "medium"
+		},
+		"defaultAnimations": {
+			"idle": "quadruped_idle",
+			"walk": "quadruped_walk",
+			"run": "quadruped_run",
+			"attack": "quadruped_bite"
+		},
+		"combatStyle": "melee",
+		"attackTypes": ["bite", "claw", "pounce", "charge"],
+		"skillAnimationMapping": {
+			"attack_physical": "attack_bite",
+			"attack_special": "attack_pounce"
+		}
+	},
+	"dragon": {
+		"name": "龙类",
+		"skeleton": "dragon",
+		"examples": ["charizard", "dragonite", "salamence", "rayquaza"],
+		"physicsProfile": {
+			"mass": "heavy",
+			"stability": "high",
+			"agility": "medium"
+		},
+		"defaultAnimations": {
+			"idle": "dragon_idle",
+			"walk": "dragon_walk",
+			"fly": "dragon_fly_idle",
+			"attack": "dragon_breath"
+		},
+		"combatStyle": "mixed",
+		"attackTypes": ["bite", "claw", "tail", "wing", "breath", "dive"],
+		"canFly": true,
+		"skillAnimationMapping": {
+			"attack_physical": "attack_claw",
+			"attack_fire": "attack_breath_fire",
+			"attack_ice": "attack_breath_ice",
+			"attack_electric": "attack_breath_lightning",
+			"attack_dragon": "attack_breath_dragon",
+			"attack_special": "attack_dive"
+		},
+		"skillVariations": {
+			"attack_breath": {
+				"fire": ["flamethrower", "fire_blast", "heat_wave", "inferno", "blast_burn"],
+				"ice": ["ice_beam", "blizzard", "ice_punch", "icy_wind", "sheer_cold"],
+				"electric": ["thunderbolt", "thunder", "discharge", "zap_cannon", "bolt_strike"],
+				"dragon": ["dragon_breath", "draco_meteor", "outrage", "dragon_pulse", "roar_of_time"]
+			}
+		}
+	},
+	"bird": {
+		"name": "鸟类",
+		"skeleton": "bird",
+		"examples": ["pidgey", "fearow", "articuno", "ho_oh"],
+		"physicsProfile": {
+			"mass": "light",
+			"stability": "low",
+			"agility": "very_high"
+		},
+		"defaultAnimations": {
+			"idle": "bird_idle",
+			"walk": "bird_hop",
+			"fly": "bird_fly_idle",
+			"attack": "bird_peck"
+		},
+		"combatStyle": "aerial",
+		"attackTypes": ["peck", "claw", "dive", "wing"],
+		"canFly": true,
+		"skillAnimationMapping": {
+			"attack_physical": "attack_peck",
+			"attack_flying": "attack_dive",
+			"attack_special": "attack_wing"
+		}
+	},
+	"fish": {
+		"name": "鱼类",
+		"skeleton": "fish",
+		"examples": ["magikarp", "gyarados", "goldeen", "wailord"],
+		"physicsProfile": {
+			"mass": "varies",
+			"stability": "medium",
+			"agility": "high_in_water"
+		},
+		"defaultAnimations": {
+			"idle": "fish_idle",
+			"swim": "fish_swim_slow",
+			"attack": "fish_bite"
+		},
+		"combatStyle": "aquatic",
+		"attackTypes": ["bite", "ram", "tail", "splash"],
+		"canSwim": true,
+		"waterOnly": false,
+		"skillAnimationMapping": {
+			"attack_physical": "attack_bite",
+			"attack_water": "attack_splash",
+			"attack_special": "attack_ram"
+		}
+	},
+	"worm": {
+		"name": "蠕虫类",
+		"skeleton": "worm",
+		"examples": ["ekans", "arbok", "onix", "dunsparce"],
+		"physicsProfile": {
+			"mass": "medium",
+			"stability": "very_high",
+			"agility": "low"
+		},
+		"defaultAnimations": {
+			"idle": "worm_idle",
+			"move": "worm_slither",
+			"attack": "worm_bite"
+		},
+		"combatStyle": "constriction",
+		"attackTypes": ["bite", "constrict", "lunge", "spit", "burrow"],
+		"canBurrow": true,
+		"skillAnimationMapping": {
+			"attack_physical": "attack_bite",
+			"attack_poison": "attack_spit",
+			"attack_ground": "attack_burrow",
+			"attack_special": "attack_constrict"
+		}
+	},
+	"amphibian": {
+		"name": "两栖类",
+		"skeleton": "quadruped",
+		"examples": ["poliwag", "politoed", "toxicroak", "seismitoad"],
+		"physicsProfile": {
+			"mass": "light",
+			"stability": "medium",
+			"agility": "high"
+		},
+		"defaultAnimations": {
+			"idle": "amphibian_idle",
+			"walk": "amphibian_hop",
+			"swim": "amphibian_swim",
+			"attack": "amphibian_tongue"
+		},
+		"combatStyle": "mixed",
+		"attackTypes": ["tongue", "hop", "splash", "croak"],
+		"canSwim": true,
+		"skillAnimationMapping": {
+			"attack_physical": "attack_tongue",
+			"attack_water": "attack_splash",
+			"attack_poison": "attack_spit"
+		}
+	},
+	"insect": {
+		"name": "昆虫类",
+		"skeleton": "insect",
+		"examples": ["caterpie", "beedrill", "scyther", "heracross"],
+		"physicsProfile": {
+			"mass": "very_light",
+			"stability": "low",
+			"agility": "very_high"
+		},
+		"defaultAnimations": {
+			"idle": "insect_idle",
+			"walk": "insect_walk",
+			"fly": "insect_fly_idle",
+			"attack": "insect_sting"
+		},
+		"combatStyle": "swarm",
+		"attackTypes": ["bite", "sting", "spit", "tackle"],
+		"canFly": true,
+		"skillAnimationMapping": {
+			"attack_physical": "attack_bite",
+			"attack_bug": "attack_sting",
+			"attack_poison": "attack_spit"
+		}
+	},
+	"arachnid": {
+		"name": "蛛形类",
+		"skeleton": "insect",
+		"examples": ["spinarak", "ariados", "galvantula", "skorupi"],
+		"physicsProfile": {
+			"mass": "light",
+			"stability": "high",
+			"agility": "high"
+		},
+		"defaultAnimations": {
+			"idle": "arachnid_idle",
+			"walk": "arachnid_walk",
+			"attack": "arachnid_bite"
+		},
+		"combatStyle": "ambush",
+		"attackTypes": ["bite", "web", "sting", "pounce"],
+		"canClimb": true,
+		"skillAnimationMapping": {
+			"attack_physical": "attack_bite",
+			"attack_bug": "attack_web",
+			"attack_poison": "attack_sting"
+		}
+	}
+}

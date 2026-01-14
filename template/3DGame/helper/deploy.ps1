@@ -146,6 +146,43 @@ if (-not (Test-Command "wails")) {
     $env:Path = $env:Path + ";" + (Join-Path $env:GOPATH "bin") + ";" + (Join-Path $env:USERPROFILE "go\bin")
 }
 Write-Host ""
+Write-Host "[*] Checking HuggingFace login..." -ForegroundColor Yellow
+$hfTokenPath = Join-Path $env:USERPROFILE ".cache\huggingface\token"
+$hfLoggedIn = $false
+if (Test-Path $hfTokenPath) {
+    $token = Get-Content $hfTokenPath -Raw
+    if ($token -and $token.Length -gt 10) {
+        $hfLoggedIn = $true
+        Write-Host "[OK] HuggingFace token found" -ForegroundColor Gray
+    }
+}
+if (-not $hfLoggedIn) {
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Yellow
+    Write-Host "  HuggingFace Login Required" -ForegroundColor Yellow
+    Write-Host "========================================" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Some models (FLUX, Stable Audio) require HuggingFace login." -ForegroundColor White
+    Write-Host ""
+    Write-Host "Steps:" -ForegroundColor Cyan
+    Write-Host "1. Go to: https://huggingface.co/settings/tokens" -ForegroundColor White
+    Write-Host "2. Create a new token with 'Read' permission" -ForegroundColor White
+    Write-Host "3. Enter the token below" -ForegroundColor White
+    Write-Host ""
+    $token = Read-Host "Enter HuggingFace token (or press Enter to skip)"
+    if ($token) {
+        $hfCacheDir = Join-Path $env:USERPROFILE ".cache\huggingface"
+        if (-not (Test-Path $hfCacheDir)) {
+            New-Item -ItemType Directory -Path $hfCacheDir -Force | Out-Null
+        }
+        $token | Out-File -FilePath $hfTokenPath -NoNewline -Encoding utf8
+        Write-Host "[OK] Token saved" -ForegroundColor Green
+        $hfLoggedIn = $true
+    } else {
+        Write-Host "[WARN] Skipping HuggingFace login. Some models may not work." -ForegroundColor Yellow
+    }
+}
+Write-Host ""
 Write-Host "[2/8] Setting up ComfyUI + FLUX..." -ForegroundColor Green
 $comfyDir = Join-Path $HELPER_DIR "comfyui"
 if (-not (Test-Path $comfyDir)) {
@@ -223,6 +260,10 @@ pip install gradio -q
 deactivate
 Write-Host ""
 Write-Host "[6/8] Setting up Stable Audio Open..." -ForegroundColor Green
+if (-not $hfLoggedIn) {
+    Write-Host "    [WARN] HuggingFace login required for Stable Audio model download" -ForegroundColor Yellow
+    Write-Host "    [INFO] Accept license at: https://huggingface.co/stabilityai/stable-audio-open-1.0" -ForegroundColor Cyan
+}
 $audioDir = Join-Path $HELPER_DIR "stable-audio"
 if (-not (Test-Path $audioDir)) {
     git clone https://github.com/Stability-AI/stable-audio-tools.git $audioDir
@@ -267,6 +308,13 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  Deployment Complete!" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
+if (-not $hfLoggedIn) {
+    Write-Host "[NOTE] HuggingFace login was skipped." -ForegroundColor Yellow
+    Write-Host "To enable FLUX and Stable Audio:" -ForegroundColor White
+    Write-Host "1. Get token: https://huggingface.co/settings/tokens" -ForegroundColor Gray
+    Write-Host "2. Save to: $hfTokenPath" -ForegroundColor Gray
+    Write-Host ""
+}
 Write-Host "Next step:" -ForegroundColor Yellow
 Write-Host "Run: .\run.ps1" -ForegroundColor White
 Write-Host "Build: .\run.ps1 -b" -ForegroundColor White

@@ -1,0 +1,94 @@
+{
+	"entities": [
+		{
+			"id": "ent_skeleton",
+			"name": "骷髅",
+			"baseClass": "humanoid.human",
+			"category": "enemy",
+			"faction": "hostile",
+			"element": null,
+			"hp": 60,
+			"maxHp": 60,
+			"armor": 5,
+			"speed": 0.8,
+			"mass": 30,
+			"hardness": 0.5,
+			"elasticity": 0.1,
+			"fragility": 0.9,
+			"aiType": "patrol",
+			"aiScript": "skeleton_ai",
+			"triggerWords": ["斩击"],
+			"lootTable": ["itm_bone", "itm_sword_rusty"],
+			"parts": [
+				{
+					"id": "skull",
+					"name": "头骨",
+					"hp": 20,
+					"canDetach": true,
+					"critMul": 3.0
+				},
+				{
+					"id": "spine",
+					"name": "脊椎",
+					"hp": 30,
+					"canDetach": false,
+					"critMul": 1.0
+				}
+			],
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -0.25,
+						"y": 0,
+						"z": -0.25,
+						"w": 0.5,
+						"h": 1.8,
+						"d": 0.5
+					}
+				]
+			}
+		},
+		{
+			"id": "ent_ghost",
+			"name": "幽灵",
+			"baseClass": "monster.spectral",
+			"category": "enemy",
+			"faction": "hostile",
+			"element": "ghost",
+			"hp": 50,
+			"maxHp": 50,
+			"armor": 0,
+			"speed": 1.2,
+			"mass": 0,
+			"hardness": 0,
+			"elasticity": 0,
+			"fragility": 0.5,
+			"aiType": "haunt",
+			"aiScript": "ghost_ai",
+			"triggerWords": ["诅咒", "附身"],
+			"lootTable": ["itm_ectoplasm"],
+			"physicsIgnore": true,
+			"parts": [
+				{
+					"id": "core",
+					"name": "核心",
+					"hp": 50,
+					"canDetach": false,
+					"critMul": 1.0
+				}
+			],
+			"hitbox": {
+				"boxes": [
+					{
+						"x": -0.3,
+						"y": 0.5,
+						"z": -0.3,
+						"w": 0.6,
+						"h": 1.0,
+						"d": 0.6
+					}
+				]
+			}
+		}
+	]
+}

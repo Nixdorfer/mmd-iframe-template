@@ -7,6 +7,7 @@ nul
 *.exe
 *.exe~
 *.dll
+tmpclaude-*
 !README.md
 
 defender/messages.json

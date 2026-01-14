@@ -1,0 +1,123 @@
+{
+	"wheeled": {
+		"name": "轮式载具",
+		"skeleton": "vehicle_wheeled",
+		"examples": ["car", "truck", "motorcycle", "bus"],
+		"physicsProfile": {
+			"mass": "heavy",
+			"stability": "high",
+			"agility": "medium"
+		},
+		"defaultAnimations": {
+			"idle": "vehicle_idle",
+			"move": "vehicle_drive",
+			"turn": "vehicle_turn"
+		},
+		"movementType": "ground",
+		"parts": ["engine", "wheels", "body", "doors", "windows"],
+		"skillAnimationMapping": {
+			"accelerate": "drive_fast",
+			"brake": "drive_brake",
+			"drift": "drive_drift",
+			"ram": "drive_ram"
+		}
+	},
+	"tracked": {
+		"name": "履带载具",
+		"skeleton": "vehicle_tracked",
+		"examples": ["tank", "apc", "bulldozer"],
+		"physicsProfile": {
+			"mass": "very_heavy",
+			"stability": "very_high",
+			"agility": "low"
+		},
+		"defaultAnimations": {
+			"idle": "tracked_idle",
+			"move": "tracked_drive",
+			"turn": "tracked_pivot"
+		},
+		"movementType": "ground",
+		"parts": ["engine", "tracks", "turret", "hull"],
+		"hasWeapon": true,
+		"skillAnimationMapping": {
+			"fire_main": "turret_fire",
+			"fire_secondary": "mg_fire",
+			"pivot": "tracked_pivot",
+			"ram": "tracked_ram"
+		}
+	},
+	"aircraft": {
+		"name": "飞行载具",
+		"skeleton": "vehicle_aircraft",
+		"examples": ["helicopter", "plane", "vtol", "drone"],
+		"physicsProfile": {
+			"mass": "medium",
+			"stability": "low",
+			"agility": "high"
+		},
+		"defaultAnimations": {
+			"idle": "aircraft_hover",
+			"fly": "aircraft_fly",
+			"turn": "aircraft_bank"
+		},
+		"movementType": "air",
+		"parts": ["engine", "rotor", "fuselage", "landing_gear"],
+		"canFly": true,
+		"skillAnimationMapping": {
+			"takeoff": "aircraft_takeoff",
+			"land": "aircraft_land",
+			"fire": "aircraft_fire",
+			"evade": "aircraft_evade"
+		}
+	},
+	"watercraft": {
+		"name": "水上载具",
+		"skeleton": "vehicle_watercraft",
+		"examples": ["boat", "ship", "submarine", "jetski"],
+		"physicsProfile": {
+			"mass": "heavy",
+			"stability": "medium",
+			"agility": "low"
+		},
+		"defaultAnimations": {
+			"idle": "watercraft_idle",
+			"move": "watercraft_cruise",
+			"turn": "watercraft_turn"
+		},
+		"movementType": "water",
+		"parts": ["engine", "hull", "propeller", "rudder"],
+		"canFloat": true,
+		"skillAnimationMapping": {
+			"accelerate": "watercraft_throttle",
+			"dive": "submarine_dive",
+			"surface": "submarine_surface",
+			"fire": "watercraft_fire"
+		}
+	},
+	"mech": {
+		"name": "机甲",
+		"skeleton": "vehicle_mech",
+		"examples": ["bipedal_mech", "quadruped_mech", "spider_mech"],
+		"physicsProfile": {
+			"mass": "very_heavy",
+			"stability": "high",
+			"agility": "medium"
+		},
+		"defaultAnimations": {
+			"idle": "mech_idle",
+			"walk": "mech_walk",
+			"run": "mech_run"
+		},
+		"movementType": "ground",
+		"parts": ["reactor", "chassis", "arms", "legs", "cockpit"],
+		"hasWeapon": true,
+		"canMelee": true,
+		"skillAnimationMapping": {
+			"fire_arm_l": "mech_fire_left",
+			"fire_arm_r": "mech_fire_right",
+			"punch": "mech_punch",
+			"stomp": "mech_stomp",
+			"missile": "mech_missile"
+		}
+	}
+}
