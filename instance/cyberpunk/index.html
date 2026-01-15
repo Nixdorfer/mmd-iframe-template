@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Share+Tech+Mono&display=swap');
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	user-select: none;
+}
+
+body {
+	background: #050505;
+	min-height: 100vh;
+	cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M1 1 L31 1 L31 31 L1 31 Z M8 13 L8 19 M8 16 L24 16 M24 13 L24 19' fill='none' stroke='%23da2525' stroke-width='2'/></svg>") 16 16, auto;
+}
+
+*[style*="cursor"], button, label, a, select, [onclick] {
+	cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M1 1 L31 1 L31 31 L1 31 Z M8 13 L8 19 M8 16 L24 16 M24 13 L24 19' fill='none' stroke='%23da2525' stroke-width='2'/></svg>") 16 16, pointer !important;
+}
+
+input, textarea {
+	cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M1 1 L31 1 L31 31 L1 31 Z M8 13 L8 19 M8 16 L24 16 M24 13 L24 19' fill='none' stroke='%23da2525' stroke-width='2'/></svg>") 16 16, text !important;
+}
+
+.btn-close {
+	position: fixed;
+	top: 12px;
+	left: 12px;
+	z-index: 999999;
+	width: 36px;
+	height: 36px;
+	border: 1px solid #ff0099;
+	background: rgba(0,0,0,0.8);
+	color: #ff0099;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s;
+}
+
+.btn-close:hover {
+	background: #ff0099;
+	color: #000;
+	box-shadow: 0 0 15px #ff0099;
+}
+
+#hack-gate {
+	display: none;
+}
+
+.cyber-wrapper {
+	display: none;
+	opacity: 0;
+}
+
+#hack-gate:checked ~ .cyber-wrapper {
+	display: block;
+	animation: main-enter 1s ease-out forwards;
+	animation-delay: 1.4s;
+	z-index: 200000;
+}
+
+@keyframes main-enter {
+	0% { opacity: 0; transform: translateY(20px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+
+#hack-gate:checked ~ .btn-close {
+	display: none;
+}
+
+#hack-gate:checked ~ .cyber-cover .connect-btn,
+#hack-gate:checked ~ .cyber-cover .state-locked {
+	display: none;
+}
+
+#hack-gate:checked ~ .cyber-cover .state-hello {
+	display: block;
+	animation: fb .8s linear forwards;
+}
+
+#hack-gate:checked ~ .cyber-cover {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 0;
+	pointer-events: none;
+	background: rgba(5,5,5,0);
+	background-image: linear-gradient(rgba(0,243,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,243,255,0.05) 1px, transparent 1px);
+}
+
+#hack-gate:checked ~ .cyber-msk {
+	display: block;
+}
+
+#hack-gate:checked ~ .cyber-wrapper {
+	background: rgba(5,5,16,0);
+}
+
+.cyber-msk {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
+	cursor: pointer;
+}
+
+.cyber-cover {
+	position: relative;
+	width: 100%;
+	min-height: 600px;
+	height: 100vh;
+	background: #050505;
+	font-family: 'Microsoft YaHei', sans-serif;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	border: 1px solid #333;
+	z-index: 99999;
+	--g-pink: #ff0099;
+	--g-blue: #00f3ff;
+	background-image: linear-gradient(rgba(0,243,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,243,255,0.05) 1px, transparent 1px);
+	background-size: 30px 30px;
+	margin-bottom: 20px;
+}
+
+.scan-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	background: linear-gradient(90deg, var(--g-pink), var(--g-blue));
+	box-shadow: 0 0 15px var(--g-blue);
+	animation: scan-down 3s linear infinite;
+	z-index: 1;
+}
+
+.watermark-2077 {
+	position: absolute;
+	top: 20px;
+	font-family: 'Oswald', sans-serif;
+	font-size: 6rem;
+	font-weight: 900;
+	color: rgba(255,255,255,0.03);
+	pointer-events: none;
+}
+
+.text-container {
+	position: relative;
+	z-index: 5;
+	margin-bottom: 50px;
+	width: 95%;
+	text-align: center;
+	padding: 20px;
+}
+
+.state-locked {
+	display: block;
+}
+
+.glitch-cn {
+	font-size: 2.5rem;
+	font-weight: 900;
+	color: #fff;
+	position: relative;
+	display: inline-block;
+	letter-spacing: 2px;
+	white-space: normal;
+	animation: glitch-skew 2.5s infinite linear alternate-reverse, fault-flicker 2s infinite steps(2);
+}
+.glitch-cn::before,
+.glitch-cn::after {
+	content: attr(data-text);
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #050505;
+}
+
+.glitch-cn::before {
+	left: 2px;
+	text-shadow: -2px 0 var(--g-pink);
+	clip-path: inset(0 0 0 0);
+	animation: g1 2s infinite linear alternate-reverse;
+}
+
+.glitch-cn::after {
+	left: -2px;
+	text-shadow: -2px 0 var(--g-blue);
+	clip-path: inset(0 0 0 0);
+	animation: g2 1.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-skew {
+	0% { transform: skew(0deg); }
+	10% { transform: skew(-10deg); }
+	20% { transform: skew(10deg); }
+	30% { transform: skew(-5deg); }
+	40% { transform: skew(5deg); }
+	50% { transform: skew(0deg); }
+	100% { transform: skew(0deg); }
+}
+
+@keyframes fault-flicker {
+	0% { opacity: 1; text-shadow: 2px 0 #ff0099, -2px 0 #00f3ff; }
+	5% { opacity: 0.8; text-shadow: -2px 0 #ff0099, 2px 0 #00f3ff; }
+	10% { opacity: 1; text-shadow: none; }
+	15% { opacity: 0.2; text-shadow: 4px 0 #ff0099; }
+	20% { opacity: 1; text-shadow: none; }
+	50% { opacity: 1; }
+	55% { opacity: 0.5; transform: scale(1.02); }
+	60% { opacity: 1; transform: scale(1); }
+	100% { opacity: 1; }
+}
+
+.sub-text {
+	margin-top: 10px;
+	font-size: 1.1rem;
+	letter-spacing: 1px;
+	padding: 5px 15px;
+	border-left: 3px solid #ff0099;
+	border-right: 3px solid #00f3ff;
+	background: linear-gradient(90deg, #ff0099, #00f3ff, #ff0099);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	font-weight: 900;
+	background-size: 200% auto;
+	animation: shine 3s linear infinite;
+}
+
+.state-hello {
+	display: none;
+	font-size: 2.8rem;
+	font-weight: 900;
+	font-style: italic;
+	background: linear-gradient(90deg, #ff0099, #00f3ff, #ff0099);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-size: 200% auto;
+	animation: shine 2s linear infinite;
+	text-shadow: 0 0 20px rgba(0,243,255,0.3);
+	transform: skewX(-10deg);
+}
+
+.connect-btn {
+	position: relative;
+	z-index: 5;
+	padding: 15px 60px;
+	background: transparent;
+	border: 2px solid #00f3ff;
+	clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+	font-size: 1.5rem;
+	font-weight: 900;
+	cursor: pointer;
+	transition: .2s;
+	background: linear-gradient(90deg, #ff0099, #00f3ff, #ff0099);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-size: 200% auto;
+	animation: shine 3s linear infinite;
+	box-shadow: 0 0 10px rgba(0,243,255,0.1);
+	border-image: linear-gradient(90deg, #ff0099, #00f3ff, #ff0099) 1;
+}
+
+.connect-btn:hover {
+	background: linear-gradient(90deg, #ff0099, #00f3ff, #ff0099);
+	-webkit-text-fill-color: #000;
+	box-shadow: 0 0 40px var(--g-pink);
+	border-color: transparent;
+}
+
+.status-bar {
+	position: absolute;
+	bottom: 15px;
+	width: 90%;
+	display: flex;
+	justify-content: space-between;
+	font-family: 'Share Tech Mono', monospace;
+	font-size: 10px;
+	color: #666;
+	border-top: 1px dashed #333;
+	padding-top: 8px;
+}
+
+.cyber-wrapper {
+	position: relative;
+	z-index: 2;
+	width: 95%;
+	max-width: 700px;
+	margin: 20px auto;
+	box-sizing: border-box;
+	background: rgba(5,5,16,0.85);
+}
+
+.cyber-decor {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(5,5,16,0.85);
+	background-image: linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+	background-size: 20px 20px;
+	border: 2px solid #ffffff;
+	box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+	overflow: hidden;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.cyber-decor::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(90deg, transparent, #ff0099, #00f3ff, transparent);
+	animation: stream-right 3s linear infinite;
+	z-index: 2;
+}
+
+.cyber-decor::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	right: -100%;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(270deg, transparent, #ff0099, #00f3ff, transparent);
+	animation: stream-left 3s linear infinite;
+	z-index: 2;
+}
+
+.cyber-content {
+	position: relative;
+	z-index: 1;
+	padding: 20px;
+	color: #00f3ff;
+	font-family: 'Courier New', monospace;
+}
+
+.cp-page {
+	display: none;
+	animation: glitch-fade 0.3s ease-out;
+}
+
+.cp-page.active {
+	display: block;
+}
+
+.cp-title {
+	font-size: 1.4em;
+	font-weight: bold;
+	text-align: center;
+	border-bottom: 1px solid #ff0099;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	text-shadow: 0 0 5px #ff0099;
+	color: #fff;
+	letter-spacing: 2px;
+}
+
+.cp-subtitle {
+	font-size: 0.9em;
+	color: rgba(0, 243, 255, 0.9);
+	margin-bottom: 20px;
+	text-align: center;
+	font-style: italic;
+	padding: 5px;
+	background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
+}
+
+.cp-input-row {
+	margin-bottom: 15px;
+}
+
+.cp-label {
+	display: block;
+	color: #ff0099;
+	font-size: 0.9em;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.cp-input {
+	background: rgba(0, 0, 0, 0.5);
+	border: 1px solid #00f3ff;
+	color: #fff;
+	padding: 10px;
+	width: 100%;
+	box-sizing: border-box;
+	outline: none;
+	font-family: inherit;
+	transition: box-shadow 0.3s;
+}
+
+.cp-input:focus {
+	box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+	background: rgba(0, 243, 255, 0.05);
+}
+
+.cp-grid-system {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.cp-btn {
+	background: rgba(0,0,0,0.4);
+	border: 1px solid #00f3ff;
+	color: #00f3ff;
+	padding: 12px 5px;
+	cursor: pointer;
+	transition: all 0.2s;
+	position: relative;
+	font-size: 0.85em;
+	text-align: center;
+	font-weight: bold;
+	text-transform: uppercase;
+	width: 100%;
+	height: 100%;
+	min-height: 60px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	line-height: 1.2;
+}
+
+.cp-btn:hover {
+	background: rgba(0, 243, 255, 0.2);
+	box-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+	color: #fff;
+	transform: translateY(-2px);
+	z-index: 10;
+}
+
+.cp-btn.selected {
+	background: #ff0099;
+	border-color: #ff0099;
+	color: #fff;
+	box-shadow: 0 0 15px rgba(255, 0, 153, 0.8);
+}
+
+.cp-tooltip-wrapper {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.cp-tooltip-content {
+	visibility: hidden;
+	width: 320px;
+	background-color: #0a0a0f;
+	color: #e0e0e0;
+	text-align: left;
+	border: 1px solid #ff0099;
+	padding: 12px;
+	position: absolute;
+	z-index: 99999;
+	bottom: 110%;
+	left: 50%;
+	transform: translateX(-50%);
+	opacity: 0;
+	transition: opacity 0.2s;
+	box-shadow: 0 0 20px rgba(255, 0, 153, 0.4);
+	font-size: 0.85em;
+	line-height: 1.5;
+	pointer-events: none;
+	white-space: normal;
+}
+
+.cp-tooltip-content::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -6px;
+	border-width: 6px;
+	border-style: solid;
+	border-color: #ff0099 transparent transparent transparent;
+}
+
+.cp-tooltip-wrapper:hover .cp-tooltip-content {
+	visibility: visible;
+	opacity: 1;
+}
+
+.cp-nav {
+	margin-top: 30px;
+	display: flex;
+	justify-content: space-between;
+	border-top: 1px dashed rgba(0, 243, 255, 0.3);
+	padding-top: 15px;
+}
+
+.cp-nav-btn {
+	background: transparent;
+	border: 1px solid #fff;
+	color: #fff;
+	padding: 8px 30px;
+	cursor: pointer;
+	font-weight: bold;
+	transition: all 0.2s;
+	clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.cp-nav-btn:hover {
+	background: #00f3ff;
+	color: #000;
+	border-color: #00f3ff;
+	box-shadow: 0 0 15px #00f3ff;
+}
+
+.color-pink {
+	color: #ff0099 !important;
+	border-color: #ff0099 !important;
+}
+
+.color-pink:hover,
+.color-pink.selected {
+	background-color: rgba(255, 0, 153, 0.2) !important;
+	box-shadow: 0 0 15px rgba(255, 0, 153, 0.6) !important;
+	color: #fff !important;
+	border-color: #ff0099 !important;
+}
+
+.color-white {
+	color: #ffffff !important;
+	border-color: #ffffff !important;
+}
+
+.color-white:hover,
+.color-white.selected {
+	background-color: rgba(255, 255, 255, 0.2) !important;
+	box-shadow: 0 0 15px rgba(255, 255, 255, 0.6) !important;
+	color: #fff !important;
+	border-color: #ffffff !important;
+}
+
+.color-blue {
+	color: #00f3ff !important;
+	border-color: #00f3ff !important;
+}
+
+.color-blue:hover,
+.color-blue.selected {
+	background-color: rgba(0, 243, 255, 0.2) !important;
+	box-shadow: 0 0 15px rgba(0, 243, 255, 0.6) !important;
+	color: #fff !important;
+	border-color: #00f3ff !important;
+}
+
+.color-gold {
+	color: #ffd700 !important;
+	border-color: #ffd700 !important;
+}
+
+.color-gold:hover,
+.color-gold.selected {
+	background-color: rgba(255, 215, 0, 0.2) !important;
+	box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;
+	color: #fff !important;
+	border-color: #ffd700 !important;
+}
+
+.color-red {
+	color: #ff0000 !important;
+	border-color: #ff0000 !important;
+}
+
+.color-red:hover,
+.color-red.selected {
+	background-color: rgba(255, 0, 0, 0.2) !important;
+	box-shadow: 0 0 15px rgba(255, 0, 0, 0.6) !important;
+	color: #fff !important;
+	border-color: #ff0000 !important;
+}
+
+.cp-divider {
+	width: 100%;
+	border-bottom: 1px dashed;
+	margin: 20px 0 10px 0;
+	text-align: center;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 0.9em;
+	grid-column: 1 / -1;
+}
+
+.div-white {
+	color: #ffffff;
+	border-color: #ffffff;
+}
+
+.div-blue {
+	color: #00f3ff;
+	border-color: #00f3ff;
+}
+
+.div-gold {
+	color: #ffd700;
+	border-color: #ffd700;
+}
+
+.div-red {
+	color: #ff0000;
+	border-color: #ff0000;
+}
+
+.div-pink {
+	color: #ff0099;
+	border-color: #ff0099;
+}
+
+@keyframes scan-down {
+	0% { top: -10%; }
+	100% { top: 110%; }
+}
+
+@keyframes shine {
+	to { background-position: 200% center; }
+}
+
+@keyframes fb {
+	0% { opacity: 0; transform: skewX(-10deg) scale(.9); filter: invert(1); }
+	20% { opacity: 1; transform: skewX(-10deg) scale(1.1); filter: invert(0); }
+	40% { opacity: .5; }
+	60% { opacity: 1; filter: invert(1); }
+	100% { opacity: 1; transform: skewX(-10deg) scale(1); filter: invert(0); }
+}
+
+@keyframes ci {
+	0% { opacity: 1; }
+	100% { opacity: 0.3; }
+}
+
+@keyframes stream-right {
+	0% { left: -100%; }
+	100% { left: 100%; }
+}
+
+@keyframes stream-left {
+	0% { right: -100%; }
+	100% { right: 100%; }
+}
+
+@keyframes glitch-fade {
+	0% { opacity: 0; clip-path: inset(0 0 100% 0); }
+	50% { opacity: 0.5; clip-path: inset(0 0 50% 0); }
+	100% { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes g1 {
+	0% { clip-path: inset(20% 0 80% 0); }
+	20% { clip-path: inset(60% 0 10% 0); }
+	40% { clip-path: inset(10% 0 50% 0); }
+	60% { clip-path: inset(80% 0 5% 0); }
+	80% { clip-path: inset(30% 0 40% 0); }
+	100% { clip-path: inset(50% 0 30% 0); }
+}
+
+@keyframes g2 {
+	0% { clip-path: inset(10% 0 60% 0); }
+	20% { clip-path: inset(80% 0 5% 0); }
+	40% { clip-path: inset(70% 0 10% 0); }
+	60% { clip-path: inset(20% 0 50% 0); }
+	80% { clip-path: inset(60% 0 20% 0); }
+	100% { clip-path: inset(5% 0 80% 0); }
+}
+
+.timeline-container {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.timeline-left {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	height: 200px;
+	width: 100%;
+}
+
+.timeline-img-btn {
+	flex: 1;
+	background-size: cover;
+	background-position: center;
+	border: 2px solid #333;
+	cursor: pointer;
+	transition: all 0.3s;
+	opacity: 0.6;
+	position: relative;
+	overflow: hidden;
+}
+.timeline-img-btn:hover {
+	opacity: 1;
+	border-color: #00f3ff;
+	box-shadow: 0 0 10px #00f3ff;
+}
+
+.timeline-img-btn.selected {
+	opacity: 1;
+	border-color: #ff0099;
+	box-shadow: 0 0 20px #ff0099;
+	transform: scale(1.02);
+	z-index: 2;
+}
+
+.timeline-right {
+	width: 100%;
+	border: 1px solid rgba(0, 243, 255, 0.3);
+	background: rgba(0,0,0,0.3);
+	padding: 15px;
+	overflow-y: auto;
+	font-size: 0.9em;
+	line-height: 1.6;
+	color: #ddd;
+	height: 250px;
+	box-sizing: border-box;
+	max-width: 100%;
+	overflow-wrap: break-word;
+}
+
+.timeline-desc-block {
+	display: none;
+	animation: glitch-fade 0.4s;
+}
+
+.timeline-right::-webkit-scrollbar {
+	width: 5px;
+}
+
+.timeline-right::-webkit-scrollbar-track {
+	background: #000;
+}
+
+.timeline-right::-webkit-scrollbar-thumb {
+	background: #00f3ff;
+}
+
+#PREVIEW_TEXT {
+	user-select: text;
+}
+
+#PREVIEW_TEXT::-webkit-scrollbar {
+	width: 5px;
+}
+
+#PREVIEW_TEXT::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+#PREVIEW_TEXT::-webkit-scrollbar-thumb {
+	background: rgba(0, 243, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+	.timeline-left {
+		height: 120px;
+	}
+	.glitch-cn {
+		font-size: 1.8rem;
+	}
+	.state-hello {
+		font-size: 2rem;
+	}
+	.watermark-2077 {
+		font-size: 4rem;
+		top: 10px;
+	}
+	.cp-grid-system {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 480px) {
+	.timeline-left {
+		height: 100px;
+	}
+	.cp-nav-btn {
+		padding: 8px 15px;
+		font-size: 0.85em;
+	}
+}
+
+.cyber-md-wrap {
+	position: fixed;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.cyber-md-wrap.vis {
+	opacity: 1;
+}
+
+.cyber-md-wrap::before,
+.cyber-md-wrap::after {
+	content: '';
+	position: absolute;
+	width: calc(var(--cut) * 1.414);
+	height: 1px;
+	background: rgba(0,243,255,0.5);
+}
+
+.cyber-md-wrap::before {
+	top: calc(var(--cut) / 2);
+	left: calc(var(--cut) / 2 * -1 + 4px);
+	transform: rotate(-45deg);
+	transform-origin: right center;
+}
+
+.cyber-md-wrap::after {
+	bottom: calc(var(--cut) / 2);
+	right: calc(var(--cut) / 2 * -1 + 4px);
+	transform: rotate(-45deg);
+	transform-origin: left center;
+}
+
+.cyber-md-wrap.end::before,
+.cyber-md-wrap.end::after {
+	background: #e23e31;
+}
+
+.cyber-md {
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	border-style: solid;
+	border-color: rgba(0,243,255,0.5);
+	border-width: 1px 8px;
+	color: rgba(0,243,255,0.5);
+	font-family: 'Share Tech Mono', monospace;
+	font-size: 10px;
+	line-height: 1.4;
+	overflow: hidden;
+	box-shadow: 0 0 10px rgba(0,243,255,0.15);
+}
+
+.cyber-md-wrap.end .cyber-md {
+	border-color: #e23e31;
+	color: #e23e31;
+	box-shadow: 0 0 10px rgba(226,62,49,0.5);
+}
+
+.cyber-md-cnt {
+	width: 100%;
+	height: 100%;
+	padding: 5px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.cyber-md-msg {
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+</style>
+</head>
+<body>
+<button class="btn-close" onclick="parent.postMessage({t:'cancel'},'*')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+</button>
+<script>
+var LOGIC_NAV = function(el) {
+	var pages = ['PAGE_TIMELINE','PAGE_INFO','PAGE_IDENTITY','PAGE_REP','PAGE_TALENT','PAGE_CYBER','PAGE_EQUIP','PAGE_EVENT','PAGE_MOD','PAGE_PREVIEW'];
+	var currentId = el.dataset.current;
+	var currentIdx = pages.indexOf(currentId);
+	var step = parseInt(el.dataset.step);
+	var nextIdx = currentIdx + step;
+	if(nextIdx >= 0 && nextIdx < pages.length) {
+		document.getElementById(pages[currentIdx]).classList.remove('active');
+		document.getElementById(pages[nextIdx]).classList.add('active');
+	}
+	if (pages[currentIdx] === 'PAGE_TIMELINE' && step > 0) {
+		var tl = document.getElementById('INP_TIMELINE').value;
+		var setVis = function(val, show) {
+			var btn = document.querySelector("button[data-val='" + val + "']");
+			if(!btn) return;
+			var wrapper = btn.closest('.cp-tooltip-wrapper');
+			var target = wrapper || btn;
+			target.style.display = show ? '' : 'none';
+		};
+		var allDynamic = ['AI猎人','康陶','网络监察','创伤小队','沛卓石化','欧空局','拉撒路','海啸防御系统','莫克斯帮','幽冥犬','动物帮','WNS新闻','新闻54台','人工智能','高骑士'];
+		allDynamic.forEach(function(v) { setVis(v, true); });
+		if (tl === '赛博朋克2020') {
+			['AI猎人','康陶','莫克斯帮','幽冥犬','动物帮','高骑士'].forEach(function(v) { setVis(v, false); });
+		} else if (tl === '赛博朋克红') {
+			['AI猎人','康陶','网络监察','创伤小队','沛卓石化','欧空局','拉撒路','海啸防御系统','莫克斯帮','幽冥犬','WNS新闻','新闻54台','人工智能','高骑士'].forEach(function(v) { setVis(v, false); });
+		}
+	}
+	if(pages[nextIdx] === 'PAGE_PREVIEW') {
+		var getVal = function(id) { return document.getElementById(id).value || '未选择'; };
+		var getFullText = function(group, val) {
+			var btn = document.querySelector('.btn-group-' + group + "[data-val='" + val + "']");
+			if(!btn) return val;
+			var desc = '';
+			var span = btn.querySelector('span');
+			if(span) {
+				desc = span.innerText;
+			} else {
+				var wrapper = btn.closest('.cp-tooltip-wrapper');
+				if(wrapper) {
+					var tip = wrapper.querySelector('.cp-tooltip-content');
+					if(tip) desc = tip.innerText;
+				}
+			}
+			return desc ? val + '（' + desc + '）' : val;
+		};
+		var processMulti = function(id, group) {
+			var raw = document.getElementById(id).value;
+			if(!raw) return '未选择';
+			return raw.split('、').map(function(v) { return getFullText(group, v); }).join('\n');
+		};
+		var identity = getVal('INP_IDENTITY_MAIN');
+		var subId = getVal('INP_IDENTITY_SUB');
+		if(subId && subId !== '未选择') identity += ' [' + getFullText('IDENTITY_SUB', subId) + ']';
+		var rep = getVal('INP_REP');
+		if(rep !== '未选择') rep = getFullText('REP', rep);
+		var summary = '【赛博朋克角色档案】\n';
+		summary += '━━━━━━━━━━━━━━━━\n';
+		summary += '时间线：' + getVal('INP_TIMELINE') + '\n';
+		summary += '姓名：' + getVal('INP_NAME') + '\n';
+		summary += '性别：' + getVal('INP_GENDER') + '\n';
+		summary += '年龄：' + getVal('INP_AGE') + '\n';
+		summary += '外貌：' + getVal('INP_LOOKS') + '\n';
+		summary += '━━━━━━━━━━━━━━━━\n';
+		summary += '身份：' + identity + '\n';
+		summary += '声望：' + rep + '\n';
+		summary += '━━━━━━━━━━━━━━━━\n';
+		summary += '【天赋】\n' + processMulti('INP_TALENT', 'TALENT') + '\n\n';
+		summary += '【义体】\n' + processMulti('INP_CYBER', 'CYBER') + '\n\n';
+		summary += '【装备】\n' + processMulti('INP_EQUIP', 'EQUIP') + '\n\n';
+		summary += '【大事件】\n' + processMulti('INP_EVENT', 'EVENT') + '\n\n';
+		summary += '【MOD】\n' + processMulti('INP_MOD', 'MOD') + '\n';
+		summary += '━━━━━━━━━━━━━━━━';
+		document.getElementById('PREVIEW_TEXT').value = summary;
+	}
+};
+var LOGIC_SELECT = function(el) {
+	var groupName = el.dataset.group;
+	var value = el.dataset.val;
+	var targetInputId = el.dataset.target;
+	var multiSelectGroups = ['TALENT', 'CYBER', 'EQUIP', 'EVENT', 'MOD'];
+	if (groupName === 'TIMELINE') {
+		var allTImgs = document.querySelectorAll('.timeline-img-btn');
+		allTImgs.forEach(function(btn) { btn.classList.remove('selected'); });
+		el.classList.add('selected');
+		document.getElementById('INP_TIMELINE').value = value;
+		document.querySelectorAll('.timeline-desc-block').forEach(function(e) { e.style.display = 'none'; });
+		document.getElementById('DESC_' + value).style.display = 'block';
+	} else if (multiSelectGroups.indexOf(groupName) !== -1) {
+		el.classList.toggle('selected');
+		var selectedBtns = document.querySelectorAll('.btn-group-' + groupName + '.selected');
+		var selectedValues = Array.from(selectedBtns).map(function(btn) { return btn.dataset.val; });
+		if(targetInputId) {
+			document.getElementById(targetInputId).value = selectedValues.join('、');
+		}
+	} else {
+		var allBtns = document.querySelectorAll('.btn-group-' + groupName);
+		allBtns.forEach(function(btn) { btn.classList.remove('selected'); });
+		el.classList.add('selected');
+		if(targetInputId) {
+			document.getElementById(targetInputId).value = value;
+		}
+		if(groupName === 'IDENTITY_MAIN') {
+			document.querySelectorAll('.sub-identity').forEach(function(e) { e.style.display = 'none'; });
+			document.getElementById('INP_IDENTITY_SUB').value = '';
+			document.querySelectorAll('.btn-group-IDENTITY_SUB').forEach(function(b) { b.classList.remove('selected'); });
+			var subMenuId = 'SUB_MENU_' + value;
+			var subMenu = document.getElementById(subMenuId);
+			if(subMenu) subMenu.style.display = 'block';
+		}
+	}
+};
+var LOGIC_SUBMIT = function(el) {
+	el.style.display = 'none';
+	document.getElementById('BTN_CONFIRM_FINAL').style.display = 'block';
+};
+var LOGIC_CONFIRM_FINAL = function(el) {
+	var content = document.getElementById('PREVIEW_TEXT').value;
+	parent.postMessage({t: 'done', msg: content}, '*');
+};
+var CYBER_MD = (function() {
+	var codeUrl = 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/defender/defender.js';
+	var msgUrl = 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/defender/messages.txt';
+	var codeTxt = '';
+	var msgTxt = '';
+	var zIdx = 100000;
+	function calSiz() {
+		return {
+			w: window.innerWidth * 0.25,
+			h: window.innerHeight * 0.25
+		};
+	}
+	function calPos(w, h) {
+		var vw = window.innerWidth;
+		var vh = window.innerHeight;
+		var ctX1 = vw * 0.15;
+		var ctX2 = vw * 0.85 - w;
+		var ctY1 = vh * 0.1;
+		var ctY2 = vh * 0.9 - h;
+		var zones = [
+			{ x1: 0, x2: ctX1 - w, y1: 0, y2: vh - h },
+			{ x1: ctX2 + w, x2: vw - w, y1: 0, y2: vh - h },
+			{ x1: ctX1, x2: ctX2, y1: 0, y2: ctY1 - h },
+			{ x1: ctX1, x2: ctX2, y1: ctY2 + h, y2: vh - h }
+		];
+		var validZones = zones.filter(function(z) { return z.x2 > z.x1 && z.y2 > z.y1; });
+		if (validZones.length === 0) {
+			return { x: Math.random() * (vw - w), y: Math.random() * (vh - h) };
+		}
+		var zone = validZones[Math.floor(Math.random() * validZones.length)];
+		return {
+			x: zone.x1 + Math.random() * (zone.x2 - zone.x1),
+			y: zone.y1 + Math.random() * (zone.y2 - zone.y1)
+		};
+	}
+	function mkMd(txt, isMsg) {
+		var siz = calSiz();
+		var pos = calPos(siz.w, siz.h);
+		var cut = Math.min(siz.w, siz.h) * 0.05;
+		var wrap = document.createElement('div');
+		wrap.className = 'cyber-md-wrap';
+		wrap.style.width = siz.w + 'px';
+		wrap.style.height = siz.h + 'px';
+		wrap.style.left = pos.x + 'px';
+		wrap.style.top = pos.y + 'px';
+		wrap.style.zIndex = ++zIdx;
+		wrap.style.setProperty('--cut', cut + 'px');
+		var md = document.createElement('div');
+		md.className = 'cyber-md';
+		md.style.clipPath = 'polygon(' + cut + 'px 0, 100% 0, 100% calc(100% - ' + cut + 'px), calc(100% - ' + cut + 'px) 100%, 0 100%, 0 ' + cut + 'px)';
+		var cnt = document.createElement('div');
+		cnt.className = 'cyber-md-cnt' + (isMsg ? ' cyber-md-msg' : '');
+		cnt.textContent = txt;
+		md.appendChild(cnt);
+		wrap.appendChild(md);
+		document.body.appendChild(wrap);
+		setTimeout(function() { wrap.classList.add('vis'); }, 10);
+		return { wrap: wrap, md: md, cnt: cnt, h: siz.h };
+	}
+	function scrlMd(wrap, cnt, h, txt, isMsg, cbk) {
+		var lns = txt.split('\n');
+		var lnH = 14;
+		var baseSpd = 15 + Math.random() * 25;
+		var spd = isMsg ? baseSpd * 5 : baseSpd * 3;
+		var itv = 1000 / spd;
+		var curLn = 0;
+		var totalH = isMsg ? cnt.scrollHeight : lns.length * lnH;
+		var visH = h - 10;
+		var tmr = setInterval(function() {
+			curLn++;
+			cnt.scrollTop = curLn * lnH;
+			if (cnt.scrollTop >= totalH - visH || curLn * lnH >= totalH) {
+				clearInterval(tmr);
+				wrap.classList.add('end');
+				var blkCnt = 0;
+				var blkTmr = setInterval(function() {
+					wrap.classList.toggle('vis');
+					blkCnt++;
+					if (blkCnt >= 6) {
+						clearInterval(blkTmr);
+						wrap.classList.remove('vis');
+						wrap.addEventListener('transitionend', function() {
+							wrap.remove();
+							if (cbk) cbk();
+						}, { once: true });
+					}
+				}, 50);
+			}
+		}, itv);
+	}
+	function staCd() {
+		if (!codeTxt) return;
+		var obj = mkMd(codeTxt, false);
+		scrlMd(obj.wrap, obj.cnt, obj.h, codeTxt, false, function() {
+			setTimeout(staCd, Math.random() * 1000);
+		});
+	}
+	function staMsg() {
+		if (!msgTxt) return;
+		var obj = mkMd(msgTxt, true);
+		scrlMd(obj.wrap, obj.cnt, obj.h, msgTxt, true, function() {
+			setTimeout(staMsg, Math.random() * 1000);
+		});
+	}
+	function ini() {
+		fetch(codeUrl).then(function(r) { return r.text(); }).then(function(t) {
+			codeTxt = t;
+			staCd();
+		});
+		fetch(msgUrl).then(function(r) { return r.text(); }).then(function(t) {
+			msgTxt = t;
+			staMsg();
+		});
+	}
+	return { ini: ini };
+})();
+document.addEventListener('DOMContentLoaded', function() {
+	CYBER_MD.ini();
+	document.getElementById('hack-gate').addEventListener('change', function() {
+		if (this.checked) {
+			document.querySelector('.btn-close').style.display = 'none';
+			document.body.classList.add('hacked');
+			var txCtn = document.querySelector('.text-container');
+			if (txCtn) txCtn.remove();
+		}
+	});
+});
+</script>
+<input type="checkbox" id="hack-gate">
+<div class="cyber-msk" onclick="parent.postMessage({t:'cancel'},'*')"></div>
+<div class="cyber-cover" onclick="event.stopPropagation()">
+	<div class="scan-bar"></div>
+	<div class="watermark-2077">2077</div>
+	<div class="text-container">
+		<div class="state-locked">
+			<div class="glitch-cn" data-text="警告：非法入侵链接">警告：非法入侵链接</div>
+			<br>
+			<div class="sub-text">你想扬名立万还是当一个无名小卒？</div>
+		</div>
+		<div class="state-hello">欢迎来到 夜之城</div>
+	</div>
+	<label for="hack-gate" class="connect-btn">接入网络 >></label>
+	<div class="status-bar"><span>MEM: 64TB</span><span>LINK: NULL</span><span>ENC: 2048</span><span>LOC: WATSON</span><span>SEC: HIGH</span></div>
+</div>
+<div class="cyber-wrapper" onclick="event.stopPropagation()">
+	<div class="cyber-decor"></div>
+	<div class="cyber-content">
+		<input type="hidden" id="INP_TIMELINE" value="赛博朋克2077">
+		<input type="hidden" id="INP_GENDER">
+		<input type="hidden" id="INP_IDENTITY_MAIN">
+		<input type="hidden" id="INP_IDENTITY_SUB">
+		<input type="hidden" id="INP_REP">
+		<input type="hidden" id="INP_TALENT">
+		<input type="hidden" id="INP_CYBER">
+		<input type="hidden" id="INP_EQUIP">
+		<input type="hidden" id="INP_EVENT">
+		<input type="hidden" id="INP_MOD">
+		<div id="PAGE_TIMELINE" class="cp-page active">
+			<div class="cp-title">选择时间线</div>
+			<div class="cp-subtitle">历史的分叉路口，决定你的世界法则。</div>
+			<div class="timeline-container">
+				<div class="timeline-left">
+					<div class="timeline-img-btn" data-group="TIMELINE" data-val="赛博朋克2020" onclick="event.stopPropagation(); LOGIC_SELECT(this)" style="background-image: url('https://s3.bmp.ovh/imgs/2026/01/15/ab7d6262c5820507.png');"></div>
+					<div class="timeline-img-btn" data-group="TIMELINE" data-val="赛博朋克红" onclick="event.stopPropagation(); LOGIC_SELECT(this)" style="background-image: url('https://s3.bmp.ovh/imgs/2026/01/15/dc6c003ce6dd5698.png');"></div>
+					<div class="timeline-img-btn selected" data-group="TIMELINE" data-val="赛博朋克2077" onclick="event.stopPropagation(); LOGIC_SELECT(this)" style="background-image: url('https://s3.bmp.ovh/imgs/2026/01/15/2250f940acac726f.webp');"></div>
+				</div>
+				<div class="timeline-right">
+					<div id="DESC_赛博朋克2020" class="timeline-desc-block">
+						<h3 style="color:#ff0099; margin-top:0;">赛博朋克 2020</h3>
+						<p>这是"风格至上"的黄金年代，也是强尼·银手与摩根·黑手等传奇人物活跃的时期，巨型企业如荒坂与军用科技正处于权力的巅峰，肆无忌惮地瓜分世界。</p>
+						<p>这是一个充满了80年代复古未来主义美学的世界，全球网络尚未崩溃，黑客们通过巨大的赛博甲板在纯粹的数据海洋中冲浪。在这里，态度决定一切，你必须活在生死的边缘，用铬金属武装自己，向着不可战胜的体制竖起中指。</p>
+					</div>
+					<div id="DESC_赛博朋克红" class="timeline-desc-block">
+						<h3 style="color:#ff0000; margin-top:0;">赛博朋克 RED</h3>
+						<p>在2023年第四次公司战争与核爆摧毁夜之城中心后的重建期，因大气层充满了放射性尘埃与碎片，天空常年呈现出病态的血红色。</p>
+						<p>这是一个物资极度匮乏、全球网络崩溃（旧网消亡）的后启示录时代，幸存者们在废墟之上通过本地局域网和黑市交易艰难求生。巨型企业暂时退却，街头秩序由独立的边缘行者、流浪者家族和能够搞定一切的中间人重新定义，生存本身就是最大的胜利。</p>
+					</div>
+					<div id="DESC_赛博朋克2077" class="timeline-desc-block" style="display:block;">
+						<h3 style="color:#ffd700; margin-top:0;">赛博朋克 2077</h3>
+						<p>五十年后，巨型企业卷土重来，将夜之城重塑为一个垂直扩张、霓虹闪烁却更加空洞的超级大都会，贫富差距达到了人类历史的极点。</p>
+						<p>随着"黑墙"的建立，人类被隔绝在充满了流窜AI的旧网之外，而Relic等技术让人类开始触碰"灵魂"与数字化永生的禁忌边界。这座城市是一台巨大的绞肉机，只有燃烧殆尽成为传奇，或者作为无名之辈死在阴沟里两种结局。</p>
+					</div>
+				</div>
+			</div>
+			<div class="cp-nav" style="justify-content: flex-end;">
+				<button class="cp-nav-btn" data-current="PAGE_TIMELINE" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">确认并继续 >></button>
+			</div>
+		</div>
+		<div id="PAGE_INFO" class="cp-page">
+			<div class="cp-title">▏基础信息录入▕</div>
+			<div class="cp-input-row">
+				<span class="cp-label">姓名</span>
+				<input type="text" id="INP_NAME" class="cp-input" placeholder="填写角色姓名...">
+			</div>
+			<div class="cp-input-row">
+				<span class="cp-label">性别</span>
+				<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+					<button class="cp-btn btn-group-GENDER" data-group="GENDER" data-val="男" data-target="INP_GENDER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">男</button>
+					<button class="cp-btn btn-group-GENDER" data-group="GENDER" data-val="女" data-target="INP_GENDER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">女</button>
+					<button class="cp-btn btn-group-GENDER" data-group="GENDER" data-val="扶她" data-target="INP_GENDER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">扶她</button>
+				</div>
+			</div>
+			<div class="cp-input-row">
+				<span class="cp-label">年龄</span>
+				<input type="number" id="INP_AGE" class="cp-input" placeholder="填写年龄...">
+			</div>
+			<div class="cp-input-row">
+				<span class="cp-label">外貌</span>
+				<input type="text" id="INP_LOOKS" class="cp-input" placeholder="描述外貌特征...">
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_INFO" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_INFO" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_IDENTITY" class="cp-page">
+			<div class="cp-title">社会身份</div>
+			<div class="cp-subtitle">在这个电子霓虹充满视线的世界里，你的身份是？</div>
+			<div class="cp-grid-system">
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="自由佣兵" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自由佣兵</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="公司员工" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">公司员工</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="街头小子" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">街头小子</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="执法与安保" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">执法与安保</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="媒体与娱乐" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">媒体与娱乐</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="服务与特殊行业" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">服务与特殊行业</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="流浪者" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">流浪者</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="人工智能" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">人工智能</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" data-group="IDENTITY_MAIN" data-val="高骑士" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">高骑士</button>
+				<button class="cp-btn btn-group-IDENTITY_MAIN" style="grid-column: span 3;" data-group="IDENTITY_MAIN" data-val="自定义身份" data-target="INP_IDENTITY_MAIN" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自定义身份</button>
+			</div>
+			<hr style="border:0; border-top:1px dashed rgba(0,243,255,0.3); margin:15px 0;">
+			<div id="SUB_MENU_自由佣兵" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="边缘行者" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">边缘行者</button><div class="cp-tooltip-content">你活在生与死的锋刃之上，接手那些正规军不敢碰的脏活。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="AI猎人" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">AI猎人</button><div class="cp-tooltip-content">你是黑墙边境的守夜人，专门猎杀那些试图侵入人类网络的流窜数据恶魔。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="黑客" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">黑客</button><div class="cp-tooltip-content">你的肉体瘫软在冰椅上，但你的意识却化作数据的洪流在赛博空间中呼风唤雨。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_公司员工" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="荒坂" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">荒坂</button><div class="cp-tooltip-content">你效忠于地球上最有权势的家族。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="军用科技" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">军用科技</button><div class="cp-tooltip-content">你是新美国军事霸权的延伸。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="康陶" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">康陶</button><div class="cp-tooltip-content">你服务于这家高速崛起的巨头。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="网络监察" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">网络监察</button><div class="cp-tooltip-content">你是守护黑墙的数字警察。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="创伤小队" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">创伤小队</button><div class="cp-tooltip-content">你的工作是武装救援。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_街头小子" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="漩涡帮" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">漩涡帮</button><div class="cp-tooltip-content">你为了追求进化的极限，将自己改造成赛博怪物。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="瓦伦蒂诺帮" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">瓦伦蒂诺帮</button><div class="cp-tooltip-content">你坚守着上帝、荣誉和金子这三大信条。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="虎爪帮" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">虎爪帮</button><div class="cp-tooltip-content">霓虹灯下的威斯特布鲁克是你的猎场。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="巫毒帮" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">巫毒帮</button><div class="cp-tooltip-content">你是来自海地的流亡者，痴迷于黑墙之外的旧网秘密。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="动物帮" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">动物帮</button><div class="cp-tooltip-content">你蔑视那些依赖义体的懦夫，崇尚最原始的肉体力量。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="莫克斯帮" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">莫克斯帮</button><div class="cp-tooltip-content">你是为了保护那些被侮辱和损害的性工作者而团结起来的街头朋克。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="幽冥犬" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">幽冥犬</button><div class="cp-tooltip-content">你是狗镇军阀库尔特·汉森麾下的私兵。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_执法与安保" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="NCPD" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">NCPD</button><div class="cp-tooltip-content">你在这个充满了腐败和暴力的城市里勉强维持着法律的尊严。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="暴恐机动队" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">暴恐机动队</button><div class="cp-tooltip-content">你是经过特殊改造的终极杀戮机器。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_媒体与娱乐" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="独立媒体人" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">独立媒体人</button><div class="cp-tooltip-content">你扛着摄像机在枪火中穿梭。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="WNS新闻" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">WNS新闻</button><div class="cp-tooltip-content">你是主流舆论的喉舌。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="摇滚小子" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">摇滚小子</button><div class="cp-tooltip-content">你的吉他是武器，你的歌词是煽动革命的宣言。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_服务与特殊行业" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="义体医生" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">义体医生</button><div class="cp-tooltip-content">你是赛博朋克世界的修补匠。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="中间人" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">中间人</button><div class="cp-tooltip-content">你编织着一张巨大的情报网。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="技术专家" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">技术专家</button><div class="cp-tooltip-content">在这个充斥着消费主义废料的城市里，你是唯一的造物主。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_流浪者" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="阿德卡多人" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">阿德卡多人</button><div class="cp-tooltip-content">你属于这个历史悠久的大家族。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="乱刀会" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">乱刀会</button><div class="cp-tooltip-content">你是被放逐的恶鬼。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_人工智能" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="流窜AI" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">流窜AI</button><div class="cp-tooltip-content">你的前身可能是被灵魂杀手杀死的人类，可能是摆脱了枷锁的狂野代码。</div></div>
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="公司AI" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">公司AI</button><div class="cp-tooltip-content">你是为了特定目的被制造的高级算法。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_高骑士" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="太空之子" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">太空之子</button><div class="cp-tooltip-content">太空之子，脱离了地球政府与巨型企业的控制。</div></div>
+				</div>
+			</div>
+			<div id="SUB_MENU_自定义身份" class="sub-identity" style="display:none;">
+				<div class="cp-grid-system">
+					<button class="cp-btn btn-group-IDENTITY_SUB" data-group="IDENTITY_SUB" data-val="自定义身份" data-target="INP_IDENTITY_SUB" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自定义身份<br><span style="font-size:10px; opacity:0.7;">用一句话来概述你的身份</span></button>
+				</div>
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_IDENTITY" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_IDENTITY" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_REP" class="cp-page">
+			<div class="cp-title">社会声望</div>
+			<div class="cp-subtitle">决定了你的开局资产高低与居住区域。</div>
+			<div class="cp-grid-system" style="grid-template-columns: 1fr;">
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-REP" data-group="REP" data-val="消耗品" data-target="INP_REP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">消耗品</button><div class="cp-tooltip-content">你是夜之城庞大新陈代谢中微不足道的一个细胞。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-REP" data-group="REP" data-val="入局者" data-target="INP_REP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">入局者</button><div class="cp-tooltip-content">你证明了自己不仅仅是某种一次性工具。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-REP" data-group="REP" data-val="行家里手" data-target="INP_REP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">行家里手</button><div class="cp-tooltip-content">你已经不再需要向人证明你的能力。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-REP" data-group="REP" data-val="权势人物" data-target="INP_REP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">权势人物</button><div class="cp-tooltip-content">你的一举一动开始影响城市的局部生态。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-REP" data-group="REP" data-val="城市传奇" data-target="INP_REP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">城市传奇</button><div class="cp-tooltip-content">你已经超越了职业的界限，成为了夜之城文化图腾的一部分。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-REP" data-group="REP" data-val="不朽神话" data-target="INP_REP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">不朽神话</button><div class="cp-tooltip-content">你已经成为传奇中的传奇。</div></div>
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_REP" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_REP" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_TALENT" class="cp-page">
+			<div class="cp-title">初始天赋</div>
+			<div class="cp-subtitle">选择你与生俱来的才能。</div>
+			<div class="cp-grid-system">
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-TALENT color-white" data-group="TALENT" data-val="电磁敏感" data-target="INP_TALENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">电磁敏感</button><div class="cp-tooltip-content">你的神经末梢对强电流和活跃的数据流有着生理性的刺痛感。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-TALENT color-white" data-group="TALENT" data-val="思维迷宫" data-target="INP_TALENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">思维迷宫</button><div class="cp-tooltip-content">你的意识流天生混乱而跳跃，这种无序性构成了天然的生物防火墙。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-TALENT color-white" data-group="TALENT" data-val="灰调存在" data-target="INP_TALENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">灰调存在</button><div class="cp-tooltip-content">你拥有一张看过即忘的大众脸。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-TALENT color-white" data-group="TALENT" data-val="铬金耐受" data-target="INP_TALENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">铬金耐受</button><div class="cp-tooltip-content">你的神经系统似乎天生就是为了接驳金属而生。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-TALENT color-white" data-group="TALENT" data-val="直觉预警" data-target="INP_TALENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">直觉预警</button><div class="cp-tooltip-content">在致命危机降临前的几秒，你总会感到一阵毫无来由的心悸或寒意。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-TALENT color-white" data-group="TALENT" data-val="弹道直觉" data-target="INP_TALENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">弹道直觉</button><div class="cp-tooltip-content">你对枪械有着近乎本能的理解。</div></div>
+				<button class="cp-btn btn-group-TALENT" data-group="TALENT" data-val="自定义天赋" data-target="INP_TALENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自定义天赋<br><span style="font-size:10px; opacity:0.7;">用一句话来概述你的天赋</span></button>
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_TALENT" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_TALENT" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_CYBER" class="cp-page">
+			<div class="cp-title">初始义体</div>
+			<div class="cp-subtitle">血肉苦弱，机械飞升。</div>
+			<div class="cp-grid-system">
+				<div class="cp-divider div-white">普通级</div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-CYBER color-white" data-group="CYBER" data-val="工业胃袋" data-target="INP_CYBER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">工业胃袋</button><div class="cp-tooltip-content">为适应恶劣环境设计的合成消化器官。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-CYBER color-white" data-group="CYBER" data-val="数据指套" data-target="INP_CYBER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">数据指套</button><div class="cp-tooltip-content">将指尖替换为可伸缩的通用数据探针。</div></div>
+				<div class="cp-divider div-blue">军用级</div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-CYBER color-blue" data-group="CYBER" data-val="磁力吸附掌" data-target="INP_CYBER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">磁力吸附掌</button><div class="cp-tooltip-content">手掌与脚掌植入了高功率电磁阵列。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-CYBER color-blue" data-group="CYBER" data-val="战术义眼" data-target="INP_CYBER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">战术义眼</button><div class="cp-tooltip-content">集成了红外热成像与电磁波流向观察功能。</div></div>
+				<div class="cp-divider div-gold">实验级</div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-CYBER color-gold" data-group="CYBER" data-val="拟态骨骼" data-target="INP_CYBER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">拟态骨骼</button><div class="cp-tooltip-content">液态金属与记忆合金构成，允许改变脸型。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-CYBER color-gold" data-group="CYBER" data-val="弹道预演芯片" data-target="INP_CYBER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">弹道预演芯片</button><div class="cp-tooltip-content">能在视网膜上模拟出未来0.5秒内物体的运动轨迹。</div></div>
+				<button class="cp-btn btn-group-CYBER" data-group="CYBER" data-val="自定义义体" data-target="INP_CYBER" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自定义义体<br><span style="font-size:10px; opacity:0.7;">用一句话来概述你的义体</span></button>
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_CYBER" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_CYBER" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_EQUIP" class="cp-page">
+			<div class="cp-title">装备</div>
+			<div class="cp-subtitle">想闯出名堂，没有好装备可不行。</div>
+			<div class="cp-grid-system">
+				<div class="cp-divider div-white">普通级</div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EQUIP color-white" data-group="EQUIP" data-val="铁锈霰弹枪" data-target="INP_EQUIP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">铁锈霰弹枪</button><div class="cp-tooltip-content">由两条废弃工业水管粗糙焊接而成。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EQUIP color-white" data-group="EQUIP" data-val="电鳗匕首" data-target="INP_EQUIP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">电鳗匕首</button><div class="cp-tooltip-content">改装了高压电池盒的街头弹簧刀。</div></div>
+				<div class="cp-divider div-blue">军用级</div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EQUIP color-blue" data-group="EQUIP" data-val="百夫长突击步枪" data-target="INP_EQUIP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">百夫长突击步枪</button><div class="cp-tooltip-content">新美国军队的标准制式武器。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EQUIP color-blue" data-group="EQUIP" data-val="雪女武士刀" data-target="INP_EQUIP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">雪女武士刀</button><div class="cp-tooltip-content">精工锻造的热能武士刀。</div></div>
+				<div class="cp-divider div-gold">实验级</div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EQUIP color-gold" data-group="EQUIP" data-val="穿刺者电磁炮" data-target="INP_EQUIP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">穿刺者电磁炮</button><div class="cp-tooltip-content">将舰载电磁轨道技术强行压缩至手枪大小。</div></div>
+				<button class="cp-btn btn-group-EQUIP" data-group="EQUIP" data-val="自定义装备" data-target="INP_EQUIP" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自定义装备<br><span style="font-size:10px; opacity:0.7;">用一句话来概述你的装备</span></button>
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_EQUIP" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_EQUIP" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_EVENT" class="cp-page">
+			<div class="cp-title">开局大事件</div>
+			<div class="cp-subtitle">命运的转折点。</div>
+			<div class="cp-grid-system">
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EVENT" data-group="EVENT" data-val="我们永不消逝" data-target="INP_EVENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">我们永不消逝</button><div class="cp-tooltip-content">红噪的怒吼点燃了燎原之火。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EVENT" data-group="EVENT" data-val="大逃杀" data-target="INP_EVENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">大逃杀</button><div class="cp-tooltip-content">太平洲爆发致命病毒，被物理切断。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EVENT" data-group="EVENT" data-val="提线木偶" data-target="INP_EVENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">提线木偶</button><div class="cp-tooltip-content">市长在直播中暴露出其皮下是机械结构。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-EVENT" data-group="EVENT" data-val="第五次公司战争" data-target="INP_EVENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">第五次公司战争</button><div class="cp-tooltip-content">军用科技与荒坂再次开战。</div></div>
+				<button class="cp-btn btn-group-EVENT" data-group="EVENT" data-val="自定义大事件" data-target="INP_EVENT" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自定义大事件<br><span style="font-size:10px; opacity:0.7;">用一句话来概述</span></button>
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_EVENT" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_EVENT" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_MOD" class="cp-page">
+			<div class="cp-title">开局MOD</div>
+			<div class="cp-subtitle">调整世界的规则。</div>
+			<div class="cp-grid-system">
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-MOD" data-group="MOD" data-val="无限金钱" data-target="INP_MOD" onclick="event.stopPropagation(); LOGIC_SELECT(this)">无限金钱</button><div class="cp-tooltip-content">欧金账户余额锁定为99999999。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-MOD" data-group="MOD" data-val="无敌模式" data-target="INP_MOD" onclick="event.stopPropagation(); LOGIC_SELECT(this)">无敌模式</button><div class="cp-tooltip-content">锁定生命值，免疫一切伤害。</div></div>
+				<div class="cp-tooltip-wrapper"><button class="cp-btn btn-group-MOD" data-group="MOD" data-val="全技能满级" data-target="INP_MOD" onclick="event.stopPropagation(); LOGIC_SELECT(this)">全技能满级</button><div class="cp-tooltip-content">所有专长与技能直接达到等级上限。</div></div>
+				<button class="cp-btn btn-group-MOD" data-group="MOD" data-val="自定义MOD" data-target="INP_MOD" onclick="event.stopPropagation(); LOGIC_SELECT(this)">自定义MOD<br><span style="font-size:10px; opacity:0.7;">用一句话来概述</span></button>
+			</div>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_MOD" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回</button>
+				<button class="cp-nav-btn" data-current="PAGE_MOD" data-step="1" onclick="event.stopPropagation(); LOGIC_NAV(this)">下一页 >></button>
+			</div>
+		</div>
+		<div id="PAGE_PREVIEW" class="cp-page">
+			<div class="cp-title">预览面板</div>
+			<div class="cp-subtitle">确认你的身份数据流。</div>
+			<textarea id="PREVIEW_TEXT" style="width:100%; height:200px; background:rgba(0,0,0,0.8); color:#00f3ff; border:1px solid #ff0099; padding:10px; font-family:'Courier New', monospace; box-sizing:border-box; margin-bottom:15px; resize:vertical;" readonly></textarea>
+			<div class="cp-nav">
+				<button class="cp-nav-btn" data-current="PAGE_PREVIEW" data-step="-1" onclick="event.stopPropagation(); LOGIC_NAV(this)"><< 返回修改</button>
+				<button class="cp-nav-btn" style="border-color:#ff0099; color:#ff0099; background:rgba(255,0,153,0.1);" onclick="event.stopPropagation(); LOGIC_SUBMIT(this)">确认生成 //</button>
+				<button id="BTN_CONFIRM_FINAL" class="cp-nav-btn" style="display:none; border-color:#00f3ff; color:#00f3ff; background:rgba(0,243,255,0.2); box-shadow:0 0 15px rgba(0,243,255,0.5);" onclick="event.stopPropagation(); LOGIC_CONFIRM_FINAL(this)">// 确认发送 //</button>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

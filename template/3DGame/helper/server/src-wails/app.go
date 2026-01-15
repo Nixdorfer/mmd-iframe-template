@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
@@ -16,7 +17,75 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"unsafe"
 )
+
+var (
+	kernel32                     = syscall.NewLazyDLL("kernel32.dll")
+	procCreateJobObject          = kernel32.NewProc("CreateJobObjectW")
+	procSetInformationJobObject  = kernel32.NewProc("SetInformationJobObject")
+	procAssignProcessToJobObject = kernel32.NewProc("AssignProcessToJobObject")
+)
+
+const (
+	jobObjectExtendedLimitInfoClass = 9
+	jobObjectLimitKillOnJobClose    = 0x2000
+	processAllAccess                = 0x1F0FFF
+)
+
+type jobObjectBasicLimitInformation struct {
+	PerProcessUserTimeLimit int64
+	PerJobUserTimeLimit     int64
+	LimitFlags              uint32
+	MinimumWorkingSetSize   uintptr
+	MaximumWorkingSetSize   uintptr
+	ActiveProcessLimit      uint32
+	Affinity                uintptr
+	PriorityClass           uint32
+	SchedulingClass         uint32
+}
+
+type ioCounters struct {
+	ReadOperationCount  uint64
+	WriteOperationCount uint64
+	OtherOperationCount uint64
+	ReadTransferCount   uint64
+	WriteTransferCount  uint64
+	OtherTransferCount  uint64
+}
+
+type jobObjectExtendedLimitInformation struct {
+	BasicLimitInformation jobObjectBasicLimitInformation
+	IoInfo                ioCounters
+	ProcessMemoryLimit    uintptr
+	JobMemoryLimit        uintptr
+	PeakProcessMemoryUsed uintptr
+	PeakJobMemoryUsed     uintptr
+}
+
+func createJobObject() (syscall.Handle, error) {
+	handle, _, err := procCreateJobObject.Call(0, 0)
+	if handle == 0 {
+		return 0, err
+	}
+	info := jobObjectExtendedLimitInformation{}
+	info.BasicLimitInformation.LimitFlags = jobObjectLimitKillOnJobClose
+	_, _, err = procSetInformationJobObject.Call(
+		handle,
+		jobObjectExtendedLimitInfoClass,
+		uintptr(unsafe.Pointer(&info)),
+		unsafe.Sizeof(info),
+	)
+	return syscall.Handle(handle), nil
+}
+
+func assignProcessToJob(job syscall.Handle, process syscall.Handle) error {
+	ret, _, err := procAssignProcessToJobObject.Call(uintptr(job), uintptr(process))
+	if ret == 0 {
+		return err
+	}
+	return nil
+}
 
 type ModelStatus struct {
 	Name   string `json:"name"`
@@ -30,6 +99,18 @@ type SystemStats struct {
 	MemoryUsage float64 `json:"memoryUsage"`
 	GpuUsage    float64 `json:"gpuUsage"`
 	GpuMemory   float64 `json:"gpuMemory"`
+}
+
+type ModelStats struct {
+	Name   string  `json:"name"`
+	Cpu    float64 `json:"cpu"`
+	Memory float64 `json:"memory"`
+	Gpu    float64 `json:"gpu"`
+}
+
+type StatsHistory struct {
+	Time   int64        `json:"time"`
+	Models []ModelStats `json:"models"`
 }
 
 type ServerStatus struct {
@@ -47,13 +128,16 @@ type LogEntry struct {
 }
 
 type App struct {
-	ctx        context.Context
-	helperDir  string
-	processes  map[string]*exec.Cmd
-	installing map[string]bool
-	logs       []LogEntry
-	mu         sync.Mutex
-	logFile    *os.File
+	ctx          context.Context
+	helperDir    string
+	processes    map[string]*exec.Cmd
+	installing   map[string]bool
+	logs         []LogEntry
+	mu           sync.Mutex
+	logFile      *os.File
+	statsHistory []StatsHistory
+	lastCpuTimes map[int]uint64
+	jobHandle    syscall.Handle
 }
 
 func NewApp() *App {
@@ -72,12 +156,16 @@ func NewApp() *App {
 	}
 	logPath := filepath.Join(helperDir, "console.log")
 	logFile, _ := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	jobHandle, _ := createJobObject()
 	return &App{
-		helperDir:  helperDir,
-		processes:  make(map[string]*exec.Cmd),
-		installing: make(map[string]bool),
-		logs:       make([]LogEntry, 0),
-		logFile:    logFile,
+		helperDir:    helperDir,
+		processes:    make(map[string]*exec.Cmd),
+		installing:   make(map[string]bool),
+		logs:         make([]LogEntry, 0),
+		logFile:      logFile,
+		statsHistory: make([]StatsHistory, 0),
+		lastCpuTimes: make(map[int]uint64),
+		jobHandle:    jobHandle,
 	}
 }
 
@@ -86,6 +174,7 @@ func (a *App) startup(ctx context.Context) {
 	a.addLog("system", "服务器已启动")
 	a.cleanupResidualProcesses()
 	go a.startHttpServer()
+	go a.collectStatsLoop()
 }
 
 func (a *App) cleanupResidualProcesses() {
@@ -127,6 +216,10 @@ func (a *App) startHttpServer() {
 		w.Header().Set("Content-Type", "application/json")
 		model := r.URL.Query().Get("model")
 		json.NewEncoder(w).Encode(a.GetLogs(model))
+	})
+	mux.HandleFunc("/api/stats-history", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(a.GetStatsHistory())
 	})
 	mux.HandleFunc("/api/deploy", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -369,6 +462,106 @@ func (a *App) getSystemStats() SystemStats {
 	}
 }
 
+func (a *App) collectStatsLoop() {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-a.ctx.Done():
+			return
+		case <-ticker.C:
+			a.collectModelStats()
+		}
+	}
+}
+
+func (a *App) collectModelStats() {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	var modelStats []ModelStats
+	for name, cmd := range a.processes {
+		if cmd.Process == nil {
+			continue
+		}
+		pid := cmd.Process.Pid
+		cpu, mem := a.getProcessStats(pid)
+		gpu := a.getProcessGpuUsage(pid)
+		modelStats = append(modelStats, ModelStats{
+			Name:   name,
+			Cpu:    cpu,
+			Memory: mem,
+			Gpu:    gpu,
+		})
+	}
+	entry := StatsHistory{
+		Time:   time.Now().Unix(),
+		Models: modelStats,
+	}
+	a.statsHistory = append(a.statsHistory, entry)
+	maxEntries := 120
+	if len(a.statsHistory) > maxEntries {
+		a.statsHistory = a.statsHistory[len(a.statsHistory)-maxEntries:]
+	}
+}
+
+func (a *App) getProcessStats(pid int) (float64, float64) {
+	cmd := exec.Command("wmic", "process", "where", fmt.Sprintf("ProcessId=%d", pid), "get", "WorkingSetSize,PercentProcessorTime", "/format:csv")
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	output, err := cmd.Output()
+	if err != nil {
+		return 0, 0
+	}
+	lines := strings.Split(string(output), "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "Node") {
+			continue
+		}
+		parts := strings.Split(line, ",")
+		if len(parts) >= 3 {
+			var cpu, mem float64
+			fmt.Sscanf(parts[1], "%f", &cpu)
+			var memBytes int64
+			fmt.Sscanf(parts[2], "%d", &memBytes)
+			mem = float64(memBytes) / 1024 / 1024 / 1024 * 100
+			return cpu, mem
+		}
+	}
+	return 0, 0
+}
+
+func (a *App) getProcessGpuUsage(pid int) float64 {
+	cmd := exec.Command("nvidia-smi", "--query-compute-apps=pid,used_memory", "--format=csv,noheader,nounits")
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	output, err := cmd.Output()
+	if err != nil {
+		return 0
+	}
+	lines := strings.Split(string(output), "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		parts := strings.Split(line, ",")
+		if len(parts) >= 2 {
+			var procPid int
+			fmt.Sscanf(strings.TrimSpace(parts[0]), "%d", &procPid)
+			if procPid == pid {
+				var usedMem float64
+				fmt.Sscanf(strings.TrimSpace(parts[1]), "%f", &usedMem)
+				return usedMem / 24576 * 100
+			}
+		}
+	}
+	return 0
+}
+
+func (a *App) GetStatsHistory() []StatsHistory {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	result := make([]StatsHistory, len(a.statsHistory))
+	copy(result, a.statsHistory)
+	return result
+}
+
 func (a *App) StartModel(name string) error {
 	a.mu.Lock()
 	if _, ok := a.processes[name]; ok {
@@ -396,6 +589,13 @@ func (a *App) StartModel(name string) error {
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {
 		return err
+	}
+	if a.jobHandle != 0 && cmd.Process != nil {
+		handle, _ := syscall.OpenProcess(processAllAccess, false, uint32(cmd.Process.Pid))
+		if handle != 0 {
+			assignProcessToJob(a.jobHandle, handle)
+			syscall.CloseHandle(handle)
+		}
 	}
 	a.mu.Lock()
 	a.processes[name] = cmd
@@ -549,6 +749,7 @@ func (a *App) runFullInstall() {
 		a.addLog("system", fmt.Sprintf("[%d/7] 安装 %s...", i+2, m.name))
 		a.installModel(m.name, m.repo, py311, m.reqs, m.extra, m.pytorch)
 	}
+	a.downloadComfyUIModels()
 	outputDir := filepath.Join(a.helperDir, "output")
 	for _, d := range []string{"images", "models", "audio", "voice"} {
 		os.MkdirAll(filepath.Join(outputDir, d), 0755)
@@ -603,6 +804,61 @@ func (a *App) installModel(name, repo, py311 string, reqs, extra []string, pytor
 		a.runCmd(name, modelDir, pipExe, "install", pkg, "-q")
 	}
 	a.addLog(name, "安装完成")
+}
+
+func (a *App) downloadComfyUIModels() {
+	checkpointDir := filepath.Join(a.helperDir, "comfyui", "models", "checkpoints")
+	if _, err := os.Stat(checkpointDir); os.IsNotExist(err) {
+		a.addLog("comfyui", "ComfyUI未安装，跳过模型下载")
+		return
+	}
+	models := []struct {
+		url      string
+		filename string
+	}{
+		{"https://civitai-delivery-worker-prod.5ac0637cfd0766c97916cefa3764fbdf.r2.cloudflarestorage.com/model/4382971/ivfurryfNoobaiV028.KcaL.safetensors?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22indigoVoidFurryFusedXL_noobaiV28.safetensors%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=e01358d793ad6966166af8b3064953ad/20260114/us-east-1/s3/aws4_request&X-Amz-Date=20260114T172536Z&X-Amz-SignedHeaders=host&X-Amz-Signature=5ccb0eaed92f6fb646ce657b75f2e03e57ade40280a5abce1f24c24e339f74c5", "二次元-宝可梦Furry特化.safetensors"},
+		{"https://civitai-delivery-worker-prod.5ac0637cfd0766c97916cefa3764fbdf.r2.cloudflarestorage.com/model/81744/epicrealismxlPureFix.Dm66.safetensors?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22epicrealismXL_pureFix.safetensors%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=e01358d793ad6966166af8b3064953ad/20260114/us-east-1/s3/aws4_request&X-Amz-Date=20260114T172514Z&X-Amz-SignedHeaders=host&X-Amz-Signature=fc9c7e1bae5d578d55cd07e12a032d146cacf859ceffca090c7a50109b3dc011", "拟真.safetensors"},
+		{"https://civitai-delivery-worker-prod.5ac0637cfd0766c97916cefa3764fbdf.r2.cloudflarestorage.com/model/2515131/novaanimeilv15.ZVEe.safetensors?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22novaAnimeXL_ilV150.safetensors%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=e01358d793ad6966166af8b3064953ad/20260114/us-east-1/s3/aws4_request&X-Amz-Date=20260114T172505Z&X-Amz-SignedHeaders=host&X-Amz-Signature=77b365a13b16499b54bf877d01f72f00ae25c79bcb8395f1e4ff5dea23bff632", "二次元.safetensors"},
+		{"https://civitai-delivery-worker-prod.5ac0637cfd0766c97916cefa3764fbdf.r2.cloudflarestorage.com/model/894473/pdv3v366.xyxs.safetensors?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22perfectdeliberate_v60.safetensors%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=e01358d793ad6966166af8b3064953ad/20260114/us-east-1/s3/aws4_request&X-Amz-Date=20260114T172500Z&X-Amz-SignedHeaders=host&X-Amz-Signature=d1de156cb01e7a299b70cd21905e0a8bc1997a1a878f813d3a700341169d3414", "2.5D.safetensors"},
+		{"https://civitai-delivery-worker-prod.5ac0637cfd0766c97916cefa3764fbdf.r2.cloudflarestorage.com/model/2040954/movable20figure20model.ypQz.safetensors?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22PVCStyleModelMovable_ckxlEPS10.safetensors%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=e01358d793ad6966166af8b3064953ad/20260114/us-east-1/s3/aws4_request&X-Amz-Date=20260114T172439Z&X-Amz-SignedHeaders=host&X-Amz-Signature=30b84c218e868b44d615fb18f2bffc66437039a5c02efc0663f0b78039720494", "二次元-手办特化.safetensors"},
+	}
+	a.addLog("comfyui", "下载预设模型...")
+	for _, m := range models {
+		destPath := filepath.Join(checkpointDir, m.filename)
+		if _, err := os.Stat(destPath); err == nil {
+			a.addLog("comfyui", fmt.Sprintf("模型已存在: %s", m.filename))
+			continue
+		}
+		a.addLog("comfyui", fmt.Sprintf("下载: %s", m.filename))
+		if err := a.downloadFile(m.url, destPath); err != nil {
+			a.addLog("comfyui", fmt.Sprintf("下载失败: %s - %v", m.filename, err))
+		} else {
+			a.addLog("comfyui", fmt.Sprintf("下载完成: %s", m.filename))
+		}
+	}
+}
+
+func (a *App) downloadFile(url, destPath string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("HTTP %d", resp.StatusCode)
+	}
+	tmpPath := destPath + ".tmp"
+	out, err := os.Create(tmpPath)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(out, resp.Body)
+	out.Close()
+	if err != nil {
+		os.Remove(tmpPath)
+		return err
+	}
+	return os.Rename(tmpPath, destPath)
 }
 
 func (a *App) ensureModelRunning(name string, port int) error {

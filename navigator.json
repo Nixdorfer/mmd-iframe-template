@@ -9,12 +9,21 @@
       "editor": "template/modal/v2/library/editor.html"
     },
     "3DGame": {
-      "version": "3.4.1",
+      "version": "3.4.3",
       "versionDesc": "nightly",
       "name": "3D游戏引擎",
       "desc": "基于WebGLv2的3D游戏引擎",
       "index": "template/3DGame",
       "editor": "template/3DGame/v3/editor.html"
+    }
+  },
+  "instances": {
+    "ICyberPunk": {
+      "version": "1.0.19",
+      "versionDesc": "release",
+      "name": "CyberPunk-MODAL实例化",
+      "desc": "@楚冥",
+      "index": "instance/cyberpunk"
     }
   }
 }

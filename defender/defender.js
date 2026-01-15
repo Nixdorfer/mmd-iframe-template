@@ -38,7 +38,7 @@
         setTimeout(function() {
             n.style.opacity = '0';
             n.style.transform = 'translateX(20px)';
-            setTimeout(function() { n.remove(); }, 300);
+            setTimeout(function() { if (n.parentNode) n.parentNode.removeChild(n); }, 300);
         }, 5000);
     }
     function a(t, d) {
@@ -145,11 +145,8 @@
     }
     window.addEventListener('error', function(e) {
         if (e.filename && /404|not found/i.test(e.message)) return;
+        if (e.target && (e.target.src || e.target.href)) return;
         if (e.message) showErr(e.message, e.filename ? e.filename + ':' + e.lineno : '');
-        else if (e.target && e.target.src) {
-            var src = e.target.src || e.target.href || '';
-            if (src && !/404/.test(src)) showErr('资源加载失败', src);
-        }
     }, true);
     window.addEventListener('unhandledrejection', function(e) {
         var msg = e.reason ? (e.reason.message || String(e.reason)) : '未处理的Promise错误';
@@ -247,7 +244,7 @@
             t.style.cssText = 'position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%) scale(1)!important;background:#166d3b!important;color:#fff!important;padding:12px 24px!important;border-radius:12px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:16px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0!important;transition:all 0.3s ease!important';
             document.body.appendChild(t);
             setTimeout(function() { t.style.opacity = '1'; }, 10);
-            setTimeout(function() { t.style.opacity = '0'; t.style.transform = 'translate(-50%,-50%) scale(0.5)'; setTimeout(function() { t.remove(); }, 300); }, 2000);
+            setTimeout(function() { t.style.opacity = '0'; t.style.transform = 'translate(-50%,-50%) scale(0.5)'; setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 300); }, 2000);
         };
         window.__R__ = function() {
             var txt = pk('repeat');
@@ -257,7 +254,7 @@
             t.style.cssText = 'position:fixed!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%) scale(1)!important;background:#166d3b!important;color:#fff!important;padding:12px 24px!important;border-radius:12px!important;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif!important;font-size:16px!important;font-weight:600!important;z-index:2147483647!important;box-shadow:0 4px 12px rgba(22,109,59,0.4)!important;pointer-events:none!important;user-select:none!important;opacity:0!important;transition:all 0.3s ease!important';
             document.body.appendChild(t);
             setTimeout(function() { t.style.opacity = '1'; }, 10);
-            setTimeout(function() { t.style.opacity = '0'; t.style.transform = 'translate(-50%,-50%) scale(0.5)'; setTimeout(function() { t.remove(); }, 300); }, 2000);
+            setTimeout(function() { t.style.opacity = '0'; t.style.transform = 'translate(-50%,-50%) scale(0.5)'; setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 300); }, 2000);
         };
         var al = false;
         window.__A__ = function() {
