@@ -280,5 +280,5 @@
         if (document.body) { T(); } else { var w = setInterval(function() { if (document.body) { clearInterval(w); T(); } }, 10); }
     }
     B();
-    console.log('[Defender] 防护已启动');
+    console.log('[Defender] INJECTION PREVENTION INITIALIZED.');
 })();
