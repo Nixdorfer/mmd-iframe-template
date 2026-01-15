@@ -25,6 +25,8 @@
 			f.style.width = "0";
 			f.style.height = "0";
 		}, 400);
+		var ms = document.querySelector(".msg-option-scope");
+		if (ms) ms.style.cssText = "background-color:rgba(0,0,0,0.7);display:none";
 	}
 	function sU(h) {
 		var rId = new URLSearchParams(location.search).get("roleId") || "";

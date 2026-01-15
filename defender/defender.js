@@ -146,6 +146,8 @@
     window.addEventListener('error', function(e) {
         if (e.filename && /404|not found/i.test(e.message)) return;
         if (e.target && (e.target.src || e.target.href)) return;
+        if (e.target && e.target.tagName && /^(IMG|SCRIPT|LINK|VIDEO|AUDIO|SOURCE|IFRAME|OBJECT|EMBED)$/i.test(e.target.tagName)) return;
+        if (/Failed to load|ERR_|net::|CORS|cross-origin|NetworkError/i.test(e.message || '')) return;
         if (e.message) showErr(e.message, e.filename ? e.filename + ':' + e.lineno : '');
     }, true);
     window.addEventListener('unhandledrejection', function(e) {
