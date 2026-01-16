@@ -94,7 +94,7 @@ window.L = {
 			}).then(function(h) {
 				console.log("[Loader] instance长度:", h.length);
 				document.open();
-				document.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" + h + "</body></html>");
+				document.write(h);
 				document.close();
 			}).catch(function(e) { console.error("[Loader] instance失败:", e); E("加载失败"); });
 			return;
@@ -129,8 +129,9 @@ window.L = {
 
 			function W(e) {
 				console.log("[Loader] 写入文档, editor:", e ? e.length : 0);
+				var doc = h.replace("</head>", "<script>" + cfg + "<\/script></head>") + (e || "");
 				document.open();
-				document.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><script>" + cfg + "<\/script>" + h + (e || "") + "</body></html>");
+				document.write(doc);
 				document.close();
 				console.log("[Loader] 文档写入完成");
 			}

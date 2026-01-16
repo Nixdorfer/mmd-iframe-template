@@ -640,6 +640,108 @@ export interface VehicleConfig {
 	}
 }
 
+export interface AnimationConfig {
+	skeleton: {
+		maxBones: number
+		ikEnabled: boolean
+		ikIterations: number
+	}
+	blend: {
+		crossfadeTime: number
+		blendMode: 'additive' | 'replace' | 'override'
+	}
+	lod: {
+		enabled: boolean
+		distThreshold: number
+		reduceBones: boolean
+	}
+}
+
+export interface TerrainConfig {
+	generation: {
+		chunkSize: number
+		maxChunks: number
+		detailScale: number
+	}
+	vegetation: {
+		enabled: boolean
+		density: number
+		maxInstances: number
+		windStrength: number
+	}
+	water: {
+		enabled: boolean
+		waveAmplitude: number
+		waveFrequency: number
+		reflections: boolean
+		refractions: boolean
+	}
+}
+
+export interface LightingConfig {
+	probes: {
+		enabled: boolean
+		spacing: number
+		resolution: number
+	}
+	dynamic: {
+		maxLights: number
+		shadowCasters: number
+		updateRate: number
+	}
+	ambient: {
+		mode: 'flat' | 'gradient' | 'skybox'
+		intensity: number
+	}
+}
+
+export interface I18nConfig {
+	defaultLocale: string
+	fallbackLocale: string
+	supportedLocales: string[]
+	dateFormat: string
+	numberFormat: string
+	currencyCode: string
+}
+
+export interface PerformanceConfig {
+	profiling: {
+		enabled: boolean
+		sampleRate: number
+		maxSamples: number
+	}
+	debugUI: {
+		enabled: boolean
+		position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+		showFPS: boolean
+		showMemory: boolean
+		showDrawCalls: boolean
+	}
+	budget: {
+		targetFPS: number
+		maxDrawCalls: number
+		maxTriangles: number
+	}
+}
+
+export interface BuffConfig {
+	display: {
+		maxVisible: number
+		iconSize: number
+		showDuration: boolean
+		showStacks: boolean
+	}
+	limits: {
+		maxBuffs: number
+		maxDebuffs: number
+		maxStacks: number
+	}
+	update: {
+		tickRate: number
+		batchSize: number
+	}
+}
+
 export interface GameConfig {
 	laws: Record<string, LawConfig>
 	rules: RulesConfig
@@ -662,4 +764,10 @@ export interface GameConfig {
 	weather: WeatherConfig
 	timeEffect: TimeEffectConfig
 	vehicle: VehicleConfig
+	animation: AnimationConfig
+	terrain: TerrainConfig
+	lighting: LightingConfig
+	i18n: I18nConfig
+	performance: PerformanceConfig
+	buff: BuffConfig
 }
