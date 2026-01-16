@@ -1,0 +1,4317 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>世界引擎 V4</title>
+	<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	user-select: none;
+}
+
+body {
+	background: #050505;
+	font-family: system-ui, sans-serif;
+	color: #fff;
+	height: 100vh;
+	overflow: hidden;
+}
+
+.app {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.toolbar {
+	height: 48px;
+	background: #1a1a1a;
+	border-bottom: 1px solid #333;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.tool-group {
+	display: flex;
+	gap: 4px;
+	padding: 0 8px;
+	border-right: 1px solid #333;
+}
+
+.tool-group:last-child {
+	border-right: none;
+}
+
+.tool-btn {
+	width: 36px;
+	height: 36px;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s;
+}
+
+.tool-btn:hover {
+	background: #333;
+}
+
+.tool-btn.active {
+	background: #166d3b;
+	border-color: #1c8548;
+}
+
+.tool-btn svg {
+	width: 20px;
+	height: 20px;
+	stroke: #aaa;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.tool-btn.active svg {
+	stroke: #fff;
+}
+
+.file-buttons {
+	margin-left: auto;
+	display: flex;
+	gap: 8px;
+}
+
+.file-btn {
+	height: 32px;
+	padding: 0 12px;
+	background: #333;
+	border: none;
+	border-radius: 6px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.file-btn:hover {
+	background: #444;
+}
+
+.file-btn.primary {
+	background: #166d3b;
+	color: #fff;
+}
+
+.file-btn.primary:hover {
+	background: #1c8548;
+}
+
+.file-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.prv-btn {
+	height: 32px;
+	padding: 0 16px;
+	background: #2563eb;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-left: 8px;
+}
+
+.prv-btn:hover {
+	background: #3b82f6;
+}
+
+.prv-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.section-tabs {
+	height: 40px;
+	background: #0a0a0a;
+	border-bottom: 1px solid #333;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+.section-tab {
+	height: 32px;
+	padding: 0 16px;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	color: #888;
+	font-size: 13px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.15s;
+}
+
+.section-tab:hover {
+	color: #aaa;
+	background: #1a1a1a;
+}
+
+.section-tab.active {
+	color: #fff;
+	background: #1a1a1a;
+	border-color: #333;
+}
+
+.section-tab svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.section-split {
+	flex: 1;
+	display: none;
+	min-height: 0;
+}
+
+.section-split.active {
+	display: flex;
+}
+
+.section-split .sec-le-pn {
+	width: 280px;
+	min-width: 200px;
+	max-width: 400px;
+	background: #111111;
+	border-right: 1px solid #333;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+}
+
+.section-split .sec-ri-pn {
+	flex: 1;
+	background: #0a0a0a;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.section-split .pn-hd {
+	padding: 12px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #888;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid #333;
+	flex-shrink: 0;
+}
+
+.section-split .pn-bd {
+	flex: 1;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.section-split .sec-ri-pn .pn-bd {
+	padding: 16px;
+}
+
+.ast-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ast-cat-item {
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+}
+
+.ast-cat-hd {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: background 0.15s;
+}
+
+.ast-cat-hd:hover {
+	background: #252525;
+}
+
+.ast-cat-hd .arrow {
+	transition: transform 0.2s;
+	stroke: #666;
+}
+
+.ast-cat-hd.open .arrow {
+	transform: rotate(90deg);
+}
+
+.ast-cat-bd {
+	display: none;
+	padding: 8px;
+	border-top: 1px solid #333;
+}
+
+.ast-cat-bd.open {
+	display: block;
+}
+
+.ast-sub-fld {
+	margin-bottom: 4px;
+}
+
+.ast-sub-hd {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 8px;
+	cursor: pointer;
+	font-size: 12px;
+	color: #888;
+	transition: background 0.15s;
+	border-radius: 4px;
+}
+
+.ast-sub-hd:hover {
+	background: #252525;
+}
+
+.ast-sub-hd .arrow {
+	transition: transform 0.2s;
+	stroke: #555;
+	width: 10px;
+	height: 10px;
+}
+
+.ast-sub-hd.open .arrow {
+	transform: rotate(90deg);
+}
+
+.ast-sub-bd {
+	display: none;
+	padding: 4px 0 4px 16px;
+}
+
+.ast-sub-bd.open {
+	display: block;
+}
+
+.ast-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 8px;
+	background: #252525;
+	border-radius: 4px;
+	margin-bottom: 4px;
+	cursor: pointer;
+	font-size: 12px;
+	transition: background 0.15s;
+}
+
+.ast-item:hover {
+	background: #333;
+}
+
+.ast-item.sel {
+	background: #166d3b;
+}
+
+.ast-add-btn {
+	width: 100%;
+	height: 28px;
+	background: transparent;
+	border: 1px dashed #444;
+	border-radius: 4px;
+	color: #888;
+	font-size: 11px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.ast-add-btn:hover {
+	background: #252525;
+	border-color: #555;
+}
+
+.config-section {
+	margin-bottom: 20px;
+}
+
+.config-section-title {
+	font-size: 13px;
+	font-weight: 600;
+	color: #888;
+	margin-bottom: 12px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #333;
+}
+
+.config-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+	gap: 8px;
+}
+
+.config-row label {
+	width: 100px;
+	font-size: 12px;
+	color: #888;
+	flex-shrink: 0;
+}
+
+.config-row input[type="text"],
+.config-row input[type="number"],
+.config-row select {
+	flex: 1;
+	height: 28px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	padding: 0 8px;
+	color: #fff;
+	font-size: 12px;
+}
+
+.config-row input[type="range"] {
+	width: 120px;
+	flex-shrink: 0;
+}
+
+.config-row input[type="color"] {
+	width: 40px;
+	height: 28px;
+	border: 1px solid #333;
+	border-radius: 4px;
+	background: #1a1a1a;
+	cursor: pointer;
+}
+
+.config-row .unit {
+	font-size: 11px;
+	color: #666;
+	width: 30px;
+}
+
+.swt {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 22px;
+}
+
+.swt input {
+	display: none;
+}
+
+.swt-trk {
+	position: absolute;
+	inset: 0;
+	background: #333;
+	border-radius: 11px;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.swt-trk::before {
+	content: '';
+	position: absolute;
+	left: 2px;
+	top: 2px;
+	width: 18px;
+	height: 18px;
+	background: #666;
+	border-radius: 50%;
+	transition: transform 0.2s, background 0.2s;
+}
+
+.swt input:checked + .swt-trk {
+	background: #166d3b;
+}
+
+.swt input:checked + .swt-trk::before {
+	transform: translateX(18px);
+	background: #fff;
+}
+
+.empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 200px;
+	color: #555;
+	font-size: 13px;
+}
+
+.empty-state svg {
+	width: 48px;
+	height: 48px;
+	stroke: #444;
+	fill: none;
+	stroke-width: 1;
+	margin-bottom: 12px;
+}
+
+.spawn-cfg-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.spawn-cfg-item {
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.spawn-cfg-item:hover {
+	background: #252525;
+}
+
+.spawn-cfg-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.spawn-cfg-add {
+	width: 100%;
+	height: 28px;
+	background: transparent;
+	border: 1px dashed #444;
+	border-radius: 4px;
+	color: #888;
+	font-size: 11px;
+	cursor: pointer;
+	margin-top: 8px;
+}
+
+.spawn-cfg-add:hover {
+	background: #252525;
+	border-color: #555;
+}
+
+.pn-hd-fld {
+	margin-bottom: 8px;
+}
+
+.pn-hd-fld-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px;
+	cursor: pointer;
+	font-size: 13px;
+	background: #1a1a1a;
+	border-radius: 4px;
+	transition: background 0.15s;
+}
+
+.pn-hd-fld-header:hover {
+	background: #252525;
+}
+
+.pn-hd-fld-header .arrow {
+	transition: transform 0.2s;
+}
+
+.pn-hd-fld-header.open .arrow {
+	transform: rotate(90deg);
+}
+
+.pn-hd-fld-body {
+	display: none;
+	padding: 8px;
+}
+
+.pn-hd-fld-body.open {
+	display: block;
+}
+
+.map-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.map-cat-item {
+	padding: 10px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.map-cat-item:hover {
+	background: #252525;
+}
+
+.map-cat-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.skill-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.skill-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.skill-item:hover {
+	background: #252525;
+}
+
+.skill-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.skill-ico {
+	width: 32px;
+	height: 32px;
+	background: #333;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 16px;
+}
+
+.skill-info {
+	flex: 1;
+}
+
+.skill-name {
+	font-size: 13px;
+	margin-bottom: 2px;
+}
+
+.skill-type {
+	font-size: 11px;
+	color: #666;
+}
+
+.skill-add {
+	width: 100%;
+	height: 36px;
+	background: #166d3b;
+	border: none;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	margin-top: 8px;
+}
+
+.skill-add:hover {
+	background: #1c8548;
+}
+
+.skill-eff-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.skill-eff-item {
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.skill-eff-hd {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	background: #222;
+	border-bottom: 1px solid #333;
+}
+
+.skill-eff-idx {
+	font-size: 11px;
+	color: #888;
+	min-width: 50px;
+}
+
+.skill-eff-type {
+	flex: 1;
+	height: 26px;
+	background: #2a2a2a;
+	border: 1px solid #444;
+	border-radius: 3px;
+	color: #ccc;
+	font-size: 11px;
+	padding: 0 6px;
+}
+
+.skill-eff-del {
+	width: 22px;
+	height: 22px;
+	background: #3a2222;
+	border: 1px solid #552222;
+	border-radius: 3px;
+	color: #c66;
+	font-size: 14px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.skill-eff-del:hover {
+	background: #4a2828;
+	color: #f88;
+}
+
+.skill-eff-bd {
+	padding: 10px;
+}
+
+.skill-eff-bd .config-row {
+	margin-bottom: 8px;
+}
+
+.skill-eff-bd .config-row:last-child {
+	margin-bottom: 0;
+}
+
+.skill-eff-add {
+	width: 100%;
+	height: 32px;
+	background: #2a2a2a;
+	border: 1px dashed #444;
+	border-radius: 4px;
+	color: #888;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.eff-area-shape-add {
+	float: right;
+	height: 20px;
+	padding: 0 8px;
+	background: #2a3a2a;
+	border: 1px solid #446644;
+	border-radius: 3px;
+	color: #8c8;
+	font-size: 10px;
+	cursor: pointer;
+}
+
+.eff-area-shape-add:hover {
+	background: #3a4a3a;
+}
+
+.eff-area-shape-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+.area-shape-item {
+	background: #181818;
+	border: 1px solid #2a2a2a;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.area-shape-hd {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 8px;
+	background: #1e1e1e;
+	border-bottom: 1px solid #2a2a2a;
+}
+
+.area-shape-idx {
+	font-size: 10px;
+	color: #666;
+	min-width: 50px;
+}
+
+.area-shape-base {
+	font-size: 10px;
+	color: #6a6;
+	padding: 2px 6px;
+	background: #1a2a1a;
+	border-radius: 3px;
+}
+
+.area-shape-op {
+	height: 22px;
+	background: #252525;
+	border: 1px solid #3a3a3a;
+	border-radius: 3px;
+	color: #aaa;
+	font-size: 10px;
+	padding: 0 4px;
+}
+
+.area-shape-del {
+	margin-left: auto;
+	width: 18px;
+	height: 18px;
+	background: #2a2222;
+	border: 1px solid #442222;
+	border-radius: 3px;
+	color: #a66;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.area-shape-del:hover {
+	background: #3a2828;
+	color: #c88;
+}
+
+.area-shape-bd {
+	padding: 8px;
+}
+
+.area-shape-bd .config-row {
+	margin-bottom: 6px;
+}
+
+.area-shape-bd .config-row:last-child {
+	margin-bottom: 0;
+}
+
+.area-shape-bd .config-section-title {
+	font-size: 10px;
+	color: #666;
+	margin: 8px 0 6px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid #2a2a2a;
+}
+
+.skill-eff-add:hover {
+	background: #333;
+	border-color: #166d3b;
+	color: #aaa;
+}
+
+.ai-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ai-cat-item {
+	padding: 10px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.ai-cat-item:hover {
+	background: #252525;
+}
+
+.ai-cat-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.sys-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.sys-cat-item {
+	padding: 10px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.sys-cat-item:hover {
+	background: #252525;
+}
+
+.sys-cat-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.bld-tlb {
+	height: 40px;
+	background: #1a1a1a;
+	border-bottom: 1px solid #333;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+.bld-tool-btn {
+	height: 32px;
+	padding: 0 12px;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	color: #888;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.15s;
+}
+
+.bld-tool-btn:hover {
+	background: #333;
+	color: #aaa;
+}
+
+.bld-tool-btn.active {
+	background: #166d3b;
+	border-color: #1c8548;
+	color: #fff;
+}
+
+.bld-tool-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 1.5;
+}
+
+.bld-cv-ctn {
+	flex: 1;
+	position: relative;
+	overflow: hidden;
+	background: #050505;
+}
+
+.bld-cv-ctn canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.bld-lyr-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.bld-lyr-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	transition: all 0.15s;
+}
+
+.bld-lyr-item:hover {
+	background: #252525;
+}
+
+.bld-lyr-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.bld-lyr-add {
+	width: 100%;
+	height: 32px;
+	background: #166d3b;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	margin-top: 8px;
+	transition: background 0.15s;
+}
+
+.bld-mat-tabs {
+	display: flex;
+	border-bottom: 1px solid #333;
+	flex-shrink: 0;
+}
+
+.bld-mat-tab {
+	flex: 1;
+	height: 40px;
+	background: transparent;
+	border: none;
+	color: #888;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.15s;
+	border-bottom: 2px solid transparent;
+}
+
+.bld-mat-tab:hover {
+	color: #aaa;
+	background: #1a1a1a;
+}
+
+.bld-mat-tab.active {
+	color: #fff;
+	border-bottom-color: #166d3b;
+}
+
+.bld-mat-pn {
+	display: none;
+}
+
+.bld-mat-pn.active {
+	display: block;
+}
+
+.bld-mat-item {
+	padding: 10px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	margin-bottom: 4px;
+	cursor: pointer;
+	font-size: 12px;
+	transition: all 0.15s;
+}
+
+.bld-mat-item:last-child {
+	margin-bottom: 0;
+}
+
+.bld-mat-item:hover {
+	background: #252525;
+}
+
+.bld-mat-item.sel {
+	background: #166d3b;
+	border-color: #1c8548;
+}
+
+.bld-exit-btn {
+	height: 32px;
+	padding: 0 12px;
+	background: #dc2626;
+	border: none;
+	border-radius: 6px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: background 0.15s;
+}
+
+.bld-exit-btn:hover {
+	background: #ef4444;
+}
+
+.bld-exit-btn svg {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+}
+
+.bld-lyr-ctrl {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	background: rgba(0,0,0,0.7);
+	padding: 8px;
+	border-radius: 6px;
+}
+
+.bld-lyr-ctrl span {
+	font-size: 12px;
+	color: #aaa;
+	padding: 4px 0;
+}
+
+.bld-lyr-btn {
+	width: 32px;
+	height: 32px;
+	background: #333;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.15s;
+}
+
+.bld-lyr-btn:hover {
+	background: #444;
+}
+
+.bld-lyr-btn svg {
+	width: 20px;
+	height: 20px;
+	stroke: #aaa;
+	fill: none;
+	stroke-width: 2;
+}
+
+.bld-info {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	background: rgba(0,0,0,0.7);
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #888;
+	display: flex;
+	gap: 16px;
+}
+
+#info-bar {
+	height: 24px;
+	background: #1a1a1a;
+	border-top: 1px solid #333;
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	font-size: 11px;
+	color: #666;
+	gap: 16px;
+	flex-shrink: 0;
+}
+
+.law-lst,
+.rules-cat-lst,
+.world-cat-lst,
+.space-cat-lst,
+.entity-cat-lst,
+.module-cat-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.law-item,
+.rules-cat-item,
+.world-cat-item,
+.space-cat-item,
+.entity-cat-item,
+.module-cat-item {
+	padding: 10px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.law-item:hover,
+.rules-cat-item:hover,
+.world-cat-item:hover,
+.space-cat-item:hover,
+.entity-cat-item:hover,
+.module-cat-item:hover {
+	background: #252525;
+}
+
+.law-item.sel,
+.rules-cat-item.sel,
+.world-cat-item.sel,
+.space-cat-item.sel,
+.entity-cat-item.sel,
+.module-cat-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.faction-lst,
+.entity-def-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-bottom: 8px;
+}
+
+.faction-item,
+.entity-def-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.faction-item:hover,
+.entity-def-item:hover {
+	background: #252525;
+}
+
+.faction-item.sel,
+.entity-def-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.faction-color {
+	width: 16px;
+	height: 16px;
+	border-radius: 3px;
+}
+
+.faction-add,
+.entity-def-add,
+.spawn-item-add {
+	width: 100%;
+	height: 32px;
+	background: #166d3b;
+	border: none;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	transition: background 0.15s;
+}
+
+.faction-add:hover,
+.entity-def-add:hover,
+.spawn-item-add:hover {
+	background: #1c8548;
+}
+
+.module-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.module-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 0;
+	font-size: 12px;
+	border-bottom: 1px solid #252525;
+}
+
+.module-item:last-child {
+	border-bottom: none;
+}
+
+.prv-cv-ctn {
+	flex: 1;
+	position: relative;
+	overflow: hidden;
+	background: #050505;
+}
+
+.prv-cv-ctn canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.prv-info {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	background: rgba(0,0,0,0.7);
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #888;
+	display: flex;
+	gap: 16px;
+}
+
+.prv-mode-lst {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.prv-mode-item {
+	padding: 8px 10px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.prv-mode-item:hover {
+	background: #252525;
+}
+
+.prv-mode-item.sel {
+	border-color: #166d3b;
+	background: #14291f;
+}
+
+.prv-action-btn {
+	width: 100%;
+	height: 32px;
+	background: #333;
+	border: none;
+	border-radius: 4px;
+	color: #aaa;
+	font-size: 12px;
+	cursor: pointer;
+	margin-bottom: 6px;
+	transition: all 0.15s;
+}
+
+.prv-action-btn:hover {
+	background: #444;
+	color: #fff;
+}
+	</style>
+</head>
+<body>
+	<div class="app" id="app">
+		<div class="toolbar" id="toolbar-ctn">
+			<div class="tool-group">
+				<button class="tool-btn active" data-tool="select" title="选择 (Q)">
+					<svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+				</button>
+				<button class="tool-btn" data-tool="move" title="移动 (W)">
+					<svg viewBox="0 0 24 24"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>
+				</button>
+				<button class="tool-btn" data-tool="rotate" title="旋转 (E)">
+					<svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M21 8c-2.39-4.15-7.07-6.52-12-4.85C4.8 4.39 1.35 8.32 1 13"/></svg>
+				</button>
+				<button class="tool-btn" data-tool="scale" title="缩放 (R)">
+					<svg viewBox="0 0 24 24"><path d="M21 21l-6-6m6 6v-4.8m0 4.8h-4.8"/><path d="M3 16.2V21m0 0h4.8M3 21l6-6"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+				</button>
+			</div>
+			<div class="tool-group">
+				<button class="tool-btn" data-tool="grid" title="网格">
+					<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+				</button>
+				<button class="tool-btn" data-tool="wireframe" title="线框">
+					<svg viewBox="0 0 24 24"><path d="M12 2l9 4.5v11L12 22l-9-4.5v-11L12 2z"/><path d="M12 22V12M3 6.5l9 5.5 9-5.5"/></svg>
+				</button>
+				<button class="tool-btn" data-tool="profiler" title="性能 (F3)">
+					<svg viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+				</button>
+			</div>
+			<div class="file-buttons">
+				<button class="file-btn" id="btn-new">
+					<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+					新建
+				</button>
+				<button class="file-btn" id="btn-open">
+					<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+					打开
+				</button>
+				<button class="file-btn primary" id="btn-save">
+					<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+					保存
+				</button>
+				<button class="prv-btn" id="btn-preview">
+					<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+					预览
+				</button>
+			</div>
+		</div>
+		<div class="section-tabs">
+			<button class="section-tab" data-section="law">
+				<svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>
+				法则
+			</button>
+			<button class="section-tab" data-section="rules">
+				<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+				规则
+			</button>
+			<button class="section-tab" data-section="world">
+				<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+				世界
+			</button>
+			<button class="section-tab" data-section="space">
+				<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+				空间
+			</button>
+			<button class="section-tab" data-section="entity">
+				<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+				实体
+			</button>
+			<button class="section-tab" data-section="system">
+				<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+				系统
+			</button>
+			<button class="section-tab" data-section="module">
+				<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+				模块
+			</button>
+			<button class="section-tab active" data-section="assets">
+				<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+				资产
+			</button>
+			<button class="section-tab" data-section="preview">
+				<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+				预览
+			</button>
+		</div>
+
+		<!-- 法则层 -->
+		<div class="section-split" id="section-law">
+			<div class="sec-le-pn">
+				<div class="pn-hd">世界法则</div>
+				<div class="pn-bd">
+					<div class="law-lst" id="law-lst">
+						<div class="law-item sel" data-id="causality">因果律</div>
+						<div class="law-item" data-id="equivalent_exchange">等价交换</div>
+						<div class="law-item" data-id="conservation">守恒律</div>
+						<div class="law-item" data-id="contract">契约律</div>
+						<div class="law-item" data-id="mortality">必死律</div>
+						<div class="law-item" data-id="identity">同一律</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">法则配置</div>
+				<div class="pn-bd" id="law-detail">
+					<div class="config-section">
+						<div class="config-section-title">因果律</div>
+						<div class="config-row">
+							<label>启用</label>
+							<label class="swt"><input type="checkbox" id="law-enabled" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>违反代价类型</label>
+							<select id="law-cost-type">
+								<option value="health">生命值</option>
+								<option value="lifespan">寿命</option>
+								<option value="soul" selected>灵魂</option>
+								<option value="karma">业力</option>
+								<option value="resource">资源</option>
+								<option value="permanent">永久</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>代价数值</label>
+							<input type="number" id="law-cost-amount" value="100" min="0">
+						</div>
+						<div class="config-row">
+							<label>代价减免</label>
+							<input type="range" id="law-cost-reduction" min="0" max="100" value="0">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>豁免标签</label>
+							<input type="text" id="law-exempt-tags" placeholder="god,immortal">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 规则层 -->
+		<div class="section-split" id="section-rules">
+			<div class="sec-le-pn">
+				<div class="pn-hd">规则分类</div>
+				<div class="pn-bd">
+					<div class="rules-cat-lst" id="rules-cat-lst">
+						<div class="rules-cat-item sel" data-cat="combat">战斗规则</div>
+						<div class="rules-cat-item" data-cat="death">死亡规则</div>
+						<div class="rules-cat-item" data-cat="progression">成长规则</div>
+						<div class="rules-cat-item" data-cat="economy">经济规则</div>
+						<div class="rules-cat-item" data-cat="physics">物理规则</div>
+						<div class="rules-cat-item" data-cat="magic">魔法规则</div>
+						<div class="rules-cat-item" data-cat="social">社交规则</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">规则配置</div>
+				<div class="pn-bd" id="rules-detail">
+					<div class="config-section" data-cat="combat">
+						<div class="config-section-title">战斗规则</div>
+						<div class="config-row">
+							<label>友军伤害</label>
+							<label class="swt"><input type="checkbox" id="rules-friendly-fire"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>PVP启用</label>
+							<label class="swt"><input type="checkbox" id="rules-pvp" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>等级缩放</label>
+							<label class="swt"><input type="checkbox" id="rules-level-scaling"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>抗性上限</label>
+							<input type="range" id="rules-resistance-cap" min="0" max="100" value="75">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>闪避上限</label>
+							<input type="range" id="rules-dodge-cap" min="0" max="100" value="50">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>暴击倍率</label>
+							<input type="number" id="rules-crit-mul" value="1.5" min="1" max="10" step="0.1">
+							<span class="unit">x</span>
+						</div>
+						<div class="config-row">
+							<label>伤害公式</label>
+							<input type="text" id="rules-damage-formula" value="atk * (1 - def/100)">
+						</div>
+					</div>
+					<div class="config-section" data-cat="death" style="display:none">
+						<div class="config-section-title">死亡规则</div>
+						<div class="config-row">
+							<label>永久死亡</label>
+							<label class="swt"><input type="checkbox" id="rules-perma-death"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>经验损失</label>
+							<input type="range" id="rules-exp-loss" min="0" max="100" value="5">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>物品掉落</label>
+							<label class="swt"><input type="checkbox" id="rules-item-drop"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>重生延迟</label>
+							<input type="number" id="rules-respawn-delay" value="5" min="0" max="3600">
+							<span class="unit">秒</span>
+						</div>
+						<div class="config-row">
+							<label>重生位置</label>
+							<select id="rules-respawn-loc">
+								<option value="checkpoint" selected>检查点</option>
+								<option value="home">主城</option>
+								<option value="death">死亡点</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>灵魂恢复</label>
+							<label class="swt"><input type="checkbox" id="rules-soul-recovery" checked><span class="swt-trk"></span></label>
+						</div>
+					</div>
+					<div class="config-section" data-cat="progression" style="display:none">
+						<div class="config-section-title">成长规则</div>
+						<div class="config-row">
+							<label>等级上限</label>
+							<input type="number" id="rules-level-cap" value="100" min="1" max="999">
+						</div>
+						<div class="config-row">
+							<label>经验曲线</label>
+							<select id="rules-exp-curve">
+								<option value="linear">线性</option>
+								<option value="exponential" selected>指数</option>
+								<option value="custom">自定义</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>技能点/级</label>
+							<input type="number" id="rules-skill-per-level" value="3" min="0" max="20">
+						</div>
+						<div class="config-row">
+							<label>属性点/级</label>
+							<input type="number" id="rules-attr-per-level" value="5" min="0" max="20">
+						</div>
+						<div class="config-row">
+							<label>允许洗点</label>
+							<label class="swt"><input type="checkbox" id="rules-can-respec" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>洗点费用</label>
+							<input type="number" id="rules-respec-cost" value="1000" min="0">
+						</div>
+					</div>
+					<div class="config-section" data-cat="economy" style="display:none">
+						<div class="config-section-title">经济规则</div>
+						<div class="config-row">
+							<label>交易税率</label>
+							<input type="range" id="rules-trade-tax" min="0" max="50" value="5">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>通货膨胀</label>
+							<input type="range" id="rules-inflation" min="0" max="100" value="0">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>最大背包</label>
+							<input type="number" id="rules-max-inventory" value="100" min="10" max="1000">
+						</div>
+						<div class="config-row">
+							<label>银行利息</label>
+							<input type="range" id="rules-bank-interest" min="0" max="20" value="1">
+							<span class="unit">%</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="physics" style="display:none">
+						<div class="config-section-title">物理规则</div>
+						<div class="config-row">
+							<label>重力系数</label>
+							<input type="number" id="rules-gravity" value="9.8" min="0" max="100" step="0.1">
+						</div>
+						<div class="config-row">
+							<label>空气阻力</label>
+							<input type="range" id="rules-air-drag" min="0" max="100" value="10">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>碰撞反弹</label>
+							<input type="range" id="rules-restitution" min="0" max="100" value="30">
+							<span class="unit">%</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="magic" style="display:none">
+						<div class="config-section-title">魔法规则</div>
+						<div class="config-row">
+							<label>魔力恢复</label>
+							<input type="number" id="rules-mana-regen" value="1" min="0" max="100" step="0.1">
+							<span class="unit">/秒</span>
+						</div>
+						<div class="config-row">
+							<label>施法打断</label>
+							<label class="swt"><input type="checkbox" id="rules-cast-interrupt" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>元素克制</label>
+							<input type="range" id="rules-element-bonus" min="0" max="200" value="50">
+							<span class="unit">%</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="social" style="display:none">
+						<div class="config-section-title">社交规则</div>
+						<div class="config-row">
+							<label>最大队伍</label>
+							<input type="number" id="rules-max-party" value="6" min="1" max="20">
+						</div>
+						<div class="config-row">
+							<label>最大公会</label>
+							<input type="number" id="rules-max-guild" value="100" min="10" max="1000">
+						</div>
+						<div class="config-row">
+							<label>允许结婚</label>
+							<label class="swt"><input type="checkbox" id="rules-marriage" checked><span class="swt-trk"></span></label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 世界层 (时代/位面/势力) -->
+		<div class="section-split" id="section-world">
+			<div class="sec-le-pn">
+				<div class="pn-hd">世界设置</div>
+				<div class="pn-bd">
+					<div class="world-cat-lst" id="world-cat-lst">
+						<div class="world-cat-item sel" data-cat="era">时代设置</div>
+						<div class="world-cat-item" data-cat="plane">位面设置</div>
+						<div class="world-cat-item" data-cat="faction">势力设置</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">世界配置</div>
+				<div class="pn-bd" id="world-detail">
+					<div class="config-section" data-cat="era">
+						<div class="config-section-title">时代设置</div>
+						<div class="config-row">
+							<label>当前时代</label>
+							<select id="world-era">
+								<option value="ancient">远古时代</option>
+								<option value="medieval">中世纪</option>
+								<option value="modern" selected>现代</option>
+								<option value="future">未来</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>科技等级</label>
+							<input type="range" id="world-tech-level" min="1" max="10" value="7">
+							<span class="unit">Lv</span>
+						</div>
+						<div class="config-row">
+							<label>魔法等级</label>
+							<input type="range" id="world-magic-level" min="1" max="10" value="3">
+							<span class="unit">Lv</span>
+						</div>
+						<div class="config-row">
+							<label>起始年份</label>
+							<input type="number" id="world-start-year" value="2024">
+						</div>
+					</div>
+					<div class="config-section" data-cat="plane" style="display:none">
+						<div class="config-section-title">位面设置</div>
+						<div class="config-row">
+							<label>当前位面</label>
+							<select id="world-plane">
+								<option value="material" selected>物质界</option>
+								<option value="ethereal">灵界</option>
+								<option value="astral">星界</option>
+								<option value="digital">数字空间</option>
+								<option value="dream">梦境</option>
+								<option value="shadow">暗影界</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>重力倍数</label>
+							<input type="number" id="world-gravity-mul" value="1" min="0" max="10" step="0.1">
+							<span class="unit">x</span>
+						</div>
+						<div class="config-row">
+							<label>时间流速</label>
+							<input type="number" id="world-time-flow" value="1" min="0" max="100" step="0.1">
+							<span class="unit">x</span>
+						</div>
+						<div class="config-row">
+							<label>可视距离</label>
+							<input type="number" id="world-visibility" value="1000" min="10" max="10000">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>环境魔力</label>
+							<input type="range" id="world-ambient-mana" min="0" max="10" value="1">
+						</div>
+						<div class="config-row">
+							<label>敌对等级</label>
+							<input type="range" id="world-hostile-level" min="0" max="10" value="0">
+						</div>
+					</div>
+					<div class="config-section" data-cat="faction" style="display:none">
+						<div class="config-section-title">势力列表</div>
+						<div class="faction-lst" id="faction-lst">
+							<div class="faction-item sel" data-id="neutral">
+								<div class="faction-color" style="background:#888"></div>
+								<span>中立</span>
+							</div>
+							<div class="faction-item" data-id="alliance">
+								<div class="faction-color" style="background:#4a9eff"></div>
+								<span>联盟</span>
+							</div>
+							<div class="faction-item" data-id="horde">
+								<div class="faction-color" style="background:#ff4a4a"></div>
+								<span>部落</span>
+							</div>
+						</div>
+						<button class="faction-add" id="faction-add">+ 添加势力</button>
+						<div class="config-section-title" style="margin-top:16px">势力属性</div>
+						<div class="config-row">
+							<label>势力名称</label>
+							<input type="text" id="faction-name" value="中立">
+						</div>
+						<div class="config-row">
+							<label>势力类型</label>
+							<select id="faction-type">
+								<option value="nation">国家</option>
+								<option value="guild">公会</option>
+								<option value="cult">教派</option>
+								<option value="corporation">企业</option>
+								<option value="clan">氏族</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>势力颜色</label>
+							<input type="color" id="faction-color" value="#888888">
+						</div>
+						<div class="config-row">
+							<label>默认关系</label>
+							<select id="faction-default-rel">
+								<option value="hostile">敌对</option>
+								<option value="unfriendly">不友好</option>
+								<option value="neutral" selected>中立</option>
+								<option value="friendly">友好</option>
+								<option value="allied">同盟</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 建筑编辑 (3D Voxel) -->
+		<div class="section-split" id="section-building">
+			<div class="sec-le-pn">
+				<div class="bld-mat-tabs">
+					<button class="bld-mat-tab active" data-tab="wall">墙体</button>
+					<button class="bld-mat-tab" data-tab="floor">地板</button>
+					<button class="bld-mat-tab" data-tab="furniture">家具</button>
+				</div>
+				<div class="pn-bd">
+					<div class="bld-mat-pn active" id="bld-mat-wall">
+						<div class="bld-mat-item sel" data-mat="brick">砖墙</div>
+						<div class="bld-mat-item" data-mat="concrete">混凝土</div>
+						<div class="bld-mat-item" data-mat="glass">玻璃</div>
+						<div class="bld-mat-item" data-mat="metal">金属板</div>
+						<div class="bld-mat-item" data-mat="wood">木板</div>
+						<div class="bld-mat-item" data-mat="stone">石墙</div>
+						<div class="bld-mat-item" data-mat="plaster">石膏</div>
+						<div class="bld-mat-item" data-mat="window">窗户</div>
+						<div class="bld-mat-item" data-mat="door">门</div>
+					</div>
+					<div class="bld-mat-pn" id="bld-mat-floor">
+						<div class="bld-mat-item" data-mat="tile">瓷砖</div>
+						<div class="bld-mat-item" data-mat="carpet">地毯</div>
+						<div class="bld-mat-item" data-mat="marble">大理石</div>
+						<div class="bld-mat-item" data-mat="plank">木地板</div>
+						<div class="bld-mat-item" data-mat="concrete-floor">水泥地</div>
+						<div class="bld-mat-item" data-mat="grass">草地</div>
+						<div class="bld-mat-item" data-mat="gravel">碎石</div>
+					</div>
+					<div class="bld-mat-pn" id="bld-mat-furniture">
+						<div class="bld-mat-item" data-mat="chair">椅子</div>
+						<div class="bld-mat-item" data-mat="table">桌子</div>
+						<div class="bld-mat-item" data-mat="bed">床</div>
+						<div class="bld-mat-item" data-mat="sofa">沙发</div>
+						<div class="bld-mat-item" data-mat="cabinet">柜子</div>
+						<div class="bld-mat-item" data-mat="lamp">灯具</div>
+						<div class="bld-mat-item" data-mat="stair">楼梯</div>
+						<div class="bld-mat-item" data-mat="fence">栏杆</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="bld-tlb">
+					<button class="bld-tool-btn active" data-bld-tool="place">
+						<svg viewBox="0 0 24 24"><rect x="4" y="4" width="8" height="8"/><rect x="12" y="12" width="8" height="8"/></svg>
+						放置
+					</button>
+					<button class="bld-tool-btn" data-bld-tool="remove">
+						<svg viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+						删除
+					</button>
+					<button class="bld-tool-btn" data-bld-tool="fill">
+						<svg viewBox="0 0 24 24"><path d="M19 11V9a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M12 12l4 10 1.7-4.3L22 16z"/></svg>
+						填充
+					</button>
+					<button class="bld-tool-btn" data-bld-tool="pick">
+						<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+						拾取
+					</button>
+					<div style="flex:1"></div>
+					<button class="bld-exit-btn" id="bld-exit-btn">
+						<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+						退出
+					</button>
+				</div>
+				<div class="bld-cv-ctn" id="bld-cv-ctn">
+					<canvas id="bld-canvas"></canvas>
+					<div class="bld-info" id="bld-info">
+						<span id="bld-pos">位置: 0, 0, 0</span>
+						<span id="bld-size">尺寸: 0 x 0 x 0</span>
+					</div>
+					<div class="bld-lyr-ctrl" id="bld-lyr-ctrl">
+						<button class="bld-lyr-btn" id="bld-lyr-up">
+							<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+						</button>
+						<span id="bld-lyr-cur">层 1</span>
+						<button class="bld-lyr-btn" id="bld-lyr-down">
+							<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 实体层 -->
+		<div class="section-split" id="section-entity">
+			<div class="sec-le-pn">
+				<div class="pn-hd">实体设置</div>
+				<div class="pn-bd">
+					<div class="entity-cat-lst" id="entity-cat-lst">
+						<div class="entity-cat-item sel" data-cat="definition">实体定义</div>
+						<div class="entity-cat-item" data-cat="spawn">出生配置</div>
+						<div class="entity-cat-item" data-cat="creature">生物类型</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">实体配置</div>
+				<div class="pn-bd" id="entity-detail">
+					<div class="config-section" data-cat="definition">
+						<div class="config-section-title">实体定义</div>
+						<div class="entity-def-lst" id="entity-def-lst">
+							<div class="entity-def-item sel" data-id="player">玩家</div>
+							<div class="entity-def-item" data-id="npc">NPC</div>
+							<div class="entity-def-item" data-id="enemy">敌人</div>
+						</div>
+						<button class="entity-def-add" id="entity-def-add">+ 添加实体</button>
+						<div class="config-section-title" style="margin-top:16px">基础属性</div>
+						<div class="config-row">
+							<label>实体名称</label>
+							<input type="text" id="entity-name" value="玩家">
+						</div>
+						<div class="config-row">
+							<label>基础HP</label>
+							<input type="number" id="entity-hp" value="100" min="1">
+						</div>
+						<div class="config-row">
+							<label>基础攻击</label>
+							<input type="number" id="entity-atk" value="10" min="0">
+						</div>
+						<div class="config-row">
+							<label>基础防御</label>
+							<input type="number" id="entity-def" value="5" min="0">
+						</div>
+						<div class="config-row">
+							<label>基础速度</label>
+							<input type="number" id="entity-spd" value="5" min="0" step="0.1">
+							<span class="unit">m/s</span>
+						</div>
+						<div class="config-row">
+							<label>运动类型</label>
+							<select id="entity-locomotion">
+								<option value="biped" selected>双足</option>
+								<option value="quadruped">四足</option>
+								<option value="hexapod">六足</option>
+								<option value="serpent">蛇形</option>
+								<option value="flying">飞行</option>
+								<option value="floating">悬浮</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>碰撞类型</label>
+							<select id="entity-collider">
+								<option value="capsule" selected>胶囊</option>
+								<option value="box">立方体</option>
+								<option value="sphere">球形</option>
+								<option value="mesh">网格</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>质量</label>
+							<input type="number" id="entity-mass" value="70" min="0.1" step="0.1">
+							<span class="unit">kg</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="spawn" style="display:none">
+						<div class="config-section-title">出生配置</div>
+						<div class="config-row">
+							<label>出生类型</label>
+							<select id="spawn-type">
+								<option value="biome">生物群系</option>
+								<option value="city" selected>城市区域</option>
+								<option value="fixed">固定坐标</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>城市区域</label>
+							<select id="spawn-zone">
+								<option value="downtown">市中心</option>
+								<option value="urban">城市区</option>
+								<option value="suburban" selected>结合部</option>
+								<option value="rural">乡村</option>
+								<option value="wild">旷野</option>
+							</select>
+						</div>
+						<div class="config-section-title" style="margin-top:16px">出生物品</div>
+						<div class="spawn-items-lst" id="spawn-items-lst"></div>
+						<button class="spawn-item-add" id="spawn-item-add">+ 添加物品</button>
+					</div>
+					<div class="config-section" data-cat="creature" style="display:none">
+						<div class="config-section-title">生物类型</div>
+						<div class="config-row">
+							<label>基础类型</label>
+							<select id="creature-base">
+								<option value="serpent">蛇形</option>
+								<option value="monopod">单足</option>
+								<option value="biped" selected>双足</option>
+								<option value="tripod">三足</option>
+								<option value="quadruped">四足</option>
+								<option value="hexapod">六足</option>
+								<option value="octopod">八足</option>
+								<option value="multipod">多足</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>飞行能力</label>
+							<label class="swt"><input type="checkbox" id="creature-winged"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>悬浮能力</label>
+							<label class="swt"><input type="checkbox" id="creature-floating"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>骨骼数量</label>
+							<input type="number" id="creature-bones" value="25" min="10" max="100">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 资产 -->
+		<div class="section-split active" id="section-assets">
+			<div class="sec-le-pn">
+				<div class="pn-hd">资产分类</div>
+				<div class="pn-bd">
+					<div class="ast-cat-lst" id="ast-cat-lst">
+						<div class="ast-cat-item" data-cat="buildings">
+							<div class="ast-cat-hd open">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>建筑</span>
+							</div>
+							<div class="ast-cat-bd open" id="ast-buildings">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="buildings-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-buildings-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="buildings-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-buildings-cst">
+										<button class="ast-add-btn" data-cat="buildings">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="entities">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>实体</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-entities">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="entities-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-entities-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="entities-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-entities-cst">
+										<button class="ast-add-btn" data-cat="entities">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="furniture">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>家具</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-furniture">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="furniture-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-furniture-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="furniture-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-furniture-cst">
+										<button class="ast-add-btn" data-cat="furniture">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="items">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>物品</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-items">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="items-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-items-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="items-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-items-cst">
+										<button class="ast-add-btn" data-cat="items">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="buffs">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>BUFF</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-buffs">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="buffs-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-buffs-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="buffs-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-buffs-cst">
+										<button class="ast-add-btn" data-cat="buffs">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="skills">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>技能</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-skills">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="skills-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-skills-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="skills-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-skills-cst">
+										<button class="ast-add-btn" data-cat="skills">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="walls">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>墙壁</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-walls">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="walls-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-walls-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="walls-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-walls-cst">
+										<button class="ast-add-btn" data-cat="walls">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="ast-cat-item" data-cat="floors">
+							<div class="ast-cat-hd">
+								<svg class="arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+								<span>地面</span>
+							</div>
+							<div class="ast-cat-bd" id="ast-floors">
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd open" data-sub="floors-sys">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>系统</span>
+									</div>
+									<div class="ast-sub-bd open" id="ast-floors-sys"></div>
+								</div>
+								<div class="ast-sub-fld">
+									<div class="ast-sub-hd" data-sub="floors-cst">
+										<svg class="arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+										<span>自定义</span>
+									</div>
+									<div class="ast-sub-bd" id="ast-floors-cst">
+										<button class="ast-add-btn" data-cat="floors">+ 新建</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">资产详情</div>
+				<div class="pn-bd" id="ast-detail">
+					<div class="empty-state">
+						<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+						<span>选择资产以查看详情</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 空间层 (地图/天气/小世界) -->
+		<div class="section-split" id="section-space">
+			<div class="sec-le-pn">
+				<div class="pn-hd">空间设置</div>
+				<div class="pn-bd">
+					<div class="space-cat-lst" id="space-cat-lst">
+						<div class="space-cat-item sel" data-cat="planet">星球设置</div>
+						<div class="space-cat-item" data-cat="terrain">地貌参数</div>
+						<div class="space-cat-item" data-cat="terrain-weight">地貌权重</div>
+						<div class="space-cat-item" data-cat="city">城市参数</div>
+						<div class="space-cat-item" data-cat="city-weight">城市权重</div>
+						<div class="space-cat-item" data-cat="weather">天气系统</div>
+						<div class="space-cat-item" data-cat="pocket">小世界</div>
+						<div class="space-cat-item" data-cat="domain">领域展开</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">地图属性</div>
+				<div class="pn-bd" id="map-detail">
+					<div class="config-section" data-cat="planet">
+						<div class="config-section-title">星球设置</div>
+						<div class="config-row">
+							<label>贴图风格</label>
+							<select id="cfg-style">
+								<option value="cyberpunk">赛博朋克</option>
+								<option value="steampunk">蒸汽朋克</option>
+								<option value="modern" selected>现代</option>
+								<option value="chinese">中式</option>
+								<option value="cartoon">卡通</option>
+								<option value="medieval">中世纪</option>
+								<option value="space">太空</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>破败风格</label>
+							<label class="swt"><input type="checkbox" id="cfg-ruined"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>平均气温</label>
+							<input type="range" id="cfg-temp" min="-100" max="100" value="20">
+							<span class="unit">°C</span>
+						</div>
+						<div class="config-row">
+							<label>白天占比</label>
+							<input type="range" id="cfg-daylight" min="0" max="100" value="50">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>阳光颜色</label>
+							<input type="color" id="cfg-sun-color" value="#fffaf0">
+						</div>
+						<div class="config-row">
+							<label>阳光强度</label>
+							<input type="range" id="cfg-sun-intensity" min="0" max="1000" value="100">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>月光颜色</label>
+							<input type="color" id="cfg-moon-color" value="#c0d0ff">
+						</div>
+						<div class="config-row">
+							<label>月光强度</label>
+							<input type="range" id="cfg-moon-intensity" min="0" max="1000" value="30">
+							<span class="unit">%</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="weather" style="display:none">
+						<div class="config-section-title">天气系统</div>
+						<div class="config-row">
+							<label>启用天气</label>
+							<label class="swt"><input type="checkbox" id="cfg-weather-enabled" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>晴天概率</label>
+							<input type="range" id="cfg-weather-clear" min="0" max="100" value="60">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>多云概率</label>
+							<input type="range" id="cfg-weather-cloudy" min="0" max="100" value="25">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>下雨概率</label>
+							<input type="range" id="cfg-weather-rain" min="0" max="100" value="10">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>下雪概率</label>
+							<input type="range" id="cfg-weather-snow" min="0" max="100" value="5">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>雾气概率</label>
+							<input type="range" id="cfg-weather-fog" min="0" max="100" value="10">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>风力范围</label>
+							<input type="number" id="cfg-wind-min" value="0" min="0" max="100" style="width:60px">
+							<span>-</span>
+							<input type="number" id="cfg-wind-max" value="30" min="0" max="100" style="width:60px">
+							<span class="unit">km/h</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="pocket" style="display:none">
+						<div class="config-section-title">小世界设置</div>
+						<div class="config-row">
+							<label>尺寸 X</label>
+							<input type="number" id="pocket-size-x" value="100" min="10" max="10000">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>尺寸 Y</label>
+							<input type="number" id="pocket-size-y" value="50" min="10" max="1000">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>尺寸 Z</label>
+							<input type="number" id="pocket-size-z" value="100" min="10" max="10000">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>时间流速</label>
+							<input type="number" id="pocket-time-flow" value="0.5" min="0.1" max="10" step="0.1">
+							<span class="unit">x</span>
+						</div>
+						<div class="config-row">
+							<label>PVP启用</label>
+							<label class="swt"><input type="checkbox" id="pocket-pvp"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>上帝模式</label>
+							<label class="swt"><input type="checkbox" id="pocket-god-mode" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>允许建造</label>
+							<label class="swt"><input type="checkbox" id="pocket-building" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>资源采集</label>
+							<label class="swt"><input type="checkbox" id="pocket-harvest" checked><span class="swt-trk"></span></label>
+						</div>
+					</div>
+					<div class="config-section" data-cat="domain" style="display:none">
+						<div class="config-section-title">领域展开设置</div>
+						<div class="config-row">
+							<label>领域形状</label>
+							<select id="domain-shape">
+								<option value="sphere" selected>球形</option>
+								<option value="cube">立方体</option>
+								<option value="cylinder">圆柱</option>
+								<option value="custom">自定义</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>默认半径</label>
+							<input type="number" id="domain-radius" value="50" min="1" max="1000">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>默认持续</label>
+							<input type="number" id="domain-duration" value="60" min="-1" max="3600">
+							<span class="unit">秒</span>
+						</div>
+						<div class="config-row">
+							<label>滤镜效果</label>
+							<select id="domain-filter">
+								<option value="none">无</option>
+								<option value="grayscale">灰度</option>
+								<option value="sepia">褐色</option>
+								<option value="invert">反色</option>
+								<option value="hue_rotate">色相旋转</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>边界效果</label>
+							<select id="domain-boundary">
+								<option value="solid">实体墙</option>
+								<option value="grid">网格</option>
+								<option value="runes">符文</option>
+								<option value="flames">火焰</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>禁止离开</label>
+							<label class="swt"><input type="checkbox" id="domain-exit-blocked" checked><span class="swt-trk"></span></label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 系统设置 -->
+		<div class="section-split" id="section-system">
+			<div class="sec-le-pn">
+				<div class="pn-hd">系统分类</div>
+				<div class="pn-bd">
+					<div class="sys-cat-lst" id="sys-cat-lst">
+						<div class="sys-cat-item sel" data-cat="time">时间系统</div>
+						<div class="sys-cat-item" data-cat="economy">经济系统</div>
+						<div class="sys-cat-item" data-cat="faction">阵营系统</div>
+						<div class="sys-cat-item" data-cat="quest">任务系统</div>
+						<div class="sys-cat-item" data-cat="dialogue">对话系统</div>
+						<div class="sys-cat-item" data-cat="inventory">背包系统</div>
+						<div class="sys-cat-item" data-cat="combat">战斗系统</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">系统设置</div>
+				<div class="pn-bd" id="sys-detail">
+					<div class="config-section" data-cat="time">
+						<div class="config-section-title">时间系统</div>
+						<div class="config-row">
+							<label>时间流速</label>
+							<input type="number" id="sys-time-speed" value="60" min="1" max="3600">
+							<span class="unit">x</span>
+						</div>
+						<div class="config-row">
+							<label>初始时间</label>
+							<input type="time" id="sys-time-init" value="08:00">
+						</div>
+						<div class="config-row">
+							<label>初始日期</label>
+							<input type="date" id="sys-date-init" value="2024-01-01">
+						</div>
+						<div class="config-row">
+							<label>可暂停</label>
+							<label class="swt"><input type="checkbox" id="sys-time-pause" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>可回溯</label>
+							<label class="swt"><input type="checkbox" id="sys-time-rewind"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>回溯上限</label>
+							<input type="number" id="sys-time-rewind-max" value="10" min="1" max="300">
+							<span class="unit">秒</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="economy" style="display:none">
+						<div class="config-section-title">经济系统</div>
+						<div class="config-row">
+							<label>货币名称</label>
+							<input type="text" id="sys-currency-name" value="金币">
+						</div>
+						<div class="config-row">
+							<label>货币上限</label>
+							<input type="number" id="sys-currency-max" value="999999999" min="0">
+						</div>
+						<div class="config-row">
+							<label>自动拾取</label>
+							<label class="swt"><input type="checkbox" id="sys-auto-loot" checked><span class="swt-trk"></span></label>
+						</div>
+					</div>
+					<div class="config-section" data-cat="faction" style="display:none">
+						<div class="config-section-title">阵营系统</div>
+						<div class="config-row">
+							<label>声望上限</label>
+							<input type="number" id="sys-rep-max" value="100000" min="0">
+						</div>
+						<div class="config-row">
+							<label>声望下限</label>
+							<input type="number" id="sys-rep-min" value="-100000" max="0">
+						</div>
+						<div class="config-row">
+							<label>击杀奖励</label>
+							<input type="number" id="sys-rep-kill" value="10" min="0">
+						</div>
+					</div>
+					<div class="config-section" data-cat="quest" style="display:none">
+						<div class="config-section-title">任务系统</div>
+						<div class="config-row">
+							<label>同时任务</label>
+							<input type="number" id="sys-quest-max" value="20" min="1" max="100">
+						</div>
+						<div class="config-row">
+							<label>每日任务</label>
+							<input type="number" id="sys-quest-daily" value="5" min="0" max="20">
+						</div>
+						<div class="config-row">
+							<label>自动追踪</label>
+							<label class="swt"><input type="checkbox" id="sys-quest-track" checked><span class="swt-trk"></span></label>
+						</div>
+					</div>
+					<div class="config-section" data-cat="dialogue" style="display:none">
+						<div class="config-section-title">对话系统</div>
+						<div class="config-row">
+							<label>文字速度</label>
+							<input type="range" id="sys-dialogue-speed" min="1" max="100" value="50">
+							<span class="unit">%</span>
+						</div>
+						<div class="config-row">
+							<label>自动播放</label>
+							<label class="swt"><input type="checkbox" id="sys-dialogue-auto"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>可跳过</label>
+							<label class="swt"><input type="checkbox" id="sys-dialogue-skip" checked><span class="swt-trk"></span></label>
+						</div>
+					</div>
+					<div class="config-section" data-cat="inventory" style="display:none">
+						<div class="config-section-title">背包系统</div>
+						<div class="config-row">
+							<label>初始格数</label>
+							<input type="number" id="sys-inv-slots" value="30" min="1" max="500">
+						</div>
+						<div class="config-row">
+							<label>最大格数</label>
+							<input type="number" id="sys-inv-max" value="100" min="1" max="500">
+						</div>
+						<div class="config-row">
+							<label>堆叠上限</label>
+							<input type="number" id="sys-inv-stack" value="99" min="1" max="9999">
+						</div>
+						<div class="config-row">
+							<label>重量限制</label>
+							<label class="swt"><input type="checkbox" id="sys-inv-weight"><span class="swt-trk"></span></label>
+						</div>
+					</div>
+					<div class="config-section" data-cat="combat" style="display:none">
+						<div class="config-section-title">战斗系统</div>
+						<div class="config-row">
+							<label>锁定模式</label>
+							<select id="sys-combat-lock">
+								<option value="soft">软锁定</option>
+								<option value="hard" selected>硬锁定</option>
+								<option value="none">无锁定</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>锁定距离</label>
+							<input type="number" id="sys-combat-lock-range" value="30" min="1" max="100">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>连击窗口</label>
+							<input type="number" id="sys-combat-combo" value="500" min="100" max="2000">
+							<span class="unit">ms</span>
+						</div>
+						<div class="config-row">
+							<label>无敌帧</label>
+							<input type="number" id="sys-combat-iframe" value="200" min="0" max="1000">
+							<span class="unit">ms</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 技能编辑 -->
+		<div class="section-split" id="section-skills">
+			<div class="sec-le-pn">
+				<div class="pn-hd">技能列表</div>
+				<div class="pn-bd">
+					<div class="skill-lst" id="skill-lst">
+						<div class="skill-item sel" data-id="fireball">
+							<div class="skill-ico">🔥</div>
+							<div class="skill-info">
+								<div class="skill-name">火球术</div>
+								<div class="skill-type">主动 · 攻击</div>
+							</div>
+						</div>
+						<div class="skill-item" data-id="heal">
+							<div class="skill-ico">💚</div>
+							<div class="skill-info">
+								<div class="skill-name">治疗术</div>
+								<div class="skill-type">主动 · 辅助</div>
+							</div>
+						</div>
+						<div class="skill-item" data-id="shield">
+							<div class="skill-ico">🛡️</div>
+							<div class="skill-info">
+								<div class="skill-name">护盾</div>
+								<div class="skill-type">主动 · 防御</div>
+							</div>
+						</div>
+					</div>
+					<button class="skill-add" id="skill-add">+ 新建技能</button>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">技能详情</div>
+				<div class="pn-bd" id="skill-detail">
+					<div class="config-section">
+						<div class="config-section-title">基本信息</div>
+						<div class="config-row">
+							<label>技能ID</label>
+							<input type="text" id="skill-id" value="fireball" readonly>
+						</div>
+						<div class="config-row">
+							<label>技能名称</label>
+							<input type="text" id="skill-name" value="火球术">
+						</div>
+						<div class="config-row">
+							<label>技能图标</label>
+							<input type="text" id="skill-icon" value="🔥">
+						</div>
+						<div class="config-row">
+							<label>技能类型</label>
+							<select id="skill-type">
+								<option value="active" selected>主动技能</option>
+								<option value="passive">被动技能</option>
+								<option value="toggle">开关技能</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>分类标签</label>
+							<select id="skill-category">
+								<option value="attack" selected>攻击</option>
+								<option value="defense">防御</option>
+								<option value="support">辅助</option>
+								<option value="utility">功能</option>
+								<option value="movement">移动</option>
+								<option value="control">控制</option>
+							</select>
+						</div>
+					</div>
+					<div class="config-section">
+						<div class="config-section-title">释放条件</div>
+						<div class="config-row">
+							<label>目标类型</label>
+							<select id="skill-target">
+								<option value="self">自身</option>
+								<option value="enemy" selected>敌方单位</option>
+								<option value="ally">友方单位</option>
+								<option value="any">任意单位</option>
+								<option value="area">区域(圆形)</option>
+								<option value="cone">区域(扇形)</option>
+								<option value="line">区域(直线)</option>
+								<option value="ground">地面点</option>
+								<option value="none">无需目标</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>施法距离</label>
+							<input type="number" id="skill-range" value="10" min="0" step="0.5">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>影响半径</label>
+							<input type="number" id="skill-radius" value="0" min="0" step="0.5">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>冷却时间</label>
+							<input type="number" id="skill-cd" value="5" min="0" step="0.1">
+							<span class="unit">秒</span>
+						</div>
+						<div class="config-row">
+							<label>施法时间</label>
+							<input type="number" id="skill-cast-time" value="0" min="0" step="0.1">
+							<span class="unit">秒</span>
+						</div>
+					</div>
+					<div class="config-section">
+						<div class="config-section-title">消耗</div>
+						<div class="config-row">
+							<label>消耗类型</label>
+							<select id="skill-cost-type">
+								<option value="mp" selected>魔力(MP)</option>
+								<option value="hp">生命(HP)</option>
+								<option value="stamina">体力</option>
+								<option value="rage">怒气</option>
+								<option value="energy">能量</option>
+								<option value="soul">灵魂值</option>
+								<option value="item">道具</option>
+								<option value="none">无消耗</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>消耗数值</label>
+							<input type="number" id="skill-cost-val" value="20" min="0">
+						</div>
+						<div class="config-row" id="skill-cost-item-row" style="display:none">
+							<label>消耗道具</label>
+							<input type="text" id="skill-cost-item" value="">
+						</div>
+					</div>
+					<div class="config-section">
+						<div class="config-section-title">技能效果</div>
+						<div class="skill-eff-lst" id="skill-eff-lst">
+							<div class="skill-eff-item" data-idx="0">
+								<div class="skill-eff-hd">
+									<span class="skill-eff-idx">效果 #1</span>
+									<select class="skill-eff-type">
+										<option value="melee" selected>近战攻击</option>
+										<option value="projectile">弹道攻击</option>
+										<option value="area">范围攻击</option>
+										<option value="heal">治疗</option>
+										<option value="attr_mod">属性修改</option>
+										<option value="buff">添加Buff</option>
+										<option value="debuff">添加Debuff</option>
+										<option value="voxel_destroy">破坏方块</option>
+										<option value="voxel_create">创建方块</option>
+										<option value="voxel_transform">转换方块</option>
+										<option value="summon">召唤实体</option>
+										<option value="teleport">传送</option>
+										<option value="knockback">击退</option>
+										<option value="pull">拉拽</option>
+										<option value="stun">眩晕</option>
+										<option value="dot">持续伤害</option>
+										<option value="hot">持续治疗</option>
+									</select>
+									<button class="skill-eff-del" title="删除效果">×</button>
+								</div>
+								<div class="skill-eff-bd" data-type="melee">
+									<div class="config-section-title">伤害设置</div>
+									<div class="config-row">
+										<label>伤害类型</label>
+										<select class="eff-dmg-type">
+											<option value="physical" selected>物理</option>
+											<option value="magical">魔法</option>
+											<option value="fire">火焰</option>
+											<option value="ice">冰霜</option>
+											<option value="true">真实</option>
+										</select>
+									</div>
+									<div class="config-row">
+										<label>基础伤害</label>
+										<input type="number" class="eff-dmg-base" value="50" min="0">
+									</div>
+									<div class="config-row">
+										<label>攻击力加成</label>
+										<input type="number" class="eff-dmg-atk-ratio" value="100" min="0">
+										<span class="unit">%</span>
+									</div>
+									<div class="config-section-title">近战参数</div>
+									<div class="config-row">
+										<label>攻击距离</label>
+										<input type="number" class="eff-melee-dist" value="2" min="0" step="0.1">
+										<span class="unit">m</span>
+									</div>
+									<div class="config-row">
+										<label>攻击角度</label>
+										<input type="range" class="eff-melee-angle" value="90" min="0" max="360">
+										<span class="unit">90°</span>
+									</div>
+									<div class="config-row">
+										<label>攻击高度</label>
+										<input type="number" class="eff-melee-height" value="2" min="0" step="0.1">
+										<span class="unit">m</span>
+									</div>
+									<div class="config-row">
+										<label>判定延迟</label>
+										<input type="number" class="eff-melee-delay" value="0.1" min="0" step="0.01">
+										<span class="unit">秒</span>
+									</div>
+									<div class="config-row">
+										<label>判定次数</label>
+										<input type="number" class="eff-melee-count" value="1" min="1">
+									</div>
+									<div class="config-row">
+										<label>判定间隔</label>
+										<input type="number" class="eff-melee-interval" value="0" min="0" step="0.01">
+										<span class="unit">秒</span>
+									</div>
+									<div class="config-row">
+										<label>可格挡</label>
+										<label class="swt"><input type="checkbox" class="eff-melee-block" checked><span class="swt-trk"></span></label>
+									</div>
+									<div class="config-row">
+										<label>可闪避</label>
+										<label class="swt"><input type="checkbox" class="eff-melee-dodge" checked><span class="swt-trk"></span></label>
+									</div>
+									<div class="config-row">
+										<label>击退距离</label>
+										<input type="number" class="eff-melee-kb" value="0" min="0" step="0.1">
+										<span class="unit">m</span>
+									</div>
+									<div class="config-row">
+										<label>击飞高度</label>
+										<input type="number" class="eff-melee-kup" value="0" min="0" step="0.1">
+										<span class="unit">m</span>
+									</div>
+									<div class="config-row">
+										<label>硬直时间</label>
+										<input type="number" class="eff-melee-stagger" value="0.5" min="0" step="0.1">
+										<span class="unit">秒</span>
+									</div>
+									<div class="config-row">
+										<label>穿透数量</label>
+										<input type="number" class="eff-melee-pierce" value="0" min="0">
+										<span class="unit">0=无限</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<button class="skill-eff-add" id="skill-eff-add">+ 添加效果</button>
+					</div>
+					<div class="config-section">
+						<div class="config-section-title">特殊设置</div>
+						<div class="config-row">
+							<label>可暴击</label>
+							<label class="swt"><input type="checkbox" id="skill-can-crit" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>可闪避</label>
+							<label class="swt"><input type="checkbox" id="skill-can-dodge" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>可格挡</label>
+							<label class="swt"><input type="checkbox" id="skill-can-block"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>无视护甲</label>
+							<label class="swt"><input type="checkbox" id="skill-ignore-armor"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>打断施法</label>
+							<label class="swt"><input type="checkbox" id="skill-interrupt"><span class="swt-trk"></span></label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- AI编辑 -->
+		<div class="section-split" id="section-ai">
+			<div class="sec-le-pn">
+				<div class="pn-hd">AI分类</div>
+				<div class="pn-bd">
+					<div class="ai-cat-lst" id="ai-cat-lst">
+						<div class="ai-cat-item sel" data-cat="behavior">行为树</div>
+						<div class="ai-cat-item" data-cat="state">状态机</div>
+						<div class="ai-cat-item" data-cat="utility">效用AI</div>
+						<div class="ai-cat-item" data-cat="pathfind">寻路设置</div>
+						<div class="ai-cat-item" data-cat="perception">感知系统</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">AI设置</div>
+				<div class="pn-bd" id="ai-detail">
+					<div class="config-section" data-cat="behavior">
+						<div class="config-section-title">行为树编辑</div>
+						<div class="config-row">
+							<label>AI模板</label>
+							<select id="ai-template">
+								<option value="none">无</option>
+								<option value="passive">被动</option>
+								<option value="neutral" selected>中立</option>
+								<option value="hostile">敌对</option>
+								<option value="friendly">友好</option>
+								<option value="guard">守卫</option>
+								<option value="patrol">巡逻</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>警觉半径</label>
+							<input type="number" id="ai-alert-radius" value="15" min="0">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>追击半径</label>
+							<input type="number" id="ai-chase-radius" value="30" min="0">
+							<span class="unit">m</span>
+						</div>
+						<div class="config-row">
+							<label>返回半径</label>
+							<input type="number" id="ai-return-radius" value="50" min="0">
+							<span class="unit">m</span>
+						</div>
+					</div>
+					<div class="config-section" data-cat="pathfind" style="display:none">
+						<div class="config-section-title">寻路设置</div>
+						<div class="config-row">
+							<label>寻路算法</label>
+							<select id="ai-pathfind-algo">
+								<option value="astar" selected>A*</option>
+								<option value="dijkstra">Dijkstra</option>
+								<option value="navmesh">导航网格</option>
+							</select>
+						</div>
+						<div class="config-row">
+							<label>更新频率</label>
+							<input type="number" id="ai-pathfind-freq" value="0.5" min="0.1" step="0.1">
+							<span class="unit">秒</span>
+						</div>
+						<div class="config-row">
+							<label>避障半径</label>
+							<input type="number" id="ai-avoid-radius" value="0.5" min="0" step="0.1">
+							<span class="unit">m</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 模块层 -->
+		<div class="section-split" id="section-module">
+			<div class="sec-le-pn">
+				<div class="pn-hd">模块管理</div>
+				<div class="pn-bd">
+					<div class="module-cat-lst" id="module-cat-lst">
+						<div class="module-cat-item sel" data-cat="core">核心模块</div>
+						<div class="module-cat-item" data-cat="advanced">高级模块</div>
+						<div class="module-cat-item" data-cat="worldview">世界观模块</div>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="pn-hd">模块配置</div>
+				<div class="pn-bd" id="module-detail">
+					<div class="config-section" data-cat="core">
+						<div class="config-section-title">核心模块 (12个)</div>
+						<div class="module-lst" id="module-core-lst">
+							<div class="module-item" data-id="physics"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>物理系统</span></div>
+							<div class="module-item" data-id="animation"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>动画系统</span></div>
+							<div class="module-item" data-id="combat"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>战斗系统</span></div>
+							<div class="module-item" data-id="ability"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>能力系统</span></div>
+							<div class="module-item" data-id="equipment"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>装备系统</span></div>
+							<div class="module-item" data-id="progression"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>成长系统</span></div>
+							<div class="module-item" data-id="behavior"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>行为系统</span></div>
+							<div class="module-item" data-id="render"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>渲染系统</span></div>
+							<div class="module-item" data-id="audio"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>音频系统</span></div>
+							<div class="module-item" data-id="lifecycle"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>生命周期</span></div>
+							<div class="module-item" data-id="interaction"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>交互系统</span></div>
+							<div class="module-item" data-id="network"><label class="swt"><input type="checkbox" checked><span class="swt-trk"></span></label><span>网络系统</span></div>
+						</div>
+					</div>
+					<div class="config-section" data-cat="advanced" style="display:none">
+						<div class="config-section-title">高级模块 (8个)</div>
+						<div class="module-lst" id="module-adv-lst">
+							<div class="module-item" data-id="transformation"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>变身系统</span></div>
+							<div class="module-item" data-id="dimension"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>维度系统</span></div>
+							<div class="module-item" data-id="contract"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>契约系统</span></div>
+							<div class="module-item" data-id="soul"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>灵魂系统</span></div>
+							<div class="module-item" data-id="fate"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>命运系统</span></div>
+							<div class="module-item" data-id="crafting"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>制作系统</span></div>
+							<div class="module-item" data-id="territory"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>领地系统</span></div>
+							<div class="module-item" data-id="evolution"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>进化系统</span></div>
+						</div>
+					</div>
+					<div class="config-section" data-cat="worldview" style="display:none">
+						<div class="config-section-title">世界观模块 (15个)</div>
+						<div class="module-lst" id="module-wv-lst">
+							<div class="module-item" data-id="hacking"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>黑客 (赛博朋克)</span></div>
+							<div class="module-item" data-id="magic"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>魔法 (哈利波特)</span></div>
+							<div class="module-item" data-id="qi"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>真气 (修仙)</span></div>
+							<div class="module-item" data-id="martial"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>内功 (武侠)</span></div>
+							<div class="module-item" data-id="ninjutsu"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>忍术 (火影)</span></div>
+							<div class="module-item" data-id="haki"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>霸气 (海贼王)</span></div>
+							<div class="module-item" data-id="jujutsu"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>咒术 (咒术回战)</span></div>
+							<div class="module-item" data-id="force"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>原力 (星战)</span></div>
+							<div class="module-item" data-id="breath"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>呼吸法 (鬼灭)</span></div>
+							<div class="module-item" data-id="magecraft"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>魔术 (FATE)</span></div>
+							<div class="module-item" data-id="esper"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>超能力 (魔禁)</span></div>
+							<div class="module-item" data-id="stand"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>替身 (JOJO)</span></div>
+							<div class="module-item" data-id="companion"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>伙伴 (宝可梦)</span></div>
+							<div class="module-item" data-id="nen"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>念能力 (猎人)</span></div>
+							<div class="module-item" data-id="alchemy"><label class="swt"><input type="checkbox"><span class="swt-trk"></span></label><span>炼金术 (钢炼)</span></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 预览面板 -->
+		<div class="section-split" id="section-preview">
+			<div class="sec-le-pn" style="width:200px">
+				<div class="pn-hd">预览控制</div>
+				<div class="pn-bd">
+					<div class="config-section">
+						<div class="config-section-title">相机模式</div>
+						<div class="prv-mode-lst">
+							<div class="prv-mode-item sel" data-mode="orbit">自由相机</div>
+							<div class="prv-mode-item" data-mode="fps">第一人称</div>
+							<div class="prv-mode-item" data-mode="tps">第三人称</div>
+						</div>
+					</div>
+					<div class="config-section">
+						<div class="config-section-title">时间控制</div>
+						<div class="config-row">
+							<label>播放</label>
+							<label class="swt"><input type="checkbox" id="prv-play"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>倍速</label>
+							<input type="range" id="prv-speed" min="0.1" max="10" value="1" step="0.1">
+							<span class="unit">x</span>
+						</div>
+					</div>
+					<div class="config-section">
+						<div class="config-section-title">显示选项</div>
+						<div class="config-row">
+							<label>网格</label>
+							<label class="swt"><input type="checkbox" id="prv-grid" checked><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>线框</label>
+							<label class="swt"><input type="checkbox" id="prv-wireframe"><span class="swt-trk"></span></label>
+						</div>
+						<div class="config-row">
+							<label>碰撞体</label>
+							<label class="swt"><input type="checkbox" id="prv-collider"><span class="swt-trk"></span></label>
+						</div>
+					</div>
+					<div class="config-section">
+						<div class="config-section-title">快速操作</div>
+						<button class="prv-action-btn" id="prv-spawn-player">生成玩家</button>
+						<button class="prv-action-btn" id="prv-spawn-npc">生成NPC</button>
+						<button class="prv-action-btn" id="prv-reset">重置场景</button>
+					</div>
+				</div>
+			</div>
+			<div class="sec-ri-pn">
+				<div class="prv-cv-ctn" id="prv-cv-ctn">
+					<canvas id="prv-canvas"></canvas>
+					<div class="prv-info" id="prv-info">
+						<span id="prv-fps">FPS: 0</span>
+						<span id="prv-time">时间: 08:00</span>
+						<span id="prv-pos">位置: 0, 0, 0</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="info-bar">
+			<span id="fps">FPS: 0</span>
+			<span id="pos">Pos: 0, 0, 0</span>
+			<span id="chunks">Chunks: 0</span>
+			<span id="version">V4.1.0</span>
+		</div>
+	</div>
+
+	<script>
+	function openBldEditor() {
+		document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'))
+		document.querySelectorAll('.section-split').forEach(s => s.classList.remove('active'))
+		document.getElementById('section-building').classList.add('active')
+	}
+	function closeBldEditor() {
+		document.querySelectorAll('.section-split').forEach(s => s.classList.remove('active'))
+		document.querySelector('.section-tab[data-section="assets"]').classList.add('active')
+		document.getElementById('section-assets').classList.add('active')
+	}
+	document.querySelectorAll('.section-tab').forEach(tab => {
+		tab.addEventListener('click', () => {
+			document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'))
+			document.querySelectorAll('.section-split').forEach(s => s.classList.remove('active'))
+			tab.classList.add('active')
+			const sec = document.getElementById('section-' + tab.dataset.section)
+			if (sec) sec.classList.add('active')
+		})
+	})
+	document.querySelectorAll('.ast-cat-hd').forEach(hd => {
+		hd.addEventListener('click', (e) => {
+			e.stopPropagation()
+			hd.classList.toggle('open')
+			const bd = hd.nextElementSibling
+			if (bd) bd.classList.toggle('open')
+		})
+	})
+	document.querySelectorAll('.ast-sub-hd').forEach(hd => {
+		hd.addEventListener('click', (e) => {
+			e.stopPropagation()
+			hd.classList.toggle('open')
+			const bd = hd.nextElementSibling
+			if (bd) bd.classList.toggle('open')
+		})
+	})
+	document.querySelectorAll('.ast-add-btn').forEach(btn => {
+		btn.addEventListener('click', (e) => {
+			e.stopPropagation()
+			const cat = btn.dataset.cat
+			if (cat === 'buildings') {
+				openBldEditor()
+			}
+		})
+	})
+	document.querySelectorAll('.ast-item').forEach(item => {
+		item.addEventListener('click', (e) => {
+			e.stopPropagation()
+			document.querySelectorAll('.ast-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+		item.addEventListener('dblclick', (e) => {
+			e.stopPropagation()
+			const cat = item.closest('.ast-cat-item')?.dataset.cat
+			if (cat === 'buildings') {
+				openBldEditor()
+			}
+		})
+	})
+	document.querySelectorAll('.pn-hd-fld-header').forEach(hd => {
+		hd.addEventListener('click', () => {
+			hd.classList.toggle('open')
+			const bd = hd.nextElementSibling
+			if (bd) bd.classList.toggle('open')
+		})
+	})
+	document.querySelectorAll('.spawn-cfg-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.spawn-cfg-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+	})
+	document.querySelectorAll('.map-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.map-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#map-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#map-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.sys-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.sys-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#sys-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#sys-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.ai-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.ai-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#ai-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#ai-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.skill-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.skill-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			const id = item.dataset.id || ''
+			if (document.getElementById('skill-id')) document.getElementById('skill-id').value = id
+			const nameEl = item.querySelector('.skill-name')
+			if (nameEl && document.getElementById('skill-name')) document.getElementById('skill-name').value = nameEl.textContent || ''
+			const iconEl = item.querySelector('.skill-ico')
+			if (iconEl && document.getElementById('skill-icon')) document.getElementById('skill-icon').value = iconEl.textContent || ''
+		})
+	})
+	document.getElementById('skill-name')?.addEventListener('input', (e) => {
+		const selItem = document.querySelector('.skill-item.sel')
+		if (selItem) {
+			const nameEl = selItem.querySelector('.skill-name')
+			if (nameEl) nameEl.textContent = e.target.value
+		}
+	})
+	document.getElementById('skill-icon')?.addEventListener('input', (e) => {
+		const selItem = document.querySelector('.skill-item.sel')
+		if (selItem) {
+			const iconEl = selItem.querySelector('.skill-ico')
+			if (iconEl) iconEl.textContent = e.target.value
+		}
+	})
+	document.getElementById('skill-type')?.addEventListener('change', (e) => {
+		const selItem = document.querySelector('.skill-item.sel')
+		if (selItem) {
+			const typeEl = selItem.querySelector('.skill-type')
+			if (typeEl) {
+				const typeMap = { active: '主动', passive: '被动', toggle: '开关' }
+				const catEl = document.getElementById('skill-category')
+				const catMap = { attack: '攻击', defense: '防御', support: '辅助', utility: '功能', movement: '移动', control: '控制' }
+				typeEl.textContent = (typeMap[e.target.value] || '主动') + ' · ' + (catMap[catEl?.value] || '攻击')
+			}
+		}
+	})
+	document.getElementById('skill-category')?.addEventListener('change', (e) => {
+		const selItem = document.querySelector('.skill-item.sel')
+		if (selItem) {
+			const typeEl = selItem.querySelector('.skill-type')
+			if (typeEl) {
+				const typeMap = { active: '主动', passive: '被动', toggle: '开关' }
+				const catMap = { attack: '攻击', defense: '防御', support: '辅助', utility: '功能', movement: '移动', control: '控制' }
+				const skillTypeEl = document.getElementById('skill-type')
+				typeEl.textContent = (typeMap[skillTypeEl?.value] || '主动') + ' · ' + (catMap[e.target.value] || '攻击')
+			}
+		}
+	})
+	document.querySelectorAll('.tool-btn').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const grp = btn.closest('.tool-group')
+			grp.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'))
+			btn.classList.add('active')
+		})
+	})
+	document.getElementById('spawn-type')?.addEventListener('change', (e) => {
+		const type = e.target.value
+		document.getElementById('spawn-biome-row').style.display = type === 'biome' ? 'flex' : 'none'
+		document.getElementById('spawn-zone-row').style.display = type === 'city' ? 'flex' : 'none'
+	})
+	document.querySelectorAll('.bld-mat-tab').forEach(tab => {
+		tab.addEventListener('click', () => {
+			document.querySelectorAll('.bld-mat-tab').forEach(t => t.classList.remove('active'))
+			document.querySelectorAll('.bld-mat-pn').forEach(p => p.classList.remove('active'))
+			tab.classList.add('active')
+			const pn = document.getElementById('bld-mat-' + tab.dataset.tab)
+			if (pn) pn.classList.add('active')
+		})
+	})
+	document.querySelectorAll('.bld-mat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.bld-mat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+	})
+	document.querySelectorAll('.bld-tool-btn').forEach(btn => {
+		btn.addEventListener('click', () => {
+			document.querySelectorAll('.bld-tool-btn').forEach(b => b.classList.remove('active'))
+			btn.classList.add('active')
+		})
+	})
+	document.getElementById('bld-exit-btn')?.addEventListener('click', closeBldEditor)
+	let curLyr = 1
+	document.getElementById('bld-lyr-up')?.addEventListener('click', () => {
+		curLyr++
+		document.getElementById('bld-lyr-cur').textContent = '层 ' + curLyr
+	})
+	document.getElementById('bld-lyr-down')?.addEventListener('click', () => {
+		if (curLyr > 1) curLyr--
+		document.getElementById('bld-lyr-cur').textContent = '层 ' + curLyr
+	})
+	const lawNames = {
+		causality: '因果律',
+		equivalent_exchange: '等价交换',
+		conservation: '守恒律',
+		contract: '契约律',
+		mortality: '必死律',
+		identity: '同一律'
+	}
+	document.querySelectorAll('.law-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.law-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			const title = document.querySelector('#law-detail .config-section-title')
+			if (title) title.textContent = lawNames[item.dataset.id] || item.textContent
+		})
+	})
+	document.querySelectorAll('.rules-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.rules-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#rules-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#rules-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.world-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.world-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#world-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#world-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.space-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.space-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#map-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#map-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.entity-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.entity-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#entity-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#entity-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.entity-def-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.entity-def-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+	})
+	document.querySelectorAll('.faction-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.faction-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+	})
+	document.querySelectorAll('.module-cat-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.module-cat-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.querySelectorAll('#module-detail .config-section').forEach(s => s.style.display = 'none')
+			const sec = document.querySelector('#module-detail .config-section[data-cat="' + item.dataset.cat + '"]')
+			if (sec) sec.style.display = 'block'
+		})
+	})
+	document.querySelectorAll('.prv-mode-item').forEach(item => {
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.prv-mode-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+	})
+	document.getElementById('btn-new')?.addEventListener('click', () => {
+		if (!confirm('确定要新建配置吗？当前未保存的修改将丢失。')) return
+		document.querySelectorAll('input[type="text"]').forEach(el => el.value = '')
+		document.querySelectorAll('input[type="number"]').forEach(el => el.value = el.defaultValue || 0)
+		document.querySelectorAll('input[type="range"]').forEach(el => el.value = el.defaultValue || 50)
+		document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = el.defaultChecked || false)
+		document.querySelectorAll('select').forEach(el => el.selectedIndex = 0)
+		document.querySelectorAll('.module-item[data-id="physics"] input, .module-item[data-id="animation"] input, .module-item[data-id="combat"] input, .module-item[data-id="ability"] input, .module-item[data-id="equipment"] input, .module-item[data-id="progression"] input, .module-item[data-id="behavior"] input, .module-item[data-id="render"] input, .module-item[data-id="audio"] input, .module-item[data-id="lifecycle"] input, .module-item[data-id="interaction"] input, .module-item[data-id="network"] input').forEach(chk => chk.checked = true)
+	})
+	document.getElementById('btn-preview')?.addEventListener('click', () => {
+		document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'))
+		document.querySelectorAll('.section-split').forEach(s => s.classList.remove('active'))
+		document.querySelector('.section-tab[data-section="preview"]')?.classList.add('active')
+		document.getElementById('section-preview')?.classList.add('active')
+	})
+	document.getElementById('faction-add')?.addEventListener('click', () => {
+		const lst = document.getElementById('faction-lst')
+		if (!lst) return
+		const cnt = lst.querySelectorAll('.faction-item').length + 1
+		const item = document.createElement('div')
+		item.className = 'faction-item'
+		item.dataset.id = 'faction_' + cnt
+		item.textContent = '新势力 ' + cnt
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.faction-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+		lst.appendChild(item)
+	})
+	document.getElementById('entity-def-add')?.addEventListener('click', () => {
+		const lst = document.getElementById('entity-def-lst')
+		if (!lst) return
+		const cnt = lst.querySelectorAll('.entity-def-item').length + 1
+		const item = document.createElement('div')
+		item.className = 'entity-def-item'
+		item.dataset.id = 'entity_' + cnt
+		item.textContent = '新实体 ' + cnt
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.entity-def-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+		})
+		lst.appendChild(item)
+	})
+	function getEffectBodyHtml(type) {
+		switch(type) {
+			case 'melee':
+				return `<div class="config-section-title">伤害设置</div>
+<div class="config-row"><label>伤害类型</label><select class="eff-dmg-type"><option value="physical" selected>物理</option><option value="magical">魔法</option><option value="fire">火焰</option><option value="ice">冰霜</option><option value="true">真实</option></select></div>
+<div class="config-row"><label>基础伤害</label><input type="number" class="eff-dmg-base" value="50" min="0"></div>
+<div class="config-row"><label>攻击力加成</label><input type="number" class="eff-dmg-atk-ratio" value="100" min="0"><span class="unit">%</span></div>
+<div class="config-section-title">近战参数</div>
+<div class="config-row"><label>攻击距离</label><input type="number" class="eff-melee-dist" value="2" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>攻击角度</label><input type="range" class="eff-melee-angle" value="90" min="0" max="360"><span class="unit">90°</span></div>
+<div class="config-row"><label>攻击高度</label><input type="number" class="eff-melee-height" value="2" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>判定延迟</label><input type="number" class="eff-melee-delay" value="0.1" min="0" step="0.01"><span class="unit">秒</span></div>
+<div class="config-row"><label>判定次数</label><input type="number" class="eff-melee-count" value="1" min="1"></div>
+<div class="config-row"><label>判定间隔</label><input type="number" class="eff-melee-interval" value="0" min="0" step="0.01"><span class="unit">秒</span></div>
+<div class="config-row"><label>可格挡</label><label class="swt"><input type="checkbox" class="eff-melee-block" checked><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>可闪避</label><label class="swt"><input type="checkbox" class="eff-melee-dodge" checked><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>击退距离</label><input type="number" class="eff-melee-kb" value="0" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>击飞高度</label><input type="number" class="eff-melee-kup" value="0" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>硬直时间</label><input type="number" class="eff-melee-stagger" value="0.5" min="0" step="0.1"><span class="unit">秒</span></div>
+<div class="config-row"><label>穿透数量</label><input type="number" class="eff-melee-pierce" value="0" min="0"><span class="unit">0=无限</span></div>`
+			case 'projectile':
+				return `<div class="config-section-title">伤害设置</div>
+<div class="config-row"><label>伤害类型</label><select class="eff-dmg-type"><option value="physical">物理</option><option value="magical" selected>魔法</option><option value="fire">火焰</option><option value="ice">冰霜</option><option value="true">真实</option></select></div>
+<div class="config-row"><label>基础伤害</label><input type="number" class="eff-dmg-base" value="50" min="0"></div>
+<div class="config-row"><label>攻击力加成</label><input type="number" class="eff-dmg-atk-ratio" value="100" min="0"><span class="unit">%</span></div>
+<div class="config-section-title">弹道基础</div>
+<div class="config-row"><label>锁定模式</label><select class="eff-proj-lock"><option value="none" selected>无锁定</option><option value="soft">软锁定</option><option value="hard">硬锁定</option></select></div>
+<div class="config-row"><label>可阻挡</label><label class="swt"><input type="checkbox" class="eff-proj-blockable" checked><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>命中类型</label><select class="eff-proj-hit"><option value="delayed" selected>延迟命中</option><option value="instant">即时命中</option></select></div>
+<div class="config-section-title">锁定设置</div>
+<div class="config-row"><label>锁定范围</label><input type="number" class="eff-proj-lock-range" value="30" min="0"><span class="unit">m</span></div>
+<div class="config-row"><label>锁定角度</label><input type="number" class="eff-proj-lock-angle" value="45" min="0" max="180"><span class="unit">°</span></div>
+<div class="config-row"><label>追踪强度</label><input type="range" class="eff-proj-track" value="50" min="0" max="100"><span class="unit">50%</span></div>
+<div class="config-row"><label>追踪时限</label><input type="number" class="eff-proj-track-dur" value="5" min="0"><span class="unit">秒</span></div>
+<div class="config-row"><label>失锁行为</label><select class="eff-proj-lost"><option value="continue" selected>继续飞行</option><option value="drop">坠落</option><option value="explode">爆炸</option></select></div>
+<div class="config-section-title">弹道物理</div>
+<div class="config-row"><label>初速度</label><input type="number" class="eff-proj-speed" value="50" min="0"><span class="unit">m/s</span></div>
+<div class="config-row"><label>加速度</label><input type="number" class="eff-proj-accel" value="0"><span class="unit">m/s²</span></div>
+<div class="config-row"><label>最大速度</label><input type="number" class="eff-proj-maxspd" value="100" min="0"><span class="unit">m/s</span></div>
+<div class="config-row"><label>重力影响</label><label class="swt"><input type="checkbox" class="eff-proj-gravity"><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>重力倍率</label><input type="range" class="eff-proj-gscale" value="100" min="0" max="300"><span class="unit">1.0x</span></div>
+<div class="config-row"><label>空气阻力</label><input type="range" class="eff-proj-drag" value="0" min="0" max="100"><span class="unit">0%</span></div>
+<div class="config-row"><label>弹道寿命</label><input type="number" class="eff-proj-life" value="10" min="0"><span class="unit">秒</span></div>
+<div class="config-row"><label>最大射程</label><input type="number" class="eff-proj-range" value="0" min="0"><span class="unit">m(0=无限)</span></div>
+<div class="config-section-title">碰撞设置</div>
+<div class="config-row"><label>碰撞形状</label><select class="eff-proj-col-shape"><option value="sphere" selected>球形</option><option value="capsule">胶囊</option><option value="box">盒形</option></select></div>
+<div class="config-row"><label>碰撞尺寸</label><input type="number" class="eff-proj-col-size" value="0.1" min="0" step="0.01"><span class="unit">m</span></div>
+<div class="config-row"><label>穿透次数</label><input type="number" class="eff-proj-pierce" value="0" min="0"><span class="unit">0=首个</span></div>
+<div class="config-row"><label>穿透衰减</label><input type="range" class="eff-proj-pierce-decay" value="0" min="0" max="100"><span class="unit">0%</span></div>
+<div class="config-row"><label>反弹次数</label><input type="number" class="eff-proj-bounce" value="0" min="0"></div>
+<div class="config-section-title">即时命中</div>
+<div class="config-row"><label>射线宽度</label><input type="number" class="eff-proj-ray-width" value="0" min="0" step="0.01"><span class="unit">m</span></div>
+<div class="config-row"><label>射线长度</label><input type="number" class="eff-proj-ray-len" value="100" min="0"><span class="unit">m</span></div>
+<div class="config-row"><label>持续时间</label><input type="number" class="eff-proj-ray-dur" value="0" min="0" step="0.1"><span class="unit">秒</span></div>
+<div class="config-row"><label>视觉效果</label><select class="eff-proj-ray-fx"><option value="laser" selected>激光</option><option value="beam">光束</option><option value="lightning">闪电</option></select></div>`
+			case 'area':
+				return `<div class="config-section-title">触发设置</div>
+<div class="config-row"><label>触发位置</label><select class="eff-area-pos"><option value="target" selected>目标位置</option><option value="self">自身位置</option><option value="cursor">指针位置</option><option value="offset">固定偏移</option></select></div>
+<div class="config-row"><label>位置偏移X</label><input type="number" class="eff-area-ox" value="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>位置偏移Y</label><input type="number" class="eff-area-oy" value="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>位置偏移Z</label><input type="number" class="eff-area-oz" value="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>触发延迟</label><input type="number" class="eff-area-delay" value="0" min="0" step="0.1"><span class="unit">秒</span></div>
+<div class="config-row"><label>预警显示</label><label class="swt"><input type="checkbox" class="eff-area-warn" checked><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>预警颜色</label><input type="color" class="eff-area-warn-clr" value="#ff0000"></div>
+<div class="config-row"><label>朝向</label><select class="eff-area-facing"><option value="forward" selected>面朝方向</option><option value="target">朝向目标</option><option value="fixed">固定方向</option></select></div>
+<div class="config-section-title">形状列表 <button class="eff-area-shape-add" type="button">+ 添加形状</button></div>
+<div class="eff-area-shape-lst"></div>
+<div class="config-section-title">持续设置</div>
+<div class="config-row"><label>持续时间</label><input type="number" class="eff-area-dur" value="0" min="0" step="0.1"><span class="unit">秒(0=瞬发)</span></div>
+<div class="config-row"><label>触发间隔</label><input type="number" class="eff-area-interval" value="1" min="0.1" step="0.1"><span class="unit">秒</span></div>
+<div class="config-row"><label>进入触发</label><label class="swt"><input type="checkbox" class="eff-area-enter" checked><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>停留触发</label><label class="swt"><input type="checkbox" class="eff-area-stay"><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>离开触发</label><label class="swt"><input type="checkbox" class="eff-area-exit"><span class="swt-trk"></span></label></div>
+<div class="config-row"><label>最大命中</label><input type="number" class="eff-area-maxhit" value="0" min="0"><span class="unit">0=无限</span></div>
+<div class="config-section-title">视觉效果</div>
+<div class="config-row"><label>效果类型</label><select class="eff-area-fx"><option value="explosion" selected>爆炸</option><option value="field">力场</option><option value="pillar">光柱</option><option value="wave">冲击波</option></select></div>
+<div class="config-row"><label>效果颜色</label><input type="color" class="eff-area-fx-clr" value="#ff6600"></div>
+<div class="config-row"><label>效果缩放</label><input type="number" class="eff-area-fx-scale" value="1" min="0" step="0.1"></div>`
+			case 'heal':
+				return `<div class="config-row"><label>基础治疗</label><input type="number" class="eff-heal-base" value="30" min="0"></div><div class="config-row"><label>法强加成</label><input type="number" class="eff-heal-sp-ratio" value="50" min="0"><span class="unit">%</span></div>`
+			case 'attr_mod':
+				return `<div class="config-row"><label>属性</label><select class="eff-attr-key"><option value="hp">生命</option><option value="mp">魔力</option><option value="atk">攻击</option><option value="def">防御</option><option value="spd">速度</option><option value="crit">暴击</option><option value="dodge">闪避</option></select></div><div class="config-row"><label>修改方式</label><select class="eff-attr-mode"><option value="add">增加固定值</option><option value="sub">减少固定值</option><option value="mul">百分比增加</option><option value="set">直接设置</option></select></div><div class="config-row"><label>数值</label><input type="number" class="eff-attr-val" value="10"></div>`
+			case 'buff':
+			case 'debuff':
+				return `<div class="config-row"><label>效果名称</label><input type="text" class="eff-buff-name" value="新效果"></div><div class="config-row"><label>持续时间</label><input type="number" class="eff-buff-dur" value="10" min="0"><span class="unit">秒</span></div><div class="config-row"><label>可叠加</label><label class="swt"><input type="checkbox" class="eff-buff-stack"><span class="swt-trk"></span></label></div><div class="config-row"><label>最大层数</label><input type="number" class="eff-buff-max" value="1" min="1"></div><div class="config-row"><label>影响属性</label><select class="eff-buff-attr"><option value="atk">攻击</option><option value="def">防御</option><option value="spd">速度</option><option value="crit">暴击</option><option value="regen">回复</option></select></div><div class="config-row"><label>修改值</label><input type="number" class="eff-buff-val" value="10"><span class="unit">%</span></div>`
+			case 'voxel_destroy':
+				return `<div class="config-row"><label>破坏半径</label><input type="number" class="eff-vox-radius" value="3" min="1"><span class="unit">格</span></div><div class="config-row"><label>形状</label><select class="eff-vox-shape"><option value="sphere">球形</option><option value="cube">立方体</option><option value="cylinder">圆柱</option></select></div><div class="config-row"><label>目标方块</label><select class="eff-vox-target"><option value="any">任意</option><option value="solid">固体</option><option value="soft">软方块</option></select></div>`
+			case 'voxel_create':
+				return `<div class="config-row"><label>创建半径</label><input type="number" class="eff-vox-radius" value="2" min="1"><span class="unit">格</span></div><div class="config-row"><label>形状</label><select class="eff-vox-shape"><option value="sphere">球形</option><option value="cube">立方体</option><option value="wall">墙壁</option><option value="floor">地板</option></select></div><div class="config-row"><label>方块类型</label><input type="text" class="eff-vox-block" value="stone"></div>`
+			case 'voxel_transform':
+				return `<div class="config-row"><label>转换半径</label><input type="number" class="eff-vox-radius" value="3" min="1"><span class="unit">格</span></div><div class="config-row"><label>源方块</label><input type="text" class="eff-vox-src" value="dirt"></div><div class="config-row"><label>目标方块</label><input type="text" class="eff-vox-dst" value="grass"></div>`
+			case 'summon':
+				return `<div class="config-row"><label>召唤实体</label><input type="text" class="eff-summon-id" value=""></div><div class="config-row"><label>数量</label><input type="number" class="eff-summon-cnt" value="1" min="1"></div><div class="config-row"><label>持续时间</label><input type="number" class="eff-summon-dur" value="30" min="0"><span class="unit">秒</span></div><div class="config-row"><label>继承等级</label><label class="swt"><input type="checkbox" class="eff-summon-lvl" checked><span class="swt-trk"></span></label></div>`
+			case 'teleport':
+				return `<div class="config-row"><label>传送类型</label><select class="eff-tp-type"><option value="forward">向前</option><option value="target">到目标</option><option value="random">随机</option><option value="home">回城</option></select></div><div class="config-row"><label>距离</label><input type="number" class="eff-tp-dist" value="10" min="0"><span class="unit">m</span></div>`
+			case 'knockback':
+				return `<div class="config-row"><label>击退距离</label><input type="number" class="eff-kb-dist" value="5" min="0"><span class="unit">m</span></div><div class="config-row"><label>击飞高度</label><input type="number" class="eff-kb-height" value="0" min="0"><span class="unit">m</span></div>`
+			case 'pull':
+				return `<div class="config-row"><label>拉拽距离</label><input type="number" class="eff-pull-dist" value="5" min="0"><span class="unit">m</span></div>`
+			case 'stun':
+				return `<div class="config-row"><label>眩晕时间</label><input type="number" class="eff-stun-dur" value="2" min="0" step="0.1"><span class="unit">秒</span></div>`
+			case 'dot':
+				return `<div class="config-row"><label>伤害类型</label><select class="eff-dot-type"><option value="physical">物理</option><option value="magical">魔法</option><option value="fire">火焰</option><option value="poison">毒素</option></select></div><div class="config-row"><label>每跳伤害</label><input type="number" class="eff-dot-dmg" value="10" min="0"></div><div class="config-row"><label>持续时间</label><input type="number" class="eff-dot-dur" value="5" min="0"><span class="unit">秒</span></div><div class="config-row"><label>跳动间隔</label><input type="number" class="eff-dot-itv" value="1" min="0.1" step="0.1"><span class="unit">秒</span></div>`
+			case 'hot':
+				return `<div class="config-row"><label>每跳治疗</label><input type="number" class="eff-hot-heal" value="10" min="0"></div><div class="config-row"><label>持续时间</label><input type="number" class="eff-hot-dur" value="5" min="0"><span class="unit">秒</span></div><div class="config-row"><label>跳动间隔</label><input type="number" class="eff-hot-itv" value="1" min="0.1" step="0.1"><span class="unit">秒</span></div>`
+			default:
+				return ''
+		}
+	}
+	function createEffectItem(idx, type = 'melee') {
+		const item = document.createElement('div')
+		item.className = 'skill-eff-item'
+		item.dataset.idx = idx
+		item.innerHTML = `<div class="skill-eff-hd"><span class="skill-eff-idx">效果 #${idx + 1}</span><select class="skill-eff-type"><option value="melee"${type === 'melee' ? ' selected' : ''}>近战攻击</option><option value="projectile"${type === 'projectile' ? ' selected' : ''}>弹道攻击</option><option value="area"${type === 'area' ? ' selected' : ''}>范围攻击</option><option value="heal"${type === 'heal' ? ' selected' : ''}>治疗</option><option value="attr_mod"${type === 'attr_mod' ? ' selected' : ''}>属性修改</option><option value="buff"${type === 'buff' ? ' selected' : ''}>添加Buff</option><option value="debuff"${type === 'debuff' ? ' selected' : ''}>添加Debuff</option><option value="voxel_destroy"${type === 'voxel_destroy' ? ' selected' : ''}>破坏方块</option><option value="voxel_create"${type === 'voxel_create' ? ' selected' : ''}>创建方块</option><option value="voxel_transform"${type === 'voxel_transform' ? ' selected' : ''}>转换方块</option><option value="summon"${type === 'summon' ? ' selected' : ''}>召唤实体</option><option value="teleport"${type === 'teleport' ? ' selected' : ''}>传送</option><option value="knockback"${type === 'knockback' ? ' selected' : ''}>击退</option><option value="pull"${type === 'pull' ? ' selected' : ''}>拉拽</option><option value="stun"${type === 'stun' ? ' selected' : ''}>眩晕</option><option value="dot"${type === 'dot' ? ' selected' : ''}>持续伤害</option><option value="hot"${type === 'hot' ? ' selected' : ''}>持续治疗</option></select><button class="skill-eff-del" title="删除效果">×</button></div><div class="skill-eff-bd" data-type="${type}">${getEffectBodyHtml(type)}</div>`
+		const bd = item.querySelector('.skill-eff-bd')
+		if (type === 'area') initAreaShapeAdd(bd)
+		item.querySelector('.skill-eff-type').addEventListener('change', (e) => {
+			const bd = item.querySelector('.skill-eff-bd')
+			const newType = e.target.value
+			bd.dataset.type = newType
+			bd.innerHTML = getEffectBodyHtml(newType)
+			if (newType === 'area') initAreaShapeAdd(bd)
+		})
+		item.querySelector('.skill-eff-del').addEventListener('click', () => {
+			item.remove()
+			updateEffectIndices()
+		})
+		return item
+	}
+	function updateEffectIndices() {
+		document.querySelectorAll('.skill-eff-item').forEach((item, i) => {
+			item.dataset.idx = i
+			item.querySelector('.skill-eff-idx').textContent = '效果 #' + (i + 1)
+		})
+	}
+	function createAreaShapeItem(idx, data = {}) {
+		const item = document.createElement('div')
+		item.className = 'area-shape-item'
+		item.dataset.idx = idx
+		const isFirst = idx === 0
+		const op = data.op || 'union'
+		const shape = data.shape || 'circle'
+		item.innerHTML = `<div class="area-shape-hd">
+<span class="area-shape-idx">形状 #${idx + 1}</span>
+${isFirst ? '<span class="area-shape-base">[基础]</span>' : `<select class="area-shape-op"><option value="union"${op === 'union' ? ' selected' : ''}>并集(+)</option><option value="intersect"${op === 'intersect' ? ' selected' : ''}>交集(∩)</option><option value="subtract"${op === 'subtract' ? ' selected' : ''}>差集(-)</option></select>`}
+<button class="area-shape-del" type="button">×</button>
+</div>
+<div class="area-shape-bd">
+<div class="config-row"><label>形状类型</label><select class="area-shape-type"><option value="circle"${shape === 'circle' ? ' selected' : ''}>圆形</option><option value="rect"${shape === 'rect' ? ' selected' : ''}>矩形</option><option value="cone"${shape === 'cone' ? ' selected' : ''}>扇形</option><option value="ring"${shape === 'ring' ? ' selected' : ''}>环形</option><option value="cylinder"${shape === 'cylinder' ? ' selected' : ''}>圆柱</option></select></div>
+<div class="config-row"><label>偏移X</label><input type="number" class="area-shape-ox" value="${data.ox ?? 0}" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>偏移Y</label><input type="number" class="area-shape-oy" value="${data.oy ?? 0}" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>偏移Z</label><input type="number" class="area-shape-oz" value="${data.oz ?? 0}" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>旋转角度</label><input type="number" class="area-shape-rot" value="${data.rot ?? 0}" min="0" max="360"><span class="unit">°</span></div>
+<div class="config-row"><label>半径/宽度</label><input type="number" class="area-shape-radius" value="${data.radius ?? 5}" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>内半径</label><input type="number" class="area-shape-inner" value="${data.inner ?? 0}" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>长度/深度</label><input type="number" class="area-shape-length" value="${data.length ?? 5}" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>高度</label><input type="number" class="area-shape-height" value="${data.height ?? 2}" min="0" step="0.1"><span class="unit">m</span></div>
+<div class="config-row"><label>扇形角度</label><input type="number" class="area-shape-angle" value="${data.angle ?? 60}" min="0" max="360"><span class="unit">°</span></div>
+<div class="config-section-title">伤害设置</div>
+<div class="config-row"><label>伤害类型</label><select class="area-shape-dmg-type"><option value="physical"${data.dmgType === 'physical' ? ' selected' : ''}>物理</option><option value="magical"${(data.dmgType === 'magical' || !data.dmgType) ? ' selected' : ''}>魔法</option><option value="fire"${data.dmgType === 'fire' ? ' selected' : ''}>火焰</option><option value="ice"${data.dmgType === 'ice' ? ' selected' : ''}>冰霜</option><option value="true"${data.dmgType === 'true' ? ' selected' : ''}>真实</option></select></div>
+<div class="config-row"><label>基础伤害</label><input type="number" class="area-shape-dmg-base" value="${data.dmgBase ?? 50}" min="0"></div>
+<div class="config-row"><label>攻击力加成</label><input type="number" class="area-shape-dmg-ratio" value="${data.dmgRatio ?? 100}" min="0"><span class="unit">%</span></div>
+</div>`
+		item.querySelector('.area-shape-del').addEventListener('click', () => {
+			const lst = item.closest('.eff-area-shape-lst')
+			item.remove()
+			updateAreaShapeIndices(lst)
+		})
+		return item
+	}
+	function updateAreaShapeIndices(lst) {
+		if (!lst) return
+		lst.querySelectorAll('.area-shape-item').forEach((item, i) => {
+			item.dataset.idx = i
+			item.querySelector('.area-shape-idx').textContent = '形状 #' + (i + 1)
+			const opSel = item.querySelector('.area-shape-op')
+			const baseTag = item.querySelector('.area-shape-base')
+			if (i === 0) {
+				if (opSel) {
+					const span = document.createElement('span')
+					span.className = 'area-shape-base'
+					span.textContent = '[基础]'
+					opSel.replaceWith(span)
+				}
+			} else {
+				if (baseTag) {
+					const sel = document.createElement('select')
+					sel.className = 'area-shape-op'
+					sel.innerHTML = '<option value="union" selected>并集(+)</option><option value="intersect">交集(∩)</option><option value="subtract">差集(-)</option>'
+					baseTag.replaceWith(sel)
+				}
+			}
+		})
+	}
+	function initAreaShapeAdd(effBd) {
+		const addBtn = effBd.querySelector('.eff-area-shape-add')
+		const lst = effBd.querySelector('.eff-area-shape-lst')
+		if (!addBtn || !lst) return
+		if (lst.children.length === 0) {
+			lst.appendChild(createAreaShapeItem(0))
+		}
+		addBtn.addEventListener('click', () => {
+			const idx = lst.querySelectorAll('.area-shape-item').length
+			lst.appendChild(createAreaShapeItem(idx))
+		})
+	}
+	document.getElementById('skill-eff-add')?.addEventListener('click', () => {
+		const lst = document.getElementById('skill-eff-lst')
+		if (!lst) return
+		const idx = lst.querySelectorAll('.skill-eff-item').length
+		lst.appendChild(createEffectItem(idx))
+	})
+	document.querySelectorAll('.skill-eff-type').forEach(sel => {
+		sel.addEventListener('change', (e) => {
+			const item = e.target.closest('.skill-eff-item')
+			const bd = item?.querySelector('.skill-eff-bd')
+			if (bd) {
+				const newType = e.target.value
+				bd.dataset.type = newType
+				bd.innerHTML = getEffectBodyHtml(newType)
+				if (newType === 'area') initAreaShapeAdd(bd)
+			}
+		})
+	})
+	document.querySelectorAll('.skill-eff-del').forEach(btn => {
+		btn.addEventListener('click', (e) => {
+			const item = e.target.closest('.skill-eff-item')
+			item?.remove()
+			updateEffectIndices()
+		})
+	})
+	document.getElementById('skill-cost-type')?.addEventListener('change', (e) => {
+		const row = document.getElementById('skill-cost-item-row')
+		if (row) row.style.display = e.target.value === 'item' ? '' : 'none'
+	})
+	document.getElementById('skill-add')?.addEventListener('click', () => {
+		const lst = document.querySelector('.skill-lst')
+		if (!lst) return
+		const cnt = lst.querySelectorAll('.skill-item').length + 1
+		const newId = 'skill_' + Date.now()
+		const item = document.createElement('div')
+		item.className = 'skill-item'
+		item.dataset.id = newId
+		item.innerHTML = '<div class="skill-ico">S</div><div class="skill-info"><div class="skill-name">新技能 ' + cnt + '</div><div class="skill-type">主动 · 攻击</div></div>'
+		item.addEventListener('click', () => {
+			document.querySelectorAll('.skill-item').forEach(i => i.classList.remove('sel'))
+			item.classList.add('sel')
+			document.getElementById('skill-id').value = newId
+			document.getElementById('skill-name').value = '新技能 ' + cnt
+		})
+		lst.appendChild(item)
+		item.click()
+	})
+	document.getElementById('spawn-item-add')?.addEventListener('click', () => {
+		const lst = document.getElementById('spawn-items-lst')
+		if (!lst) return
+		const cnt = lst.children.length + 1
+		const item = document.createElement('div')
+		item.className = 'config-row'
+		item.innerHTML = '<label>物品 ' + cnt + '</label><input type="text" placeholder="物品ID"><input type="number" value="1" min="1" style="width:60px">'
+		lst.appendChild(item)
+	})
+	document.getElementById('prv-spawn-player')?.addEventListener('click', () => {
+		console.log('生成玩家实体')
+	})
+	document.getElementById('prv-spawn-npc')?.addEventListener('click', () => {
+		console.log('生成NPC实体')
+	})
+	document.getElementById('prv-reset')?.addEventListener('click', () => {
+		console.log('重置预览场景')
+	})
+	let prvPlaying = false
+	document.getElementById('prv-play')?.addEventListener('change', (e) => {
+		prvPlaying = e.target.checked
+		console.log('预览' + (prvPlaying ? '播放' : '暂停'))
+	})
+	document.getElementById('prv-speed')?.addEventListener('input', (e) => {
+		const speed = parseFloat(e.target.value)
+		const unit = e.target.closest('.config-row')?.querySelector('.unit')
+		if (unit) unit.textContent = speed.toFixed(1) + 'x'
+		console.log('时间倍速:', speed)
+	})
+	document.getElementById('prv-grid')?.addEventListener('change', (e) => {
+		console.log('网格显示:', e.target.checked)
+	})
+	document.getElementById('prv-wireframe')?.addEventListener('change', (e) => {
+		console.log('线框显示:', e.target.checked)
+	})
+	document.getElementById('prv-collider')?.addEventListener('change', (e) => {
+		console.log('碰撞显示:', e.target.checked)
+	})
+	document.querySelectorAll('input[type="range"]').forEach(sld => {
+		const updateVal = () => {
+			const unit = sld.closest('.config-row')?.querySelector('.unit')
+			if (!unit) return
+			if (unit.textContent.includes('%')) {
+				unit.textContent = sld.value + '%'
+			} else if (unit.textContent.includes('°')) {
+				unit.textContent = sld.value + '°'
+			} else if (unit.textContent.includes('x')) {
+				unit.textContent = (sld.value / 100).toFixed(1) + 'x'
+			}
+		}
+		sld.addEventListener('input', updateVal)
+	})
+	function collectConfig() {
+		const laws = {}
+		document.querySelectorAll('#law-lst .law-item').forEach(item => {
+			const id = item.dataset.id
+			laws[id] = {
+				enabled: document.getElementById('law-enabled')?.checked ?? true,
+				costType: document.getElementById('law-cost-type')?.value ?? 'soul',
+				costAmount: parseInt(document.getElementById('law-cost-amount')?.value) || 100,
+				costReduction: parseInt(document.getElementById('law-cost-reduction')?.value) || 0,
+				exemptTags: (document.getElementById('law-exempt-tags')?.value || '').split(',').filter(t => t.trim())
+			}
+		})
+		const entities = {}
+		document.querySelectorAll('#entity-def-lst .entity-def-item').forEach(item => {
+			const id = item.dataset.id
+			entities[id] = {
+				name: document.getElementById('entity-name')?.value || id,
+				hp: parseInt(document.getElementById('entity-hp')?.value) || 100,
+				atk: parseInt(document.getElementById('entity-atk')?.value) || 10,
+				def: parseInt(document.getElementById('entity-def')?.value) || 5,
+				spd: parseFloat(document.getElementById('entity-spd')?.value) || 5,
+				locomotion: document.getElementById('entity-locomotion')?.value || 'biped',
+				collider: document.getElementById('entity-collider')?.value || 'capsule'
+			}
+		})
+		function collectEffectData(item) {
+			const type = item.querySelector('.skill-eff-type')?.value || 'melee'
+			const bd = item.querySelector('.skill-eff-bd')
+			const eff = { type }
+			switch(type) {
+				case 'melee':
+					eff.damageType = bd.querySelector('.eff-dmg-type')?.value || 'physical'
+					eff.baseDamage = parseInt(bd.querySelector('.eff-dmg-base')?.value) || 0
+					eff.atkRatio = parseInt(bd.querySelector('.eff-dmg-atk-ratio')?.value) / 100 || 1
+					eff.distance = parseFloat(bd.querySelector('.eff-melee-dist')?.value) || 2
+					eff.angle = parseInt(bd.querySelector('.eff-melee-angle')?.value) || 90
+					eff.height = parseFloat(bd.querySelector('.eff-melee-height')?.value) || 2
+					eff.hitDelay = parseFloat(bd.querySelector('.eff-melee-delay')?.value) || 0.1
+					eff.hitCount = parseInt(bd.querySelector('.eff-melee-count')?.value) || 1
+					eff.hitInterval = parseFloat(bd.querySelector('.eff-melee-interval')?.value) || 0
+					eff.canBlock = bd.querySelector('.eff-melee-block')?.checked ?? true
+					eff.canDodge = bd.querySelector('.eff-melee-dodge')?.checked ?? true
+					eff.knockback = parseFloat(bd.querySelector('.eff-melee-kb')?.value) || 0
+					eff.knockup = parseFloat(bd.querySelector('.eff-melee-kup')?.value) || 0
+					eff.stagger = parseFloat(bd.querySelector('.eff-melee-stagger')?.value) || 0.5
+					eff.pierce = parseInt(bd.querySelector('.eff-melee-pierce')?.value) || 0
+					break
+				case 'projectile':
+					eff.damageType = bd.querySelector('.eff-dmg-type')?.value || 'magical'
+					eff.baseDamage = parseInt(bd.querySelector('.eff-dmg-base')?.value) || 0
+					eff.atkRatio = parseInt(bd.querySelector('.eff-dmg-atk-ratio')?.value) / 100 || 1
+					eff.lockMode = bd.querySelector('.eff-proj-lock')?.value || 'none'
+					eff.blockable = bd.querySelector('.eff-proj-blockable')?.checked ?? true
+					eff.hitType = bd.querySelector('.eff-proj-hit')?.value || 'delayed'
+					eff.lockRange = parseInt(bd.querySelector('.eff-proj-lock-range')?.value) || 30
+					eff.lockAngle = parseInt(bd.querySelector('.eff-proj-lock-angle')?.value) || 45
+					eff.trackStrength = parseInt(bd.querySelector('.eff-proj-track')?.value) / 100 || 0.5
+					eff.trackDuration = parseInt(bd.querySelector('.eff-proj-track-dur')?.value) || 5
+					eff.lostBehavior = bd.querySelector('.eff-proj-lost')?.value || 'continue'
+					eff.speed = parseInt(bd.querySelector('.eff-proj-speed')?.value) || 50
+					eff.acceleration = parseInt(bd.querySelector('.eff-proj-accel')?.value) || 0
+					eff.maxSpeed = parseInt(bd.querySelector('.eff-proj-maxspd')?.value) || 100
+					eff.gravity = bd.querySelector('.eff-proj-gravity')?.checked || false
+					eff.gravityScale = parseInt(bd.querySelector('.eff-proj-gscale')?.value) / 100 || 1
+					eff.drag = parseInt(bd.querySelector('.eff-proj-drag')?.value) / 100 || 0
+					eff.lifetime = parseInt(bd.querySelector('.eff-proj-life')?.value) || 10
+					eff.maxRange = parseInt(bd.querySelector('.eff-proj-range')?.value) || 0
+					eff.colliderShape = bd.querySelector('.eff-proj-col-shape')?.value || 'sphere'
+					eff.colliderSize = parseFloat(bd.querySelector('.eff-proj-col-size')?.value) || 0.1
+					eff.pierceCount = parseInt(bd.querySelector('.eff-proj-pierce')?.value) || 0
+					eff.pierceDecay = parseInt(bd.querySelector('.eff-proj-pierce-decay')?.value) / 100 || 0
+					eff.bounceCount = parseInt(bd.querySelector('.eff-proj-bounce')?.value) || 0
+					eff.rayWidth = parseFloat(bd.querySelector('.eff-proj-ray-width')?.value) || 0
+					eff.rayLength = parseInt(bd.querySelector('.eff-proj-ray-len')?.value) || 100
+					eff.rayDuration = parseFloat(bd.querySelector('.eff-proj-ray-dur')?.value) || 0
+					eff.rayEffect = bd.querySelector('.eff-proj-ray-fx')?.value || 'laser'
+					break
+				case 'area':
+					eff.triggerPos = bd.querySelector('.eff-area-pos')?.value || 'target'
+					eff.posOffset = [parseFloat(bd.querySelector('.eff-area-ox')?.value) || 0, parseFloat(bd.querySelector('.eff-area-oy')?.value) || 0, parseFloat(bd.querySelector('.eff-area-oz')?.value) || 0]
+					eff.triggerDelay = parseFloat(bd.querySelector('.eff-area-delay')?.value) || 0
+					eff.showWarning = bd.querySelector('.eff-area-warn')?.checked ?? true
+					eff.warningColor = bd.querySelector('.eff-area-warn-clr')?.value || '#ff0000'
+					eff.facing = bd.querySelector('.eff-area-facing')?.value || 'forward'
+					eff.shapes = []
+					bd.querySelectorAll('.area-shape-item').forEach((shapeItem, i) => {
+						const s = {
+							op: i === 0 ? 'base' : (shapeItem.querySelector('.area-shape-op')?.value || 'union'),
+							shape: shapeItem.querySelector('.area-shape-type')?.value || 'circle',
+							ox: parseFloat(shapeItem.querySelector('.area-shape-ox')?.value) || 0,
+							oy: parseFloat(shapeItem.querySelector('.area-shape-oy')?.value) || 0,
+							oz: parseFloat(shapeItem.querySelector('.area-shape-oz')?.value) || 0,
+							rot: parseFloat(shapeItem.querySelector('.area-shape-rot')?.value) || 0,
+							radius: parseFloat(shapeItem.querySelector('.area-shape-radius')?.value) || 5,
+							inner: parseFloat(shapeItem.querySelector('.area-shape-inner')?.value) || 0,
+							length: parseFloat(shapeItem.querySelector('.area-shape-length')?.value) || 5,
+							height: parseFloat(shapeItem.querySelector('.area-shape-height')?.value) || 2,
+							angle: parseFloat(shapeItem.querySelector('.area-shape-angle')?.value) || 60,
+							dmgType: shapeItem.querySelector('.area-shape-dmg-type')?.value || 'magical',
+							dmgBase: parseInt(shapeItem.querySelector('.area-shape-dmg-base')?.value) || 50,
+							dmgRatio: parseInt(shapeItem.querySelector('.area-shape-dmg-ratio')?.value) / 100 || 1
+						}
+						eff.shapes.push(s)
+					})
+					eff.duration = parseFloat(bd.querySelector('.eff-area-dur')?.value) || 0
+					eff.interval = parseFloat(bd.querySelector('.eff-area-interval')?.value) || 1
+					eff.triggerEnter = bd.querySelector('.eff-area-enter')?.checked ?? true
+					eff.triggerStay = bd.querySelector('.eff-area-stay')?.checked || false
+					eff.triggerExit = bd.querySelector('.eff-area-exit')?.checked || false
+					eff.maxHits = parseInt(bd.querySelector('.eff-area-maxhit')?.value) || 0
+					eff.effectType = bd.querySelector('.eff-area-fx')?.value || 'explosion'
+					eff.effectColor = bd.querySelector('.eff-area-fx-clr')?.value || '#ff6600'
+					eff.effectScale = parseFloat(bd.querySelector('.eff-area-fx-scale')?.value) || 1
+					break
+				case 'heal':
+					eff.baseHeal = parseInt(bd.querySelector('.eff-heal-base')?.value) || 0
+					eff.spRatio = parseInt(bd.querySelector('.eff-heal-sp-ratio')?.value) / 100 || 0.5
+					break
+				case 'attr_mod':
+					eff.attr = bd.querySelector('.eff-attr-key')?.value || 'atk'
+					eff.mode = bd.querySelector('.eff-attr-mode')?.value || 'add'
+					eff.value = parseFloat(bd.querySelector('.eff-attr-val')?.value) || 0
+					break
+				case 'buff':
+				case 'debuff':
+					eff.name = bd.querySelector('.eff-buff-name')?.value || ''
+					eff.duration = parseInt(bd.querySelector('.eff-buff-dur')?.value) || 10
+					eff.stackable = bd.querySelector('.eff-buff-stack')?.checked || false
+					eff.maxStack = parseInt(bd.querySelector('.eff-buff-max')?.value) || 1
+					eff.attr = bd.querySelector('.eff-buff-attr')?.value || 'atk'
+					eff.value = parseInt(bd.querySelector('.eff-buff-val')?.value) || 0
+					break
+				case 'voxel_destroy':
+					eff.radius = parseInt(bd.querySelector('.eff-vox-radius')?.value) || 3
+					eff.shape = bd.querySelector('.eff-vox-shape')?.value || 'sphere'
+					eff.target = bd.querySelector('.eff-vox-target')?.value || 'any'
+					break
+				case 'voxel_create':
+					eff.radius = parseInt(bd.querySelector('.eff-vox-radius')?.value) || 2
+					eff.shape = bd.querySelector('.eff-vox-shape')?.value || 'sphere'
+					eff.block = bd.querySelector('.eff-vox-block')?.value || 'stone'
+					break
+				case 'voxel_transform':
+					eff.radius = parseInt(bd.querySelector('.eff-vox-radius')?.value) || 3
+					eff.srcBlock = bd.querySelector('.eff-vox-src')?.value || ''
+					eff.dstBlock = bd.querySelector('.eff-vox-dst')?.value || ''
+					break
+				case 'summon':
+					eff.entityId = bd.querySelector('.eff-summon-id')?.value || ''
+					eff.count = parseInt(bd.querySelector('.eff-summon-cnt')?.value) || 1
+					eff.duration = parseInt(bd.querySelector('.eff-summon-dur')?.value) || 30
+					eff.inheritLevel = bd.querySelector('.eff-summon-lvl')?.checked ?? true
+					break
+				case 'teleport':
+					eff.tpType = bd.querySelector('.eff-tp-type')?.value || 'forward'
+					eff.distance = parseInt(bd.querySelector('.eff-tp-dist')?.value) || 10
+					break
+				case 'knockback':
+					eff.distance = parseInt(bd.querySelector('.eff-kb-dist')?.value) || 5
+					eff.height = parseInt(bd.querySelector('.eff-kb-height')?.value) || 0
+					break
+				case 'pull':
+					eff.distance = parseInt(bd.querySelector('.eff-pull-dist')?.value) || 5
+					break
+				case 'stun':
+					eff.duration = parseFloat(bd.querySelector('.eff-stun-dur')?.value) || 2
+					break
+				case 'dot':
+					eff.damageType = bd.querySelector('.eff-dot-type')?.value || 'magical'
+					eff.damage = parseInt(bd.querySelector('.eff-dot-dmg')?.value) || 10
+					eff.duration = parseInt(bd.querySelector('.eff-dot-dur')?.value) || 5
+					eff.interval = parseFloat(bd.querySelector('.eff-dot-itv')?.value) || 1
+					break
+				case 'hot':
+					eff.heal = parseInt(bd.querySelector('.eff-hot-heal')?.value) || 10
+					eff.duration = parseInt(bd.querySelector('.eff-hot-dur')?.value) || 5
+					eff.interval = parseFloat(bd.querySelector('.eff-hot-itv')?.value) || 1
+					break
+			}
+			return eff
+		}
+		const skills = {}
+		document.querySelectorAll('#skill-lst .skill-item').forEach(item => {
+			const id = item.dataset.id || item.querySelector('.skill-name')?.textContent?.replace(/\s/g, '_') || 'skill'
+			const effects = []
+			document.querySelectorAll('#skill-eff-lst .skill-eff-item').forEach(effItem => {
+				effects.push(collectEffectData(effItem))
+			})
+			skills[id] = {
+				name: document.getElementById('skill-name')?.value || '',
+				icon: document.getElementById('skill-icon')?.value || '',
+				type: document.getElementById('skill-type')?.value || 'active',
+				category: document.getElementById('skill-category')?.value || 'attack',
+				target: document.getElementById('skill-target')?.value || 'enemy',
+				range: parseFloat(document.getElementById('skill-range')?.value) || 10,
+				radius: parseFloat(document.getElementById('skill-radius')?.value) || 0,
+				cooldown: parseFloat(document.getElementById('skill-cd')?.value) || 5,
+				castTime: parseFloat(document.getElementById('skill-cast-time')?.value) || 0,
+				costType: document.getElementById('skill-cost-type')?.value || 'mp',
+				costValue: parseInt(document.getElementById('skill-cost-val')?.value) || 0,
+				costItem: document.getElementById('skill-cost-item')?.value || '',
+				effects: effects,
+				canCrit: document.getElementById('skill-can-crit')?.checked ?? true,
+				canDodge: document.getElementById('skill-can-dodge')?.checked ?? true,
+				canBlock: document.getElementById('skill-can-block')?.checked ?? false,
+				ignoreArmor: document.getElementById('skill-ignore-armor')?.checked ?? false,
+				interrupt: document.getElementById('skill-interrupt')?.checked ?? false
+			}
+		})
+		const cfg = {
+			meta: { version: '4.1.0', createdAt: Date.now() },
+			laws: laws,
+			rules: {
+				combat: {
+					friendlyFire: document.getElementById('rules-friendly-fire')?.checked,
+					pvp: document.getElementById('rules-pvp')?.checked,
+					levelScaling: document.getElementById('rules-level-scaling')?.checked,
+					resistanceCap: parseInt(document.getElementById('rules-resistance-cap')?.value) / 100,
+					dodgeCap: parseInt(document.getElementById('rules-dodge-cap')?.value) / 100,
+					critMul: parseFloat(document.getElementById('rules-crit-mul')?.value),
+					damageFormula: document.getElementById('rules-damage-formula')?.value
+				},
+				death: {
+					permaDeath: document.getElementById('rules-perma-death')?.checked,
+					expLoss: parseInt(document.getElementById('rules-exp-loss')?.value) / 100,
+					itemDrop: document.getElementById('rules-item-drop')?.checked,
+					respawnDelay: parseInt(document.getElementById('rules-respawn-delay')?.value),
+					respawnLoc: document.getElementById('rules-respawn-loc')?.value,
+					soulRecovery: document.getElementById('rules-soul-recovery')?.checked
+				},
+				progression: {
+					levelCap: parseInt(document.getElementById('rules-level-cap')?.value),
+					expCurve: document.getElementById('rules-exp-curve')?.value,
+					skillPerLevel: parseInt(document.getElementById('rules-skill-per-level')?.value),
+					attrPerLevel: parseInt(document.getElementById('rules-attr-per-level')?.value),
+					canRespec: document.getElementById('rules-can-respec')?.checked,
+					respecCost: parseInt(document.getElementById('rules-respec-cost')?.value)
+				},
+				economy: {
+					tradeTax: parseInt(document.getElementById('rules-trade-tax')?.value) / 100,
+					inflation: parseInt(document.getElementById('rules-inflation')?.value) / 100,
+					maxInventory: parseInt(document.getElementById('rules-max-inventory')?.value),
+					bankInterest: parseInt(document.getElementById('rules-bank-interest')?.value) / 100
+				},
+				social: {
+					maxParty: parseInt(document.getElementById('rules-max-party')?.value),
+					maxGuild: parseInt(document.getElementById('rules-max-guild')?.value),
+					marriage: document.getElementById('rules-marriage')?.checked
+				}
+			},
+			world: {
+				era: document.getElementById('world-era')?.value,
+				techLevel: parseInt(document.getElementById('world-tech-level')?.value),
+				magicLevel: parseInt(document.getElementById('world-magic-level')?.value),
+				plane: document.getElementById('world-plane')?.value,
+				gravityMul: parseFloat(document.getElementById('world-gravity-mul')?.value),
+				timeFlow: parseFloat(document.getElementById('world-time-flow')?.value)
+			},
+			space: {
+				style: document.getElementById('cfg-style')?.value,
+				ruined: document.getElementById('cfg-ruined')?.checked,
+				temp: parseInt(document.getElementById('cfg-temp')?.value),
+				daylight: parseInt(document.getElementById('cfg-daylight')?.value),
+				sunColor: document.getElementById('cfg-sun-color')?.value,
+				sunIntensity: parseInt(document.getElementById('cfg-sun-intensity')?.value),
+				pocket: {
+					sizeX: parseInt(document.getElementById('pocket-size-x')?.value),
+					sizeY: parseInt(document.getElementById('pocket-size-y')?.value),
+					sizeZ: parseInt(document.getElementById('pocket-size-z')?.value),
+					timeFlow: parseFloat(document.getElementById('pocket-time-flow')?.value),
+					pvp: document.getElementById('pocket-pvp')?.checked,
+					godMode: document.getElementById('pocket-god-mode')?.checked
+				}
+			},
+			entities: entities,
+			skills: skills,
+			modules: { enabled: [] },
+			systems: {
+				time: {
+					speed: parseInt(document.getElementById('sys-time-speed')?.value),
+					initTime: document.getElementById('sys-time-init')?.value,
+					initDate: document.getElementById('sys-date-init')?.value,
+					canPause: document.getElementById('sys-time-pause')?.checked,
+					canRewind: document.getElementById('sys-time-rewind')?.checked,
+					rewindMax: parseInt(document.getElementById('sys-time-rewind-max')?.value)
+				},
+				economy: {
+					currencyName: document.getElementById('sys-currency-name')?.value,
+					currencyMax: parseInt(document.getElementById('sys-currency-max')?.value),
+					autoLoot: document.getElementById('sys-auto-loot')?.checked
+				},
+				combat: {
+					lockMode: document.getElementById('sys-combat-lock')?.value,
+					lockRange: parseInt(document.getElementById('sys-combat-lock-range')?.value),
+					comboWindow: parseInt(document.getElementById('sys-combat-combo')?.value),
+					iFrame: parseInt(document.getElementById('sys-combat-iframe')?.value)
+				},
+				inventory: {
+					slots: parseInt(document.getElementById('sys-inv-slots')?.value),
+					maxSlots: parseInt(document.getElementById('sys-inv-max')?.value),
+					stackLimit: parseInt(document.getElementById('sys-inv-stack')?.value),
+					useWeight: document.getElementById('sys-inv-weight')?.checked
+				}
+			}
+		}
+		document.querySelectorAll('.module-item input:checked').forEach(chk => {
+			cfg.modules.enabled.push(chk.closest('.module-item').dataset.id)
+		})
+		return cfg
+	}
+	function loadConfig(cfg) {
+		if (!cfg) return
+		if (cfg.laws) {
+			const firstLaw = Object.keys(cfg.laws)[0]
+			if (firstLaw && cfg.laws[firstLaw]) {
+				const law = cfg.laws[firstLaw]
+				if (document.getElementById('law-enabled')) document.getElementById('law-enabled').checked = law.enabled ?? true
+				if (document.getElementById('law-cost-type')) document.getElementById('law-cost-type').value = law.costType || 'soul'
+				if (document.getElementById('law-cost-amount')) document.getElementById('law-cost-amount').value = law.costAmount || 100
+				if (document.getElementById('law-cost-reduction')) document.getElementById('law-cost-reduction').value = law.costReduction || 0
+				if (document.getElementById('law-exempt-tags')) document.getElementById('law-exempt-tags').value = (law.exemptTags || []).join(',')
+			}
+		}
+		if (cfg.rules) {
+			const combat = cfg.rules.combat || {}
+			if (document.getElementById('rules-friendly-fire')) document.getElementById('rules-friendly-fire').checked = combat.friendlyFire ?? false
+			if (document.getElementById('rules-pvp')) document.getElementById('rules-pvp').checked = combat.pvp ?? true
+			if (document.getElementById('rules-level-scaling')) document.getElementById('rules-level-scaling').checked = combat.levelScaling ?? false
+			if (document.getElementById('rules-resistance-cap')) document.getElementById('rules-resistance-cap').value = (combat.resistanceCap || 0.75) * 100
+			if (document.getElementById('rules-dodge-cap')) document.getElementById('rules-dodge-cap').value = (combat.dodgeCap || 0.5) * 100
+			if (document.getElementById('rules-crit-mul')) document.getElementById('rules-crit-mul').value = combat.critMul || 1.5
+			if (document.getElementById('rules-damage-formula')) document.getElementById('rules-damage-formula').value = combat.damageFormula || ''
+			const death = cfg.rules.death || {}
+			if (document.getElementById('rules-perma-death')) document.getElementById('rules-perma-death').checked = death.permaDeath ?? false
+			if (document.getElementById('rules-exp-loss')) document.getElementById('rules-exp-loss').value = (death.expLoss || 0.05) * 100
+			if (document.getElementById('rules-item-drop')) document.getElementById('rules-item-drop').checked = death.itemDrop ?? false
+			if (document.getElementById('rules-respawn-delay')) document.getElementById('rules-respawn-delay').value = death.respawnDelay || 5
+			if (document.getElementById('rules-respawn-loc')) document.getElementById('rules-respawn-loc').value = death.respawnLoc || 'checkpoint'
+			if (document.getElementById('rules-soul-recovery')) document.getElementById('rules-soul-recovery').checked = death.soulRecovery ?? true
+			const progression = cfg.rules.progression || {}
+			if (document.getElementById('rules-level-cap')) document.getElementById('rules-level-cap').value = progression.levelCap || 100
+			if (document.getElementById('rules-exp-curve')) document.getElementById('rules-exp-curve').value = progression.expCurve || 'exponential'
+			if (document.getElementById('rules-skill-per-level')) document.getElementById('rules-skill-per-level').value = progression.skillPerLevel || 3
+			if (document.getElementById('rules-attr-per-level')) document.getElementById('rules-attr-per-level').value = progression.attrPerLevel || 5
+			if (document.getElementById('rules-can-respec')) document.getElementById('rules-can-respec').checked = progression.canRespec ?? true
+			if (document.getElementById('rules-respec-cost')) document.getElementById('rules-respec-cost').value = progression.respecCost || 1000
+			const economy = cfg.rules.economy || {}
+			if (document.getElementById('rules-trade-tax')) document.getElementById('rules-trade-tax').value = (economy.tradeTax || 0.05) * 100
+			if (document.getElementById('rules-inflation')) document.getElementById('rules-inflation').value = (economy.inflation || 0) * 100
+			if (document.getElementById('rules-max-inventory')) document.getElementById('rules-max-inventory').value = economy.maxInventory || 100
+			if (document.getElementById('rules-bank-interest')) document.getElementById('rules-bank-interest').value = (economy.bankInterest || 0.01) * 100
+			const social = cfg.rules.social || {}
+			if (document.getElementById('rules-max-party')) document.getElementById('rules-max-party').value = social.maxParty || 6
+			if (document.getElementById('rules-max-guild')) document.getElementById('rules-max-guild').value = social.maxGuild || 100
+			if (document.getElementById('rules-marriage')) document.getElementById('rules-marriage').checked = social.marriage ?? true
+		}
+		if (cfg.world) {
+			if (document.getElementById('world-era')) document.getElementById('world-era').value = cfg.world.era || 'modern'
+			if (document.getElementById('world-tech-level')) document.getElementById('world-tech-level').value = cfg.world.techLevel || 5
+			if (document.getElementById('world-magic-level')) document.getElementById('world-magic-level').value = cfg.world.magicLevel || 5
+			if (document.getElementById('world-plane')) document.getElementById('world-plane').value = cfg.world.plane || 'material'
+			if (document.getElementById('world-gravity-mul')) document.getElementById('world-gravity-mul').value = cfg.world.gravityMul || 1
+			if (document.getElementById('world-time-flow')) document.getElementById('world-time-flow').value = cfg.world.timeFlow || 1
+		}
+		if (cfg.space) {
+			if (document.getElementById('cfg-style')) document.getElementById('cfg-style').value = cfg.space.style || 'forest'
+			if (document.getElementById('cfg-ruined')) document.getElementById('cfg-ruined').checked = cfg.space.ruined ?? false
+			if (document.getElementById('cfg-temp')) document.getElementById('cfg-temp').value = cfg.space.temp || 20
+			if (document.getElementById('cfg-daylight')) document.getElementById('cfg-daylight').value = cfg.space.daylight || 80
+			if (document.getElementById('cfg-sun-color')) document.getElementById('cfg-sun-color').value = cfg.space.sunColor || '#fffaed'
+			if (document.getElementById('cfg-sun-intensity')) document.getElementById('cfg-sun-intensity').value = cfg.space.sunIntensity || 100
+			if (cfg.space.pocket) {
+				if (document.getElementById('pocket-size-x')) document.getElementById('pocket-size-x').value = cfg.space.pocket.sizeX || 100
+				if (document.getElementById('pocket-size-y')) document.getElementById('pocket-size-y').value = cfg.space.pocket.sizeY || 50
+				if (document.getElementById('pocket-size-z')) document.getElementById('pocket-size-z').value = cfg.space.pocket.sizeZ || 100
+				if (document.getElementById('pocket-time-flow')) document.getElementById('pocket-time-flow').value = cfg.space.pocket.timeFlow || 0.5
+				if (document.getElementById('pocket-pvp')) document.getElementById('pocket-pvp').checked = cfg.space.pocket.pvp ?? false
+				if (document.getElementById('pocket-god-mode')) document.getElementById('pocket-god-mode').checked = cfg.space.pocket.godMode ?? true
+			}
+		}
+		if (cfg.entities) {
+			const firstEntity = Object.keys(cfg.entities)[0]
+			if (firstEntity && cfg.entities[firstEntity]) {
+				const ent = cfg.entities[firstEntity]
+				if (document.getElementById('entity-name')) document.getElementById('entity-name').value = ent.name || firstEntity
+				if (document.getElementById('entity-hp')) document.getElementById('entity-hp').value = ent.hp || 100
+				if (document.getElementById('entity-atk')) document.getElementById('entity-atk').value = ent.atk || 10
+				if (document.getElementById('entity-def')) document.getElementById('entity-def').value = ent.def || 5
+				if (document.getElementById('entity-spd')) document.getElementById('entity-spd').value = ent.spd || 5
+				if (document.getElementById('entity-locomotion')) document.getElementById('entity-locomotion').value = ent.locomotion || 'biped'
+				if (document.getElementById('entity-collider')) document.getElementById('entity-collider').value = ent.collider || 'capsule'
+			}
+		}
+		if (cfg.skills) {
+			const firstSkill = Object.keys(cfg.skills)[0]
+			if (firstSkill && cfg.skills[firstSkill]) {
+				const sk = cfg.skills[firstSkill]
+				if (document.getElementById('skill-id')) document.getElementById('skill-id').value = firstSkill
+				if (document.getElementById('skill-name')) document.getElementById('skill-name').value = sk.name || ''
+				if (document.getElementById('skill-icon')) document.getElementById('skill-icon').value = sk.icon || ''
+				if (document.getElementById('skill-type')) document.getElementById('skill-type').value = sk.type || 'active'
+				if (document.getElementById('skill-category')) document.getElementById('skill-category').value = sk.category || 'attack'
+				if (document.getElementById('skill-target')) document.getElementById('skill-target').value = sk.target || 'enemy'
+				if (document.getElementById('skill-range')) document.getElementById('skill-range').value = sk.range || 10
+				if (document.getElementById('skill-radius')) document.getElementById('skill-radius').value = sk.radius || 0
+				if (document.getElementById('skill-cd')) document.getElementById('skill-cd').value = sk.cooldown || 5
+				if (document.getElementById('skill-cast-time')) document.getElementById('skill-cast-time').value = sk.castTime || 0
+				if (document.getElementById('skill-cost-type')) document.getElementById('skill-cost-type').value = sk.costType || 'mp'
+				if (document.getElementById('skill-cost-val')) document.getElementById('skill-cost-val').value = sk.costValue || 0
+				if (document.getElementById('skill-cost-item')) document.getElementById('skill-cost-item').value = sk.costItem || ''
+				if (document.getElementById('skill-cost-item-row')) document.getElementById('skill-cost-item-row').style.display = sk.costType === 'item' ? '' : 'none'
+				if (document.getElementById('skill-can-crit')) document.getElementById('skill-can-crit').checked = sk.canCrit ?? true
+				if (document.getElementById('skill-can-dodge')) document.getElementById('skill-can-dodge').checked = sk.canDodge ?? true
+				if (document.getElementById('skill-can-block')) document.getElementById('skill-can-block').checked = sk.canBlock ?? false
+				if (document.getElementById('skill-ignore-armor')) document.getElementById('skill-ignore-armor').checked = sk.ignoreArmor ?? false
+				if (document.getElementById('skill-interrupt')) document.getElementById('skill-interrupt').checked = sk.interrupt ?? false
+				const effLst = document.getElementById('skill-eff-lst')
+				if (effLst && sk.effects && sk.effects.length > 0) {
+					effLst.innerHTML = ''
+					sk.effects.forEach((eff, idx) => {
+						const item = createEffectItem(idx, eff.type)
+						effLst.appendChild(item)
+						const bd = item.querySelector('.skill-eff-bd')
+						switch(eff.type) {
+							case 'melee':
+								if (bd.querySelector('.eff-dmg-type')) bd.querySelector('.eff-dmg-type').value = eff.damageType || 'physical'
+								if (bd.querySelector('.eff-dmg-base')) bd.querySelector('.eff-dmg-base').value = eff.baseDamage || 0
+								if (bd.querySelector('.eff-dmg-atk-ratio')) bd.querySelector('.eff-dmg-atk-ratio').value = (eff.atkRatio || 1) * 100
+								if (bd.querySelector('.eff-melee-dist')) bd.querySelector('.eff-melee-dist').value = eff.distance || 2
+								if (bd.querySelector('.eff-melee-angle')) bd.querySelector('.eff-melee-angle').value = eff.angle || 90
+								if (bd.querySelector('.eff-melee-height')) bd.querySelector('.eff-melee-height').value = eff.height || 2
+								if (bd.querySelector('.eff-melee-delay')) bd.querySelector('.eff-melee-delay').value = eff.hitDelay || 0.1
+								if (bd.querySelector('.eff-melee-count')) bd.querySelector('.eff-melee-count').value = eff.hitCount || 1
+								if (bd.querySelector('.eff-melee-interval')) bd.querySelector('.eff-melee-interval').value = eff.hitInterval || 0
+								if (bd.querySelector('.eff-melee-block')) bd.querySelector('.eff-melee-block').checked = eff.canBlock ?? true
+								if (bd.querySelector('.eff-melee-dodge')) bd.querySelector('.eff-melee-dodge').checked = eff.canDodge ?? true
+								if (bd.querySelector('.eff-melee-kb')) bd.querySelector('.eff-melee-kb').value = eff.knockback || 0
+								if (bd.querySelector('.eff-melee-kup')) bd.querySelector('.eff-melee-kup').value = eff.knockup || 0
+								if (bd.querySelector('.eff-melee-stagger')) bd.querySelector('.eff-melee-stagger').value = eff.stagger || 0.5
+								if (bd.querySelector('.eff-melee-pierce')) bd.querySelector('.eff-melee-pierce').value = eff.pierce || 0
+								break
+							case 'projectile':
+								if (bd.querySelector('.eff-dmg-type')) bd.querySelector('.eff-dmg-type').value = eff.damageType || 'magical'
+								if (bd.querySelector('.eff-dmg-base')) bd.querySelector('.eff-dmg-base').value = eff.baseDamage || 0
+								if (bd.querySelector('.eff-dmg-atk-ratio')) bd.querySelector('.eff-dmg-atk-ratio').value = (eff.atkRatio || 1) * 100
+								if (bd.querySelector('.eff-proj-lock')) bd.querySelector('.eff-proj-lock').value = eff.lockMode || 'none'
+								if (bd.querySelector('.eff-proj-blockable')) bd.querySelector('.eff-proj-blockable').checked = eff.blockable ?? true
+								if (bd.querySelector('.eff-proj-hit')) bd.querySelector('.eff-proj-hit').value = eff.hitType || 'delayed'
+								if (bd.querySelector('.eff-proj-lock-range')) bd.querySelector('.eff-proj-lock-range').value = eff.lockRange || 30
+								if (bd.querySelector('.eff-proj-lock-angle')) bd.querySelector('.eff-proj-lock-angle').value = eff.lockAngle || 45
+								if (bd.querySelector('.eff-proj-track')) bd.querySelector('.eff-proj-track').value = (eff.trackStrength || 0.5) * 100
+								if (bd.querySelector('.eff-proj-track-dur')) bd.querySelector('.eff-proj-track-dur').value = eff.trackDuration || 5
+								if (bd.querySelector('.eff-proj-lost')) bd.querySelector('.eff-proj-lost').value = eff.lostBehavior || 'continue'
+								if (bd.querySelector('.eff-proj-speed')) bd.querySelector('.eff-proj-speed').value = eff.speed || 50
+								if (bd.querySelector('.eff-proj-accel')) bd.querySelector('.eff-proj-accel').value = eff.acceleration || 0
+								if (bd.querySelector('.eff-proj-maxspd')) bd.querySelector('.eff-proj-maxspd').value = eff.maxSpeed || 100
+								if (bd.querySelector('.eff-proj-gravity')) bd.querySelector('.eff-proj-gravity').checked = eff.gravity || false
+								if (bd.querySelector('.eff-proj-gscale')) bd.querySelector('.eff-proj-gscale').value = (eff.gravityScale || 1) * 100
+								if (bd.querySelector('.eff-proj-drag')) bd.querySelector('.eff-proj-drag').value = (eff.drag || 0) * 100
+								if (bd.querySelector('.eff-proj-life')) bd.querySelector('.eff-proj-life').value = eff.lifetime || 10
+								if (bd.querySelector('.eff-proj-range')) bd.querySelector('.eff-proj-range').value = eff.maxRange || 0
+								if (bd.querySelector('.eff-proj-col-shape')) bd.querySelector('.eff-proj-col-shape').value = eff.colliderShape || 'sphere'
+								if (bd.querySelector('.eff-proj-col-size')) bd.querySelector('.eff-proj-col-size').value = eff.colliderSize || 0.1
+								if (bd.querySelector('.eff-proj-pierce')) bd.querySelector('.eff-proj-pierce').value = eff.pierceCount || 0
+								if (bd.querySelector('.eff-proj-pierce-decay')) bd.querySelector('.eff-proj-pierce-decay').value = (eff.pierceDecay || 0) * 100
+								if (bd.querySelector('.eff-proj-bounce')) bd.querySelector('.eff-proj-bounce').value = eff.bounceCount || 0
+								if (bd.querySelector('.eff-proj-ray-width')) bd.querySelector('.eff-proj-ray-width').value = eff.rayWidth || 0
+								if (bd.querySelector('.eff-proj-ray-len')) bd.querySelector('.eff-proj-ray-len').value = eff.rayLength || 100
+								if (bd.querySelector('.eff-proj-ray-dur')) bd.querySelector('.eff-proj-ray-dur').value = eff.rayDuration || 0
+								if (bd.querySelector('.eff-proj-ray-fx')) bd.querySelector('.eff-proj-ray-fx').value = eff.rayEffect || 'laser'
+								break
+							case 'area':
+								if (bd.querySelector('.eff-area-pos')) bd.querySelector('.eff-area-pos').value = eff.triggerPos || 'target'
+								if (bd.querySelector('.eff-area-ox')) bd.querySelector('.eff-area-ox').value = (eff.posOffset && eff.posOffset[0]) || 0
+								if (bd.querySelector('.eff-area-oy')) bd.querySelector('.eff-area-oy').value = (eff.posOffset && eff.posOffset[1]) || 0
+								if (bd.querySelector('.eff-area-oz')) bd.querySelector('.eff-area-oz').value = (eff.posOffset && eff.posOffset[2]) || 0
+								if (bd.querySelector('.eff-area-delay')) bd.querySelector('.eff-area-delay').value = eff.triggerDelay || 0
+								if (bd.querySelector('.eff-area-warn')) bd.querySelector('.eff-area-warn').checked = eff.showWarning ?? true
+								if (bd.querySelector('.eff-area-warn-clr')) bd.querySelector('.eff-area-warn-clr').value = eff.warningColor || '#ff0000'
+								if (bd.querySelector('.eff-area-facing')) bd.querySelector('.eff-area-facing').value = eff.facing || 'forward'
+								const shapeLst = bd.querySelector('.eff-area-shape-lst')
+								if (shapeLst && eff.shapes && eff.shapes.length > 0) {
+									shapeLst.innerHTML = ''
+									eff.shapes.forEach((s, si) => {
+										const shapeItem = createAreaShapeItem(si, s)
+										shapeLst.appendChild(shapeItem)
+									})
+								}
+								if (bd.querySelector('.eff-area-dur')) bd.querySelector('.eff-area-dur').value = eff.duration || 0
+								if (bd.querySelector('.eff-area-interval')) bd.querySelector('.eff-area-interval').value = eff.interval || 1
+								if (bd.querySelector('.eff-area-enter')) bd.querySelector('.eff-area-enter').checked = eff.triggerEnter ?? true
+								if (bd.querySelector('.eff-area-stay')) bd.querySelector('.eff-area-stay').checked = eff.triggerStay || false
+								if (bd.querySelector('.eff-area-exit')) bd.querySelector('.eff-area-exit').checked = eff.triggerExit || false
+								if (bd.querySelector('.eff-area-maxhit')) bd.querySelector('.eff-area-maxhit').value = eff.maxHits || 0
+								if (bd.querySelector('.eff-area-fx')) bd.querySelector('.eff-area-fx').value = eff.effectType || 'explosion'
+								if (bd.querySelector('.eff-area-fx-clr')) bd.querySelector('.eff-area-fx-clr').value = eff.effectColor || '#ff6600'
+								if (bd.querySelector('.eff-area-fx-scale')) bd.querySelector('.eff-area-fx-scale').value = eff.effectScale || 1
+								break
+							case 'heal':
+								if (bd.querySelector('.eff-heal-base')) bd.querySelector('.eff-heal-base').value = eff.baseHeal || 0
+								if (bd.querySelector('.eff-heal-sp-ratio')) bd.querySelector('.eff-heal-sp-ratio').value = (eff.spRatio || 0.5) * 100
+								break
+							case 'attr_mod':
+								if (bd.querySelector('.eff-attr-key')) bd.querySelector('.eff-attr-key').value = eff.attr || 'atk'
+								if (bd.querySelector('.eff-attr-mode')) bd.querySelector('.eff-attr-mode').value = eff.mode || 'add'
+								if (bd.querySelector('.eff-attr-val')) bd.querySelector('.eff-attr-val').value = eff.value || 0
+								break
+							case 'buff':
+							case 'debuff':
+								if (bd.querySelector('.eff-buff-name')) bd.querySelector('.eff-buff-name').value = eff.name || ''
+								if (bd.querySelector('.eff-buff-dur')) bd.querySelector('.eff-buff-dur').value = eff.duration || 10
+								if (bd.querySelector('.eff-buff-stack')) bd.querySelector('.eff-buff-stack').checked = eff.stackable || false
+								if (bd.querySelector('.eff-buff-max')) bd.querySelector('.eff-buff-max').value = eff.maxStack || 1
+								if (bd.querySelector('.eff-buff-attr')) bd.querySelector('.eff-buff-attr').value = eff.attr || 'atk'
+								if (bd.querySelector('.eff-buff-val')) bd.querySelector('.eff-buff-val').value = eff.value || 0
+								break
+							case 'voxel_destroy':
+								if (bd.querySelector('.eff-vox-radius')) bd.querySelector('.eff-vox-radius').value = eff.radius || 3
+								if (bd.querySelector('.eff-vox-shape')) bd.querySelector('.eff-vox-shape').value = eff.shape || 'sphere'
+								if (bd.querySelector('.eff-vox-target')) bd.querySelector('.eff-vox-target').value = eff.target || 'any'
+								break
+							case 'voxel_create':
+								if (bd.querySelector('.eff-vox-radius')) bd.querySelector('.eff-vox-radius').value = eff.radius || 2
+								if (bd.querySelector('.eff-vox-shape')) bd.querySelector('.eff-vox-shape').value = eff.shape || 'sphere'
+								if (bd.querySelector('.eff-vox-block')) bd.querySelector('.eff-vox-block').value = eff.block || 'stone'
+								break
+							case 'voxel_transform':
+								if (bd.querySelector('.eff-vox-radius')) bd.querySelector('.eff-vox-radius').value = eff.radius || 3
+								if (bd.querySelector('.eff-vox-src')) bd.querySelector('.eff-vox-src').value = eff.srcBlock || ''
+								if (bd.querySelector('.eff-vox-dst')) bd.querySelector('.eff-vox-dst').value = eff.dstBlock || ''
+								break
+							case 'summon':
+								if (bd.querySelector('.eff-summon-id')) bd.querySelector('.eff-summon-id').value = eff.entityId || ''
+								if (bd.querySelector('.eff-summon-cnt')) bd.querySelector('.eff-summon-cnt').value = eff.count || 1
+								if (bd.querySelector('.eff-summon-dur')) bd.querySelector('.eff-summon-dur').value = eff.duration || 30
+								if (bd.querySelector('.eff-summon-lvl')) bd.querySelector('.eff-summon-lvl').checked = eff.inheritLevel ?? true
+								break
+							case 'teleport':
+								if (bd.querySelector('.eff-tp-type')) bd.querySelector('.eff-tp-type').value = eff.tpType || 'forward'
+								if (bd.querySelector('.eff-tp-dist')) bd.querySelector('.eff-tp-dist').value = eff.distance || 10
+								break
+							case 'knockback':
+								if (bd.querySelector('.eff-kb-dist')) bd.querySelector('.eff-kb-dist').value = eff.distance || 5
+								if (bd.querySelector('.eff-kb-height')) bd.querySelector('.eff-kb-height').value = eff.height || 0
+								break
+							case 'pull':
+								if (bd.querySelector('.eff-pull-dist')) bd.querySelector('.eff-pull-dist').value = eff.distance || 5
+								break
+							case 'stun':
+								if (bd.querySelector('.eff-stun-dur')) bd.querySelector('.eff-stun-dur').value = eff.duration || 2
+								break
+							case 'dot':
+								if (bd.querySelector('.eff-dot-type')) bd.querySelector('.eff-dot-type').value = eff.damageType || 'magical'
+								if (bd.querySelector('.eff-dot-dmg')) bd.querySelector('.eff-dot-dmg').value = eff.damage || 10
+								if (bd.querySelector('.eff-dot-dur')) bd.querySelector('.eff-dot-dur').value = eff.duration || 5
+								if (bd.querySelector('.eff-dot-itv')) bd.querySelector('.eff-dot-itv').value = eff.interval || 1
+								break
+							case 'hot':
+								if (bd.querySelector('.eff-hot-heal')) bd.querySelector('.eff-hot-heal').value = eff.heal || 10
+								if (bd.querySelector('.eff-hot-dur')) bd.querySelector('.eff-hot-dur').value = eff.duration || 5
+								if (bd.querySelector('.eff-hot-itv')) bd.querySelector('.eff-hot-itv').value = eff.interval || 1
+								break
+						}
+					})
+				}
+			}
+		}
+		if (cfg.modules && cfg.modules.enabled) {
+			document.querySelectorAll('.module-item input').forEach(chk => {
+				const id = chk.closest('.module-item').dataset.id
+				chk.checked = cfg.modules.enabled.includes(id)
+			})
+		}
+		if (cfg.systems) {
+			const time = cfg.systems.time || {}
+			if (document.getElementById('sys-time-speed')) document.getElementById('sys-time-speed').value = time.speed || 60
+			if (document.getElementById('sys-time-init')) document.getElementById('sys-time-init').value = time.initTime || '08:00'
+			if (document.getElementById('sys-date-init')) document.getElementById('sys-date-init').value = time.initDate || '2024-01-01'
+			if (document.getElementById('sys-time-pause')) document.getElementById('sys-time-pause').checked = time.canPause ?? true
+			if (document.getElementById('sys-time-rewind')) document.getElementById('sys-time-rewind').checked = time.canRewind ?? false
+			if (document.getElementById('sys-time-rewind-max')) document.getElementById('sys-time-rewind-max').value = time.rewindMax || 10
+			const economy = cfg.systems.economy || {}
+			if (document.getElementById('sys-currency-name')) document.getElementById('sys-currency-name').value = economy.currencyName || '金币'
+			if (document.getElementById('sys-currency-max')) document.getElementById('sys-currency-max').value = economy.currencyMax || 999999999
+			if (document.getElementById('sys-auto-loot')) document.getElementById('sys-auto-loot').checked = economy.autoLoot ?? true
+			const combat = cfg.systems.combat || {}
+			if (document.getElementById('sys-combat-lock')) document.getElementById('sys-combat-lock').value = combat.lockMode || 'hard'
+			if (document.getElementById('sys-combat-lock-range')) document.getElementById('sys-combat-lock-range').value = combat.lockRange || 30
+			if (document.getElementById('sys-combat-combo')) document.getElementById('sys-combat-combo').value = combat.comboWindow || 500
+			if (document.getElementById('sys-combat-iframe')) document.getElementById('sys-combat-iframe').value = combat.iFrame || 200
+			const inventory = cfg.systems.inventory || {}
+			if (document.getElementById('sys-inv-slots')) document.getElementById('sys-inv-slots').value = inventory.slots || 30
+			if (document.getElementById('sys-inv-max')) document.getElementById('sys-inv-max').value = inventory.maxSlots || 100
+			if (document.getElementById('sys-inv-stack')) document.getElementById('sys-inv-stack').value = inventory.stackLimit || 99
+			if (document.getElementById('sys-inv-weight')) document.getElementById('sys-inv-weight').checked = inventory.useWeight ?? false
+		}
+	}
+	document.getElementById('btn-save')?.addEventListener('click', () => {
+		const cfg = collectConfig()
+		const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' })
+		const url = URL.createObjectURL(blob)
+		const a = document.createElement('a')
+		a.href = url
+		a.download = 'game.config.json'
+		a.click()
+		URL.revokeObjectURL(url)
+	})
+	document.getElementById('btn-open')?.addEventListener('click', () => {
+		const input = document.createElement('input')
+		input.type = 'file'
+		input.accept = '.json'
+		input.onchange = e => {
+			const file = e.target.files[0]
+			if (!file) return
+			const reader = new FileReader()
+			reader.onload = ev => {
+				try {
+					const cfg = JSON.parse(ev.target.result)
+					loadConfig(cfg)
+				} catch (err) {
+					alert('配置文件格式错误')
+				}
+			}
+			reader.readAsText(file)
+		}
+		input.click()
+	})
+	</script>
+	<script type="module" src="./src/main.ts"></script>
+</body>
+</html>

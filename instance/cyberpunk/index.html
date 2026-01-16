@@ -1020,7 +1020,7 @@ body.cursor-red input, body.cursor-red textarea {
 </style>
 </head>
 <body>
-<button class="btn-close" onclick="parent.postMessage({t:'cancel'},'*')">
+<button class="btn-close" onclick="parent.postMessage({t:'hide'},'*')">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
 </button>
 <script>
@@ -1141,7 +1141,11 @@ var LOGIC_SUBMIT = function(el) {
 };
 var LOGIC_CONFIRM_FINAL = function(el) {
 	var content = document.getElementById('PREVIEW_TEXT').value;
-	parent.postMessage({t: 'done', msg: content}, '*');
+	parent.postMessage({t: 'set', msg: content}, '*');
+	setTimeout(function() {
+		parent.postMessage({t: 'send'}, '*');
+		parent.postMessage({t: 'done'}, '*');
+	}, 100);
 };
 var CYBER_MD = (function() {
 	var codeUrl = 'https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/defender/defender.js';
@@ -1420,7 +1424,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <input type="checkbox" id="hack-gate">
-<div class="cyber-msk" onclick="parent.postMessage({t:'cancel'},'*')"></div>
+<div class="cyber-msk" onclick="parent.postMessage({t:'hide'},'*')"></div>
 <div class="intrusion-pn red-mode" id="intrusion-pn">
 	<div class="cyber-decor"></div>
 	<div class="intrusion-code-ar" id="intrusion-code-ar"></div>

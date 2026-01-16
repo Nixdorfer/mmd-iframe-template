@@ -1,0 +1,20 @@
+{
+	"name": "@engine/client",
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build"
+	},
+	"dependencies": {
+		"@engine/common": "workspace:*",
+		"@engine/render": "workspace:*",
+		"@engine/world": "workspace:*",
+		"@engine/mapgen": "workspace:*",
+		"@engine/event": "workspace:*"
+	},
+	"devDependencies": {
+		"vite": "^5.0.0",
+		"vite-plugin-singlefile": "^2.0.0"
+	}
+}

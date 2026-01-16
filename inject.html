@@ -1,16 +1,25 @@
 <div class="iFrEdt"><img src="" onerror='
 (function(c, p) {
-	var base = "https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/", o, f, mH;
+	var base = "https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/", o, f, mH, unloaded = false;
+	var once = p.indexOf("ONCE:") === 0;
+	if (once) p = p.slice(5);
 	c.style.position = "relative";
 	var b = document.createElement("button");
 	b.style.cssText = "padding:12px 24px;background:#b8860b;border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
 	b.textContent = "加载中...";
 	b.disabled = true;
 	c.appendChild(b);
-	function sI() {
+
+	function TA() {
+		return document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope textarea");
+	}
+	
+	function SEND() {
+		return document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope uni-image.btn-icon");
+	}
+
+	function show() {
 		o.style.display = "flex";
-		f.style.width = "100vw";
-		f.style.height = "100vh";
 		f.style.opacity = "0";
 		f.style.transform = "translateY(-30px)";
 		setTimeout(function() {
@@ -18,73 +27,170 @@
 			f.style.transform = "translateY(0)";
 		}, 10);
 	}
-	function hI() {
+
+	function hide() {
 		f.style.opacity = "0";
+		f.style.transform = "translateY(-30px)";
 		setTimeout(function() {
 			o.style.display = "none";
-			f.style.width = "0";
-			f.style.height = "0";
 		}, 400);
-		var ms = document.querySelector(".msg-option-scope");
-		if (ms) ms.style.cssText = "background-color:rgba(0,0,0,0.7);display:none";
 	}
-	function sU(h) {
+
+	function cleanup() {
+		window.removeEventListener("message", mH);
+		if (o) o.remove();
+		c.remove();
+	}
+
+	function showError(msg) {
+		cleanup();
+		var d = document.createElement("div");
+		d.className = "iFrEdt";
+		d.style.cssText = "padding:16px;background:#8b0000;border:none;border-radius:8px;color:#fff;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
+		d.textContent = msg || "加载失败";
+		if (c.parentNode) c.parentNode.insertBefore(d, c);
+	}
+
+	function showComplete() {
+		b.remove();
+		var d = document.createElement("div");
+		d.style.cssText = "padding:16px;background:#166d3b;border:none;border-radius:8px;color:#fff;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
+		d.textContent = "操作已完成";
+		c.appendChild(d);
+	}
+
+	function getCookie(name) {
+		var m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+		return m ? m[2] : "";
+	}
+
+	function checkConversation(roleId) {
+		var rptoken = getCookie("rptoken");
+		return fetch("https://sexyai.top/api/conversation2/list", {
+			method: "POST",
+			headers: {
+				"accept": "*/*",
+				"content-type": "application/json",
+				"authorization": rptoken
+			},
+			body: JSON.stringify({roleId: roleId}),
+			credentials: "include"
+		}).then(function(r) { return r.json(); });
+	}
+
+	function setup(h) {
 		var rId = new URLSearchParams(location.search).get("roleId") || "";
-		var ht = h.replace("/*__INJECT__*/", "window.P=" + JSON.stringify(p) + ";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
+		var pStr = JSON.stringify(p).replace(/<\//g, "<\\/");
+		var ht = h.replace("/*__INJECT__*/", "window.P=" + pStr + ";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
 		o = document.createElement("div");
 		o.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#242424;z-index:99999;display:none;align-items:center;justify-content:center";
 		f = document.createElement("iframe");
-		f.style.cssText = "width:0;height:0;border:none;opacity:0;transform:translateY(-30px);transition:opacity 0.4s,transform 0.4s";
+		f.style.cssText = "width:100vw;height:100vh;border:none;opacity:0;transform:translateY(-30px);transition:opacity 0.4s,transform 0.4s";
 		f.srcdoc = ht;
 		o.appendChild(f);
 		document.body.appendChild(o);
+
 		var sH = window.initStore ? window.initStore(f) : null;
+
 		mH = function(ev) {
 			if (!ev.data || !ev.data.t) return;
-			if (ev.data.t === "cancel") hI();
-			else if (ev.data.t === "unload") {
-				document.body.innerHTML = "";
-				f.style.cssText = "width:100vw;height:100vh;border:none;position:fixed;top:0;left:0;z-index:99999";
-				document.body.appendChild(f);
-			} else if (ev.data.t === "error") {
-				o.remove();
-				b.remove();
-				var d = document.createElement("div");
-				d.style.cssText = "padding:16px;background:#8b0000;border-radius:8px;color:#fff;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
-				d.textContent = ev.data.msg;
-				c.appendChild(d);
-			} else if (ev.data.t === "done") {
-				var a = document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope textarea");
+			var t = ev.data.t;
+			var a, btn;
+
+			if (t === "input") {
+				a = TA();
 				if (a) {
 					a.focus();
-					a.value = ev.data.msg;
+					a.value += ev.data.msg || "";
 					a.dispatchEvent(new Event("input", {bubbles: true}));
 				}
-				hI();
-			} else if (sH) sH(ev);
+			}
+			else if (t === "clear") {
+				a = TA();
+				if (a) {
+					a.focus();
+					a.value = "";
+					a.dispatchEvent(new Event("input", {bubbles: true}));
+				}
+			}
+			else if (t === "set") {
+				a = TA();
+				if (a) {
+					a.focus();
+					a.value = ev.data.msg || "";
+					a.dispatchEvent(new Event("input", {bubbles: true}));
+				}
+			}
+			else if (t === "send") {
+				btn = SEND();
+				if (btn) btn.click();
+			}
+			else if (t === "done") {
+				if (unloaded) return;
+				cleanup();
+			}
+			else if (t === "hide") {
+				if (unloaded) return;
+				hide();
+			}
+			else if (t === "show") {
+				if (unloaded) return;
+				show();
+			}
+			else if (t === "unload") {
+				unloaded = true;
+				var chatBottom = document.querySelector(".chat .chat-bottom");
+				document.body.innerHTML = "";
+				if (chatBottom) document.body.appendChild(chatBottom);
+				f.style.cssText = "width:100vw;height:100vh;border:none;position:fixed;top:0;left:0;z-index:99999";
+				document.body.appendChild(f);
+			}
+			else if (t === "error") {
+				showError(ev.data.msg);
+			}
+			else if (sH) {
+				sH(ev);
+			}
 		};
+
 		window.addEventListener("message", mH);
-		b.onclick = sI;
-		sI();
+		b.onclick = show;
+		show();
 	}
-	Promise.all([
-		fetch(base + "loader/loader.html").then(function(r) { return r.ok ? r.text() : Promise.reject(); }),
-		fetch(base + "library/store.js").then(function(r) { return r.ok ? r.text() : ""; })
-	]).then(function(r) {
+
+	function ready(r) {
 		b.disabled = false;
 		b.style.background = "#166d3b";
 		b.style.cursor = "pointer";
 		b.textContent = "打开";
 		if (r[1]) new Function(r[1])();
-		sU(r[0]);
+		setup(r[0]);
+	}
+
+	Promise.all([
+		fetch(base + "loader/loader.html").then(function(r) { return r.ok ? r.text() : Promise.reject(); }),
+		fetch(base + "library/store.js").then(function(r) { return r.ok ? r.text() : ""; })
+	]).then(function(r) {
+		if (once) {
+			var roleId = new URLSearchParams(location.search).get("roleId") || "";
+			checkConversation(roleId).then(function(res) {
+				if (res.data && res.data.total !== 0) {
+					showComplete();
+				} else {
+					ready(r);
+				}
+			}).catch(function() {
+				ready(r);
+			});
+		} else {
+			ready(r);
+		}
 	}).catch(function() {
 		b.disabled = false;
 		b.style.background = "#8b0000";
 		b.style.cursor = "pointer";
 		b.textContent = "加载失败";
-		b.onclick = function() {
-			location.reload();
-		};
+		b.onclick = function() { location.reload(); };
 	});
 })(this.closest(".iFR"), "$1")
 '></div>

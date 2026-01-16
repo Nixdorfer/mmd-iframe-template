@@ -12,7 +12,10 @@ tmpclaude-*
 
 defender/messages.json
 
-template/3DGame/v4/
+template/3DGame/v4/**/node_modules/
+template/3DGame/v4/pnpm-lock.yaml
+template/3DGame/v4/Cargo.lock
+template/3DGame/v4/**/target/
 template/3DGame/helper/Flux/
 template/3DGame/helper/comfyui/
 template/3DGame/helper/hunyuan3d/

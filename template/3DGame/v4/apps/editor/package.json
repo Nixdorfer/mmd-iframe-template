@@ -1,0 +1,26 @@
+{
+	"name": "@engine/editor",
+	"version": "4.2.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vue-tsc -b && vite build"
+	},
+	"dependencies": {
+		"@engine/common": "workspace:*",
+		"@engine/event": "workspace:*",
+		"@engine/mapgen": "workspace:*",
+		"@engine/render": "workspace:*",
+		"@engine/ui": "workspace:*",
+		"@engine/world": "workspace:*",
+		"pinia": "^2.3.1",
+		"vue": "^3.5.26"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^5.2.4",
+		"typescript": "^5.4.2",
+		"vite": "^5.0.0",
+		"vite-plugin-singlefile": "^2.0.0",
+		"vue-tsc": "^2.2.12"
+	}
+}

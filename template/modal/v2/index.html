@@ -1628,7 +1628,11 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 				if (once && btnState[el.textContent]) return;
 				if (el.dataset.killer === 'true') {
 					collect();
-					parent.postMessage({t: 'done', d: data, msg: toMsg()}, '*');
+					parent.postMessage({t: 'set', msg: toMsg()}, '*');
+					setTimeout(function() {
+						parent.postMessage({t: 'send'}, '*');
+						parent.postMessage({t: 'done'}, '*');
+					}, 100);
 					return;
 				}
 				if (el.dataset.hider === 'true') {
@@ -1637,7 +1641,11 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 				}
 				if (msg) {
 					collect();
-					parent.postMessage({t: 'done', d: data, msg: toMsg() + ';' + msg}, '*');
+					parent.postMessage({t: 'set', msg: toMsg() + ';' + msg}, '*');
+					setTimeout(function() {
+						parent.postMessage({t: 'send'}, '*');
+						parent.postMessage({t: 'done'}, '*');
+					}, 100);
 					return;
 				}
 				if (action === 'jumpModal' && target > 0) {
@@ -1963,7 +1971,11 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		} else if (L.preview) {
 			parent.postMessage({t: 'exitPreview'}, '*');
 		} else {
-			parent.postMessage({t: 'done', d: data, msg: toMsg()}, '*');
+			parent.postMessage({t: 'set', msg: toMsg()}, '*');
+			setTimeout(function() {
+				parent.postMessage({t: 'send'}, '*');
+				parent.postMessage({t: 'done'}, '*');
+			}, 100);
 		}
 	}
 
@@ -1977,7 +1989,7 @@ L.load(['util', 'content', 'select', 'input', 'btn', 'image', 'row'], function()
 		state.d = JSON.parse(JSON.stringify(data));
 		var mc = document.querySelector('.modal-content');
 		state.s = mc ? mc.scrollTop : 0;
-		parent.postMessage({t: 'cancel'}, '*');
+		parent.postMessage({t: 'hide'}, '*');
 	}
 
 	function applyState() {

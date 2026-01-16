@@ -1,0 +1,483 @@
+import { defineStore } from 'pinia'
+import { ref, reactive, computed } from 'vue'
+import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig } from '@/types/config'
+import { CfgHotLoader, type CfgLsnOpt, type CfgLsnCbk, type CfgSnapshot } from '@engine/common'
+
+export const useConfigStore = defineStore('config', () => {
+	const proMode = ref(false)
+	const editingAsset = ref<{ type: string; id: string } | null>(null)
+
+	const laws = reactive<Record<string, LawConfig>>({
+		causality: { enabled: true, costType: 'soul', costAmount: 100, costReduction: 0, exemptTags: [] },
+		equivalent_exchange: { enabled: true, costType: 'resource', costAmount: 100, costReduction: 0, exemptTags: [] },
+		conservation: { enabled: true, costType: 'lifespan', costAmount: 100, costReduction: 0, exemptTags: [] },
+		contract: { enabled: true, costType: 'karma', costAmount: 100, costReduction: 0, exemptTags: [] },
+		mortality: { enabled: true, costType: 'permanent', costAmount: 100, costReduction: 0, exemptTags: [] },
+		identity: { enabled: true, costType: 'health', costAmount: 100, costReduction: 0, exemptTags: [] }
+	})
+
+	const rules = reactive<RulesConfig>({
+		combat: {
+			friendlyFire: false,
+			pvp: true,
+			levelScaling: false,
+			resistanceCap: 0.75,
+			dodgeCap: 0.5,
+			critMul: 1.5,
+			damageFormula: ''
+		},
+		death: {
+			permaDeath: false,
+			expLoss: 0.05,
+			itemDrop: false,
+			respawnDelay: 5,
+			respawnLoc: 'checkpoint',
+			soulRecovery: true
+		},
+		progression: {
+			levelCap: 100,
+			expCurve: 'exponential',
+			skillPerLevel: 3,
+			attrPerLevel: 5,
+			canRespec: true,
+			respecCost: 1000
+		},
+		economy: {
+			tradeTax: 0.05,
+			inflation: 0,
+			maxInventory: 100,
+			bankInterest: 0.01
+		},
+		social: {
+			maxParty: 6,
+			maxGuild: 100,
+			marriage: true
+		}
+	})
+
+	const world = reactive<WorldConfig>({
+		era: 'modern',
+		techLevel: 5,
+		magicLevel: 5,
+		plane: 'material',
+		gravityMul: 1,
+		timeFlow: 1,
+		manaLevel: 5,
+		physics: {
+			gravityX: 0,
+			gravityY: -9.8,
+			gravityZ: 0,
+			maxSubSteps: 4,
+			tps: 60,
+			sleepEnabled: true,
+			defaultRestitution: 0.3,
+			defaultFriction: 0.5,
+			solverIterations: 10,
+			broadphaseMargin: 0.04,
+			ccdEnabled: false,
+			ccdVelThreshold: 1.0
+		},
+		render: {
+			mode: 'realistic',
+			shadowIntensity: 0.5,
+			aoStrength: 1.0,
+			specularPower: 32,
+			rimPower: 3.0,
+			smoothness: 0.5,
+			steps: 2,
+			outlineWidth: 0.02,
+			outlineColor: '#000000',
+			outlineEntity: true,
+			outlineTerrain: false
+		},
+		camera: {
+			fov: 0.785,
+			near: 0.1,
+			far: 1000
+		},
+		physicsAdvanced: {
+			ragdoll: {
+				enabled: true,
+				damping: 0.8
+			},
+			cloth: {
+				enabled: true,
+				iterations: 4,
+				stiffness: 0.9
+			},
+			fluid: {
+				enabled: false,
+				viscosity: 0.01,
+				density: 1000
+			},
+			rope: {
+				enabled: true,
+				segments: 20,
+				stiffness: 0.9
+			},
+			destruction: {
+				enabled: true,
+				fragments: 8,
+				debrisLife: 10
+			}
+		},
+		postProcess: {
+			shadow: {
+				enabled: true,
+				resolution: 2048,
+				bias: 0.005,
+				intensity: 0.7,
+				cascades: 3,
+				distance: 100
+			},
+			ssao: {
+				enabled: true,
+				radius: 0.5,
+				intensity: 1.0,
+				samples: 32,
+				bias: 0.025
+			},
+			bloom: {
+				enabled: true,
+				threshold: 1.0,
+				intensity: 0.5,
+				radius: 0.4
+			},
+			gi: {
+				enabled: false,
+				intensity: 1.0,
+				probeSpacing: 4.0
+			},
+			fog: {
+				enabled: false,
+				type: 0,
+				density: 0.01,
+				start: 10,
+				end: 100,
+				color: '#a0a0b0'
+			},
+			volumetric: {
+				enabled: false,
+				intensity: 0.5,
+				samples: 32
+			},
+			tonemap: {
+				enabled: true,
+				exposure: 1.0,
+				gamma: 2.2,
+				contrast: 1.0,
+				saturation: 1.0
+			},
+			ssr: {
+				enabled: false,
+				maxSteps: 64,
+				thickness: 0.5
+			},
+			dof: {
+				enabled: false,
+				focusDist: 10,
+				aperture: 0.05
+			}
+		},
+		lod: {
+			enabled: true,
+			tier: 2,
+			distMul: 1.0,
+			maxInstances: 1000,
+			cullDist: 500
+		}
+	})
+
+	const space = reactive<SpaceConfig>({
+		style: 'forest',
+		ruined: false,
+		temp: 20,
+		daylight: 80,
+		sunColor: '#fffaed',
+		sunIntensity: 100,
+		pocket: {
+			sizeX: 100,
+			sizeY: 50,
+			sizeZ: 100,
+			timeFlow: 0.5,
+			pvp: false,
+			godMode: true
+		},
+		mapGen: {
+			seed: 12345,
+			seaLevel: 32,
+			mountainHeight: 48,
+			continentScale: 0.002,
+			detailScale: 0.02,
+			tempScale: 0.00002,
+			humidScale: 0.00002,
+			biomeMinSize: 50000
+		},
+		light: {
+			ambientR: 0.3,
+			ambientG: 0.3,
+			ambientB: 0.35,
+			sunDirX: 0.5,
+			sunDirY: 0.3,
+			sunDirZ: 0.8,
+			sunColorR: 1.0,
+			sunColorG: 0.95,
+			sunColorB: 0.9
+		},
+		plane: 'material',
+		dimension: {
+			type: 'domain',
+			radius: 100,
+			duration: 60
+		}
+	})
+
+	const entities = ref<EntityConfig[]>([
+		{
+			id: 'entity_1',
+			name: '人类',
+			desc: '最常见的智慧生物，拥有高度的适应性和学习能力。',
+			tags: ['humanoid', 'sentient'],
+			hp: 100,
+			atk: 10,
+			def: 5,
+			spd: 5,
+			locomotion: 'biped',
+			locomotionMod: 'none',
+			size: 'medium',
+			rarity: 'common',
+			collider: 'capsule',
+			mass: 70,
+			drag: 0.1,
+			angDrag: 0.05,
+			gravityScale: 1,
+			bounce: 0,
+			friction: 0.5
+		}
+	])
+
+	const factions = ref<{ id: string; name: string; color: string }[]>([
+		{ id: 'faction_1', name: '默认势力', color: '#166d3b' }
+	])
+
+	const skills = ref<SkillConfig[]>([
+		{
+			id: 'skill_1',
+			name: '火球术',
+			icon: '🔥',
+			type: 'active',
+			category: 'attack',
+			target: 'enemy',
+			range: 10,
+			radius: 0,
+			cd: 5,
+			castTime: 0,
+			costType: 'mp',
+			costVal: 20,
+			costItem: '',
+			canCrit: true,
+			canDodge: true,
+			canBlock: false,
+			ignoreArmor: false,
+			interrupt: false,
+			effects: []
+		}
+	])
+
+	const modules = reactive({
+		core: {
+			physics: true, animation: true, combat: true, ability: true,
+			equipment: true, progression: true, behavior: true, render: true,
+			audio: true, lifecycle: true, interaction: true, network: true
+		} as Record<string, boolean>,
+		advanced: {
+			transformation: false, dimension: false, contract: false, soul: false,
+			fate: false, crafting: false, territory: false, evolution: false
+		} as Record<string, boolean>,
+		worldview: {
+			hacking: false, magic: false, qi: false, martial: false,
+			ninjutsu: false, haki: false, jujutsu: false, force: false,
+			breath: false, magecraft: false, esper: false, stand: false,
+			companion: false, nen: false, alchemy: false
+		} as Record<string, boolean>
+	})
+
+	const systems = reactive({
+		time: {
+			speed: 60, initTime: '08:00', initDate: '2024-01-01',
+			canPause: true, canRewind: false, rewindMax: 10
+		},
+		economy: { currencyName: '金币', currencyMax: 999999999, autoLoot: true },
+		faction: { repMax: 100000, repMin: -100000, repKill: 10 },
+		quest: { maxActive: 20, dailyCount: 5, autoTrack: true },
+		dialogue: { speed: 50, autoPlay: false, canSkip: true },
+		inventory: { initSlots: 30, maxSlots: 100, stackLimit: 99, weightLimit: false },
+		combat: { lockMode: 'hard', lockRange: 30, comboWindow: 500, iframeDuration: 200 }
+	})
+
+	const ai = reactive({
+		behavior: { template: 'neutral' as const, alertRadius: 15, chaseRadius: 30, returnRadius: 50 },
+		state: { initial: 'idle', transDelay: 0.5 },
+		utility: { evalInterval: 0.5, randomFactor: 10 },
+		pathfind: { algo: 'astar' as const, updateFreq: 0.5, avoidRadius: 0.5 },
+		perception: { sightRange: 30, sightAngle: 120, hearRange: 15 },
+		dialogue: {
+			canTalk: false,
+			personality: '',
+			knowledge: [] as string[],
+			talkRange: 5,
+			greeting: ''
+		}
+	})
+
+	const llm = reactive<LLMConfig>({
+		provider: 'openai',
+		endpoint: '',
+		apiKey: '',
+		model: 'gpt-4'
+	})
+
+	function collectAll(): GameConfig {
+		return {
+			laws: { ...laws },
+			rules: { ...rules },
+			world: { ...world },
+			space: { ...space },
+			entities: entities.value.reduce((acc: Record<string, EntityConfig>, e) => ({ ...acc, [e.id]: e }), {}),
+			factions: factions.value.reduce((acc: Record<string, { id: string; name: string; color: string }>, f) => ({ ...acc, [f.id]: f }), {}),
+			skills: skills.value.reduce((acc: Record<string, SkillConfig>, s) => ({ ...acc, [s.id]: s }), {}),
+			modules: { ...modules },
+			systems: { ...systems },
+			ai: { ...ai },
+			llm: { ...llm }
+		}
+	}
+
+	function loadAll(cfg: GameConfig) {
+		if (cfg.laws) Object.assign(laws, cfg.laws)
+		if (cfg.rules) Object.assign(rules, cfg.rules)
+		if (cfg.world) Object.assign(world, cfg.world)
+		if (cfg.space) Object.assign(space, cfg.space)
+		if (cfg.entities) entities.value = Object.entries(cfg.entities).map(([id, e]) => ({ ...(e as EntityConfig), id }))
+		if (cfg.factions) factions.value = Object.entries(cfg.factions).map(([id, f]) => ({ ...(f as { name: string; color: string }), id }))
+		if (cfg.skills) skills.value = Object.entries(cfg.skills).map(([id, s]) => ({ ...(s as SkillConfig), id }))
+		if (cfg.modules) Object.assign(modules, cfg.modules)
+		if (cfg.systems) Object.assign(systems, cfg.systems)
+		if (cfg.ai) Object.assign(ai, cfg.ai)
+		if (cfg.llm) Object.assign(llm, cfg.llm)
+	}
+
+	function reset() {
+		Object.assign(laws, {
+			causality: { enabled: true, costType: 'soul', costAmount: 100, costReduction: 0, exemptTags: [] },
+			equivalent_exchange: { enabled: true, costType: 'resource', costAmount: 100, costReduction: 0, exemptTags: [] },
+			conservation: { enabled: true, costType: 'lifespan', costAmount: 100, costReduction: 0, exemptTags: [] },
+			contract: { enabled: true, costType: 'karma', costAmount: 100, costReduction: 0, exemptTags: [] },
+			mortality: { enabled: true, costType: 'permanent', costAmount: 100, costReduction: 0, exemptTags: [] },
+			identity: { enabled: true, costType: 'health', costAmount: 100, costReduction: 0, exemptTags: [] }
+		})
+		entities.value = [{
+			id: 'entity_1',
+			name: '人类',
+			desc: '最常见的智慧生物，拥有高度的适应性和学习能力。',
+			tags: ['humanoid', 'sentient'],
+			hp: 100,
+			atk: 10,
+			def: 5,
+			spd: 5,
+			locomotion: 'biped',
+			locomotionMod: 'none',
+			size: 'medium',
+			rarity: 'common',
+			collider: 'capsule',
+			mass: 70,
+			drag: 0.1,
+			angDrag: 0.05,
+			gravityScale: 1,
+			bounce: 0,
+			friction: 0.5
+		}]
+		factions.value = [{ id: 'faction_1', name: '默认势力', color: '#166d3b' }]
+		skills.value = [{
+			id: 'skill_1', name: '火球术', icon: '🔥', type: 'active', category: 'attack', target: 'enemy',
+			range: 10, radius: 0, cd: 5, castTime: 0, costType: 'mp', costVal: 20, costItem: '',
+			canCrit: true, canDodge: true, canBlock: false, ignoreArmor: false, interrupt: false, effects: []
+		}]
+	}
+
+	const hotLoader = new CfgHotLoader<GameConfig>(collectAll(), 50)
+
+	function syncToHotLoader() {
+		hotLoader.lodFromObj(collectAll())
+	}
+
+	function syncFromHotLoader() {
+		loadAll(hotLoader.getRaw())
+	}
+
+	function subCfgChg(path: string, cbk: CfgLsnCbk, opt?: CfgLsnOpt): string {
+		return hotLoader.sub(path, cbk, opt)
+	}
+
+	function unsubCfgChg(id: string) {
+		hotLoader.unsub(id)
+	}
+
+	function snapshotCfg(desc?: string): string {
+		syncToHotLoader()
+		return hotLoader.snapshot(desc)
+	}
+
+	function bakCfg(id?: string): boolean {
+		const result = hotLoader.bak(id)
+		if (result) syncFromHotLoader()
+		return result
+	}
+
+	function bakToPrvCfg(): boolean {
+		syncToHotLoader()
+		const result = hotLoader.bakToPrv()
+		if (result) syncFromHotLoader()
+		return result
+	}
+
+	function bakToNxtCfg(): boolean {
+		const result = hotLoader.bakToNxt()
+		if (result) syncFromHotLoader()
+		return result
+	}
+
+	function getCfgSnapshots(): CfgSnapshot[] {
+		return hotLoader.getSnapshots()
+	}
+
+	async function lodCfgFromUrl(url: string): Promise<boolean> {
+		const result = await hotLoader.lodFromUrl(url)
+		if (result) syncFromHotLoader()
+		return result
+	}
+
+	async function lodCfgFromFile(file: File): Promise<boolean> {
+		const result = await hotLoader.lodFromFile(file)
+		if (result) syncFromHotLoader()
+		return result
+	}
+
+	function lodCfgFromObj(obj: Partial<GameConfig>) {
+		hotLoader.lodFromObj(obj)
+		syncFromHotLoader()
+	}
+
+	const canUndo = computed(() => hotLoader.canUndo())
+	const canRedo = computed(() => hotLoader.canRedo())
+
+	return {
+		proMode, editingAsset,
+		laws, rules, world, space, entities, factions, skills, modules, systems, ai, llm,
+		collectAll, loadAll, reset,
+		subCfgChg, unsubCfgChg,
+		snapshotCfg, bakCfg, bakToPrvCfg, bakToNxtCfg, getCfgSnapshots,
+		lodCfgFromUrl, lodCfgFromFile, lodCfgFromObj,
+		canUndo, canRedo, syncToHotLoader
+	}
+})

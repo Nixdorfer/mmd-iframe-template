@@ -3,15 +3,13 @@
 <head>
 	<meta charset="utf-8">
 	<style>
-*
-{
+* {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
 
-body
-{
+body {
 	background: #242424;
 	font-family: system-ui, sans-serif;
 }
@@ -51,28 +49,22 @@ window.L = {
 };
 
 (function() {
-	var M = function(t) {
+	function M(t) {
 		document.body.innerHTML = "<div style=\"display:flex;align-items:center;justify-content:center;height:100vh;color:#fff\">" + t + "</div>";
-	};
-	console.log("[Loader] 开始加载");
+	}
+	function E(msg) {
+		M(msg);
+		parent.postMessage({t: "error", msg: msg}, "*");
+	}
+
 	M("加载中...");
 	var p = window.P;
-	console.log("[Loader] window.P长度:", p ? p.length : 0);
-	if (!p) {
-		console.error("[Loader] 参数为空");
-		M("参数为空");
-		return;
-	}
+	if (!p) { E("参数为空"); return; }
 	if (p.charAt(0) === "[" && p.charAt(p.length - 1) === "]") p = p.slice(1, -1);
-	console.log("[Loader] 去括号后长度:", p.length);
+
 	var m = p.match(/^(?:(EDIT):)?([^_:]+)(?:_(\d+))?:(.+)$/);
-	console.log("[Loader] m[4]长度:", m ? m[4].length : 0);
-	if (!m) {
-		console.error("[Loader] 格式错误, p =", p);
-		M("格式错误");
-		parent.postMessage({t: "error", msg: "格式错误"}, "*");
-		return;
-	}
+	if (!m) { E("格式错误"); return; }
+
 	L.edit = !!m[1];
 	L.project = m[2];
 	L.paramMajor = m[3] || "";
@@ -80,57 +72,34 @@ window.L = {
 	L.char = params[0] || "";
 	L.user = params[1] || "";
 	L.b64 = params[2] || "";
-	console.log("[Loader] 解析参数: edit =", L.edit, ", project =", L.project, ", b64长度 =", L.b64.length);
-	M("加载中...");
-	console.log("[Loader] 正在获取 navigator.json:", L.base + "navigator.json");
+
 	fetch(L.base + "navigator.json").then(function(r) {
-		console.log("[Loader] navigator.json 响应状态:", r.status);
 		return r.json();
 	}).then(function(nav) {
-		console.log("[Loader] navigator.json 加载成功");
 		var proj = nav.projects[L.project];
 		var inst = nav.instances[L.project];
-		console.log("[Loader] 查找项目:", L.project, ", 结果:", proj || inst);
+
 		if (inst) {
-			if (L.edit) {
-				console.log("[Loader] instance不支持编辑模式");
-				M("instance不支持编辑");
-				parent.postMessage({t: "error", msg: "instance不支持编辑"}, "*");
-				return;
-			}
-			var instUrl = L.base + inst.index + "/index.html";
-			console.log("[Loader] 正在获取instance:", instUrl);
-			fetch(instUrl).then(function(r) {
-				console.log("[Loader] instance响应状态:", r.status);
+			if (L.edit) { E("instance不支持编辑"); return; }
+			fetch(L.base + inst.index + "/index.html").then(function(r) {
 				return r.text();
 			}).then(function(h) {
-				console.log("[Loader] instance加载成功, 长度:", h.length);
 				document.open();
 				document.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" + h + "</body></html>");
 				document.close();
-				console.log("[Loader] 文档写入完成");
-			}).catch(function(err) {
-				console.error("[Loader] instance加载失败:", err);
-				M("加载失败");
-				parent.postMessage({t: "error", msg: "加载失败"}, "*");
-			});
+			}).catch(function() { E("加载失败"); });
 			return;
 		}
-		if (!proj) {
-			console.error("[Loader] 未找到项目:", L.project);
-			M("未找到: " + L.project);
-			parent.postMessage({t: "error", msg: "未找到: " + L.project}, "*");
-			return;
-		}
+
+		if (!proj) { E("未找到: " + L.project); return; }
+
 		L.version = proj.version;
 		L.major = L.paramMajor || proj.version.split(".")[0];
 		var templateUrl = L.base + proj.index + "/v" + L.major + "/index.html";
-		console.log("[Loader] 正在获取模板:", templateUrl);
+
 		fetch(templateUrl).then(function(r) {
-			console.log("[Loader] 模板响应状态:", r.status);
 			return r.text();
 		}).then(function(h) {
-			console.log("[Loader] 模板加载成功, 长度:", h.length);
 			var cfg = "window.L=" + JSON.stringify({
 				loaded: {},
 				base: L.base,
@@ -145,39 +114,24 @@ window.L = {
 				version: L.version,
 				major: L.major
 			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+(n===\"store\"||n===\"util\"?\"library/\":\"template/modal/v2/library/\")+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
-			var W = function(e) {
-				console.log("[Loader] 写入文档, 编辑器长度:", e ? e.length : 0);
+
+			function W(e) {
 				document.open();
 				document.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body><script>" + cfg + "<\/script>" + h + (e || "") + "</body></html>");
 				document.close();
-				console.log("[Loader] 文档写入完成");
-			};
+			}
+
 			if (L.edit && proj.editor) {
-				console.log("[Loader] 编辑模式, 正在加载编辑器");
 				fetch(L.base + proj.editor).then(function(r) {
-					console.log("[Loader] 编辑器响应状态:", r.status);
 					return r.text();
 				}).then(function(e) {
-					console.log("[Loader] 编辑器加载成功, 长度:", e.length);
 					W(e);
-				}).catch(function(err) {
-					console.error("[Loader] 编辑器加载失败:", err);
-					W();
-				});
+				}).catch(function() { W(); });
 			} else {
-				console.log("[Loader] 非编辑模式");
 				W();
 			}
-		}).catch(function(err) {
-			console.error("[Loader] 模板加载失败:", err);
-			M("加载失败");
-			parent.postMessage({t: "error", msg: "加载失败"}, "*");
-		});
-	}).catch(function(err) {
-		console.error("[Loader] navigator.json加载失败:", err);
-		M("导航失败");
-		parent.postMessage({t: "error", msg: "导航失败"}, "*");
-	});
+		}).catch(function() { E("加载失败"); });
+	}).catch(function() { E("导航失败"); });
 })();
 </script>
 </body>
