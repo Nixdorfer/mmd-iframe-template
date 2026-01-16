@@ -13,8 +13,8 @@
       "versionDesc": "nightly",
       "name": "世界引擎 v4",
       "desc": "基于WebGLv2的3D世界引擎",
-      "index": "template/3DGame",
-      "editor": "template/3DGame/v4/apps/editor/index.html"
+      "index": "template/WorldEngine",
+      "editor": "template/WorldEngine/v4/apps/editor/index.html"
     }
   },
   "instances": {
