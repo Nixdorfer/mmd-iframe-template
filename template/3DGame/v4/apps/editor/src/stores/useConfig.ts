@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
-import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig, AudioConfig, NetworkConfig, UIConfig, SaveConfig, InputConfig, AIAdvancedConfig, ParticleConfig, WeatherConfig, TimeEffectConfig, VehicleConfig } from '@/types/config'
+import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig, AudioConfig, NetworkConfig, UIConfig, SaveConfig, InputConfig, AIAdvancedConfig, ParticleConfig, WeatherConfig, TimeEffectConfig, VehicleConfig, AnimationConfig, TerrainConfig, LightingConfig, I18nConfig, PerformanceConfig, BuffConfig } from '@/types/config'
 import { CfgHotLoader, type CfgLsnOpt, type CfgLsnCbk, type CfgSnapshot } from '@engine/common'
 
 export const useConfigStore = defineStore('config', () => {
@@ -604,6 +604,108 @@ export const useConfigStore = defineStore('config', () => {
 		}
 	})
 
+	const animation = reactive<AnimationConfig>({
+		skeleton: {
+			maxBones: 64,
+			ikEnabled: true,
+			ikIterations: 10
+		},
+		blend: {
+			crossfadeTime: 0.2,
+			blendMode: 'replace'
+		},
+		lod: {
+			enabled: true,
+			distThreshold: 30,
+			reduceBones: true
+		}
+	})
+
+	const terrain = reactive<TerrainConfig>({
+		generation: {
+			chunkSize: 64,
+			maxChunks: 256,
+			detailScale: 1.0
+		},
+		vegetation: {
+			enabled: true,
+			density: 0.5,
+			maxInstances: 10000,
+			windStrength: 0.3
+		},
+		water: {
+			enabled: true,
+			waveAmplitude: 0.5,
+			waveFrequency: 1.0,
+			reflections: true,
+			refractions: true
+		}
+	})
+
+	const lighting = reactive<LightingConfig>({
+		probes: {
+			enabled: true,
+			spacing: 4,
+			resolution: 32
+		},
+		dynamic: {
+			maxLights: 16,
+			shadowCasters: 4,
+			updateRate: 30
+		},
+		ambient: {
+			mode: 'gradient',
+			intensity: 0.3
+		}
+	})
+
+	const i18n = reactive<I18nConfig>({
+		defaultLocale: 'zh-CN',
+		fallbackLocale: 'en',
+		supportedLocales: ['zh-CN', 'en', 'ja'],
+		dateFormat: 'YYYY-MM-DD',
+		numberFormat: '0,0.00',
+		currencyCode: 'CNY'
+	})
+
+	const performance = reactive<PerformanceConfig>({
+		profiling: {
+			enabled: false,
+			sampleRate: 60,
+			maxSamples: 300
+		},
+		debugUI: {
+			enabled: false,
+			position: 'top-left',
+			showFPS: true,
+			showMemory: true,
+			showDrawCalls: false
+		},
+		budget: {
+			targetFPS: 60,
+			maxDrawCalls: 2000,
+			maxTriangles: 500000
+		}
+	})
+
+	const buff = reactive<BuffConfig>({
+		display: {
+			maxVisible: 10,
+			iconSize: 32,
+			showDuration: true,
+			showStacks: true
+		},
+		limits: {
+			maxBuffs: 20,
+			maxDebuffs: 20,
+			maxStacks: 99
+		},
+		update: {
+			tickRate: 20,
+			batchSize: 10
+		}
+	})
+
 	function collectAll(): GameConfig {
 		return {
 			laws: { ...laws },
@@ -626,7 +728,13 @@ export const useConfigStore = defineStore('config', () => {
 			particle: { ...particle },
 			weather: { ...weather },
 			timeEffect: { ...timeEffect },
-			vehicle: { ...vehicle }
+			vehicle: { ...vehicle },
+			animation: { ...animation },
+			terrain: { ...terrain },
+			lighting: { ...lighting },
+			i18n: { ...i18n },
+			performance: { ...performance },
+			buff: { ...buff }
 		}
 	}
 
@@ -652,6 +760,12 @@ export const useConfigStore = defineStore('config', () => {
 		if (cfg.weather) Object.assign(weather, cfg.weather)
 		if (cfg.timeEffect) Object.assign(timeEffect, cfg.timeEffect)
 		if (cfg.vehicle) Object.assign(vehicle, cfg.vehicle)
+		if (cfg.animation) Object.assign(animation, cfg.animation)
+		if (cfg.terrain) Object.assign(terrain, cfg.terrain)
+		if (cfg.lighting) Object.assign(lighting, cfg.lighting)
+		if (cfg.i18n) Object.assign(i18n, cfg.i18n)
+		if (cfg.performance) Object.assign(performance, cfg.performance)
+		if (cfg.buff) Object.assign(buff, cfg.buff)
 	}
 
 	function reset() {
@@ -762,6 +876,7 @@ export const useConfigStore = defineStore('config', () => {
 		proMode, editingAsset,
 		laws, rules, world, space, entities, factions, skills, modules, systems, ai, aiAdvanced, llm,
 		audio, network, ui, save, input, particle, weather, timeEffect, vehicle,
+		animation, terrain, lighting, i18n, performance, buff,
 		collectAll, loadAll, reset,
 		subCfgChg, unsubCfgChg,
 		snapshotCfg, bakCfg, bakToPrvCfg, bakToNxtCfg, getCfgSnapshots,
