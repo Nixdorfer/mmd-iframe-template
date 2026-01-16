@@ -80,7 +80,7 @@
 
 	function setup(h) {
 		var rId = new URLSearchParams(location.search).get("roleId") || "";
-		var pStr = JSON.stringify(p).replace(/<\//g, "<\\/");
+		var pStr = JSON.stringify(p).replace(/</g, "\\u003c");
 		var ht = h.replace("/*__INJECT__*/", "window.P=" + pStr + ";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
 		o = document.createElement("div");
 		o.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#242424;z-index:99999;display:none;align-items:center;justify-content:center";

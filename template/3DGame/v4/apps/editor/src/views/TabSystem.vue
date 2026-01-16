@@ -21,8 +21,21 @@ const cats = [
 	{ id: 'faction', name: '阵营系统' },
 	{ id: 'quest', name: '任务系统' },
 	{ id: 'dialogue', name: '对话系统' },
+	{ id: 'ui', name: 'UI系统' },
+	{ id: 'save', name: '存档系统' },
 	{ id: 'worldview', name: '世界观系统' },
 	{ id: 'llm', name: 'LLM配置' }
+]
+
+const minimapShapeOpts = [
+	{ value: 'rect', label: '矩形', desc: '矩形小地图' },
+	{ value: 'circle', label: '圆形', desc: '圆形小地图' }
+]
+
+const saveBackendOpts = [
+	{ value: 'auto', label: '自动', desc: '自动选择最佳存储方式' },
+	{ value: 'localStorage', label: '本地存储', desc: '使用浏览器本地存储' },
+	{ value: 'indexedDB', label: 'IndexedDB', desc: '使用IndexedDB数据库' }
 ]
 
 const lockModeOpts = [
@@ -283,6 +296,112 @@ const wvModules = [
 				</CfgRow>
 				<CfgRow v-if="store.ai.dialogue.canTalk" label="开场白" info="NPC主动打招呼时说的话">
 					<input type="text" v-model="store.ai.dialogue.greeting" placeholder="如: 欢迎来到我的小店!">
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'ui'" class="config-section">
+				<div class="config-section-title">血条设置</div>
+				<CfgRow label="显示数值" info="是否在血条上显示具体数值">
+					<CfgSwt v-model="store.ui.hpBar.showValue" />
+				</CfgRow>
+				<CfgRow label="显示护盾" info="是否显示护盾条">
+					<CfgSwt v-model="store.ui.hpBar.showShield" />
+				</CfgRow>
+				<CfgRow label="背景色" info="血条背景颜色">
+					<input type="color" v-model="store.ui.hpBar.bgColor">
+				</CfgRow>
+				<CfgRow label="血量色" info="正常血量颜色">
+					<input type="color" v-model="store.ui.hpBar.hpColor">
+				</CfgRow>
+				<CfgRow label="低血色" info="低血量时的颜色">
+					<input type="color" v-model="store.ui.hpBar.hpLowColor">
+				</CfgRow>
+				<CfgRow label="护盾色" info="护盾条颜色">
+					<input type="color" v-model="store.ui.hpBar.shieldColor">
+				</CfgRow>
+				<CfgRow label="低血阈值" info="低于此百分比显示低血色">
+					<CfgSld v-model="store.ui.hpBar.lowThreshold" :min="0.1" :max="0.5" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="动画速度" info="血条变化动画的速度">
+					<CfgSld v-model="store.ui.hpBar.animSpeed" :min="1" :max="20" :step="1" />
+				</CfgRow>
+				<div class="config-section-title">小地图</div>
+				<CfgRow label="启用" info="是否显示小地图">
+					<CfgSwt v-model="store.ui.minimap.enabled" />
+				</CfgRow>
+				<CfgRow label="世界宽度" unit="m" info="小地图对应的世界宽度">
+					<input type="number" v-model.number="store.ui.minimap.worldW" min="100" max="10000">
+				</CfgRow>
+				<CfgRow label="世界高度" unit="m" info="小地图对应的世界高度">
+					<input type="number" v-model.number="store.ui.minimap.worldH" min="100" max="10000">
+				</CfgRow>
+				<CfgRow label="背景色" info="小地图背景颜色">
+					<input type="color" v-model="store.ui.minimap.bgColor">
+				</CfgRow>
+				<CfgRow label="边框色" info="小地图边框颜色">
+					<input type="color" v-model="store.ui.minimap.borderColor">
+				</CfgRow>
+				<CfgRow label="玩家标记色" info="玩家在小地图上的颜色">
+					<input type="color" v-model="store.ui.minimap.playerColor">
+				</CfgRow>
+				<CfgRow label="玩家标记大小" info="玩家标记的像素大小">
+					<CfgSld v-model="store.ui.minimap.playerSize" :min="2" :max="16" :step="1" />
+				</CfgRow>
+				<CfgRow label="形状" info="小地图的形状">
+					<CfgCrd v-model="store.ui.minimap.maskShape" :options="minimapShapeOpts" />
+				</CfgRow>
+				<CfgRow label="显示网格" info="是否在小地图上显示网格线">
+					<CfgSwt v-model="store.ui.minimap.showGrid" />
+				</CfgRow>
+				<CfgRow v-if="store.ui.minimap.showGrid" label="网格大小" info="网格单元的大小">
+					<CfgSld v-model="store.ui.minimap.gridSize" :min="50" :max="500" :step="50" />
+				</CfgRow>
+				<CfgRow label="战争迷雾" info="是否启用战争迷雾效果">
+					<CfgSwt v-model="store.ui.minimap.fogEnabled" />
+				</CfgRow>
+				<CfgRow v-if="store.ui.minimap.fogEnabled" label="视野半径" unit="m" info="玩家可见范围半径">
+					<CfgSld v-model="store.ui.minimap.viewRadius" :min="10" :max="200" :step="10" />
+				</CfgRow>
+				<div class="config-section-title">伤害数字</div>
+				<CfgRow label="启用" info="是否显示浮动伤害数字">
+					<CfgSwt v-model="store.ui.damageNumbers.enabled" />
+				</CfgRow>
+				<CfgRow label="持续时间" unit="ms" info="伤害数字显示的持续时间">
+					<CfgSld v-model="store.ui.damageNumbers.duration" :min="500" :max="3000" :step="100" />
+				</CfgRow>
+				<CfgRow label="字体大小" info="伤害数字的字体大小">
+					<CfgSld v-model="store.ui.damageNumbers.fontSize" :min="10" :max="32" :step="2" />
+				</CfgRow>
+				<CfgRow label="暴击颜色" info="暴击伤害的数字颜色">
+					<input type="color" v-model="store.ui.damageNumbers.critColor">
+				</CfgRow>
+				<CfgRow label="治疗颜色" info="治疗数字的颜色">
+					<input type="color" v-model="store.ui.damageNumbers.healColor">
+				</CfgRow>
+				<CfgRow label="普通颜色" info="普通伤害的数字颜色">
+					<input type="color" v-model="store.ui.damageNumbers.normalColor">
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'save'" class="config-section">
+				<div class="config-section-title">存档设置</div>
+				<CfgRow label="最大存档数" info="玩家可以保存的最大存档数量">
+					<CfgSld v-model="store.save.maxSlots" :min="1" :max="50" :step="1" />
+				</CfgRow>
+				<CfgRow label="存储后端" info="存档数据的存储方式">
+					<CfgCrd v-model="store.save.backend" :options="saveBackendOpts" />
+				</CfgRow>
+				<div class="config-section-title">自动存档</div>
+				<CfgRow label="启用" info="是否启用自动存档功能">
+					<CfgSwt v-model="store.save.autoSave.enabled" />
+				</CfgRow>
+				<CfgRow v-if="store.save.autoSave.enabled" label="间隔" unit="ms" info="自动存档的时间间隔">
+					<CfgSld v-model="store.save.autoSave.interval" :min="60000" :max="600000" :step="60000" />
+				</CfgRow>
+				<div class="config-section-title">检查点</div>
+				<CfgRow label="启用" info="是否启用检查点系统">
+					<CfgSwt v-model="store.save.checkpoint.enabled" />
+				</CfgRow>
+				<CfgRow v-if="store.save.checkpoint.enabled" label="最大检查点" info="最多保存的检查点数量">
+					<CfgSld v-model="store.save.checkpoint.maxCheckpoints" :min="1" :max="20" :step="1" />
 				</CfgRow>
 			</div>
 			<div v-else-if="curCat === 'worldview'" class="config-section">

@@ -373,6 +373,127 @@ export interface AIConfig {
 	dialogue: AIDialogueConfig
 }
 
+export interface AudioConfig {
+	master: {
+		volume: number
+		muted: boolean
+	}
+	channels: {
+		music: number
+		sfx: number
+		voice: number
+		ambient: number
+	}
+	spatial: {
+		enabled: boolean
+		maxDist: number
+		rolloff: number
+		refDist: number
+	}
+	occlusion: {
+		enabled: boolean
+		maxAttenuation: number
+		lowpassFreq: number
+		highpassFreq: number
+	}
+	doppler: {
+		enabled: boolean
+		speedOfSound: number
+		maxShift: number
+	}
+	compressor: {
+		enabled: boolean
+		threshold: number
+		ratio: number
+		attack: number
+		release: number
+	}
+	dynamicMusic: {
+		enabled: boolean
+		fadeTime: number
+		syncLayers: boolean
+	}
+}
+
+export interface NetworkConfig {
+	transport: {
+		url: string
+		reconnect: boolean
+		reconnectDelay: number
+		reconnectMaxAttempts: number
+		heartbeatInterval: number
+		timeout: number
+	}
+	sync: {
+		tickRate: number
+		sendRate: number
+		interpDelay: number
+		maxPredictedInputs: number
+		reconciliationThreshold: number
+		snapshotBufferSize: number
+	}
+	prediction: {
+		enabled: boolean
+	}
+	compression: {
+		enabled: boolean
+	}
+	lobby: {
+		maxRooms: number
+		maxPlayersPerRoom: number
+		roomTimeout: number
+	}
+}
+
+export interface UIConfig {
+	hpBar: {
+		showValue: boolean
+		showShield: boolean
+		bgColor: string
+		hpColor: string
+		hpLowColor: string
+		shieldColor: string
+		lowThreshold: number
+		animSpeed: number
+	}
+	minimap: {
+		enabled: boolean
+		worldW: number
+		worldH: number
+		bgColor: string
+		borderColor: string
+		playerColor: string
+		playerSize: number
+		showGrid: boolean
+		gridColor: string
+		gridSize: number
+		maskShape: 'rect' | 'circle'
+		fogEnabled: boolean
+		viewRadius: number
+	}
+	damageNumbers: {
+		enabled: boolean
+		duration: number
+		fontSize: number
+		critColor: string
+		healColor: string
+		normalColor: string
+	}
+}
+
+export interface SaveConfig {
+	maxSlots: number
+	backend: 'localStorage' | 'indexedDB' | 'auto'
+	autoSave: {
+		enabled: boolean
+		interval: number
+	}
+	checkpoint: {
+		enabled: boolean
+		maxCheckpoints: number
+	}
+}
+
 export interface GameConfig {
 	laws: Record<string, LawConfig>
 	rules: RulesConfig
@@ -385,4 +506,8 @@ export interface GameConfig {
 	systems: any
 	ai: AIConfig
 	llm: LLMConfig
+	audio: AudioConfig
+	network: NetworkConfig
+	ui: UIConfig
+	save: SaveConfig
 }

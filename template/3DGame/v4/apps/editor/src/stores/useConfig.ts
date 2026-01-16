@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
-import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig } from '@/types/config'
+import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig, AudioConfig, NetworkConfig, UIConfig, SaveConfig } from '@/types/config'
 import { CfgHotLoader, type CfgLsnOpt, type CfgLsnCbk, type CfgSnapshot } from '@engine/common'
 
 export const useConfigStore = defineStore('config', () => {
@@ -337,6 +337,127 @@ export const useConfigStore = defineStore('config', () => {
 		model: 'gpt-4'
 	})
 
+	const audio = reactive<AudioConfig>({
+		master: {
+			volume: 1.0,
+			muted: false
+		},
+		channels: {
+			music: 0.8,
+			sfx: 1.0,
+			voice: 1.0,
+			ambient: 0.6
+		},
+		spatial: {
+			enabled: true,
+			maxDist: 50,
+			rolloff: 1.0,
+			refDist: 1
+		},
+		occlusion: {
+			enabled: true,
+			maxAttenuation: 0.9,
+			lowpassFreq: 800,
+			highpassFreq: 200
+		},
+		doppler: {
+			enabled: true,
+			speedOfSound: 343,
+			maxShift: 2.0
+		},
+		compressor: {
+			enabled: true,
+			threshold: -24,
+			ratio: 4,
+			attack: 0.003,
+			release: 0.25
+		},
+		dynamicMusic: {
+			enabled: true,
+			fadeTime: 2.0,
+			syncLayers: true
+		}
+	})
+
+	const network = reactive<NetworkConfig>({
+		transport: {
+			url: 'ws://localhost:8080',
+			reconnect: true,
+			reconnectDelay: 1000,
+			reconnectMaxAttempts: 5,
+			heartbeatInterval: 30000,
+			timeout: 10000
+		},
+		sync: {
+			tickRate: 60,
+			sendRate: 20,
+			interpDelay: 100,
+			maxPredictedInputs: 64,
+			reconciliationThreshold: 0.1,
+			snapshotBufferSize: 32
+		},
+		prediction: {
+			enabled: true
+		},
+		compression: {
+			enabled: true
+		},
+		lobby: {
+			maxRooms: 100,
+			maxPlayersPerRoom: 16,
+			roomTimeout: 300000
+		}
+	})
+
+	const ui = reactive<UIConfig>({
+		hpBar: {
+			showValue: true,
+			showShield: false,
+			bgColor: '#1a1a1a',
+			hpColor: '#44cc44',
+			hpLowColor: '#cc4444',
+			shieldColor: '#6688cc',
+			lowThreshold: 0.3,
+			animSpeed: 5
+		},
+		minimap: {
+			enabled: true,
+			worldW: 1000,
+			worldH: 1000,
+			bgColor: '#1a2a1a',
+			borderColor: '#446644',
+			playerColor: '#00ff00',
+			playerSize: 6,
+			showGrid: true,
+			gridColor: 'rgba(68, 102, 68, 0.3)',
+			gridSize: 100,
+			maskShape: 'rect',
+			fogEnabled: false,
+			viewRadius: 50
+		},
+		damageNumbers: {
+			enabled: true,
+			duration: 1000,
+			fontSize: 16,
+			critColor: '#ff4444',
+			healColor: '#44ff44',
+			normalColor: '#ffffff'
+		}
+	})
+
+	const save = reactive<SaveConfig>({
+		maxSlots: 10,
+		backend: 'auto',
+		autoSave: {
+			enabled: true,
+			interval: 300000
+		},
+		checkpoint: {
+			enabled: true,
+			maxCheckpoints: 5
+		}
+	})
+
 	function collectAll(): GameConfig {
 		return {
 			laws: { ...laws },
@@ -349,7 +470,11 @@ export const useConfigStore = defineStore('config', () => {
 			modules: { ...modules },
 			systems: { ...systems },
 			ai: { ...ai },
-			llm: { ...llm }
+			llm: { ...llm },
+			audio: { ...audio },
+			network: { ...network },
+			ui: { ...ui },
+			save: { ...save }
 		}
 	}
 
@@ -365,6 +490,10 @@ export const useConfigStore = defineStore('config', () => {
 		if (cfg.systems) Object.assign(systems, cfg.systems)
 		if (cfg.ai) Object.assign(ai, cfg.ai)
 		if (cfg.llm) Object.assign(llm, cfg.llm)
+		if (cfg.audio) Object.assign(audio, cfg.audio)
+		if (cfg.network) Object.assign(network, cfg.network)
+		if (cfg.ui) Object.assign(ui, cfg.ui)
+		if (cfg.save) Object.assign(save, cfg.save)
 	}
 
 	function reset() {
@@ -474,6 +603,7 @@ export const useConfigStore = defineStore('config', () => {
 	return {
 		proMode, editingAsset,
 		laws, rules, world, space, entities, factions, skills, modules, systems, ai, llm,
+		audio, network, ui, save,
 		collectAll, loadAll, reset,
 		subCfgChg, unsubCfgChg,
 		snapshotCfg, bakCfg, bakToPrvCfg, bakToNxtCfg, getCfgSnapshots,
