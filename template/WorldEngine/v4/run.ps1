@@ -1,8 +1,8 @@
 param(
-	[switch]$b,
-	[switch]$d
+	[switch]$b
 )
 
+Clear-Host
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptDir
 
@@ -36,23 +36,15 @@ if ($b) {
 	pnpm --filter @engine/client build
 	Copy-Item "$clientDist\index.html" "$releaseDir\client\index.html"
 	Write-Host "Build completed: $releaseDir" -ForegroundColor Green
-} elseif ($d) {
-	$devDir = "build\dev"
-	if (Test-Path $devDir) {
-		Remove-Item -Recurse -Force $devDir
-	}
-	New-Item -ItemType Directory -Force -Path $devDir | Out-Null
-	Write-Host "Building editor (dev)..." -ForegroundColor Cyan
-	Push-Location $editorDir
-	pnpm build
-	Pop-Location
-	Copy-Item "$editorDist\index.html" "$devDir\index.html"
-	$htmlPath = Join-Path $scriptDir "build\dev\index.html"
-	Write-Host "Opening in Chrome..." -ForegroundColor Cyan
-	Start-Process "chrome" $htmlPath
+	Set-Location $scriptDir
 } else {
-    Write-Host "Starting editor dev server..." -ForegroundColor Cyan
+	Write-Host "Starting editor dev server..." -ForegroundColor Cyan
+	Start-Job -ScriptBlock {
+		Start-Sleep -Seconds 3
+		Start-Process "chrome" "http://localhost:3000"
+	} | Out-Null
 	Push-Location $editorDir
 	pnpm dev
 	Pop-Location
+	Set-Location $scriptDir
 }
