@@ -14,6 +14,8 @@ const cats = [
 	{ id: 'render', name: '渲染系统' },
 	{ id: 'camera', name: '相机系统' },
 	{ id: 'time', name: '时间系统' },
+	{ id: 'timeEffect', name: '时间特效' },
+	{ id: 'input', name: '输入系统' },
 	{ id: 'inventory', name: '物品栏系统' },
 	{ id: 'combat', name: '战斗系统' },
 	{ id: 'ai', name: 'AI系统' },
@@ -21,6 +23,9 @@ const cats = [
 	{ id: 'faction', name: '阵营系统' },
 	{ id: 'quest', name: '任务系统' },
 	{ id: 'dialogue', name: '对话系统' },
+	{ id: 'particle', name: '粒子系统' },
+	{ id: 'weather', name: '天气系统' },
+	{ id: 'vehicle', name: '载具系统' },
 	{ id: 'ui', name: 'UI系统' },
 	{ id: 'save', name: '存档系统' },
 	{ id: 'worldview', name: '世界观系统' },
@@ -66,6 +71,27 @@ const llmProviderOpts = [
 	{ value: 'anthropic', label: 'Anthropic', desc: 'Claude系列' },
 	{ value: 'ollama', label: 'Ollama', desc: '本地部署' },
 	{ value: 'custom', label: '自定义', desc: '自定义接口' }
+]
+
+const weatherOpts = [
+	{ value: 'clear', label: '晴天', desc: '无云天气' },
+	{ value: 'cloudy', label: '多云', desc: '云层较多' },
+	{ value: 'rain', label: '雨天', desc: '降雨天气' },
+	{ value: 'storm', label: '暴风雨', desc: '雷暴天气' },
+	{ value: 'snow', label: '雪天', desc: '降雪天气' },
+	{ value: 'fog', label: '雾天', desc: '能见度低' }
+]
+
+const particleSortOpts = [
+	{ value: 'none', label: '不排序', desc: '无排序开销' },
+	{ value: 'distance', label: '距离', desc: '按距离排序' },
+	{ value: 'age', label: '年龄', desc: '按存活时间排序' }
+]
+
+const particleCullOpts = [
+	{ value: 'none', label: '不剔除', desc: '全部渲染' },
+	{ value: 'frustum', label: '视锥剔除', desc: '剔除视野外粒子' },
+	{ value: 'distance', label: '距离剔除', desc: '剔除远距离粒子' }
 ]
 
 const wvModules = [
@@ -172,6 +198,99 @@ const wvModules = [
 					<input type="number" v-model.number="store.systems.time.rewindMax" min="1" max="300">
 				</CfgRow>
 			</div>
+			<div v-else-if="curCat === 'timeEffect'" class="config-section">
+				<div class="config-section-title">慢动作</div>
+				<CfgRow label="启用" info="是否启用子弹时间/慢动作效果">
+					<CfgSwt v-model="store.timeEffect.slowMo.enabled" />
+				</CfgRow>
+				<CfgRow label="最小时间缩放" info="慢动作时的最低时间流速(0.1=10%速度)">
+					<CfgSld v-model="store.timeEffect.slowMo.minScale" :min="0.01" :max="0.5" :step="0.01" />
+				</CfgRow>
+				<CfgRow label="过渡速度" info="进入/退出慢动作的过渡速度">
+					<CfgSld v-model="store.timeEffect.slowMo.transitionSpeed" :min="0.5" :max="10" :step="0.5" />
+				</CfgRow>
+				<div class="config-section-title">时间冻结</div>
+				<CfgRow label="启用" info="是否启用时间冻结技能">
+					<CfgSwt v-model="store.timeEffect.freeze.enabled" />
+				</CfgRow>
+				<CfgRow label="最大持续时间" unit="秒" info="时间冻结的最大持续时间">
+					<CfgSld v-model="store.timeEffect.freeze.duration" :min="1" :max="30" :step="1" />
+				</CfgRow>
+				<div class="config-section-title">时间回溯</div>
+				<CfgRow label="启用" info="是否启用时间回溯技能">
+					<CfgSwt v-model="store.timeEffect.rewind.enabled" />
+				</CfgRow>
+				<CfgRow label="最大回溯时长" unit="秒" info="可以回溯的最大时间长度">
+					<CfgSld v-model="store.timeEffect.rewind.maxDuration" :min="1" :max="60" :step="1" />
+				</CfgRow>
+				<CfgRow label="记录帧率" unit="FPS" info="时间回溯数据的记录频率">
+					<CfgSld v-model="store.timeEffect.rewind.recordRate" :min="10" :max="60" :step="5" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'input'" class="config-section">
+				<div class="config-section-title">键盘</div>
+				<CfgRow label="启用" info="是否启用键盘输入">
+					<CfgSwt v-model="store.input.keyboard.enabled" />
+				</CfgRow>
+				<CfgRow label="重复延迟" unit="ms" info="按住按键后开始重复的延迟时间">
+					<CfgSld v-model="store.input.keyboard.repeatDelay" :min="100" :max="1000" :step="50" />
+				</CfgRow>
+				<CfgRow label="重复速率" unit="ms" info="按键重复的间隔时间">
+					<CfgSld v-model="store.input.keyboard.repeatRate" :min="10" :max="200" :step="10" />
+				</CfgRow>
+				<div class="config-section-title">鼠标</div>
+				<CfgRow label="启用" info="是否启用鼠标输入">
+					<CfgSwt v-model="store.input.mouse.enabled" />
+				</CfgRow>
+				<CfgRow label="灵敏度" info="鼠标移动的灵敏度倍数">
+					<CfgSld v-model="store.input.mouse.sensitivity" :min="0.1" :max="5" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="反转Y轴" info="是否反转鼠标上下移动的方向">
+					<CfgSwt v-model="store.input.mouse.invertY" />
+				</CfgRow>
+				<CfgRow label="原始输入" info="绕过系统加速使用原始鼠标数据">
+					<CfgSwt v-model="store.input.mouse.rawInput" />
+				</CfgRow>
+				<div class="config-section-title">手柄</div>
+				<CfgRow label="启用" info="是否启用游戏手柄输入">
+					<CfgSwt v-model="store.input.gamepad.enabled" />
+				</CfgRow>
+				<CfgRow label="死区" info="摇杆输入的最小阈值，防止漂移">
+					<CfgSld v-model="store.input.gamepad.deadzone" :min="0.05" :max="0.5" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="震动" info="是否启用手柄震动反馈">
+					<CfgSwt v-model="store.input.gamepad.vibration" />
+				</CfgRow>
+				<CfgRow label="轴阈值" info="模拟输入转数字输入的阈值">
+					<CfgSld v-model="store.input.gamepad.axisThreshold" :min="0.1" :max="1" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">触摸</div>
+				<CfgRow label="启用" info="是否启用触摸屏输入">
+					<CfgSwt v-model="store.input.touch.enabled" />
+				</CfgRow>
+				<CfgRow label="多点触控" info="是否支持多点触控">
+					<CfgSwt v-model="store.input.touch.multiTouch" />
+				</CfgRow>
+				<CfgRow label="点击阈值" unit="ms" info="判定为点击的最大触摸时间">
+					<CfgSld v-model="store.input.touch.tapThreshold" :min="50" :max="500" :step="50" />
+				</CfgRow>
+				<div class="config-section-title">手势</div>
+				<CfgRow label="启用" info="是否启用手势识别">
+					<CfgSwt v-model="store.input.gesture.enabled" />
+				</CfgRow>
+				<CfgRow label="滑动阈值" unit="px" info="识别为滑动手势的最小距离">
+					<CfgSld v-model="store.input.gesture.swipeThreshold" :min="10" :max="200" :step="10" />
+				</CfgRow>
+				<CfgRow label="缩放阈值" info="识别为缩放手势的最小比例变化">
+					<CfgSld v-model="store.input.gesture.pinchThreshold" :min="0.05" :max="0.5" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="旋转阈值" unit="°" info="识别为旋转手势的最小角度">
+					<CfgSld v-model="store.input.gesture.rotateThreshold" :min="5" :max="45" :step="5" />
+				</CfgRow>
+				<CfgRow label="长按时长" unit="ms" info="识别为长按手势的持续时间">
+					<CfgSld v-model="store.input.gesture.holdDuration" :min="200" :max="1500" :step="100" />
+				</CfgRow>
+			</div>
 			<div v-else-if="curCat === 'economy'" class="config-section">
 				<div class="config-section-title">经济系统</div>
 				<CfgRow label="货币名称" info="游戏中货币的显示名称。如: 金币、钻石、星币等。">
@@ -218,6 +337,92 @@ const wvModules = [
 				</CfgRow>
 				<CfgRow label="可跳过" info="开启后玩家可以跳过对话。关闭则强制观看所有对话。">
 					<CfgSwt v-model="store.systems.dialogue.canSkip" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'particle'" class="config-section">
+				<div class="config-section-title">粒子系统</div>
+				<CfgRow label="最大粒子数" info="场景中允许的最大粒子数量">
+					<input type="number" v-model.number="store.particle.maxParticles" min="1000" max="100000" step="1000">
+				</CfgRow>
+				<CfgRow label="GPU加速" info="使用GPU计算粒子位置">
+					<CfgSwt v-model="store.particle.gpuAcceleration" />
+				</CfgRow>
+				<CfgRow label="排序模式" info="粒子的渲染排序方式">
+					<CfgCrd v-model="store.particle.sortMode" :options="particleSortOpts" />
+				</CfgRow>
+				<CfgRow label="剔除模式" info="不可见粒子的剔除方式">
+					<CfgCrd v-model="store.particle.cullMode" :options="particleCullOpts" />
+				</CfgRow>
+				<CfgRow label="剔除距离" unit="m" info="超过此距离的粒子将被剔除">
+					<CfgSld v-model="store.particle.cullDistance" :min="20" :max="500" :step="20" />
+				</CfgRow>
+				<CfgRow label="LOD偏移" info="粒子LOD的距离偏移系数">
+					<CfgSld v-model="store.particle.lodBias" :min="0.5" :max="2" :step="0.1" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'weather'" class="config-section">
+				<div class="config-section-title">天气系统</div>
+				<CfgRow label="启用" info="是否启用动态天气系统">
+					<CfgSwt v-model="store.weather.enabled" />
+				</CfgRow>
+				<CfgRow label="当前天气" info="当前的天气类型">
+					<CfgCrd v-model="store.weather.current" :options="weatherOpts" />
+				</CfgRow>
+				<CfgRow label="过渡时间" unit="秒" info="天气变化的过渡时间">
+					<CfgSld v-model="store.weather.transitionTime" :min="1" :max="30" :step="1" />
+				</CfgRow>
+				<CfgRow label="风力强度" info="风力的强度(0=无风 1=强风)">
+					<CfgSld v-model="store.weather.windStrength" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="风向" unit="°" info="风的方向(0=北 90=东)">
+					<CfgSld v-model="store.weather.windDirection" :min="0" :max="359" :step="15" />
+				</CfgRow>
+				<CfgRow label="降水量" info="降雨/降雪的强度">
+					<CfgSld v-model="store.weather.precipitation" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="温度" unit="°C" info="环境温度">
+					<CfgSld v-model="store.weather.temperature" :min="-30" :max="50" :step="1" />
+				</CfgRow>
+				<CfgRow label="湿度" unit="%" info="空气湿度">
+					<CfgSld v-model="store.weather.humidity" :min="0" :max="100" :step="5" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'vehicle'" class="config-section">
+				<div class="config-section-title">载具系统</div>
+				<CfgRow label="启用" info="是否启用载具系统">
+					<CfgSwt v-model="store.vehicle.enabled" />
+				</CfgRow>
+				<div class="config-section-title">物理参数</div>
+				<CfgRow label="轮胎摩擦" info="轮胎与地面的摩擦系数">
+					<CfgSld v-model="store.vehicle.physics.wheelFriction" :min="0.5" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="悬挂刚度" info="悬挂弹簧的刚度">
+					<CfgSld v-model="store.vehicle.physics.suspensionStiffness" :min="10" :max="100" :step="5" />
+				</CfgRow>
+				<CfgRow label="悬挂阻尼" info="悬挂的阻尼系数">
+					<CfgSld v-model="store.vehicle.physics.suspensionDamping" :min="0.5" :max="5" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="最大转向角" unit="°" info="车轮的最大转向角度">
+					<CfgSld v-model="store.vehicle.physics.maxSteerAngle" :min="15" :max="60" :step="5" />
+				</CfgRow>
+				<CfgRow label="引擎功率" unit="HP" info="发动机最大输出功率">
+					<input type="number" v-model.number="store.vehicle.physics.enginePower" min="100" max="5000">
+				</CfgRow>
+				<CfgRow label="制动力" unit="N" info="刹车制动力">
+					<input type="number" v-model.number="store.vehicle.physics.brakePower" min="1000" max="10000">
+				</CfgRow>
+				<CfgRow label="质量" unit="kg" info="载具整体质量">
+					<input type="number" v-model.number="store.vehicle.physics.mass" min="500" max="10000">
+				</CfgRow>
+				<div class="config-section-title">相机参数</div>
+				<CfgRow label="跟随距离" unit="m" info="相机与载具的距离">
+					<CfgSld v-model="store.vehicle.camera.followDist" :min="3" :max="20" :step="1" />
+				</CfgRow>
+				<CfgRow label="跟随高度" unit="m" info="相机相对载具的高度">
+					<CfgSld v-model="store.vehicle.camera.followHeight" :min="1" :max="10" :step="0.5" />
+				</CfgRow>
+				<CfgRow label="前瞻距离" unit="m" info="相机预瞄的前方距离">
+					<CfgSld v-model="store.vehicle.camera.lookAhead" :min="0" :max="10" :step="0.5" />
 				</CfgRow>
 			</div>
 			<div v-else-if="curCat === 'inventory'" class="config-section">

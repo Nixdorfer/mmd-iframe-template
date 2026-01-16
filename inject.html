@@ -1,8 +1,10 @@
 <div class="iFrEdt"><img src="" onerror='
 (function(c, p) {
+	console.log("[Inject] 开始, once:", p.indexOf("ONCE:") === 0);
 	var base = "https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/", o, f, mH, unloaded = false;
 	var once = p.indexOf("ONCE:") === 0;
 	if (once) p = p.slice(5);
+	console.log("[Inject] P长度:", p.length);
 	c.style.position = "relative";
 	var b = document.createElement("button");
 	b.style.cssText = "padding:12px 24px;background:#b8860b;border:none;border-radius:8px;color:#fff;cursor:not-allowed;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
@@ -79,9 +81,12 @@
 	}
 
 	function setup(h) {
+		console.log("[Inject] setup开始");
 		var rId = new URLSearchParams(location.search).get("roleId") || "";
 		var pStr = JSON.stringify(p).replace(/</g, "\\u003c");
+		console.log("[Inject] pStr长度:", pStr.length);
 		var ht = h.replace("/*__INJECT__*/", "window.P=" + pStr + ";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
+		console.log("[Inject] ht长度:", ht.length);
 		o = document.createElement("div");
 		o.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#242424;z-index:99999;display:none;align-items:center;justify-content:center";
 		f = document.createElement("iframe");
@@ -89,6 +94,7 @@
 		f.srcdoc = ht;
 		o.appendChild(f);
 		document.body.appendChild(o);
+		console.log("[Inject] iframe已添加到DOM");
 
 		var sH = window.initStore ? window.initStore(f) : null;
 
@@ -155,37 +161,48 @@
 
 		window.addEventListener("message", mH);
 		b.onclick = show;
+		console.log("[Inject] 调用show");
 		show();
 	}
 
 	function ready(r) {
+		console.log("[Inject] ready, 设置按钮");
 		b.disabled = false;
 		b.style.background = "#166d3b";
 		b.style.cursor = "pointer";
 		b.textContent = "打开";
 		if (r[1]) new Function(r[1])();
+		console.log("[Inject] 调用setup");
 		setup(r[0]);
 	}
 
+	console.log("[Inject] 开始加载资源");
 	Promise.all([
-		fetch(base + "loader/loader.html").then(function(r) { return r.ok ? r.text() : Promise.reject(); }),
-		fetch(base + "library/store.js").then(function(r) { return r.ok ? r.text() : ""; })
+		fetch(base + "loader/loader.html").then(function(r) { console.log("[Inject] loader状态:", r.status); return r.ok ? r.text() : Promise.reject(); }),
+		fetch(base + "library/store.js").then(function(r) { console.log("[Inject] store状态:", r.status); return r.ok ? r.text() : ""; })
 	]).then(function(r) {
+		console.log("[Inject] 资源加载完成, loader长度:", r[0].length);
 		if (once) {
 			var roleId = new URLSearchParams(location.search).get("roleId") || "";
+			console.log("[Inject] ONCE模式, 检查对话, roleId:", roleId);
 			checkConversation(roleId).then(function(res) {
+				console.log("[Inject] 对话检查结果:", res);
 				if (res.data && res.data.total !== 0) {
+					console.log("[Inject] 已有对话, 显示完成");
 					showComplete();
 				} else {
+					console.log("[Inject] 无对话, 继续");
 					ready(r);
 				}
-			}).catch(function() {
+			}).catch(function(e) {
+				console.error("[Inject] 对话检查失败:", e);
 				ready(r);
 			});
 		} else {
 			ready(r);
 		}
-	}).catch(function() {
+	}).catch(function(e) {
+		console.error("[Inject] 资源加载失败:", e);
 		b.disabled = false;
 		b.style.background = "#8b0000";
 		b.style.cursor = "pointer";

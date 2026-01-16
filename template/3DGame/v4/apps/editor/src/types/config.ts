@@ -494,6 +494,152 @@ export interface SaveConfig {
 	}
 }
 
+export interface InputConfig {
+	keyboard: {
+		enabled: boolean
+		repeatDelay: number
+		repeatRate: number
+	}
+	mouse: {
+		enabled: boolean
+		sensitivity: number
+		invertY: boolean
+		rawInput: boolean
+	}
+	gamepad: {
+		enabled: boolean
+		deadzone: number
+		vibration: boolean
+		axisThreshold: number
+	}
+	touch: {
+		enabled: boolean
+		multiTouch: boolean
+		tapThreshold: number
+	}
+	gesture: {
+		enabled: boolean
+		swipeThreshold: number
+		pinchThreshold: number
+		rotateThreshold: number
+		holdDuration: number
+	}
+}
+
+export interface AIAdvancedConfig {
+	pathfind: {
+		enabled: boolean
+		gridSize: number
+		maxNodes: number
+		algo: 'astar' | 'dijkstra' | 'jps'
+		updateFreq: number
+		avoidRadius: number
+	}
+	perception: {
+		enabled: boolean
+		viewAngle: number
+		viewDist: number
+		hearDist: number
+		memoryDuration: number
+		updateRate: number
+	}
+	goap: {
+		enabled: boolean
+		maxActions: number
+		replanInterval: number
+		costThreshold: number
+	}
+	tactical: {
+		enabled: boolean
+		coverWeight: number
+		flankWeight: number
+		heightWeight: number
+		distanceWeight: number
+	}
+	flock: {
+		enabled: boolean
+		separation: number
+		alignment: number
+		cohesion: number
+		maxSpeed: number
+		neighborDist: number
+		avoidDist: number
+	}
+	aggro: {
+		enabled: boolean
+		decayRate: number
+		maxTargets: number
+		threatMul: number
+		healThreatMul: number
+		proximityBonus: number
+	}
+	navmesh: {
+		enabled: boolean
+		cellSize: number
+		cellHeight: number
+		agentHeight: number
+		agentRadius: number
+		maxSlope: number
+		maxStepHeight: number
+		minRegionArea: number
+	}
+}
+
+export interface ParticleConfig {
+	maxParticles: number
+	gpuAcceleration: boolean
+	sortMode: 'none' | 'distance' | 'age'
+	cullMode: 'none' | 'frustum' | 'distance'
+	cullDistance: number
+	lodBias: number
+}
+
+export interface WeatherConfig {
+	enabled: boolean
+	current: 'clear' | 'cloudy' | 'rain' | 'storm' | 'snow' | 'fog'
+	transitionTime: number
+	windStrength: number
+	windDirection: number
+	precipitation: number
+	temperature: number
+	humidity: number
+}
+
+export interface TimeEffectConfig {
+	slowMo: {
+		enabled: boolean
+		minScale: number
+		transitionSpeed: number
+	}
+	freeze: {
+		enabled: boolean
+		duration: number
+	}
+	rewind: {
+		enabled: boolean
+		maxDuration: number
+		recordRate: number
+	}
+}
+
+export interface VehicleConfig {
+	enabled: boolean
+	physics: {
+		wheelFriction: number
+		suspensionStiffness: number
+		suspensionDamping: number
+		maxSteerAngle: number
+		enginePower: number
+		brakePower: number
+		mass: number
+	}
+	camera: {
+		followDist: number
+		followHeight: number
+		lookAhead: number
+	}
+}
+
 export interface GameConfig {
 	laws: Record<string, LawConfig>
 	rules: RulesConfig
@@ -505,9 +651,15 @@ export interface GameConfig {
 	modules: any
 	systems: any
 	ai: AIConfig
+	aiAdvanced: AIAdvancedConfig
 	llm: LLMConfig
 	audio: AudioConfig
 	network: NetworkConfig
 	ui: UIConfig
 	save: SaveConfig
+	input: InputConfig
+	particle: ParticleConfig
+	weather: WeatherConfig
+	timeEffect: TimeEffectConfig
+	vehicle: VehicleConfig
 }

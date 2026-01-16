@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
-import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig, AudioConfig, NetworkConfig, UIConfig, SaveConfig } from '@/types/config'
+import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig, AudioConfig, NetworkConfig, UIConfig, SaveConfig, InputConfig, AIAdvancedConfig, ParticleConfig, WeatherConfig, TimeEffectConfig, VehicleConfig } from '@/types/config'
 import { CfgHotLoader, type CfgLsnOpt, type CfgLsnCbk, type CfgSnapshot } from '@engine/common'
 
 export const useConfigStore = defineStore('config', () => {
@@ -458,6 +458,152 @@ export const useConfigStore = defineStore('config', () => {
 		}
 	})
 
+	const input = reactive<InputConfig>({
+		keyboard: {
+			enabled: true,
+			repeatDelay: 500,
+			repeatRate: 50
+		},
+		mouse: {
+			enabled: true,
+			sensitivity: 1.0,
+			invertY: false,
+			rawInput: false
+		},
+		gamepad: {
+			enabled: true,
+			deadzone: 0.15,
+			vibration: true,
+			axisThreshold: 0.5
+		},
+		touch: {
+			enabled: true,
+			multiTouch: true,
+			tapThreshold: 200
+		},
+		gesture: {
+			enabled: true,
+			swipeThreshold: 50,
+			pinchThreshold: 0.1,
+			rotateThreshold: 15,
+			holdDuration: 500
+		}
+	})
+
+	const aiAdvanced = reactive<AIAdvancedConfig>({
+		pathfind: {
+			enabled: true,
+			gridSize: 1.0,
+			maxNodes: 1000,
+			algo: 'astar',
+			updateFreq: 0.5,
+			avoidRadius: 0.5
+		},
+		perception: {
+			enabled: true,
+			viewAngle: 120,
+			viewDist: 50,
+			hearDist: 20,
+			memoryDuration: 10,
+			updateRate: 0.2
+		},
+		goap: {
+			enabled: true,
+			maxActions: 10,
+			replanInterval: 1.0,
+			costThreshold: 100
+		},
+		tactical: {
+			enabled: true,
+			coverWeight: 1.0,
+			flankWeight: 0.8,
+			heightWeight: 0.5,
+			distanceWeight: 0.6
+		},
+		flock: {
+			enabled: true,
+			separation: 1.5,
+			alignment: 1.0,
+			cohesion: 1.0,
+			maxSpeed: 5,
+			neighborDist: 10,
+			avoidDist: 2
+		},
+		aggro: {
+			enabled: true,
+			decayRate: 5,
+			maxTargets: 5,
+			threatMul: 1.0,
+			healThreatMul: 0.5,
+			proximityBonus: 10
+		},
+		navmesh: {
+			enabled: true,
+			cellSize: 0.3,
+			cellHeight: 0.2,
+			agentHeight: 2.0,
+			agentRadius: 0.5,
+			maxSlope: 45,
+			maxStepHeight: 0.4,
+			minRegionArea: 8
+		}
+	})
+
+	const particle = reactive<ParticleConfig>({
+		maxParticles: 10000,
+		gpuAcceleration: true,
+		sortMode: 'distance',
+		cullMode: 'frustum',
+		cullDistance: 100,
+		lodBias: 1.0
+	})
+
+	const weather = reactive<WeatherConfig>({
+		enabled: true,
+		current: 'clear',
+		transitionTime: 5,
+		windStrength: 0.5,
+		windDirection: 0,
+		precipitation: 0,
+		temperature: 20,
+		humidity: 50
+	})
+
+	const timeEffect = reactive<TimeEffectConfig>({
+		slowMo: {
+			enabled: true,
+			minScale: 0.1,
+			transitionSpeed: 2.0
+		},
+		freeze: {
+			enabled: true,
+			duration: 3
+		},
+		rewind: {
+			enabled: false,
+			maxDuration: 10,
+			recordRate: 30
+		}
+	})
+
+	const vehicle = reactive<VehicleConfig>({
+		enabled: true,
+		physics: {
+			wheelFriction: 1.0,
+			suspensionStiffness: 50,
+			suspensionDamping: 2.3,
+			maxSteerAngle: 35,
+			enginePower: 1000,
+			brakePower: 3000,
+			mass: 1500
+		},
+		camera: {
+			followDist: 8,
+			followHeight: 3,
+			lookAhead: 2
+		}
+	})
+
 	function collectAll(): GameConfig {
 		return {
 			laws: { ...laws },
@@ -470,11 +616,17 @@ export const useConfigStore = defineStore('config', () => {
 			modules: { ...modules },
 			systems: { ...systems },
 			ai: { ...ai },
+			aiAdvanced: { ...aiAdvanced },
 			llm: { ...llm },
 			audio: { ...audio },
 			network: { ...network },
 			ui: { ...ui },
-			save: { ...save }
+			save: { ...save },
+			input: { ...input },
+			particle: { ...particle },
+			weather: { ...weather },
+			timeEffect: { ...timeEffect },
+			vehicle: { ...vehicle }
 		}
 	}
 
@@ -489,11 +641,17 @@ export const useConfigStore = defineStore('config', () => {
 		if (cfg.modules) Object.assign(modules, cfg.modules)
 		if (cfg.systems) Object.assign(systems, cfg.systems)
 		if (cfg.ai) Object.assign(ai, cfg.ai)
+		if (cfg.aiAdvanced) Object.assign(aiAdvanced, cfg.aiAdvanced)
 		if (cfg.llm) Object.assign(llm, cfg.llm)
 		if (cfg.audio) Object.assign(audio, cfg.audio)
 		if (cfg.network) Object.assign(network, cfg.network)
 		if (cfg.ui) Object.assign(ui, cfg.ui)
 		if (cfg.save) Object.assign(save, cfg.save)
+		if (cfg.input) Object.assign(input, cfg.input)
+		if (cfg.particle) Object.assign(particle, cfg.particle)
+		if (cfg.weather) Object.assign(weather, cfg.weather)
+		if (cfg.timeEffect) Object.assign(timeEffect, cfg.timeEffect)
+		if (cfg.vehicle) Object.assign(vehicle, cfg.vehicle)
 	}
 
 	function reset() {
@@ -602,8 +760,8 @@ export const useConfigStore = defineStore('config', () => {
 
 	return {
 		proMode, editingAsset,
-		laws, rules, world, space, entities, factions, skills, modules, systems, ai, llm,
-		audio, network, ui, save,
+		laws, rules, world, space, entities, factions, skills, modules, systems, ai, aiAdvanced, llm,
+		audio, network, ui, save, input, particle, weather, timeEffect, vehicle,
 		collectAll, loadAll, reset,
 		subCfgChg, unsubCfgChg,
 		snapshotCfg, bakCfg, bakToPrvCfg, bakToNxtCfg, getCfgSnapshots,
