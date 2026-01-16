@@ -58,8 +58,11 @@ window.L = {
 	}
 
 	console.log("[Loader] 开始");
+	console.log("[Loader] window.PB64类型:", typeof window.PB64);
+	console.log("[Loader] window.PB64前100字符:", window.PB64 ? window.PB64.substring(0, 100) : window.PB64);
 	M("加载中...");
-	var p = window.P;
+	var p = window.PB64 ? decodeURIComponent(escape(atob(window.PB64))) : "";
+	console.log("[Loader] 解码后P前200字符:", p ? p.substring(0, 200) : p);
 	console.log("[Loader] P =", p ? p.substring(0, 100) + "..." : p);
 	if (!p) { E("参数为空"); return; }
 	if (p.charAt(0) === "[" && p.charAt(p.length - 1) === "]") p = p.slice(1, -1);

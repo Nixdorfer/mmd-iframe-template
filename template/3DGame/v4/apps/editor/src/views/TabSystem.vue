@@ -12,12 +12,19 @@ const curCat = ref('time')
 
 const cats = [
 	{ id: 'render', name: '渲染系统' },
+	{ id: 'shader', name: '着色器' },
 	{ id: 'camera', name: '相机系统' },
+	{ id: 'lighting', name: '光照系统' },
+	{ id: 'terrain', name: '地形系统' },
+	{ id: 'mapGenDetail', name: '地图生成' },
+	{ id: 'animation', name: '动画系统' },
+	{ id: 'physicsAdvanced', name: '高级物理' },
 	{ id: 'time', name: '时间系统' },
 	{ id: 'timeEffect', name: '时间特效' },
 	{ id: 'input', name: '输入系统' },
 	{ id: 'inventory', name: '物品栏系统' },
 	{ id: 'combat', name: '战斗系统' },
+	{ id: 'buff', name: 'Buff系统' },
 	{ id: 'ai', name: 'AI系统' },
 	{ id: 'economy', name: '经济系统' },
 	{ id: 'faction', name: '阵营系统' },
@@ -28,8 +35,17 @@ const cats = [
 	{ id: 'vehicle', name: '载具系统' },
 	{ id: 'ui', name: 'UI系统' },
 	{ id: 'save', name: '存档系统' },
+	{ id: 'assetStreaming', name: '资源流送' },
+	{ id: 'i18n', name: '本地化' },
+	{ id: 'performance', name: '性能监控' },
 	{ id: 'worldview', name: '世界观系统' },
-	{ id: 'llm', name: 'LLM配置' }
+	{ id: 'llm', name: 'LLM配置' },
+	{ id: 'achievement', name: '成就系统' },
+	{ id: 'keybind', name: '快捷键' },
+	{ id: 'display', name: '显示设置' },
+	{ id: 'accessibility', name: '辅助功能' },
+	{ id: 'debug', name: '调试设置' },
+	{ id: 'shop', name: '商城系统' }
 ]
 
 const minimapShapeOpts = [
@@ -92,6 +108,39 @@ const particleCullOpts = [
 	{ value: 'none', label: '不剔除', desc: '全部渲染' },
 	{ value: 'frustum', label: '视锥剔除', desc: '剔除视野外粒子' },
 	{ value: 'distance', label: '距离剔除', desc: '剔除远距离粒子' }
+]
+
+const blendModeOpts = [
+	{ value: 'additive', label: '叠加', desc: '动画叠加混合' },
+	{ value: 'replace', label: '替换', desc: '完全替换动画' },
+	{ value: 'override', label: '覆盖', desc: '权重覆盖混合' }
+]
+
+const ambientModeOpts = [
+	{ value: 'flat', label: '平面', desc: '单色环境光' },
+	{ value: 'gradient', label: '渐变', desc: '天地渐变光' },
+	{ value: 'skybox', label: '天空盒', desc: '从天空盒采样' }
+]
+
+const debugPosOpts = [
+	{ value: 'top-left', label: '左上', desc: '左上角' },
+	{ value: 'top-right', label: '右上', desc: '右上角' },
+	{ value: 'bottom-left', label: '左下', desc: '左下角' },
+	{ value: 'bottom-right', label: '右下', desc: '右下角' }
+]
+
+const colorblindModeOpts = [
+	{ value: 'none', label: '无', desc: '不使用色盲模式' },
+	{ value: 'protanopia', label: '红色盲', desc: '红色视觉障碍' },
+	{ value: 'deuteranopia', label: '绿色盲', desc: '绿色视觉障碍' },
+	{ value: 'tritanopia', label: '蓝色盲', desc: '蓝色视觉障碍' }
+]
+
+const logLevelOpts = [
+	{ value: 'debug', label: '调试', desc: '显示所有日志' },
+	{ value: 'info', label: '信息', desc: '显示信息及以上' },
+	{ value: 'warn', label: '警告', desc: '显示警告及以上' },
+	{ value: 'error', label: '错误', desc: '仅显示错误' }
 ]
 
 const wvModules = [
@@ -165,6 +214,91 @@ const wvModules = [
 					<CfgSwt v-model="store.world.render.outlineTerrain" />
 				</CfgRow>
 			</div>
+			<div v-else-if="curCat === 'shader'" class="config-section">
+				<div class="config-section-title">全局光照</div>
+				<CfgRow label="启用" info="是否启用全局光照">
+					<CfgSwt v-model="store.shader.gi.enabled" />
+				</CfgRow>
+				<CfgRow label="反弹次数" info="光线反弹的次数">
+					<CfgSld v-model="store.shader.gi.bounces" :min="1" :max="4" :step="1" />
+				</CfgRow>
+				<CfgRow label="采样数" info="每像素的采样数量">
+					<CfgSld v-model="store.shader.gi.samples" :min="8" :max="64" :step="8" />
+				</CfgRow>
+				<CfgRow label="强度" info="全局光照的强度">
+					<CfgSld v-model="store.shader.gi.intensity" :min="0" :max="2" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">屏幕空间反射</div>
+				<CfgRow label="启用" info="是否启用屏幕空间反射">
+					<CfgSwt v-model="store.shader.ssr.enabled" />
+				</CfgRow>
+				<CfgRow label="最大步数" info="光线追踪的最大步数">
+					<CfgSld v-model="store.shader.ssr.maxSteps" :min="16" :max="128" :step="16" />
+				</CfgRow>
+				<CfgRow label="步长" info="每步的长度">
+					<CfgSld v-model="store.shader.ssr.stepSize" :min="0.01" :max="0.5" :step="0.01" />
+				</CfgRow>
+				<CfgRow label="厚度" info="反射表面的厚度">
+					<CfgSld v-model="store.shader.ssr.thickness" :min="0.1" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="淡入开始" info="反射淡入的开始位置">
+					<CfgSld v-model="store.shader.ssr.fadeStart" :min="0.5" :max="1" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="淡入结束" info="反射淡入的结束位置">
+					<CfgSld v-model="store.shader.ssr.fadeEnd" :min="0.5" :max="1" :step="0.05" />
+				</CfgRow>
+				<div class="config-section-title">描边效果</div>
+				<CfgRow label="启用" info="是否启用描边效果">
+					<CfgSwt v-model="store.shader.outline.enabled" />
+				</CfgRow>
+				<CfgRow label="宽度" unit="px" info="描边的宽度">
+					<CfgSld v-model="store.shader.outline.width" :min="1" :max="5" :step="0.5" />
+				</CfgRow>
+				<CfgRow label="颜色" info="描边的颜色">
+					<input type="color" v-model="store.shader.outline.color">
+				</CfgRow>
+				<CfgRow label="深度阈值" info="深度边缘检测阈值">
+					<CfgSld v-model="store.shader.outline.depthThreshold" :min="0.01" :max="0.5" :step="0.01" />
+				</CfgRow>
+				<CfgRow label="法线阈值" info="法线边缘检测阈值">
+					<CfgSld v-model="store.shader.outline.normalThreshold" :min="0.1" :max="1" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">水面着色器</div>
+				<CfgRow label="启用" info="是否启用水面特效">
+					<CfgSwt v-model="store.shader.water.enabled" />
+				</CfgRow>
+				<CfgRow label="波浪速度" info="波浪移动的速度">
+					<CfgSld v-model="store.shader.water.waveSpeed" :min="0.1" :max="3" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="波浪缩放" info="波浪纹理的缩放">
+					<CfgSld v-model="store.shader.water.waveScale" :min="0.1" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="泡沫强度" info="水面泡沫的强度">
+					<CfgSld v-model="store.shader.water.foamIntensity" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="折射强度" info="水下折射的强度">
+					<CfgSld v-model="store.shader.water.refractionStrength" :min="0" :max="0.5" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="焦散强度" info="水底焦散效果强度">
+					<CfgSld v-model="store.shader.water.causticsIntensity" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">体积光</div>
+				<CfgRow label="启用" info="是否启用体积光效果">
+					<CfgSwt v-model="store.shader.volumetricLight.enabled" />
+				</CfgRow>
+				<CfgRow label="采样数" info="光线采样数量">
+					<CfgSld v-model="store.shader.volumetricLight.samples" :min="8" :max="64" :step="8" />
+				</CfgRow>
+				<CfgRow label="密度" info="体积光的密度">
+					<CfgSld v-model="store.shader.volumetricLight.density" :min="0" :max="0.5" :step="0.01" />
+				</CfgRow>
+				<CfgRow label="衰减" info="光线的衰减率">
+					<CfgSld v-model="store.shader.volumetricLight.decay" :min="0.9" :max="1" :step="0.01" />
+				</CfgRow>
+				<CfgRow label="曝光" info="体积光的曝光度">
+					<CfgSld v-model="store.shader.volumetricLight.exposure" :min="0.1" :max="2" :step="0.1" />
+				</CfgRow>
+			</div>
 			<div v-else-if="curCat === 'camera'" class="config-section">
 				<div class="config-section-title">相机系统</div>
 				<CfgRow label="视野角度" unit="rad" info="相机的视野范围(弧度)。0.785≈45° 1.047≈60° 1.571≈90°">
@@ -175,6 +309,327 @@ const wvModules = [
 				</CfgRow>
 				<CfgRow label="远裁剪面" unit="m" info="相机能看到的最远距离。影响可见范围和性能">
 					<input type="number" v-model.number="store.world.camera.far" min="100" max="10000" step="100">
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'lighting'" class="config-section">
+				<div class="config-section-title">光照探针</div>
+				<CfgRow label="启用" info="是否启用光照探针系统">
+					<CfgSwt v-model="store.lighting.probes.enabled" />
+				</CfgRow>
+				<CfgRow label="间距" unit="m" info="光照探针的网格间距">
+					<CfgSld v-model="store.lighting.probes.spacing" :min="1" :max="16" :step="1" />
+				</CfgRow>
+				<CfgRow label="分辨率" info="探针贴图分辨率">
+					<CfgSld v-model="store.lighting.probes.resolution" :min="8" :max="128" :step="8" />
+				</CfgRow>
+				<div class="config-section-title">动态光源</div>
+				<CfgRow label="最大光源数" info="场景中允许的最大动态光源数量">
+					<CfgSld v-model="store.lighting.dynamic.maxLights" :min="4" :max="64" :step="4" />
+				</CfgRow>
+				<CfgRow label="阴影投射数" info="可投射阴影的光源数量">
+					<CfgSld v-model="store.lighting.dynamic.shadowCasters" :min="1" :max="8" :step="1" />
+				</CfgRow>
+				<CfgRow label="更新率" unit="FPS" info="动态光源的更新频率">
+					<CfgSld v-model="store.lighting.dynamic.updateRate" :min="10" :max="60" :step="5" />
+				</CfgRow>
+				<div class="config-section-title">环境光</div>
+				<CfgRow label="模式" info="环境光的计算方式">
+					<CfgCrd v-model="store.lighting.ambient.mode" :options="ambientModeOpts" />
+				</CfgRow>
+				<CfgRow label="强度" info="环境光的整体强度">
+					<CfgSld v-model="store.lighting.ambient.intensity" :min="0" :max="1" :step="0.05" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'terrain'" class="config-section">
+				<div class="config-section-title">地形生成</div>
+				<CfgRow label="分块大小" info="每个地形分块的边长">
+					<CfgSld v-model="store.terrain.generation.chunkSize" :min="16" :max="256" :step="16" />
+				</CfgRow>
+				<CfgRow label="最大分块" info="可加载的最大分块数量">
+					<CfgSld v-model="store.terrain.generation.maxChunks" :min="64" :max="1024" :step="64" />
+				</CfgRow>
+				<CfgRow label="细节缩放" info="地形细节的缩放系数">
+					<CfgSld v-model="store.terrain.generation.detailScale" :min="0.5" :max="2" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">植被</div>
+				<CfgRow label="启用" info="是否启用植被渲染">
+					<CfgSwt v-model="store.terrain.vegetation.enabled" />
+				</CfgRow>
+				<CfgRow label="密度" info="植被的生成密度">
+					<CfgSld v-model="store.terrain.vegetation.density" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="最大实例" info="植被的最大实例数">
+					<input type="number" v-model.number="store.terrain.vegetation.maxInstances" min="1000" max="100000" step="1000">
+				</CfgRow>
+				<CfgRow label="风力" info="植被受风摆动的强度">
+					<CfgSld v-model="store.terrain.vegetation.windStrength" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">水体</div>
+				<CfgRow label="启用" info="是否启用水体渲染">
+					<CfgSwt v-model="store.terrain.water.enabled" />
+				</CfgRow>
+				<CfgRow label="波浪幅度" info="水面波浪的高度">
+					<CfgSld v-model="store.terrain.water.waveAmplitude" :min="0" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="波浪频率" info="水面波浪的速度">
+					<CfgSld v-model="store.terrain.water.waveFrequency" :min="0.1" :max="3" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="反射" info="是否启用水面反射">
+					<CfgSwt v-model="store.terrain.water.reflections" />
+				</CfgRow>
+				<CfgRow label="折射" info="是否启用水下折射">
+					<CfgSwt v-model="store.terrain.water.refractions" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'mapGenDetail'" class="config-section">
+				<div class="config-section-title">洞穴生成</div>
+				<CfgRow label="启用" info="是否生成洞穴">
+					<CfgSwt v-model="store.mapGenDetail.cave.enabled" />
+				</CfgRow>
+				<CfgRow label="密度" info="洞穴的生成密度">
+					<CfgSld v-model="store.mapGenDetail.cave.density" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="最小尺寸" info="洞穴的最小大小">
+					<CfgSld v-model="store.mapGenDetail.cave.minSize" :min="5" :max="50" :step="5" />
+				</CfgRow>
+				<CfgRow label="最大尺寸" info="洞穴的最大大小">
+					<CfgSld v-model="store.mapGenDetail.cave.maxSize" :min="20" :max="200" :step="10" />
+				</CfgRow>
+				<CfgRow label="连通度" info="洞穴之间的连通程度">
+					<CfgSld v-model="store.mapGenDetail.cave.connectedness" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">河流生成</div>
+				<CfgRow label="启用" info="是否生成河流">
+					<CfgSwt v-model="store.mapGenDetail.river.enabled" />
+				</CfgRow>
+				<CfgRow label="数量" info="河流的数量">
+					<CfgSld v-model="store.mapGenDetail.river.count" :min="1" :max="20" :step="1" />
+				</CfgRow>
+				<CfgRow label="宽度" unit="m" info="河流的平均宽度">
+					<CfgSld v-model="store.mapGenDetail.river.width" :min="2" :max="30" :step="2" />
+				</CfgRow>
+				<CfgRow label="深度" unit="m" info="河流的平均深度">
+					<CfgSld v-model="store.mapGenDetail.river.depth" :min="1" :max="10" :step="1" />
+				</CfgRow>
+				<CfgRow label="蜿蜒度" info="河流的弯曲程度">
+					<CfgSld v-model="store.mapGenDetail.river.meander" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">城市生成</div>
+				<CfgRow label="启用" info="是否生成城市">
+					<CfgSwt v-model="store.mapGenDetail.city.enabled" />
+				</CfgRow>
+				<CfgRow label="密度" info="城市的生成密度">
+					<CfgSld v-model="store.mapGenDetail.city.density" :min="0" :max="0.5" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="最小建筑数" info="城市的最小建筑数量">
+					<CfgSld v-model="store.mapGenDetail.city.minBuildings" :min="5" :max="50" :step="5" />
+				</CfgRow>
+				<CfgRow label="最大建筑数" info="城市的最大建筑数量">
+					<CfgSld v-model="store.mapGenDetail.city.maxBuildings" :min="20" :max="500" :step="20" />
+				</CfgRow>
+				<CfgRow label="街道宽度" unit="m" info="街道的宽度">
+					<CfgSld v-model="store.mapGenDetail.city.streetWidth" :min="3" :max="15" :step="1" />
+				</CfgRow>
+				<CfgRow label="街区大小" unit="m" info="一个街区的边长">
+					<CfgSld v-model="store.mapGenDetail.city.blockSize" :min="16" :max="64" :step="8" />
+				</CfgRow>
+				<div class="config-section-title">结构生成</div>
+				<CfgRow label="启用" info="是否生成特殊结构">
+					<CfgSwt v-model="store.mapGenDetail.structure.enabled" />
+				</CfgRow>
+				<CfgRow label="地牢密度" info="地牢的生成密度">
+					<CfgSld v-model="store.mapGenDetail.structure.dungeonDensity" :min="0" :max="0.1" :step="0.005" />
+				</CfgRow>
+				<CfgRow label="遗迹密度" info="遗迹的生成密度">
+					<CfgSld v-model="store.mapGenDetail.structure.ruinDensity" :min="0" :max="0.1" :step="0.005" />
+				</CfgRow>
+				<CfgRow label="塔楼密度" info="塔楼的生成密度">
+					<CfgSld v-model="store.mapGenDetail.structure.towerDensity" :min="0" :max="0.05" :step="0.001" />
+				</CfgRow>
+				<CfgRow label="每区块上限" info="每个区块最多生成的结构数量">
+					<CfgSld v-model="store.mapGenDetail.structure.maxPerChunk" :min="1" :max="10" :step="1" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'animation'" class="config-section">
+				<div class="config-section-title">骨骼系统</div>
+				<CfgRow label="最大骨骼数" info="单个模型允许的最大骨骼数量">
+					<CfgSld v-model="store.animation.skeleton.maxBones" :min="16" :max="128" :step="8" />
+				</CfgRow>
+				<CfgRow label="IK启用" info="是否启用反向动力学">
+					<CfgSwt v-model="store.animation.skeleton.ikEnabled" />
+				</CfgRow>
+				<CfgRow label="IK迭代次数" info="IK求解器的迭代次数">
+					<CfgSld v-model="store.animation.skeleton.ikIterations" :min="1" :max="30" :step="1" />
+				</CfgRow>
+				<div class="config-section-title">动画混合</div>
+				<CfgRow label="过渡时间" unit="秒" info="动画切换的过渡时间">
+					<CfgSld v-model="store.animation.blend.crossfadeTime" :min="0" :max="1" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="混合模式" info="动画层的混合方式">
+					<CfgCrd v-model="store.animation.blend.blendMode" :options="blendModeOpts" />
+				</CfgRow>
+				<div class="config-section-title">动画LOD</div>
+				<CfgRow label="启用" info="是否启用动画LOD优化">
+					<CfgSwt v-model="store.animation.lod.enabled" />
+				</CfgRow>
+				<CfgRow label="距离阈值" unit="m" info="开始降低动画质量的距离">
+					<CfgSld v-model="store.animation.lod.distThreshold" :min="10" :max="100" :step="5" />
+				</CfgRow>
+				<CfgRow label="简化骨骼" info="是否在远距离减少骨骼计算">
+					<CfgSwt v-model="store.animation.lod.reduceBones" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'physicsAdvanced'" class="config-section">
+				<div class="config-section-title">布娃娃系统</div>
+				<CfgRow label="启用" info="是否启用布娃娃物理">
+					<CfgSwt v-model="store.world.physicsAdvanced.ragdoll.enabled" />
+				</CfgRow>
+				<CfgRow label="阻尼" info="布娃娃的运动阻尼">
+					<CfgSld v-model="store.world.physicsAdvanced.ragdoll.damping" :min="0" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="关节刚度" info="关节的刚度系数">
+					<CfgSld v-model="store.world.physicsAdvanced.ragdoll.jointStiffness" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="角速度阻尼" info="旋转运动的阻尼">
+					<CfgSld v-model="store.world.physicsAdvanced.ragdoll.angularDamping" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="线性阻尼" info="线性运动的阻尼">
+					<CfgSld v-model="store.world.physicsAdvanced.ragdoll.linearDamping" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<div class="config-section-title">布料系统</div>
+				<CfgRow label="启用" info="是否启用布料模拟">
+					<CfgSwt v-model="store.world.physicsAdvanced.cloth.enabled" />
+				</CfgRow>
+				<CfgRow label="迭代次数" info="约束求解器的迭代次数">
+					<CfgSld v-model="store.world.physicsAdvanced.cloth.iterations" :min="1" :max="16" :step="1" />
+				</CfgRow>
+				<CfgRow label="刚度" info="布料的刚度系数">
+					<CfgSld v-model="store.world.physicsAdvanced.cloth.stiffness" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="阻尼" info="布料的阻尼系数">
+					<CfgSld v-model="store.world.physicsAdvanced.cloth.damping" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="重力系数" info="布料受重力影响的系数">
+					<CfgSld v-model="store.world.physicsAdvanced.cloth.gravity" :min="0" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="风力响应" info="布料对风力的响应强度">
+					<CfgSld v-model="store.world.physicsAdvanced.cloth.windResponse" :min="0" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="撕裂阈值" info="布料撕裂的力阈值">
+					<CfgSld v-model="store.world.physicsAdvanced.cloth.tearThreshold" :min="10" :max="500" :step="10" />
+				</CfgRow>
+				<CfgRow label="碰撞边距" info="布料碰撞检测的边距">
+					<CfgSld v-model="store.world.physicsAdvanced.cloth.collisionMargin" :min="0.01" :max="0.2" :step="0.01" />
+				</CfgRow>
+				<div class="config-section-title">流体系统</div>
+				<CfgRow label="启用" info="是否启用流体模拟">
+					<CfgSwt v-model="store.world.physicsAdvanced.fluid.enabled" />
+				</CfgRow>
+				<CfgRow label="粘度" info="流体的粘度系数">
+					<CfgSld v-model="store.world.physicsAdvanced.fluid.viscosity" :min="0" :max="0.1" :step="0.005" />
+				</CfgRow>
+				<CfgRow label="密度" info="流体的密度">
+					<input type="number" v-model.number="store.world.physicsAdvanced.fluid.density" min="100" max="2000">
+				</CfgRow>
+				<CfgRow label="粒子半径" info="流体粒子的半径">
+					<CfgSld v-model="store.world.physicsAdvanced.fluid.particleRadius" :min="0.05" :max="0.5" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="刚度" info="流体的不可压缩性">
+					<CfgSld v-model="store.world.physicsAdvanced.fluid.stiffness" :min="10" :max="500" :step="10" />
+				</CfgRow>
+				<CfgRow label="表面张力" info="流体的表面张力">
+					<CfgSld v-model="store.world.physicsAdvanced.fluid.surfaceTension" :min="0" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="最大粒子数" info="流体粒子的最大数量">
+					<input type="number" v-model.number="store.world.physicsAdvanced.fluid.maxParticles" min="1000" max="50000" step="1000">
+				</CfgRow>
+				<CfgRow label="边界刚度" info="边界反弹的刚度">
+					<CfgSld v-model="store.world.physicsAdvanced.fluid.boundaryStiffness" :min="100" :max="1000" :step="50" />
+				</CfgRow>
+				<div class="config-section-title">绳索系统</div>
+				<CfgRow label="启用" info="是否启用绳索模拟">
+					<CfgSwt v-model="store.world.physicsAdvanced.rope.enabled" />
+				</CfgRow>
+				<CfgRow label="节点数" info="绳索的节点数量">
+					<CfgSld v-model="store.world.physicsAdvanced.rope.segments" :min="5" :max="50" :step="5" />
+				</CfgRow>
+				<CfgRow label="刚度" info="绳索的刚度">
+					<CfgSld v-model="store.world.physicsAdvanced.rope.stiffness" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="阻尼" info="绳索的阻尼">
+					<CfgSld v-model="store.world.physicsAdvanced.rope.damping" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="重力系数" info="绳索受重力影响的系数">
+					<CfgSld v-model="store.world.physicsAdvanced.rope.gravity" :min="0" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="碰撞检测" info="是否启用绳索碰撞">
+					<CfgSwt v-model="store.world.physicsAdvanced.rope.collisionEnabled" />
+				</CfgRow>
+				<CfgRow label="断裂阈值" info="绳索断裂的力阈值">
+					<CfgSld v-model="store.world.physicsAdvanced.rope.tearThreshold" :min="10" :max="500" :step="10" />
+				</CfgRow>
+				<div class="config-section-title">破坏系统</div>
+				<CfgRow label="启用" info="是否启用破坏系统">
+					<CfgSwt v-model="store.world.physicsAdvanced.destruction.enabled" />
+				</CfgRow>
+				<CfgRow label="最小碎片" info="破坏时的最小碎片数">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.minFragments" :min="2" :max="10" :step="1" />
+				</CfgRow>
+				<CfgRow label="最大碎片" info="破坏时的最大碎片数">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.maxFragments" :min="5" :max="30" :step="1" />
+				</CfgRow>
+				<CfgRow label="噪声缩放" info="碎裂噪声的缩放">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.noiseScale" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="噪声幅度" info="碎裂噪声的幅度">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.noiseAmplitude" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="冲击阈值" info="触发破坏的冲击力阈值">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.impactThreshold" :min="10" :max="200" :step="10" />
+				</CfgRow>
+				<CfgRow label="碎片质量比" info="碎片相对原物体的质量比">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.fragmentMassRatio" :min="0.05" :max="0.5" :step="0.05" />
+				</CfgRow>
+				<CfgRow label="碎片寿命" unit="秒" info="碎片存在的时间">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.debrisLifetime" :min="1" :max="30" :step="1" />
+				</CfgRow>
+				<CfgRow label="最大碎片数" info="场景中同时存在的最大碎片数">
+					<CfgSld v-model="store.world.physicsAdvanced.destruction.maxDebris" :min="50" :max="500" :step="50" />
+				</CfgRow>
+				<div class="config-section-title">约束系统</div>
+				<CfgRow label="启用" info="是否启用物理约束">
+					<CfgSwt v-model="store.world.physicsAdvanced.constraints.enabled" />
+				</CfgRow>
+				<CfgRow label="铰链马达力" info="铰链约束马达的最大力">
+					<CfgSld v-model="store.world.physicsAdvanced.constraints.hingeMotorForce" :min="10" :max="500" :step="10" />
+				</CfgRow>
+				<CfgRow label="滑块马达力" info="滑块约束马达的最大力">
+					<CfgSld v-model="store.world.physicsAdvanced.constraints.sliderMotorForce" :min="10" :max="500" :step="10" />
+				</CfgRow>
+				<CfgRow label="弹簧刚度" info="弹簧约束的刚度">
+					<CfgSld v-model="store.world.physicsAdvanced.constraints.springStiffness" :min="1" :max="200" :step="5" />
+				</CfgRow>
+				<CfgRow label="弹簧阻尼" info="弹簧约束的阻尼">
+					<CfgSld v-model="store.world.physicsAdvanced.constraints.springDamping" :min="0" :max="20" :step="1" />
+				</CfgRow>
+				<CfgRow label="断裂力" info="约束断裂的力阈值">
+					<CfgSld v-model="store.world.physicsAdvanced.constraints.breakForce" :min="100" :max="5000" :step="100" />
+				</CfgRow>
+				<div class="config-section-title">软体系统</div>
+				<CfgRow label="启用" info="是否启用软体模拟">
+					<CfgSwt v-model="store.world.physicsAdvanced.softBody.enabled" />
+				</CfgRow>
+				<CfgRow label="迭代次数" info="软体求解器的迭代次数">
+					<CfgSld v-model="store.world.physicsAdvanced.softBody.iterations" :min="1" :max="16" :step="1" />
+				</CfgRow>
+				<CfgRow label="体积刚度" info="软体保持体积的刚度">
+					<CfgSld v-model="store.world.physicsAdvanced.softBody.volumeStiffness" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="形状刚度" info="软体保持形状的刚度">
+					<CfgSld v-model="store.world.physicsAdvanced.softBody.shapeStiffness" :min="0" :max="1" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="内部压力" info="软体的内部压力">
+					<CfgSld v-model="store.world.physicsAdvanced.softBody.pressure" :min="0" :max="3" :step="0.1" />
 				</CfgRow>
 			</div>
 			<div v-else-if="curCat === 'time'" class="config-section">
@@ -455,6 +910,38 @@ const wvModules = [
 					<input type="number" v-model.number="store.systems.combat.iframeDuration" min="0" max="1000">
 				</CfgRow>
 			</div>
+			<div v-else-if="curCat === 'buff'" class="config-section">
+				<div class="config-section-title">显示设置</div>
+				<CfgRow label="最大可见数" info="同时显示的Buff图标数量上限">
+					<CfgSld v-model="store.buff.display.maxVisible" :min="5" :max="30" :step="1" />
+				</CfgRow>
+				<CfgRow label="图标大小" unit="px" info="Buff图标的像素大小">
+					<CfgSld v-model="store.buff.display.iconSize" :min="16" :max="64" :step="4" />
+				</CfgRow>
+				<CfgRow label="显示持续时间" info="是否在图标上显示剩余时间">
+					<CfgSwt v-model="store.buff.display.showDuration" />
+				</CfgRow>
+				<CfgRow label="显示堆叠数" info="是否在图标上显示堆叠层数">
+					<CfgSwt v-model="store.buff.display.showStacks" />
+				</CfgRow>
+				<div class="config-section-title">数量限制</div>
+				<CfgRow label="最大增益数" info="单个实体可拥有的最大Buff数量">
+					<CfgSld v-model="store.buff.limits.maxBuffs" :min="5" :max="50" :step="5" />
+				</CfgRow>
+				<CfgRow label="最大减益数" info="单个实体可拥有的最大Debuff数量">
+					<CfgSld v-model="store.buff.limits.maxDebuffs" :min="5" :max="50" :step="5" />
+				</CfgRow>
+				<CfgRow label="最大堆叠数" info="同一Buff的最大堆叠层数">
+					<CfgSld v-model="store.buff.limits.maxStacks" :min="1" :max="999" :step="1" />
+				</CfgRow>
+				<div class="config-section-title">更新设置</div>
+				<CfgRow label="Tick率" unit="FPS" info="Buff效果的更新频率">
+					<CfgSld v-model="store.buff.update.tickRate" :min="10" :max="60" :step="5" />
+				</CfgRow>
+				<CfgRow label="批处理大小" info="每帧处理的Buff数量">
+					<CfgSld v-model="store.buff.update.batchSize" :min="1" :max="50" :step="1" />
+				</CfgRow>
+			</div>
 			<div v-else-if="curCat === 'ai'" class="config-section">
 				<div class="config-section-title">AI基础</div>
 				<CfgRow label="AI模板" info="AI的默认行为模式">
@@ -609,6 +1096,92 @@ const wvModules = [
 					<CfgSld v-model="store.save.checkpoint.maxCheckpoints" :min="1" :max="20" :step="1" />
 				</CfgRow>
 			</div>
+			<div v-else-if="curCat === 'assetStreaming'" class="config-section">
+				<div class="config-section-title">资源流送</div>
+				<CfgRow label="启用" info="是否启用资源流送加载">
+					<CfgSwt v-model="store.assetStreaming.enabled" />
+				</CfgRow>
+				<CfgRow label="最大并发数" info="同时加载的最大资源数量">
+					<CfgSld v-model="store.assetStreaming.maxConcurrent" :min="1" :max="16" :step="1" />
+				</CfgRow>
+				<CfgRow label="加载半径" unit="m" info="触发资源加载的距离">
+					<CfgSld v-model="store.assetStreaming.loadRadius" :min="50" :max="500" :step="50" />
+				</CfgRow>
+				<CfgRow label="卸载半径" unit="m" info="触发资源卸载的距离">
+					<CfgSld v-model="store.assetStreaming.unloadRadius" :min="100" :max="800" :step="50" />
+				</CfgRow>
+				<CfgRow label="优先级加成" info="高优先级资源的加载加成">
+					<CfgSld v-model="store.assetStreaming.priorityBoost" :min="1" :max="5" :step="0.5" />
+				</CfgRow>
+				<CfgRow label="重试次数" info="加载失败后的重试次数">
+					<CfgSld v-model="store.assetStreaming.retryAttempts" :min="1" :max="10" :step="1" />
+				</CfgRow>
+				<CfgRow label="重试延迟" unit="ms" info="重试加载的间隔时间">
+					<CfgSld v-model="store.assetStreaming.retryDelay" :min="500" :max="5000" :step="500" />
+				</CfgRow>
+				<CfgRow label="缓存大小" unit="MB" info="资源缓存的最大大小">
+					<CfgSld v-model="store.assetStreaming.cacheSize" :min="64" :max="1024" :step="64" />
+				</CfgRow>
+				<CfgRow label="预加载半径" unit="m" info="预加载资源的距离">
+					<CfgSld v-model="store.assetStreaming.preloadRadius" :min="0" :max="200" :step="25" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'i18n'" class="config-section">
+				<div class="config-section-title">本地化设置</div>
+				<CfgRow label="默认语言" info="游戏启动时的默认语言">
+					<input type="text" v-model="store.i18n.defaultLocale" placeholder="zh-CN">
+				</CfgRow>
+				<CfgRow label="备用语言" info="当翻译缺失时使用的语言">
+					<input type="text" v-model="store.i18n.fallbackLocale" placeholder="en">
+				</CfgRow>
+				<CfgRow label="日期格式" info="日期显示的格式化字符串">
+					<input type="text" v-model="store.i18n.dateFormat" placeholder="YYYY-MM-DD">
+				</CfgRow>
+				<CfgRow label="数字格式" info="数字显示的格式化字符串">
+					<input type="text" v-model="store.i18n.numberFormat" placeholder="0,0.00">
+				</CfgRow>
+				<CfgRow label="货币代码" info="货币的ISO代码">
+					<input type="text" v-model="store.i18n.currencyCode" placeholder="CNY">
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'performance'" class="config-section">
+				<div class="config-section-title">性能分析</div>
+				<CfgRow label="启用" info="是否启用性能分析器">
+					<CfgSwt v-model="store.performance.profiling.enabled" />
+				</CfgRow>
+				<CfgRow label="采样率" unit="FPS" info="性能数据的采样频率">
+					<CfgSld v-model="store.performance.profiling.sampleRate" :min="10" :max="120" :step="10" />
+				</CfgRow>
+				<CfgRow label="最大样本数" info="保留的最大性能样本数量">
+					<CfgSld v-model="store.performance.profiling.maxSamples" :min="60" :max="600" :step="60" />
+				</CfgRow>
+				<div class="config-section-title">调试UI</div>
+				<CfgRow label="启用" info="是否显示调试信息面板">
+					<CfgSwt v-model="store.performance.debugUI.enabled" />
+				</CfgRow>
+				<CfgRow label="位置" info="调试面板的显示位置">
+					<CfgCrd v-model="store.performance.debugUI.position" :options="debugPosOpts" />
+				</CfgRow>
+				<CfgRow label="显示FPS" info="是否显示帧率">
+					<CfgSwt v-model="store.performance.debugUI.showFPS" />
+				</CfgRow>
+				<CfgRow label="显示内存" info="是否显示内存使用">
+					<CfgSwt v-model="store.performance.debugUI.showMemory" />
+				</CfgRow>
+				<CfgRow label="显示DrawCall" info="是否显示绘制调用次数">
+					<CfgSwt v-model="store.performance.debugUI.showDrawCalls" />
+				</CfgRow>
+				<div class="config-section-title">性能预算</div>
+				<CfgRow label="目标帧率" unit="FPS" info="游戏的目标帧率">
+					<CfgSld v-model="store.performance.budget.targetFPS" :min="30" :max="144" :step="10" />
+				</CfgRow>
+				<CfgRow label="最大DrawCall" info="每帧允许的最大绘制调用数">
+					<input type="number" v-model.number="store.performance.budget.maxDrawCalls" min="500" max="10000" step="500">
+				</CfgRow>
+				<CfgRow label="最大三角形" info="每帧允许渲染的最大三角形数">
+					<input type="number" v-model.number="store.performance.budget.maxTriangles" min="100000" max="2000000" step="100000">
+				</CfgRow>
+			</div>
 			<div v-else-if="curCat === 'worldview'" class="config-section">
 				<div class="config-section-title">世界观系统</div>
 				<div class="wv-module-lst">
@@ -634,6 +1207,151 @@ const wvModules = [
 				</CfgRow>
 				<CfgRow label="模型名称" info="使用的模型名称。如gpt-4、claude-3-opus、llama3等。">
 					<input type="text" v-model="store.llm.model" placeholder="如: gpt-4">
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'achievement'" class="config-section">
+				<div class="config-section-title">成就系统</div>
+				<CfgRow label="启用" info="是否启用成就系统">
+					<CfgSwt v-model="store.achievement.enabled" />
+				</CfgRow>
+				<CfgRow label="最大追踪数" info="同时追踪的最大成就数量">
+					<CfgSld v-model="store.achievement.maxTracking" :min="1" :max="20" :step="1" />
+				</CfgRow>
+				<CfgRow label="显示弹窗" info="成就完成时是否显示弹窗">
+					<CfgSwt v-model="store.achievement.showPopup" />
+				</CfgRow>
+				<CfgRow label="弹窗时长" unit="s" info="成就弹窗显示的持续时间">
+					<CfgSld v-model="store.achievement.popupDuration" :min="1" :max="10" :step="1" />
+				</CfgRow>
+				<CfgRow label="启用音效" info="成就完成时是否播放音效">
+					<CfgSwt v-model="store.achievement.soundEnabled" />
+				</CfgRow>
+				<CfgRow label="进度条" info="是否显示成就进度条">
+					<CfgSwt v-model="store.achievement.progressBar" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'keybind'" class="config-section">
+				<div class="config-section-title">快捷键设置</div>
+				<CfgRow label="允许重绑定" info="是否允许玩家自定义按键">
+					<CfgSwt v-model="store.keybind.allowRebind" />
+				</CfgRow>
+				<CfgRow label="冲突警告" info="按键冲突时是否显示警告">
+					<CfgSwt v-model="store.keybind.conflictWarning" />
+				</CfgRow>
+				<CfgRow label="可重置" info="是否允许重置为默认按键">
+					<CfgSwt v-model="store.keybind.resetToDefault" />
+				</CfgRow>
+				<div class="config-section-title">可配置分类</div>
+				<CfgRow label="移动控制" info="允许自定义移动相关按键">
+					<CfgSwt v-model="store.keybind.categories.movement" />
+				</CfgRow>
+				<CfgRow label="战斗控制" info="允许自定义战斗相关按键">
+					<CfgSwt v-model="store.keybind.categories.combat" />
+				</CfgRow>
+				<CfgRow label="界面控制" info="允许自定义UI相关按键">
+					<CfgSwt v-model="store.keybind.categories.ui" />
+				</CfgRow>
+				<CfgRow label="社交控制" info="允许自定义社交相关按键">
+					<CfgSwt v-model="store.keybind.categories.social" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'display'" class="config-section">
+				<div class="config-section-title">显示设置</div>
+				<CfgRow label="全屏" info="是否默认全屏模式">
+					<CfgSwt v-model="store.display.fullscreen" />
+				</CfgRow>
+				<CfgRow label="垂直同步" info="是否启用垂直同步">
+					<CfgSwt v-model="store.display.vsync" />
+				</CfgRow>
+				<CfgRow label="帧率限制" unit="FPS" info="最大帧率限制(0为不限制)">
+					<CfgSld v-model="store.display.fpsLimit" :min="0" :max="240" :step="30" />
+				</CfgRow>
+				<CfgRow label="渲染缩放" info="渲染分辨率缩放比例">
+					<CfgSld v-model="store.display.renderScale" :min="0.5" :max="2" :step="0.25" />
+				</CfgRow>
+				<CfgRow label="UI缩放" info="用户界面的缩放比例">
+					<CfgSld v-model="store.display.uiScale" :min="0.5" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="伽马值" info="画面伽马校正值">
+					<CfgSld v-model="store.display.gamma" :min="0.5" :max="2" :step="0.1" />
+				</CfgRow>
+				<CfgRow label="亮度" info="画面亮度">
+					<CfgSld v-model="store.display.brightness" :min="0.5" :max="1.5" :step="0.1" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'accessibility'" class="config-section">
+				<div class="config-section-title">辅助功能</div>
+				<CfgRow label="色盲模式" info="选择色盲辅助模式">
+					<CfgCrd v-model="store.accessibility.colorblindMode" :options="colorblindModeOpts" />
+				</CfgRow>
+				<CfgRow label="字幕" info="是否显示游戏字幕">
+					<CfgSwt v-model="store.accessibility.subtitles" />
+				</CfgRow>
+				<CfgRow v-if="store.accessibility.subtitles" label="字幕大小" info="字幕字体大小">
+					<CfgSld v-model="store.accessibility.subtitleSize" :min="12" :max="32" :step="2" />
+				</CfgRow>
+				<CfgRow v-if="store.accessibility.subtitles" label="字幕背景" info="是否显示字幕背景">
+					<CfgSwt v-model="store.accessibility.subtitleBg" />
+				</CfgRow>
+				<CfgRow label="屏幕震动" info="是否启用屏幕震动效果">
+					<CfgSwt v-model="store.accessibility.screenShake" />
+				</CfgRow>
+				<CfgRow label="闪光效果" info="是否允许闪光效果">
+					<CfgSwt v-model="store.accessibility.flashEffects" />
+				</CfgRow>
+				<CfgRow label="高对比度" info="是否启用高对比度模式">
+					<CfgSwt v-model="store.accessibility.highContrast" />
+				</CfgRow>
+				<CfgRow label="减少动画" info="减少动画以降低视觉刺激">
+					<CfgSwt v-model="store.accessibility.motionReduction" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'debug'" class="config-section">
+				<div class="config-section-title">调试设置</div>
+				<CfgRow label="启用" info="是否启用调试模式">
+					<CfgSwt v-model="store.debug.enabled" />
+				</CfgRow>
+				<CfgRow label="日志级别" info="显示的最低日志级别">
+					<CfgCrd v-model="store.debug.logLevel" :options="logLevelOpts" />
+				</CfgRow>
+				<CfgRow label="显示控制台" info="是否显示调试控制台">
+					<CfgSwt v-model="store.debug.showConsole" />
+				</CfgRow>
+				<CfgRow label="线框模式" info="是否显示网格线框">
+					<CfgSwt v-model="store.debug.wireframe" />
+				</CfgRow>
+				<CfgRow label="显示碰撞体" info="是否显示物理碰撞体">
+					<CfgSwt v-model="store.debug.showColliders" />
+				</CfgRow>
+				<CfgRow label="显示NavMesh" info="是否显示导航网格">
+					<CfgSwt v-model="store.debug.showNavmesh" />
+				</CfgRow>
+				<CfgRow label="显示统计" info="是否显示详细统计信息">
+					<CfgSwt v-model="store.debug.showStats" />
+				</CfgRow>
+			</div>
+			<div v-else-if="curCat === 'shop'" class="config-section">
+				<div class="config-section-title">商城系统</div>
+				<CfgRow label="启用" info="是否启用游戏内商城">
+					<CfgSwt v-model="store.shop.enabled" />
+				</CfgRow>
+				<CfgRow label="刷新间隔" unit="s" info="商品列表刷新间隔">
+					<CfgSld v-model="store.shop.refreshInterval" :min="3600" :max="604800" :step="3600" />
+				</CfgRow>
+				<CfgRow label="最大商品数" info="商城同时展示的最大商品数">
+					<CfgSld v-model="store.shop.maxItems" :min="10" :max="100" :step="10" />
+				</CfgRow>
+				<CfgRow label="货币种类数" info="支持的货币类型数量">
+					<CfgSld v-model="store.shop.currencyTypes" :min="1" :max="10" :step="1" />
+				</CfgRow>
+				<CfgRow label="最大折扣" unit="%" info="商品最大折扣百分比">
+					<CfgSld v-model="store.shop.discountMax" :min="0" :max="90" :step="10" />
+				</CfgRow>
+				<CfgRow label="限时优惠" info="是否启用限时特价商品">
+					<CfgSwt v-model="store.shop.limitedOffers" />
+				</CfgRow>
+				<CfgRow label="确认购买" info="购买前是否需要确认">
+					<CfgSwt v-model="store.shop.confirmPurchase" />
 				</CfgRow>
 			</div>
 		</template>

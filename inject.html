@@ -83,9 +83,9 @@
 	function setup(h) {
 		console.log("[Inject] setup开始");
 		var rId = new URLSearchParams(location.search).get("roleId") || "";
-		var pStr = JSON.stringify(p).replace(/</g, "\\u003c");
-		console.log("[Inject] pStr长度:", pStr.length);
-		var ht = h.replace("/*__INJECT__*/", "window.P=" + pStr + ";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
+		var pB64 = btoa(unescape(encodeURIComponent(p)));
+		console.log("[Inject] pB64长度:", pB64.length);
+		var ht = h.replace("/*__INJECT__*/", "window.PB64=\"" + pB64 + "\";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
 		console.log("[Inject] ht长度:", ht.length);
 		o = document.createElement("div");
 		o.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#242424;z-index:99999;display:none;align-items:center;justify-content:center";

@@ -161,26 +161,64 @@ export interface PhysicsAdvancedConfig {
 	ragdoll: {
 		enabled: boolean
 		damping: number
+		jointStiffness: number
+		angularDamping: number
+		linearDamping: number
 	}
 	cloth: {
 		enabled: boolean
 		iterations: number
 		stiffness: number
+		damping: number
+		gravity: number
+		windResponse: number
+		tearThreshold: number
+		collisionMargin: number
 	}
 	fluid: {
 		enabled: boolean
 		viscosity: number
 		density: number
+		particleRadius: number
+		stiffness: number
+		surfaceTension: number
+		maxParticles: number
+		boundaryStiffness: number
 	}
 	rope: {
 		enabled: boolean
 		segments: number
 		stiffness: number
+		damping: number
+		gravity: number
+		collisionEnabled: boolean
+		tearThreshold: number
 	}
 	destruction: {
 		enabled: boolean
-		fragments: number
-		debrisLife: number
+		minFragments: number
+		maxFragments: number
+		noiseScale: number
+		noiseAmplitude: number
+		impactThreshold: number
+		fragmentMassRatio: number
+		debrisLifetime: number
+		maxDebris: number
+	}
+	constraints: {
+		enabled: boolean
+		hingeMotorForce: number
+		sliderMotorForce: number
+		springStiffness: number
+		springDamping: number
+		breakForce: number
+	}
+	softBody: {
+		enabled: boolean
+		iterations: number
+		volumeStiffness: number
+		shapeStiffness: number
+		pressure: number
 	}
 }
 
@@ -742,6 +780,151 @@ export interface BuffConfig {
 	}
 }
 
+export interface AssetStreamingConfig {
+	enabled: boolean
+	maxConcurrent: number
+	loadRadius: number
+	unloadRadius: number
+	priorityBoost: number
+	retryAttempts: number
+	retryDelay: number
+	cacheSize: number
+	preloadRadius: number
+}
+
+export interface MapGenDetailConfig {
+	cave: {
+		enabled: boolean
+		density: number
+		minSize: number
+		maxSize: number
+		connectedness: number
+	}
+	river: {
+		enabled: boolean
+		count: number
+		width: number
+		depth: number
+		meander: number
+	}
+	city: {
+		enabled: boolean
+		density: number
+		minBuildings: number
+		maxBuildings: number
+		streetWidth: number
+		blockSize: number
+	}
+	structure: {
+		enabled: boolean
+		dungeonDensity: number
+		ruinDensity: number
+		towerDensity: number
+		maxPerChunk: number
+	}
+}
+
+export interface ShaderConfig {
+	gi: {
+		enabled: boolean
+		bounces: number
+		samples: number
+		intensity: number
+	}
+	ssr: {
+		enabled: boolean
+		maxSteps: number
+		stepSize: number
+		thickness: number
+		fadeStart: number
+		fadeEnd: number
+	}
+	outline: {
+		enabled: boolean
+		width: number
+		color: string
+		depthThreshold: number
+		normalThreshold: number
+	}
+	water: {
+		enabled: boolean
+		waveSpeed: number
+		waveScale: number
+		foamIntensity: number
+		refractionStrength: number
+		causticsIntensity: number
+	}
+	volumetricLight: {
+		enabled: boolean
+		samples: number
+		density: number
+		decay: number
+		exposure: number
+	}
+}
+
+export interface AchievementConfig {
+	enabled: boolean
+	maxTracking: number
+	showPopup: boolean
+	popupDuration: number
+	soundEnabled: boolean
+	progressBar: boolean
+}
+
+export interface KeybindConfig {
+	allowRebind: boolean
+	conflictWarning: boolean
+	resetToDefault: boolean
+	categories: {
+		movement: boolean
+		combat: boolean
+		ui: boolean
+		social: boolean
+	}
+}
+
+export interface DisplayConfig {
+	fullscreen: boolean
+	vsync: boolean
+	fpsLimit: number
+	renderScale: number
+	uiScale: number
+	gamma: number
+	brightness: number
+}
+
+export interface AccessibilityConfig {
+	colorblindMode: 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia'
+	subtitles: boolean
+	subtitleSize: number
+	subtitleBg: boolean
+	screenShake: boolean
+	flashEffects: boolean
+	highContrast: boolean
+	motionReduction: boolean
+}
+
+export interface DebugConfig {
+	enabled: boolean
+	logLevel: 'debug' | 'info' | 'warn' | 'error'
+	showConsole: boolean
+	wireframe: boolean
+	showColliders: boolean
+	showNavmesh: boolean
+	showStats: boolean
+}
+
+export interface ShopConfig {
+	enabled: boolean
+	refreshInterval: number
+	maxItems: number
+	currencyTypes: number
+	discountMax: number
+	limitedOffers: boolean
+	confirmPurchase: boolean
+}
+
 export interface GameConfig {
 	laws: Record<string, LawConfig>
 	rules: RulesConfig
@@ -770,4 +953,13 @@ export interface GameConfig {
 	i18n: I18nConfig
 	performance: PerformanceConfig
 	buff: BuffConfig
+	assetStreaming: AssetStreamingConfig
+	mapGenDetail: MapGenDetailConfig
+	shader: ShaderConfig
+	achievement: AchievementConfig
+	keybind: KeybindConfig
+	display: DisplayConfig
+	accessibility: AccessibilityConfig
+	debug: DebugConfig
+	shop: ShopConfig
 }

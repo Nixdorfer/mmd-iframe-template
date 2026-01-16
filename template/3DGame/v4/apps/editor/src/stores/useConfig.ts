@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
-import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig, AudioConfig, NetworkConfig, UIConfig, SaveConfig, InputConfig, AIAdvancedConfig, ParticleConfig, WeatherConfig, TimeEffectConfig, VehicleConfig, AnimationConfig, TerrainConfig, LightingConfig, I18nConfig, PerformanceConfig, BuffConfig } from '@/types/config'
+import type { GameConfig, LawConfig, RulesConfig, WorldConfig, SpaceConfig, EntityConfig, SkillConfig, LLMConfig, PostProcessConfig, LODConfig, PhysicsAdvancedConfig, AudioConfig, NetworkConfig, UIConfig, SaveConfig, InputConfig, AIAdvancedConfig, ParticleConfig, WeatherConfig, TimeEffectConfig, VehicleConfig, AnimationConfig, TerrainConfig, LightingConfig, I18nConfig, PerformanceConfig, BuffConfig, AssetStreamingConfig, MapGenDetailConfig, ShaderConfig, AchievementConfig, KeybindConfig, DisplayConfig, AccessibilityConfig, DebugConfig, ShopConfig } from '@/types/config'
 import { CfgHotLoader, type CfgLsnOpt, type CfgLsnCbk, type CfgSnapshot } from '@engine/common'
 
 export const useConfigStore = defineStore('config', () => {
@@ -98,27 +98,65 @@ export const useConfigStore = defineStore('config', () => {
 		physicsAdvanced: {
 			ragdoll: {
 				enabled: true,
-				damping: 0.8
+				damping: 0.8,
+				jointStiffness: 0.9,
+				angularDamping: 0.5,
+				linearDamping: 0.1
 			},
 			cloth: {
 				enabled: true,
 				iterations: 4,
-				stiffness: 0.9
+				stiffness: 0.9,
+				damping: 0.1,
+				gravity: 1.0,
+				windResponse: 0.5,
+				tearThreshold: 100,
+				collisionMargin: 0.05
 			},
 			fluid: {
 				enabled: false,
 				viscosity: 0.01,
-				density: 1000
+				density: 1000,
+				particleRadius: 0.1,
+				stiffness: 100,
+				surfaceTension: 0.5,
+				maxParticles: 10000,
+				boundaryStiffness: 500
 			},
 			rope: {
 				enabled: true,
 				segments: 20,
-				stiffness: 0.9
+				stiffness: 0.9,
+				damping: 0.1,
+				gravity: 1.0,
+				collisionEnabled: true,
+				tearThreshold: 100
 			},
 			destruction: {
 				enabled: true,
-				fragments: 8,
-				debrisLife: 10
+				minFragments: 4,
+				maxFragments: 12,
+				noiseScale: 0.5,
+				noiseAmplitude: 0.3,
+				impactThreshold: 50,
+				fragmentMassRatio: 0.1,
+				debrisLifetime: 10,
+				maxDebris: 100
+			},
+			constraints: {
+				enabled: true,
+				hingeMotorForce: 100,
+				sliderMotorForce: 100,
+				springStiffness: 50,
+				springDamping: 5,
+				breakForce: 1000
+			},
+			softBody: {
+				enabled: false,
+				iterations: 4,
+				volumeStiffness: 0.9,
+				shapeStiffness: 0.9,
+				pressure: 1.0
 			}
 		},
 		postProcess: {
@@ -706,6 +744,151 @@ export const useConfigStore = defineStore('config', () => {
 		}
 	})
 
+	const assetStreaming = reactive<AssetStreamingConfig>({
+		enabled: true,
+		maxConcurrent: 4,
+		loadRadius: 100,
+		unloadRadius: 150,
+		priorityBoost: 2.0,
+		retryAttempts: 3,
+		retryDelay: 1000,
+		cacheSize: 256,
+		preloadRadius: 50
+	})
+
+	const mapGenDetail = reactive<MapGenDetailConfig>({
+		cave: {
+			enabled: true,
+			density: 0.3,
+			minSize: 10,
+			maxSize: 100,
+			connectedness: 0.5
+		},
+		river: {
+			enabled: true,
+			count: 5,
+			width: 8,
+			depth: 3,
+			meander: 0.5
+		},
+		city: {
+			enabled: false,
+			density: 0.1,
+			minBuildings: 10,
+			maxBuildings: 100,
+			streetWidth: 6,
+			blockSize: 32
+		},
+		structure: {
+			enabled: true,
+			dungeonDensity: 0.01,
+			ruinDensity: 0.02,
+			towerDensity: 0.005,
+			maxPerChunk: 3
+		}
+	})
+
+	const shader = reactive<ShaderConfig>({
+		gi: {
+			enabled: false,
+			bounces: 2,
+			samples: 32,
+			intensity: 1.0
+		},
+		ssr: {
+			enabled: false,
+			maxSteps: 64,
+			stepSize: 0.1,
+			thickness: 0.5,
+			fadeStart: 0.8,
+			fadeEnd: 1.0
+		},
+		outline: {
+			enabled: true,
+			width: 2,
+			color: '#000000',
+			depthThreshold: 0.1,
+			normalThreshold: 0.5
+		},
+		water: {
+			enabled: true,
+			waveSpeed: 1.0,
+			waveScale: 0.5,
+			foamIntensity: 0.3,
+			refractionStrength: 0.1,
+			causticsIntensity: 0.2
+		},
+		volumetricLight: {
+			enabled: false,
+			samples: 32,
+			density: 0.1,
+			decay: 0.95,
+			exposure: 1.0
+		}
+	})
+
+	const achievement = reactive<AchievementConfig>({
+		enabled: true,
+		maxTracking: 5,
+		showPopup: true,
+		popupDuration: 3,
+		soundEnabled: true,
+		progressBar: true
+	})
+
+	const keybind = reactive<KeybindConfig>({
+		allowRebind: true,
+		conflictWarning: true,
+		resetToDefault: true,
+		categories: {
+			movement: true,
+			combat: true,
+			ui: true,
+			social: true
+		}
+	})
+
+	const display = reactive<DisplayConfig>({
+		fullscreen: false,
+		vsync: true,
+		fpsLimit: 60,
+		renderScale: 1.0,
+		uiScale: 1.0,
+		gamma: 1.0,
+		brightness: 1.0
+	})
+
+	const accessibility = reactive<AccessibilityConfig>({
+		colorblindMode: 'none',
+		subtitles: false,
+		subtitleSize: 16,
+		subtitleBg: true,
+		screenShake: true,
+		flashEffects: true,
+		highContrast: false,
+		motionReduction: false
+	})
+
+	const debug = reactive<DebugConfig>({
+		enabled: false,
+		logLevel: 'warn',
+		showConsole: false,
+		wireframe: false,
+		showColliders: false,
+		showNavmesh: false,
+		showStats: false
+	})
+
+	const shop = reactive<ShopConfig>({
+		enabled: true,
+		refreshInterval: 86400,
+		maxItems: 20,
+		currencyTypes: 2,
+		discountMax: 50,
+		limitedOffers: true,
+		confirmPurchase: true
+	})
+
 	function collectAll(): GameConfig {
 		return {
 			laws: { ...laws },
@@ -734,7 +917,16 @@ export const useConfigStore = defineStore('config', () => {
 			lighting: { ...lighting },
 			i18n: { ...i18n },
 			performance: { ...performance },
-			buff: { ...buff }
+			buff: { ...buff },
+			assetStreaming: { ...assetStreaming },
+			mapGenDetail: { ...mapGenDetail },
+			shader: { ...shader },
+			achievement: { ...achievement },
+			keybind: { ...keybind },
+			display: { ...display },
+			accessibility: { ...accessibility },
+			debug: { ...debug },
+			shop: { ...shop }
 		}
 	}
 
@@ -766,6 +958,15 @@ export const useConfigStore = defineStore('config', () => {
 		if (cfg.i18n) Object.assign(i18n, cfg.i18n)
 		if (cfg.performance) Object.assign(performance, cfg.performance)
 		if (cfg.buff) Object.assign(buff, cfg.buff)
+		if (cfg.assetStreaming) Object.assign(assetStreaming, cfg.assetStreaming)
+		if (cfg.mapGenDetail) Object.assign(mapGenDetail, cfg.mapGenDetail)
+		if (cfg.shader) Object.assign(shader, cfg.shader)
+		if (cfg.achievement) Object.assign(achievement, cfg.achievement)
+		if (cfg.keybind) Object.assign(keybind, cfg.keybind)
+		if (cfg.display) Object.assign(display, cfg.display)
+		if (cfg.accessibility) Object.assign(accessibility, cfg.accessibility)
+		if (cfg.debug) Object.assign(debug, cfg.debug)
+		if (cfg.shop) Object.assign(shop, cfg.shop)
 	}
 
 	function reset() {
@@ -877,6 +1078,8 @@ export const useConfigStore = defineStore('config', () => {
 		laws, rules, world, space, entities, factions, skills, modules, systems, ai, aiAdvanced, llm,
 		audio, network, ui, save, input, particle, weather, timeEffect, vehicle,
 		animation, terrain, lighting, i18n, performance, buff,
+		assetStreaming, mapGenDetail, shader,
+		achievement, keybind, display, accessibility, debug, shop,
 		collectAll, loadAll, reset,
 		subCfgChg, unsubCfgChg,
 		snapshotCfg, bakCfg, bakToPrvCfg, bakToNxtCfg, getCfgSnapshots,

@@ -1,7 +1,7 @@
 {
   "projects": {
     "MODAL": {
-      "version": "2.7.9",
+      "version": "2.7.10",
       "versionDesc": "alpha",
       "name": "通用GalGame模板",
       "desc": "剧情向通用模板 拥有高可自定义的对话框和状态栏",
@@ -9,7 +9,7 @@
       "editor": "template/modal/v2/library/editor.html"
     },
     "WorldEngine": {
-      "version": "4.33.0",
+      "version": "4.36.0",
       "versionDesc": "nightly",
       "name": "世界引擎 v4",
       "desc": "基于WebGLv2的3D世界引擎",
