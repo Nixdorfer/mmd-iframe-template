@@ -113,7 +113,7 @@ window.L = {
 				platform: L.platform,
 				version: L.version,
 				major: L.major
-			}) + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+(n===\"store\"||n===\"util\"?\"library/\":\"template/modal/v2/library/\")+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
+			}).replace(/</g, "\\u003c") + ";L.load=function(libs,cb){var self=this,pending=libs.filter(function(n){return!self.loaded[n]});if(!pending.length)return cb&&cb();var c=pending.length;pending.forEach(function(n){self.loaded[n]=1;fetch(self.base+(n===\"store\"||n===\"util\"?\"library/\":\"template/modal/v2/library/\")+n+\".js\").then(function(r){return r.text()}).then(function(t){new Function(t)();if(--c===0&&cb)cb()})})};";
 
 			function W(e) {
 				document.open();
