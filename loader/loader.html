@@ -21,7 +21,7 @@ body {
 window.L = {
 	loaded: {},
 	base: "https://raw.githubusercontent.com/Nixdorfer/mmd-iframe-template/refs/heads/main/",
-	edit: false,
+	flags: {},
 	project: "",
 	char: "",
 	user: "",
@@ -56,29 +56,52 @@ window.L = {
 		M(msg);
 		parent.postMessage({t: "error", msg: msg}, "*");
 	}
+	function Complete(msg) {
+		parent.postMessage({t: "complete", msg: msg || "操作已完成"}, "*");
+	}
 
 	console.log("[Loader] 开始");
-	console.log("[Loader] window.PB64类型:", typeof window.PB64);
-	console.log("[Loader] window.PB64前100字符:", window.PB64 ? window.PB64.substring(0, 100) : window.PB64);
 	M("加载中...");
 	var p = window.PB64 ? decodeURIComponent(escape(atob(window.PB64))) : "";
-	console.log("[Loader] 解码后P前200字符:", p ? p.substring(0, 200) : p);
 	console.log("[Loader] P =", p ? p.substring(0, 100) + "..." : p);
 	if (!p) { E("参数为空"); return; }
 	if (p.charAt(0) === "[" && p.charAt(p.length - 1) === "]") p = p.slice(1, -1);
 
-	var m = p.match(/^(?:(EDIT):)?([^_:]+)(?:_(\d+))?:(.+)$/);
-	console.log("[Loader] 匹配结果:", m ? {edit: m[1], project: m[2], major: m[3]} : null);
-	if (!m) { E("格式错误"); return; }
+	var parts = p.split(":");
+	var flags = {};
+	while (parts.length > 1 && /^[A-Z]+$/.test(parts[0])) {
+		flags[parts.shift()] = true;
+	}
+	L.flags = flags;
+	console.log("[Loader] Flags:", Object.keys(flags));
 
-	L.edit = !!m[1];
-	L.project = m[2];
-	L.paramMajor = m[3] || "";
-	var params = m[4].split(";;");
+	var projPart = parts.shift() || "";
+	var projMatch = projPart.match(/^([^_]+)(?:_(\d+))?$/);
+	if (!projMatch) { E("格式错误"); return; }
+	L.project = projMatch[1];
+	L.paramMajor = projMatch[2] || "";
+
+	var params = parts.join(":").split(";;");
 	L.char = params[0] || "";
 	L.user = params[1] || "";
 	L.b64 = params[2] || "";
-	console.log("[Loader] 项目:", L.project, "编辑:", L.edit);
+	console.log("[Loader] 项目:", L.project, "Flags:", Object.keys(flags));
+
+	for (var flag in flags) {
+		switch (flag) {
+			case "ONCE":
+				var onceKey = "once_" + L.roleId + "_" + L.project;
+				if (localStorage.getItem(onceKey)) {
+					Complete("操作已完成");
+					return;
+				}
+				L.onceKey = onceKey;
+				break;
+			case "EDIT":
+				L.edit = true;
+				break;
+		}
+	}
 
 	fetch(L.base + "navigator.json").then(function(r) {
 		console.log("[Loader] navigator.json 状态:", r.status);
@@ -118,7 +141,9 @@ window.L = {
 			var cfg = "window.L=" + JSON.stringify({
 				loaded: {},
 				base: L.base,
-				edit: L.edit,
+				flags: L.flags,
+				edit: L.edit || false,
+				onceKey: L.onceKey || "",
 				project: L.project,
 				char: L.char,
 				user: L.user,
