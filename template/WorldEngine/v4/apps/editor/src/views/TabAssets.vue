@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import SplitPanel from '@/components/layout/SplitPanel.vue'
 import CfgRow from '@/components/ui/CfgRow.vue'
 import CfgSwt from '@/components/ui/CfgSwt.vue'
 import CfgSld from '@/components/ui/CfgSld.vue'
 import CfgCrd from '@/components/ui/CfgCrd.vue'
 import CfgEff from '@/components/ui/CfgEff.vue'
+import { useBldPresets, type BuildingPreset } from '@/composables/useBldPresets'
+
+const { getPresets, addPreset, updPreset, delPreset, getPreset } = useBldPresets()
 
 interface PhysicsProps {
 	mass: number
@@ -350,6 +353,72 @@ const selItem = ref<AssetItem | null>(null)
 const selFolder = ref<FolderNode | null>(null)
 
 const assetType = computed(() => selFolder.value?.type || '')
+
+function getBldPresetFolder(): FolderNode | null {
+	const bldNode = tree.find(n => n.id === 'building')
+	if (!bldNode) return null
+	return bldNode.children.find(c => c.id === 'building/preset') || null
+}
+
+function presetToAssetItem(preset: BuildingPreset): AssetItem {
+	return {
+		id: preset.id,
+		name: preset.name,
+		isFolder: false,
+		type: 'buildingPreset',
+		data: {
+			name: preset.name,
+			desc: preset.desc,
+			tags: preset.tags,
+			sizeX: preset.sizeX,
+			sizeY: preset.sizeY,
+			sizeZ: preset.sizeZ,
+			blocks: preset.blocks,
+			createdAt: preset.createdAt,
+			updatedAt: preset.updatedAt
+		}
+	}
+}
+
+function syncBldPresetsFromStorage() {
+	const folder = getBldPresetFolder()
+	if (!folder) return
+	const presets = getPresets()
+	const existingIds = new Set(folder.items.filter(i => i.id.startsWith('user_bld_')).map(i => i.id))
+	const storageIds = new Set(presets.map(p => p.id))
+	folder.items = folder.items.filter(i => !i.id.startsWith('user_bld_') || storageIds.has(i.id))
+	for (const preset of presets) {
+		if (!existingIds.has(preset.id)) {
+			folder.items.push(presetToAssetItem(preset))
+		} else {
+			const idx = folder.items.findIndex(i => i.id === preset.id)
+			if (idx >= 0) {
+				folder.items[idx] = presetToAssetItem(preset)
+			}
+		}
+	}
+}
+
+function savBldPresetToStorage(item: AssetItem) {
+	if (!item.id.startsWith('user_bld_')) return
+	const data = item.data as BuildingPresetData
+	const existing = getPreset(item.id)
+	if (existing) {
+		updPreset(item.id, {
+			name: data.name,
+			desc: data.desc,
+			tags: data.tags,
+			sizeX: data.sizeX,
+			sizeY: data.sizeY,
+			sizeZ: data.sizeZ,
+			blocks: data.blocks
+		})
+	}
+}
+
+onMounted(() => {
+	syncBldPresetsFromStorage()
+})
 
 const levelOpts = [
 	{ value: '1', label: 'Lv.1', desc: '初级' },

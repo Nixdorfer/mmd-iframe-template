@@ -11,8 +11,55 @@ import TabEntity from './views/TabEntity.vue'
 import TabSystem from './views/TabSystem.vue'
 import TabAssets from './views/TabAssets.vue'
 import TabPreview from './views/TabPreview.vue'
+import TabBuildingEditor from './views/TabBuildingEditor.vue'
+
+interface BuildingPresetBlock {
+	x: number
+	y: number
+	z: number
+	blockType: string
+}
+
+interface BuildingPresetData {
+	name: string
+	desc: string
+	tags: string[]
+	sizeX: number
+	sizeY: number
+	sizeZ: number
+	blocks: BuildingPresetBlock[]
+	createdAt: number
+	updatedAt: number
+}
+
+interface AssetItem {
+	id: string
+	name: string
+	isFolder: boolean
+	type: string
+	data: BuildingPresetData
+}
 
 const store = useConfigStore()
+const bldEdtItem = ref<AssetItem | null>(null)
+const showBldEdt = ref(false)
+
+function openBldEdt(item: AssetItem) {
+	bldEdtItem.value = item
+	showBldEdt.value = true
+}
+
+function closeBldEdt() {
+	showBldEdt.value = false
+	bldEdtItem.value = null
+}
+
+function savBldEdt(blocks: BuildingPresetBlock[]) {
+	if (bldEdtItem.value && bldEdtItem.value.data) {
+		bldEdtItem.value.data.blocks = blocks
+		bldEdtItem.value.data.updatedAt = Date.now()
+	}
+}
 
 const allTabs = [
 	{ id: 'law', label: '法则', pro: false },
@@ -56,6 +103,32 @@ const currentView = computed(() => viewMap[activeTab.value])
 	<div class="app">
 		<Toolbar />
 		<TabBar v-model="activeTab" :tabs="tabs" />
-		<component :is="currentView" />
+		<TabAssets v-if="activeTab === 'assets'" @openBldEditor="openBldEdt" />
+		<component v-else :is="currentView" />
+		<div v-if="showBldEdt" class="bld-edt-overlay">
+			<TabBuildingEditor :item="bldEdtItem" @close="closeBldEdt" @save="savBldEdt" />
+		</div>
 	</div>
 </template>
+
+<style scoped>
+.app {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100vh;
+	background: #1a1a1a;
+	color: #ddd;
+	overflow: hidden;
+}
+
+.bld-edt-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	background: #1a1a1a;
+}
+</style>

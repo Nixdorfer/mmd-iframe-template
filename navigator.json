@@ -9,7 +9,7 @@
       "editor": "template/modal/v2/library/editor.html"
     },
     "WorldEngine": {
-      "version": "4.37.0",
+      "version": "4.38.0",
       "versionDesc": "nightly",
       "name": "世界引擎 v4",
       "desc": "基于WebGLv2的3D世界引擎",
