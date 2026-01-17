@@ -206,7 +206,26 @@ interface SkillbarData {
 	layout: string
 }
 
-type AssetData = WallData | FloorData | FurnitureData | BuffData | SkillData | ItemData | ProjectileData | RangeEffectData | CreatureData | AttributeData | BasicAttrData | SkillbarData
+interface BuildingPresetBlock {
+	x: number
+	y: number
+	z: number
+	blockType: string
+}
+
+interface BuildingPresetData {
+	name: string
+	desc: string
+	tags: string[]
+	sizeX: number
+	sizeY: number
+	sizeZ: number
+	blocks: BuildingPresetBlock[]
+	createdAt: number
+	updatedAt: number
+}
+
+type AssetData = WallData | FloorData | FurnitureData | BuffData | SkillData | ItemData | ProjectileData | RangeEffectData | CreatureData | AttributeData | BasicAttrData | SkillbarData | BuildingPresetData
 
 interface AssetItem {
 	id: string
@@ -287,6 +306,10 @@ function defSkillbar(): SkillbarData {
 	return { name: '新技能条', desc: '', slots: 8, allowQuickCast: true, showCooldown: true, showCost: true, layout: 'horizontal' }
 }
 
+function defBuildingPreset(): BuildingPresetData {
+	return { name: '新建筑预设', desc: '', tags: [], sizeX: 10, sizeY: 10, sizeZ: 10, blocks: [], createdAt: Date.now(), updatedAt: Date.now() }
+}
+
 const tree = reactive<FolderNode[]>([
 	{
 		id: 'basic', name: '基本', open: false, isLeaf: false, type: '',
@@ -299,6 +322,7 @@ const tree = reactive<FolderNode[]>([
 	{
 		id: 'building', name: '建筑', open: true, isLeaf: false, type: '',
 		children: [
+			{ id: 'building/preset', name: '预设', open: false, isLeaf: true, type: 'buildingPreset', children: [], items: [] },
 			{ id: 'building/wall', name: '墙壁', open: false, isLeaf: true, type: 'wall', children: [], items: [] },
 			{ id: 'building/floor', name: '地面', open: false, isLeaf: true, type: 'floor', children: [], items: [] },
 			{ id: 'building/furniture', name: '家具', open: false, isLeaf: true, type: 'furniture', children: [], items: [] }
@@ -451,6 +475,7 @@ function createAssetData(type: string): AssetData {
 		case 'entityAttr': return defAttribute()
 		case 'attribute': return defBasicAttr()
 		case 'skillbar': return defSkillbar()
+		case 'buildingPreset': return defBuildingPreset()
 		default: return defWall()
 	}
 }
@@ -487,6 +512,14 @@ function getTagsStr(tags: string[]): string {
 function setTagsFromStr(tags: string[], str: string) {
 	tags.length = 0
 	str.split(',').map(t => t.trim()).filter(t => t).forEach(t => tags.push(t))
+}
+
+const emit = defineEmits<{
+	(e: 'openBldEditor', item: AssetItem): void
+}>()
+
+function openBldEditor(item: AssetItem) {
+	emit('openBldEditor', item)
 }
 </script>
 
@@ -1273,6 +1306,41 @@ function setTagsFromStr(tags: string[], str: string) {
 				</div>
 				<button v-if="selFolder" class="ast-del-btn" @click="delItem(selFolder, selItem)">删除</button>
 			</template>
+			<template v-else-if="assetType === 'buildingPreset'">
+				<div class="config-section">
+					<div class="config-section-title">建筑预设配置</div>
+					<CfgRow label="名称" info="建筑预设的显示名称。">
+						<input type="text" v-model="(selItem.data as BuildingPresetData).name">
+					</CfgRow>
+					<CfgRow label="描述" info="建筑预设的详细描述。">
+						<textarea v-model="(selItem.data as BuildingPresetData).desc" rows="2"></textarea>
+					</CfgRow>
+					<CfgRow label="标签" info="用逗号分隔的标签列表。">
+						<input type="text" :value="getTagsStr((selItem.data as BuildingPresetData).tags)" @change="(e: Event) => setTagsFromStr((selItem.data as BuildingPresetData).tags, (e.target as HTMLInputElement).value)">
+					</CfgRow>
+				</div>
+				<div class="config-section">
+					<div class="config-section-title">建筑尺寸</div>
+					<CfgRow label="宽度X" unit="格" info="建筑在X轴方向的尺寸。">
+						<CfgSld v-model="(selItem.data as BuildingPresetData).sizeX" :min="1" :max="64" :step="1" />
+					</CfgRow>
+					<CfgRow label="深度Y" unit="格" info="建筑在Y轴方向的尺寸。">
+						<CfgSld v-model="(selItem.data as BuildingPresetData).sizeY" :min="1" :max="64" :step="1" />
+					</CfgRow>
+					<CfgRow label="高度Z" unit="格" info="建筑在Z轴方向的尺寸。">
+						<CfgSld v-model="(selItem.data as BuildingPresetData).sizeZ" :min="1" :max="64" :step="1" />
+					</CfgRow>
+				</div>
+				<div class="config-section">
+					<div class="config-section-title">体素数据</div>
+					<div class="bld-info">
+						<span class="bld-info-lbl">方块数量</span>
+						<span class="bld-info-val">{{ (selItem.data as BuildingPresetData).blocks.length }}</span>
+					</div>
+					<button class="bld-edit-btn" @click="openBldEditor(selItem)">打开编辑器</button>
+				</div>
+				<button v-if="selFolder" class="ast-del-btn" @click="delItem(selFolder, selItem)">删除</button>
+			</template>
 			<template v-else>
 				<div class="config-section">
 					<div class="config-section-title">资产详情</div>
@@ -1532,5 +1600,44 @@ function setTagsFromStr(tags: string[], str: string) {
 	background: #252525;
 	border-color: #166d3b;
 	color: #aaa;
+}
+
+.bld-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 12px;
+	background: #1a1a1a;
+	border: 1px solid #333;
+	border-radius: 4px;
+	margin-bottom: 12px;
+}
+
+.bld-info-lbl {
+	font-size: 12px;
+	color: #888;
+}
+
+.bld-info-val {
+	font-size: 14px;
+	color: #6c9;
+	font-family: monospace;
+}
+
+.bld-edit-btn {
+	width: 100%;
+	height: 36px;
+	background: #1a3a2a;
+	border: 1px solid #166d3b;
+	border-radius: 4px;
+	color: #6c9;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.bld-edit-btn:hover {
+	background: #1f4a35;
+	color: #8ef;
 }
 </style>

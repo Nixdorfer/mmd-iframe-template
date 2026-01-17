@@ -7,6 +7,17 @@
 	b.textContent = "加载中...";
 	b.disabled = true;
 	c.appendChild(b);
+	function showComplete(msg) {
+		b.remove();
+		var d = document.createElement("div");
+		d.style.cssText = "padding:16px;background:#166d3b;border:none;border-radius:8px;color:#fff;font-size:16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif";
+		d.textContent = msg || "操作已完成";
+		c.appendChild(d);
+	}
+	function checkOnce() {
+		var aiCount = document.querySelectorAll(".chat .chat-scope-box .item.Ai").length;
+		return aiCount === 2;
+	}
 	function TA() {
 		return document.querySelector(".chat .chat-bottom .uni-textarea .chat-input-scope textarea");
 	}
@@ -46,7 +57,7 @@
 		d.textContent = msg || "加载失败";
 		if (c.parentNode) c.parentNode.insertBefore(d, c);
 	}
-	function sU(h) {
+	function sU(h, flags) {
 		var rId = new URLSearchParams(location.search).get("roleId") || "";
 		var pB64 = btoa(unescape(encodeURIComponent(p)));
 		var ht = h.replace("/*__INJECT__*/", "window.PB64=\"" + pB64 + "\";window.R=\"" + window.innerWidth + "x" + window.innerHeight + "\";window.ROLEID=\"" + rId + "\";");
@@ -125,7 +136,21 @@
 		};
 		window.addEventListener("message", mH);
 		b.onclick = sI;
-		sI();
+		if (flags.ONCE) {
+			if (checkOnce()) {
+				sI();
+			} else {
+				showComplete();
+			}
+		} else {
+			sI();
+		}
+	}
+	var tmp = p.charAt(0) === "[" && p.charAt(p.length - 1) === "]" ? p.slice(1, -1) : p;
+	var parts = tmp.split(":");
+	var flags = {};
+	while (parts.length > 1 && /^[A-Z]+$/.test(parts[0])) {
+		flags[parts.shift()] = true;
 	}
 	Promise.all([
 		fetch(base + "loader/loader.html").then(function(r) { return r.ok ? r.text() : Promise.reject(); }),
@@ -136,7 +161,7 @@
 		b.style.cursor = "pointer";
 		b.textContent = "打开";
 		if (r[1]) new Function(r[1])();
-		sU(r[0]);
+		sU(r[0], flags);
 	}).catch(function() {
 		b.disabled = false;
 		b.style.background = "#8b0000";

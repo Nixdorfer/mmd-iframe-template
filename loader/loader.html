@@ -56,9 +56,6 @@ window.L = {
 		M(msg);
 		parent.postMessage({t: "error", msg: msg}, "*");
 	}
-	function Complete(msg) {
-		parent.postMessage({t: "complete", msg: msg || "操作已完成"}, "*");
-	}
 
 	console.log("[Loader] 开始");
 	M("加载中...");
@@ -89,14 +86,6 @@ window.L = {
 
 	for (var flag in flags) {
 		switch (flag) {
-			case "ONCE":
-				var onceKey = "once_" + L.roleId + "_" + L.project;
-				if (localStorage.getItem(onceKey)) {
-					Complete("操作已完成");
-					return;
-				}
-				L.onceKey = onceKey;
-				break;
 			case "EDIT":
 				L.edit = true;
 				break;
@@ -143,7 +132,6 @@ window.L = {
 				base: L.base,
 				flags: L.flags,
 				edit: L.edit || false,
-				onceKey: L.onceKey || "",
 				project: L.project,
 				char: L.char,
 				user: L.user,
